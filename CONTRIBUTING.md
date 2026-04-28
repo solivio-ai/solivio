@@ -23,5 +23,6 @@ yarn db:up
 - Keep server-only integration code in `apps/solivio/src/server`.
 - Put shared domain types and demo fixtures in `packages/domain`.
 - Prefer a working mock over an unfinished integration.
+- Keep public UI, docs, metadata, and repository copy aligned with the README and docs brand guide.
 - Document any new environment variable in the relevant `.env.example`.
 - Run `yarn typecheck` before opening a pull request.

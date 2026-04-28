@@ -39,6 +39,7 @@ As the schema grows, split tables into `apps/solivio/src/server/database/schema/
 
 The app uses **shadcn/ui** components with **Tailwind CSS v4**.
 
+- Public copy should come from the README. Brand implementation notes live in `apps/docs/src/content/docs/guides/brand.md`.
 - Install new UI components with `yarn dlx shadcn@latest add <component>` from `apps/solivio`.
 - Import components from `@/components/ui/<component>`.
 - Use shadcn primitives (`Button`, `Card`, `Badge`, `Textarea`, etc.) for all UI — do not write custom CSS classes.
