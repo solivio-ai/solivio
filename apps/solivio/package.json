@@ -10,7 +10,9 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.53",
     "@solivio/domain": "*",
+    "ai": "^6.0.168",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
     "pg": "^8.20.0",
