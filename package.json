@@ -1,0 +1,37 @@
+{
+  "name": "solivio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source groundwork for Solivio: customer request intake, product matching, and offer generation.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "overrides": {
+    "postcss": "8.5.12"
+  },
+  "engines": {
+    "node": ">=22.9.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,green \"npm run dev --workspace @solivio/api\" \"npm run dev --workspace @solivio/web\"",
+    "dev:api": "npm run dev --workspace @solivio/api",
+    "dev:web": "npm run dev --workspace @solivio/web",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "start": "concurrently -n api,web -c cyan,green \"npm run start --workspace @solivio/api\" \"npm run start --workspace @solivio/web\"",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "concurrently": "^9.2.1",
+    "typescript": "^6.0.3"
+  }
+}
