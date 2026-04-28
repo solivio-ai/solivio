@@ -27,7 +27,7 @@ Repository setup still needs to be enabled once in GitHub:
 4. Enable HTTPS after GitHub provisions the certificate.
 
 The docs build runs OpenAPI generation first, so the workflow only needs
-`npm ci` and `npm run docs:build`.
+`yarn install --immutable` and `yarn docs:build`.
 
 ## DNS For solivio.ai
 
@@ -61,9 +61,9 @@ Avoid wildcard records for `*.solivio.ai`.
 
 For any other static host:
 
-1. Install from the repository root with `npm install`.
-2. Generate the API contract with `npm run openapi:generate`.
-3. Build the docs workspace with `npm run docs:build`.
+1. Install from the repository root with `yarn install`.
+2. Generate the API contract with `yarn openapi:generate`.
+3. Build the docs workspace with `yarn docs:build`.
 4. Publish `apps/docs/dist`.
 
 ## API Contract
@@ -75,8 +75,8 @@ docs build and is consumed by the Starlight OpenAPI plugin.
 Before a public release, lint the generated file on a Node 24.15+ CI image:
 
 ```bash
-npm run openapi:generate
-npx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
+yarn openapi:generate
+yarn dlx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
 ```
 
 ## Publishing Targets

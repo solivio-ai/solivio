@@ -23,7 +23,7 @@ the same boundary definitions.
 ## Generate the schema
 
 ```bash
-npm run openapi:generate
+yarn openapi:generate
 ```
 
 This runs `scripts/generate-openapi.ts`, registers the route contracts with

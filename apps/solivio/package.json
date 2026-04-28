@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
-    "@solivio/domain": "*",
+    "@solivio/domain": "workspace:*",
     "@tailwindcss/postcss": "^4.2.4",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
-    "typescript": "6.0.3",
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": "^0.31.10",
+    "typescript": "6.0.3"
   }
 }

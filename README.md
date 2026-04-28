@@ -35,8 +35,8 @@ Manual work → Searching → Copy-paste → Guessing
 To:
 Data → AI → Structured draft → Review → Send
 
-- Node.js 22.12 or newer
-- npm 10 or newer
+- Node.js 24.15 or newer
+- Yarn 4.14.1 CLI
 - Docker, only if you want the local database
 
 ## 🚀 What Solivio Does
