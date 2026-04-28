@@ -4,6 +4,9 @@ node_modules/
 # next.js
 .next/
 out/
+apps/docs/.astro/
+apps/docs/dist/
+apps/docs/public/openapi/solivio.json
 
 # production
 dist/
