@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
+    "@react-pdf/renderer": "^4.5.1",
     "@solivio/domain": "workspace:*",
     "@solivio/theme": "workspace:*",
     "@tailwindcss/postcss": "^4.2.4",
@@ -23,9 +24,9 @@
     "better-auth": "^1.6.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "decimal.js": "^10.6.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
-    "lightningcss-darwin-arm64": "^1.32.0",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
     "pg": "^8.20.0",
@@ -47,5 +48,6 @@
   },
   "optionalDependencies": {
     "@tailwindcss/oxide-darwin-arm64": "^4.2.4"
+  }
   }
 }
