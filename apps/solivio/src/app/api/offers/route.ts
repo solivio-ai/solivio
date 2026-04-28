@@ -1,17 +1,24 @@
 import { demoOffer } from "@solivio/domain";
 import { NextResponse } from "next/server";
 
-import { offerResponseSchema } from "../../../server/api/contracts";
+import { offerResponseSchema } from "@/server/api/contracts";
+import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
 
-export function GET() {
+export async function GET() {
+  const unauthorized = await requireAuth();
+  if (unauthorized) return unauthorized;
+
   return NextResponse.json(offerResponseSchema.parse({
     offer: demoOffer
   }));
 }
 
-export function POST() {
+export async function POST() {
+  const unauthorized = await requireAuth();
+  if (unauthorized) return unauthorized;
+
   return NextResponse.json(
     offerResponseSchema.parse({
       offer: {

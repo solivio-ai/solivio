@@ -4,12 +4,16 @@ import {
   errorResponseSchema,
   productSearchRequestSchema,
   productSearchResponseSchema
-} from "../../../../server/api/contracts";
-import { searchProductsWithVoltAgent } from "../../../../server/agents/productSearchAgent";
+} from "@/server/api/contracts";
+import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
+import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const unauthorized = await requireAuth();
+  if (unauthorized) return unauthorized;
+
   try {
     const body = await request.json();
     const parsed = productSearchRequestSchema.safeParse(body);

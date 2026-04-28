@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { ApiStatus, RequestWorkbench } from "../features/request-workbench";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 export default function Home() {
   return (
@@ -12,7 +13,8 @@ export default function Home() {
         <div>
           <h1 className="text-4xl leading-none font-semibold tracking-tight sm:text-5xl lg:text-[58px]">Solivio</h1>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <UserMenu />
           <ApiStatus />
         </div>
       </header>
