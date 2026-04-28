@@ -165,10 +165,22 @@ export const offerItemSchema = z
     description: "A product line item included in an offer."
   });
 
+export const createOfferRequestSchema = z
+  .object({
+    customerName: z.string().optional(),
+    clientRequest: z.string().optional()
+  })
+  .strict()
+  .meta({
+    id: "CreateOfferRequest",
+    description: "Input accepted when generating a new draft offer."
+  });
+
 export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
     requestId: z.string(),
+    clientRequest: z.string().optional(),
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
@@ -344,10 +356,19 @@ export const apiContracts = [
     summary: "Generate a draft offer",
     description: "Future boundary for AI-assisted offer generation.",
     tags: ["Offers"],
+    requestBody: {
+      description: "Customer name and request text for the new offer.",
+      required: false,
+      schema: createOfferRequestSchema
+    },
     responses: {
       201: {
         description: "A newly timestamped mocked offer.",
         schema: offerResponseSchema
+      },
+      400: {
+        description: "The request body could not be parsed or validated.",
+        schema: errorResponseSchema
       }
     }
   }
