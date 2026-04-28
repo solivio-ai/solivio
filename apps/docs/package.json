@@ -16,6 +16,7 @@
   "devDependencies": {
     "@astrojs/markdown-remark": "^7.1.1",
     "@astrojs/starlight": "^0.38.4",
+    "@solivio/theme": "workspace:*",
     "astro": "^6.1.9",
     "starlight-openapi": "^0.22.1"
   }

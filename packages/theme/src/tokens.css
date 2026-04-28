@@ -1,0 +1,53 @@
+:root {
+  color-scheme: dark;
+
+  --solivio-font-sans: Inter, Arial, Helvetica, sans-serif;
+
+  --solivio-color-background: #020617;
+  --solivio-color-background-hsl: 228.6 84% 4.9%;
+  --solivio-color-background-rgb: 2 6 23;
+
+  --solivio-color-foreground: #fafafa;
+  --solivio-color-foreground-hsl: 0 0% 98%;
+
+  --solivio-color-card: #0f172a;
+  --solivio-color-card-hsl: 222.2 47.4% 11.2%;
+
+  --solivio-color-muted: #1e293b;
+  --solivio-color-muted-hsl: 217.2 32.6% 17.5%;
+
+  --solivio-color-muted-foreground: #a1a1aa;
+  --solivio-color-muted-foreground-hsl: 240 5% 64.9%;
+
+  --solivio-color-subtle-foreground: #d4d4d8;
+  --solivio-color-subtle-foreground-hsl: 240 5.2% 83.9%;
+
+  --solivio-color-soft-border: #64748b;
+  --solivio-color-soft-border-hsl: 215.4 16.3% 46.9%;
+
+  --solivio-color-primary: #facc15;
+  --solivio-color-primary-hsl: 47.9 95.8% 53.1%;
+
+  --solivio-color-primary-hover: #eab308;
+  --solivio-color-primary-hover-hsl: 45.4 93.4% 47.5%;
+
+  --solivio-color-primary-foreground: #020617;
+  --solivio-color-primary-foreground-hsl: 228.6 84% 4.9%;
+
+  --solivio-color-secondary: #134e4a;
+  --solivio-color-secondary-hsl: 175.9 60.8% 19%;
+
+  --solivio-color-secondary-hover: #0d9488;
+  --solivio-color-secondary-hover-hsl: 174.7 83.9% 31.6%;
+
+  --solivio-color-secondary-foreground: #fafafa;
+  --solivio-color-secondary-foreground-hsl: 0 0% 98%;
+
+  --solivio-color-destructive: #ef4444;
+  --solivio-color-destructive-hsl: 0 84.2% 60.2%;
+
+  --solivio-color-destructive-foreground: #fafafa;
+  --solivio-color-destructive-foreground-hsl: 0 0% 98%;
+
+  --solivio-radius: 0.5rem;
+}

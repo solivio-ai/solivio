@@ -1,33 +1,35 @@
+@import "@solivio/theme/tokens.css";
+
 @layer starlight.base {
   :root,
   :root[data-theme="dark"],
   :root[data-theme="light"],
   ::backdrop {
     color-scheme: dark;
-    --sl-color-white: #fafafa;
-    --sl-color-gray-1: #fafafa;
-    --sl-color-gray-2: #d4d4d8;
-    --sl-color-gray-3: #a1a1aa;
-    --sl-color-gray-4: #64748b;
-    --sl-color-gray-5: #1e293b;
-    --sl-color-gray-6: #0f172a;
-    --sl-color-gray-7: #0f172a;
-    --sl-color-black: #020617;
-    --sl-color-accent-low: #134e4a;
-    --sl-color-accent: #facc15;
-    --sl-color-accent-high: #facc15;
-    --sl-color-text: #fafafa;
-    --sl-color-text-accent: #facc15;
-    --sl-color-text-invert: #020617;
-    --sl-color-bg: #020617;
-    --sl-color-bg-nav: #0f172a;
-    --sl-color-bg-sidebar: #0f172a;
-    --sl-color-bg-inline-code: #1e293b;
-    --sl-color-bg-accent: #facc15;
-    --sl-color-hairline-light: #1e293b;
-    --sl-color-hairline: #1e293b;
-    --sl-color-hairline-shade: #020617;
-    --sl-color-backdrop-overlay: rgb(2 6 23 / 72%);
+    --sl-color-white: var(--solivio-color-foreground);
+    --sl-color-gray-1: var(--solivio-color-foreground);
+    --sl-color-gray-2: var(--solivio-color-subtle-foreground);
+    --sl-color-gray-3: var(--solivio-color-muted-foreground);
+    --sl-color-gray-4: var(--solivio-color-soft-border);
+    --sl-color-gray-5: var(--solivio-color-muted);
+    --sl-color-gray-6: var(--solivio-color-card);
+    --sl-color-gray-7: var(--solivio-color-card);
+    --sl-color-black: var(--solivio-color-background);
+    --sl-color-accent-low: var(--solivio-color-secondary);
+    --sl-color-accent: var(--solivio-color-primary);
+    --sl-color-accent-high: var(--solivio-color-primary);
+    --sl-color-text: var(--solivio-color-foreground);
+    --sl-color-text-accent: var(--solivio-color-primary);
+    --sl-color-text-invert: var(--solivio-color-primary-foreground);
+    --sl-color-bg: var(--solivio-color-background);
+    --sl-color-bg-nav: var(--solivio-color-card);
+    --sl-color-bg-sidebar: var(--solivio-color-card);
+    --sl-color-bg-inline-code: var(--solivio-color-muted);
+    --sl-color-bg-accent: var(--solivio-color-primary);
+    --sl-color-hairline-light: var(--solivio-color-muted);
+    --sl-color-hairline: var(--solivio-color-muted);
+    --sl-color-hairline-shade: var(--solivio-color-background);
+    --sl-color-backdrop-overlay: rgb(var(--solivio-color-background-rgb) / 72%);
   }
 }
 
