@@ -1,10 +1,15 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import type { Offer } from "@solivio/domain";
 
 import { db } from "../database/db";
-import { offerProducts, offers, products } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
+import {
+  findOfferById,
+  insertOffer,
+  insertOfferProducts,
+  type OfferRow
+} from "./offerRepository";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -51,6 +56,44 @@ function deduplicateItems(generated: GeneratedOffer): {
   return { items, extraUnmatched };
 }
 
+function rowToCreatedOffer(row: OfferRow): CreatedOffer {
+  return {
+    id: row.id,
+    customerName: row.customerName,
+    clientRequest: row.clientRequest,
+    status: row.status,
+    generatedAt: row.createdAt.toISOString(),
+    items: row.items,
+    unmatched: row.unmatched,
+    notes: row.notes
+  };
+}
+
+export function toOfferDomain(offer: CreatedOffer): Offer {
+  return {
+    id: offer.id,
+    requestId: offer.id,
+    customerName: offer.customerName ?? undefined,
+    clientRequest: offer.clientRequest ?? undefined,
+    status: offer.status as Offer["status"],
+    generatedAt: offer.generatedAt,
+    notes: offer.notes,
+    items: offer.items.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      rationale: item.rationale,
+      product: {
+        id: item.productId,
+        sku: item.productSku,
+        name: item.productName,
+        description: item.productDescription,
+        manufacturer: item.productManufacturer,
+        source: "semantic-search" as const
+      }
+    }))
+  };
+}
+
 // ── Service ────────────────────────────────────────────────────────────────────
 
 export async function createOffer(
@@ -61,62 +104,35 @@ export async function createOffer(
   const { items, extraUnmatched } = deduplicateItems(generated);
 
   return db.transaction(async (tx) => {
-    const [offer] = await tx
-      .insert(offers)
-      .values({
+    const offer = await insertOffer(
+      {
         customerName: customerName ?? null,
         clientRequest,
         status: "draft",
         notes: generated.notes,
         unmatched: [...generated.unmatched, ...extraUnmatched]
-      })
-      .returning();
+      },
+      tx
+    );
 
-    if (items.length > 0) {
-      await tx.insert(offerProducts).values(
-        items.map((item) => ({
-          offerId: offer.id,
-          productId: item.productId,
-          requestItem: item.requestItem,
-          quantity: item.quantity,
-          rationale: item.rationale
-        }))
-      );
-    }
-
-    const lineItems = await tx
-      .select({
-        productId: offerProducts.productId,
-        productName: products.name,
-        productSku: products.sku,
-        productDescription: products.description,
-        productManufacturer: products.manufacturer,
-        requestItem: offerProducts.requestItem,
-        quantity: offerProducts.quantity,
-        rationale: offerProducts.rationale
-      })
-      .from(offerProducts)
-      .innerJoin(products, eq(products.id, offerProducts.productId))
-      .where(eq(offerProducts.offerId, offer.id));
-
-    return {
-      id: offer.id,
-      customerName: offer.customerName,
-      clientRequest: offer.clientRequest,
-      status: offer.status,
-      generatedAt: offer.createdAt.toISOString(),
-      items: lineItems.map((row) => ({
-        productId: row.productId,
-        productName: row.productName,
-        productSku: row.productSku,
-        productDescription: row.productDescription,
-        productManufacturer: row.productManufacturer,
-        requestItem: row.requestItem,
-        quantity: row.quantity,
-        rationale: row.rationale
+    await insertOfferProducts(
+      items.map((item) => ({
+        offerId: offer.id,
+        productId: item.productId,
+        requestItem: item.requestItem,
+        quantity: item.quantity,
+        rationale: item.rationale
       })),
-      unmatched: offer.unmatched,
-      notes: offer.notes
-    };
+      tx
+    );
+
+    const row = await findOfferById(offer.id, tx);
+    return rowToCreatedOffer(row!);
   });
+}
+
+export async function getOffer(id: string): Promise<Offer | null> {
+  const row = await findOfferById(id);
+  if (!row) return null;
+  return toOfferDomain(rowToCreatedOffer(row));
 }
