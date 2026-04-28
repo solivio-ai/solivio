@@ -1,90 +1,116 @@
-# Solivio
 
-Solivio is an open-source groundwork for a sales workflow that turns a customer request into a reviewed product offer. The first version keeps the system deliberately small: one Next.js app with clearly separated frontend, API, server, and shared domain layers, plus local Postgres with pgvector ready for product embeddings.
+# ![Solivio Logo](https://github.com/solivio-ai/solivio/blob/main/solivio-logo.png?raw=true)
 
-## What This Repo Contains
+> **Quotes shouldn’t take hours. They should start from your data.**
 
-- `apps/solivio` - the Next.js app on `http://localhost:3000`
-- `apps/solivio/src/app/api` - API route handlers
-- `apps/solivio/src/features` - frontend product/workflow features
-- `apps/solivio/src/server` - server-only helpers and integrations
-- `packages/domain` - shared process, product, request, and offer types
-- `infra/postgres` - database initialization for pgvector
-- `docs` - API, database, and MVP implementation notes
+Solivio is an open-source AI system that transforms how B2B companies create offers.
 
-## Quick Start
+Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds.
 
-Requirements:
 
-- Node.js 22 or newer
+## 💡 The Problem
+
+Creating offers in complex B2B environments is slow, manual, and inconsistent.
+
+- 📦 Thousands of products
+- 🧩 Multi-line, configurable offers
+- 🧠 Knowledge spread across systems and people
+- 📝 Every offer built from scratch
+
+**What this leads to:**
+
+- ⏳ Long response times
+- ❌ Errors and inconsistencies
+- 🔁 Repetitive manual work
+- 📉 Lost revenue opportunities
+
+
+## ⚡ The Shift
+
+Solivio changes offer creation from a manual task into a data-driven process.
+
+From:
+Manual work → Searching → Copy-paste → Guessing
+
+To:
+Data → AI → Structured draft → Review → Send
+
+- Node.js 22.12 or newer
 - npm 10 or newer
 - Docker, only if you want the local database
 
-```bash
-npm install
-npm run dev
-```
+## 🚀 What Solivio Does
 
-Open:
+Solivio generates ready-to-review offer drafts using your internal data.
 
-- Frontend: `http://localhost:3000`
-- API health: `http://localhost:3000/api/health`
+- 🧠 Understands incoming inquiries
+- 🔗 Connects multiple data sources
+- 🧾 Builds structured offers automatically
+- 👤 Keeps humans in control (review & adjust)
 
-Start the optional database:
+**Result:**
 
-```bash
-cp .env.example .env
-cp apps/solivio/.env.example apps/solivio/.env
-npm run db:up
-npm run db:push
-```
+Faster offers. Better consistency. Less operational overhead.
 
-The database image is pinned to `pgvector/pgvector:0.8.2-pg18-trixie`: pgvector `0.8.2` on PostgreSQL 18, the latest supported PostgreSQL major. If you previously started the database on another PostgreSQL major, recreate the local dev volume or run a proper PostgreSQL major upgrade.
 
-The current app uses mocked domain data, so the database is not required for the first demo.
+## 📈 Business Impact
 
-## Useful Commands
+Solivio is not about features. It’s about outcomes.
 
-```bash
-npm run dev        # run the Next.js app
-npm run start      # run the production Next server after a build
-npm run typecheck  # type-check all workspaces
-npm run build      # build all workspaces
-npm run db:up      # start Postgres with pgvector
-npm run db:down    # stop local infra
-npm run db:push    # apply the current schema directly to the local DB (dev only)
-npm run db:generate  # generate a SQL migration file from schema changes
-npm run db:migrate   # apply pending migration files to the DB
-npm run db:studio    # open Drizzle Studio to browse the database
-```
+- ⚡ Faster response to customers
+- 📊 Higher conversion potential
+- 🧑‍💼 More time for actual selling
+- 📏 Standardized offer quality
+- 🔁 Scalable sales operations
 
-### Database workflow
+## 🧠 How It Thinks
 
-Schema is defined in `apps/solivio/src/server/database/schema.ts` and managed with [Drizzle ORM](https://orm.drizzle.team). The config lives in `apps/solivio/drizzle.config.ts`.
+Solivio uses context from your business:
 
-**Local development** — use `db:push` to instantly apply schema changes without creating migration files:
+- 📦 Product data
+- 💰 Pricing logic
+- 👤 Customer context
+- 📚 Internal knowledge
+- 📊 Historical patterns
 
-```bash
-npm run db:push
-```
+The system doesn’t just generate offers — it reconstructs decision-making behind them.
 
-**Staging / production** — generate and commit migration files, then apply them:
 
-```bash
-npm run db:generate  # creates a new SQL file in apps/solivio/drizzle/
-npm run db:migrate   # runs all pending migrations against the DB
-```
+## 🌍 Why Open Source?
 
-Migration files are checked into version control so schema history is tracked alongside code.
+We believe offer generation should be:
 
-## MVP Direction
+- 🔓 Transparent
+- 🔧 Customizable
+- 🌐 Extensible
+- 🤝 Community-driven
 
-The screenshots describe the first implementation path:
+Solivio is built as an open foundation that can be adapted to different industries and workflows.
 
-1. Intake a customer request from text or chat.
-2. Extract customer needs and constraints.
-3. Match the request against imported products.
-4. Generate a draft offer with alternatives.
-5. Let a salesperson review, edit, diff, validate, and accept the offer.
 
-This scaffold avoids locking in storage, auth, AI provider, or deployment choices too early. Those pieces can be added behind the current API boundaries.
+## 🔮 Vision
+
+Turn offer creation into a real-time, data-driven system — not a manual process.
+
+Solivio aims to become the standard layer between customer inquiry and final offer.
+
+
+## 🤝 Contributing
+
+We’re building this in the open.
+
+You can contribute by:
+
+- 💡 Sharing ideas
+- 🧠 Challenging assumptions
+- 🔌 Proposing use cases
+- 📣 Spreading the word
+
+
+## ⭐ Support
+
+If this resonates:
+
+- ⭐ Star the repo
+- 🧵 Share feedback
+- 👀 Follow the project

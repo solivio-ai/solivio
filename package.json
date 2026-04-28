@@ -13,11 +13,14 @@
     "postcss": "8.5.12"
   },
   "engines": {
-    "node": ">=22.9.0",
+    "node": ">=24.15.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
     "dev": "npm run dev --workspace @solivio/app",
+    "docs:dev": "npm run dev --workspace @solivio/docs",
+    "docs:build": "npm run build --workspace @solivio/docs",
+    "openapi:generate": "npm run openapi:generate --workspace @solivio/docs",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "start": "npm run start --workspace @solivio/app",
@@ -29,10 +32,12 @@
     "db:studio": "npm run db:studio --workspace @solivio/app"
   },
   "devDependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@types/node": "^24.12.2",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"

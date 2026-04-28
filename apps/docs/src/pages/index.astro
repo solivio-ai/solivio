@@ -1,0 +1,133 @@
+---
+const links = [
+  { href: "/guides/", label: "Guides" },
+  { href: "/api/", label: "API Reference" }
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Solivio</title>
+    <meta
+      name="description"
+      content="Open-source sales workflow documentation and API reference for Solivio."
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Solivio</a>
+      <nav aria-label="Primary navigation">
+        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </header>
+
+    <main class="landing-shell">
+      <section class="landing-panel" aria-labelledby="landing-title">
+        <h1 id="landing-title">Solivio</h1>
+        <div class="landing-actions">
+          {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(html) {
+    color-scheme: light;
+    background: #ffffff;
+    color: #111827;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .site-header {
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    min-height: 68px;
+    padding: 0 24px;
+  }
+
+  .brand,
+  nav a,
+  .landing-actions a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .brand {
+    color: #0f766e;
+    font-size: 22px;
+  }
+
+  nav {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+  }
+
+  nav a,
+  .landing-actions a {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    min-height: 40px;
+    padding: 10px 14px;
+  }
+
+  nav a:hover,
+  .landing-actions a:hover {
+    background: #f3f4f6;
+  }
+
+  .landing-shell {
+    display: grid;
+    min-height: calc(100vh - 69px);
+    place-items: center;
+    padding: 24px;
+  }
+
+  .landing-panel {
+    display: grid;
+    gap: 16px;
+    max-width: 760px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .landing-panel h1 {
+    font-size: clamp(48px, 10vw, 104px);
+    line-height: 0.95;
+    margin: 0;
+  }
+
+  .landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  @media (max-width: 560px) {
+    .site-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    nav {
+      flex-wrap: wrap;
+    }
+  }
+</style>

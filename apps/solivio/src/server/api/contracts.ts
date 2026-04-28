@@ -1,0 +1,286 @@
+import { z, type ZodType } from "zod";
+
+export type ApiMethod = "get" | "post";
+
+export type ApiResponseContract = {
+  description: string;
+  schema?: ZodType;
+};
+
+export type ApiRequestBodyContract = {
+  description: string;
+  required?: boolean;
+  schema: ZodType;
+};
+
+export type ApiContract = {
+  description?: string;
+  method: ApiMethod;
+  operationId: string;
+  path: string;
+  requestBody?: ApiRequestBodyContract;
+  responses: Record<number, ApiResponseContract>;
+  summary: string;
+  tags: string[];
+};
+
+export const apiTags = [
+  {
+    name: "System",
+    description: "Operational status and readiness checks."
+  },
+  {
+    name: "Products",
+    description: "Product candidate data used by matching."
+  },
+  {
+    name: "Requests",
+    description: "Customer request intake and requirement extraction."
+  },
+  {
+    name: "Offers",
+    description: "Draft offer generation boundaries."
+  }
+] as const;
+
+export const availabilitySchema = z
+  .enum(["available", "limited", "unavailable"])
+  .meta({ id: "Availability" });
+
+export const currencySchema = z.enum(["PLN", "EUR"]).meta({ id: "Currency" });
+
+export const productSchema = z
+  .object({
+    id: z.string().meta({ examples: ["solar-panel-430"] }),
+    name: z.string().meta({ examples: ["Solar Panel 430 W"] }),
+    category: z.string().meta({ examples: ["photovoltaics"] }),
+    availability: availabilitySchema,
+    priceNet: z.number().nonnegative(),
+    currency: currencySchema,
+    tags: z.array(z.string()),
+    summary: z.string()
+  })
+  .strict()
+  .meta({
+    id: "Product",
+    description: "A product candidate that can be matched into an offer."
+  });
+
+export const productsResponseSchema = z
+  .object({
+    products: z.array(productSchema)
+  })
+  .strict()
+  .meta({ id: "ProductsResponse" });
+
+export const customerRequestSourceSchema = z
+  .enum(["manual", "chat", "email"])
+  .meta({ id: "CustomerRequestSource" });
+
+export const customerRequestSchema = z
+  .object({
+    id: z.string().meta({ examples: ["request-demo-001"] }),
+    customerName: z.string().meta({ examples: ["Demo customer"] }),
+    source: customerRequestSourceSchema,
+    text: z.string(),
+    requirements: z.array(z.string())
+  })
+  .strict()
+  .meta({
+    id: "CustomerRequest",
+    description: "Raw customer request text plus extracted requirements."
+  });
+
+export const createCustomerRequestRequestSchema = z
+  .object({
+    customerName: z.string().optional(),
+    customerText: z.string().optional()
+  })
+  .strict()
+  .meta({
+    id: "CreateCustomerRequestRequest",
+    description: "Draft request input accepted by the mocked intake boundary."
+  });
+
+export const customerRequestResponseSchema = z
+  .object({
+    request: customerRequestSchema
+  })
+  .strict()
+  .meta({ id: "CustomerRequestResponse" });
+
+export const offerStatusSchema = z.enum(["draft", "reviewed", "accepted"]).meta({ id: "OfferStatus" });
+
+export const offerItemSchema = z
+  .object({
+    productId: z.string(),
+    quantity: z.number().int().positive(),
+    rationale: z.string()
+  })
+  .strict()
+  .meta({
+    id: "OfferItem",
+    description: "A product line item included in an offer."
+  });
+
+export const offerSchema = z
+  .object({
+    id: z.string().meta({ examples: ["offer-demo-001"] }),
+    requestId: z.string(),
+    status: offerStatusSchema,
+    generatedAt: z.string().datetime(),
+    items: z.array(offerItemSchema),
+    notes: z.array(z.string())
+  })
+  .strict()
+  .meta({
+    id: "Offer",
+    description: "A draft, reviewed, or accepted offer for a customer request."
+  });
+
+export const offerResponseSchema = z
+  .object({
+    offer: offerSchema
+  })
+  .strict()
+  .meta({ id: "OfferResponse" });
+
+export const databaseStatusSchema = z
+  .discriminatedUnion("status", [
+    z.object({ status: z.literal("not-configured") }).strict(),
+    z
+      .object({
+        status: z.literal("reachable"),
+        source: z.enum(["env", "development-default"]),
+        serverVersion: z.string(),
+        vectorVersion: z.string()
+      })
+      .strict(),
+    z
+      .object({
+        status: z.literal("unreachable"),
+        message: z.string()
+      })
+      .strict()
+  ])
+  .meta({
+    id: "DatabaseStatus",
+    description: "Database readiness information returned by the health endpoint."
+  });
+
+export const healthResponseSchema = z
+  .object({
+    app: z.literal("solivio"),
+    status: z.literal("ok"),
+    database: databaseStatusSchema,
+    timestamp: z.string().datetime()
+  })
+  .strict()
+  .meta({ id: "HealthResponse" });
+
+export const errorResponseSchema = z
+  .object({
+    error: z
+      .object({
+        code: z.string(),
+        message: z.string(),
+        issues: z.array(z.string()).optional()
+      })
+      .strict()
+  })
+  .strict()
+  .meta({
+    id: "ErrorResponse",
+    description: "Standard API error payload."
+  });
+
+export const apiContracts = [
+  {
+    method: "get",
+    path: "/api/health",
+    operationId: "getHealth",
+    summary: "Check service health",
+    tags: ["System"],
+    responses: {
+      200: {
+        description: "The app is reachable and reports database readiness.",
+        schema: healthResponseSchema
+      }
+    }
+  },
+  {
+    method: "get",
+    path: "/api/products",
+    operationId: "listProducts",
+    summary: "List product candidates",
+    tags: ["Products"],
+    responses: {
+      200: {
+        description: "Mocked product candidates available for request matching.",
+        schema: productsResponseSchema
+      }
+    }
+  },
+  {
+    method: "get",
+    path: "/api/requests",
+    operationId: "getDemoRequest",
+    summary: "Get the demo customer request",
+    tags: ["Requests"],
+    responses: {
+      200: {
+        description: "The current mocked request and extracted requirements.",
+        schema: customerRequestResponseSchema
+      }
+    }
+  },
+  {
+    method: "post",
+    path: "/api/requests",
+    operationId: "createCustomerRequest",
+    summary: "Create a draft customer request",
+    tags: ["Requests"],
+    requestBody: {
+      description: "Raw customer request text for mocked requirement extraction.",
+      required: false,
+      schema: createCustomerRequestRequestSchema
+    },
+    responses: {
+      201: {
+        description: "A mocked request object with extracted requirements.",
+        schema: customerRequestResponseSchema
+      },
+      400: {
+        description: "The request body could not be parsed or validated.",
+        schema: errorResponseSchema
+      }
+    }
+  },
+  {
+    method: "get",
+    path: "/api/offers",
+    operationId: "getDemoOffer",
+    summary: "Get the demo draft offer",
+    tags: ["Offers"],
+    responses: {
+      200: {
+        description: "The current mocked draft offer.",
+        schema: offerResponseSchema
+      }
+    }
+  },
+  {
+    method: "post",
+    path: "/api/offers",
+    operationId: "generateOffer",
+    summary: "Generate a draft offer",
+    description: "Future boundary for AI-assisted offer generation.",
+    tags: ["Offers"],
+    responses: {
+      201: {
+        description: "A newly timestamped mocked offer.",
+        schema: offerResponseSchema
+      }
+    }
+  }
+] as const satisfies readonly ApiContract[];
