@@ -5,15 +5,15 @@ Thanks for helping with Solivio. Keep changes small, easy to run locally, and do
 ## Local Setup
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 The app uses mocked data by default. Start Postgres only when working on persistence, imports, search, or embeddings:
 
 ```bash
 cp .env.example .env
-npm run db:up
+yarn db:up
 ```
 
 ## Development Guidelines
@@ -23,5 +23,6 @@ npm run db:up
 - Keep server-only integration code in `apps/solivio/src/server`.
 - Put shared domain types and demo fixtures in `packages/domain`.
 - Prefer a working mock over an unfinished integration.
+- Keep public UI, docs, metadata, and repository copy aligned with the README and docs brand guide.
 - Document any new environment variable in the relevant `.env.example`.
-- Run `npm run typecheck` before opening a pull request.
+- Run `yarn typecheck` before opening a pull request.

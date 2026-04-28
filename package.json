@@ -9,38 +9,41 @@
     "packages/*",
     "apps/*"
   ],
-  "overrides": {
+  "resolutions": {
     "postcss": "8.5.12"
   },
   "engines": {
     "node": ">=24.15.0",
-    "npm": ">=10.0.0"
+    "yarn": ">=4.14.1"
   },
   "scripts": {
-    "dev": "npm run dev --workspace @solivio/app",
-    "docs:dev": "npm run dev --workspace @solivio/docs",
-    "docs:build": "npm run build --workspace @solivio/docs",
-    "openapi:generate": "npm run openapi:generate --workspace @solivio/docs",
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "start": "npm run start --workspace @solivio/app",
+    "dev": "yarn workspace @solivio/app dev",
+    "docs:dev": "yarn workspace @solivio/docs dev",
+    "docs:build": "yarn workspace @solivio/docs build",
+    "openapi:generate": "yarn workspace @solivio/docs openapi:generate",
+    "build": "yarn workspace @solivio/app build && yarn workspace @solivio/docs build",
+    "typecheck": "yarn workspace @solivio/domain typecheck && yarn workspace @solivio/app typecheck",
+    "start": "yarn workspace @solivio/app start",
+    "setup": "yarn db:up && yarn db:wait && yarn db:migrate",
     "db:up": "docker compose up -d db",
+    "db:wait": "node --env-file=apps/solivio/.env.local scripts/db-wait.mjs",
     "db:down": "docker compose down",
-    "db:generate": "npm run db:generate --workspace @solivio/app",
-    "db:migrate": "npm run db:migrate --workspace @solivio/app",
-    "db:push": "npm run db:push --workspace @solivio/app",
-    "db:studio": "npm run db:studio --workspace @solivio/app"
+    "db:generate": "yarn workspace @solivio/app db:generate",
+    "db:migrate": "yarn workspace @solivio/app db:migrate",
+    "db:push": "yarn workspace @solivio/app db:push",
+    "db:studio": "yarn workspace @solivio/app db:studio"
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
-    "@tailwindcss/oxide-darwin-arm64": "^4.2.4",
+    "@tailwindcss/oxide-darwin-arm64": "4.2.4",
     "@types/node": "^24.12.2",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "lightningcss-darwin-arm64": "^1.32.0",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.3.6"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@4.14.1"
 }

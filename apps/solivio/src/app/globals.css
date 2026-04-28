@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@solivio/theme/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -32,96 +33,75 @@
 
 @layer base {
   :root {
-    /* ─── Core ─────────────────────────────────────── */
-    --background:            228.6  84.0%   4.9%;   /* #020617 */
-    --foreground:              0.0   0.0%  98.0%;   /* #FAFAFA */
-
-    /* ─── Card / Popover ───────────────────────────── */
-    --card:                  222.2  47.4%  11.2%;   /* #0F172A */
-    --card-foreground:         0.0   0.0%  98.0%;   /* #FAFAFA */
-    --popover:               222.2  47.4%  11.2%;   /* #0F172A */
-    --popover-foreground:      0.0   0.0%  98.0%;   /* #FAFAFA */
-
-    /* ─── Primary (Yellow) ─────────────────────────── */
-    --primary:                47.9  95.8%  53.1%;   /* #FACC15 */
-    --primary-foreground:    228.6  84.0%   4.9%;   /* #020617 */
-
-    /* ─── Secondary (Teal) ─────────────────────────── */
-    --secondary:             175.9  60.8%  19.0%;   /* #134E4A */
-    --secondary-foreground:    0.0   0.0%  98.0%;   /* #FAFAFA */
-
-    /* ─── Muted ────────────────────────────────────── */
-    --muted:                 217.2  32.6%  17.5%;   /* #1E293B */
-    --muted-foreground:      240.0   5.0%  64.9%;   /* #A1A1AA */
-
-    /* ─── Accent (Teal) ────────────────────────────── */
-    --accent:                175.9  60.8%  19.0%;   /* #134E4A */
-    --accent-foreground:       0.0   0.0%  98.0%;   /* #FAFAFA */
-
-    /* ─── Destructive ──────────────────────────────── */
-    --destructive:             0.0  84.2%  60.2%;   /* #EF4444 */
-    --destructive-foreground:  0.0   0.0%  98.0%;   /* #FAFAFA */
-
-    /* ─── Structural ───────────────────────────────── */
-    --border:                217.2  32.6%  17.5%;   /* #1E293B */
-    --input:                 217.2  32.6%  17.5%;   /* #1E293B */
-    --ring:                   47.9  95.8%  53.1%;   /* #FACC15 */
-
-    /* ─── Radius ───────────────────────────────────── */
-    --radius: 0.5rem;
-
-    /* ─── Charts ───────────────────────────────────── */
-    --chart-1:                47.9  95.8%  53.1%;   /* #FACC15  Yellow */
-    --chart-2:               175.9  60.8%  19.0%;   /* #134E4A  Teal   */
-    --chart-3:                45.4  93.4%  47.5%;   /* #EAB308  Amber  */
-    --chart-4:               174.7  83.9%  31.6%;   /* #0D9488  Cyan   */
-    --chart-5:               240.0   5.0%  64.9%;   /* #A1A1AA  Gray   */
-
-    /* ─── Sidebar ──────────────────────────────────── */
-    --sidebar-background:    222.2  47.4%  11.2%;   /* #0F172A */
-    --sidebar-foreground:      0.0   0.0%  98.0%;   /* #FAFAFA */
-    --sidebar-primary:        47.9  95.8%  53.1%;   /* #FACC15 */
-    --sidebar-primary-foreground: 228.6 84.0% 4.9%; /* #020617 */
-    --sidebar-accent:        217.2  32.6%  17.5%;   /* #1E293B */
-    --sidebar-accent-foreground: 0.0  0.0%  98.0%;  /* #FAFAFA */
-    --sidebar-border:        217.2  32.6%  17.5%;   /* #1E293B */
-    --sidebar-ring:           47.9  95.8%  53.1%;   /* #FACC15 */
+    --background: var(--solivio-color-background-hsl);
+    --foreground: var(--solivio-color-foreground-hsl);
+    --card: var(--solivio-color-card-hsl);
+    --card-foreground: var(--solivio-color-foreground-hsl);
+    --popover: var(--solivio-color-card-hsl);
+    --popover-foreground: var(--solivio-color-foreground-hsl);
+    --primary: var(--solivio-color-primary-hsl);
+    --primary-foreground: var(--solivio-color-primary-foreground-hsl);
+    --secondary: var(--solivio-color-secondary-hsl);
+    --secondary-foreground: var(--solivio-color-secondary-foreground-hsl);
+    --muted: var(--solivio-color-muted-hsl);
+    --muted-foreground: var(--solivio-color-muted-foreground-hsl);
+    --accent: var(--solivio-color-secondary-hsl);
+    --accent-foreground: var(--solivio-color-secondary-foreground-hsl);
+    --destructive: var(--solivio-color-destructive-hsl);
+    --destructive-foreground: var(--solivio-color-destructive-foreground-hsl);
+    --border: var(--solivio-color-muted-hsl);
+    --input: var(--solivio-color-muted-hsl);
+    --ring: var(--solivio-color-primary-hsl);
+    --radius: var(--solivio-radius);
+    --chart-1: var(--solivio-color-primary-hsl);
+    --chart-2: var(--solivio-color-secondary-hsl);
+    --chart-3: var(--solivio-color-primary-hover-hsl);
+    --chart-4: var(--solivio-color-secondary-hover-hsl);
+    --chart-5: var(--solivio-color-muted-foreground-hsl);
+    --sidebar-background: var(--solivio-color-card-hsl);
+    --sidebar-foreground: var(--solivio-color-foreground-hsl);
+    --sidebar-primary: var(--solivio-color-primary-hsl);
+    --sidebar-primary-foreground: var(--solivio-color-primary-foreground-hsl);
+    --sidebar-accent: var(--solivio-color-muted-hsl);
+    --sidebar-accent-foreground: var(--solivio-color-foreground-hsl);
+    --sidebar-border: var(--solivio-color-muted-hsl);
+    --sidebar-ring: var(--solivio-color-primary-hsl);
   }
 
   /* Solivio is dark-first. .dark mirrors :root. */
   .dark {
-    --background:            228.6  84.0%   4.9%;
-    --foreground:              0.0   0.0%  98.0%;
-    --card:                  222.2  47.4%  11.2%;
-    --card-foreground:         0.0   0.0%  98.0%;
-    --popover:               222.2  47.4%  11.2%;
-    --popover-foreground:      0.0   0.0%  98.0%;
-    --primary:                47.9  95.8%  53.1%;
-    --primary-foreground:    228.6  84.0%   4.9%;
-    --secondary:             175.9  60.8%  19.0%;
-    --secondary-foreground:    0.0   0.0%  98.0%;
-    --muted:                 217.2  32.6%  17.5%;
-    --muted-foreground:      240.0   5.0%  64.9%;
-    --accent:                175.9  60.8%  19.0%;
-    --accent-foreground:       0.0   0.0%  98.0%;
-    --destructive:             0.0  84.2%  60.2%;
-    --destructive-foreground:  0.0   0.0%  98.0%;
-    --border:                217.2  32.6%  17.5%;
-    --input:                 217.2  32.6%  17.5%;
-    --ring:                   47.9  95.8%  53.1%;
-    --chart-1:                47.9  95.8%  53.1%;
-    --chart-2:               175.9  60.8%  19.0%;
-    --chart-3:                45.4  93.4%  47.5%;
-    --chart-4:               174.7  83.9%  31.6%;
-    --chart-5:               240.0   5.0%  64.9%;
-    --sidebar-background:    222.2  47.4%  11.2%;
-    --sidebar-foreground:      0.0   0.0%  98.0%;
-    --sidebar-primary:        47.9  95.8%  53.1%;
-    --sidebar-primary-foreground: 228.6 84.0% 4.9%;
-    --sidebar-accent:        217.2  32.6%  17.5%;
-    --sidebar-accent-foreground: 0.0  0.0%  98.0%;
-    --sidebar-border:        217.2  32.6%  17.5%;
-    --sidebar-ring:           47.9  95.8%  53.1%;
+    --background: var(--solivio-color-background-hsl);
+    --foreground: var(--solivio-color-foreground-hsl);
+    --card: var(--solivio-color-card-hsl);
+    --card-foreground: var(--solivio-color-foreground-hsl);
+    --popover: var(--solivio-color-card-hsl);
+    --popover-foreground: var(--solivio-color-foreground-hsl);
+    --primary: var(--solivio-color-primary-hsl);
+    --primary-foreground: var(--solivio-color-primary-foreground-hsl);
+    --secondary: var(--solivio-color-secondary-hsl);
+    --secondary-foreground: var(--solivio-color-secondary-foreground-hsl);
+    --muted: var(--solivio-color-muted-hsl);
+    --muted-foreground: var(--solivio-color-muted-foreground-hsl);
+    --accent: var(--solivio-color-secondary-hsl);
+    --accent-foreground: var(--solivio-color-secondary-foreground-hsl);
+    --destructive: var(--solivio-color-destructive-hsl);
+    --destructive-foreground: var(--solivio-color-destructive-foreground-hsl);
+    --border: var(--solivio-color-muted-hsl);
+    --input: var(--solivio-color-muted-hsl);
+    --ring: var(--solivio-color-primary-hsl);
+    --chart-1: var(--solivio-color-primary-hsl);
+    --chart-2: var(--solivio-color-secondary-hsl);
+    --chart-3: var(--solivio-color-primary-hover-hsl);
+    --chart-4: var(--solivio-color-secondary-hover-hsl);
+    --chart-5: var(--solivio-color-muted-foreground-hsl);
+    --sidebar-background: var(--solivio-color-card-hsl);
+    --sidebar-foreground: var(--solivio-color-foreground-hsl);
+    --sidebar-primary: var(--solivio-color-primary-hsl);
+    --sidebar-primary-foreground: var(--solivio-color-primary-foreground-hsl);
+    --sidebar-accent: var(--solivio-color-muted-hsl);
+    --sidebar-accent-foreground: var(--solivio-color-foreground-hsl);
+    --sidebar-border: var(--solivio-color-muted-hsl);
+    --sidebar-ring: var(--solivio-color-primary-hsl);
   }
 
   * {

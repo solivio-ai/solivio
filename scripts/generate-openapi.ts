@@ -53,9 +53,9 @@ const document = generator.generateDocument({
   openapi: "3.1.0",
   info: {
     title: "Solivio API",
-    summary: "API boundaries for the Solivio sales offer workflow demo.",
+    summary: "API boundaries for Data → AI → Structured draft → Review → Send.",
     description:
-      "Solivio turns raw customer input into extracted requirements, product matches, and a draft offer that a salesperson can review. The current API intentionally uses mock data so contributors can launch the product without external services.",
+      "Solivio is an open-source AI system that transforms how B2B companies create offers. The current API intentionally uses mock data so contributors can launch the product without external services.",
     version: "0.1.0",
     license: {
       name: "MIT",

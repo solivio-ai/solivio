@@ -10,7 +10,7 @@ OpenAPI reference pages.
 ## Build
 
 ```bash
-npm run docs:build
+yarn docs:build
 ```
 
 The docs build runs `openapi:generate` first, then emits static files to:
@@ -28,8 +28,8 @@ or any static host.
 ## GitHub Pages
 
 The workflow is `.github/workflows/docs-pages.yml`. It installs dependencies
-with `npm ci`, runs `npm run docs:build`, uploads `apps/docs/dist`, and deploys
-through GitHub Pages.
+with `yarn install --immutable`, runs `yarn docs:build`, uploads
+`apps/docs/dist`, and deploys through GitHub Pages.
 
 Repository setup still needs to be enabled once in GitHub:
 
@@ -55,9 +55,9 @@ For `www.solivio.ai`, create a `CNAME` record pointing to
 Before publishing public docs, run:
 
 ```bash
-npm run openapi:generate
-npx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
-npm run docs:build
+yarn openapi:generate
+yarn dlx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
+yarn docs:build
 ```
 
 Use a Node 24.15+ CI image for Redocly CLI and the docs build.

@@ -21,7 +21,16 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Solivio",
-      description: "Open-source docs for the Solivio sales offer workflow.",
+      description: "Docs for the open-source AI system that transforms how B2B companies create offers.",
+      logo: {
+        src: "./src/assets/solivio-logo.png",
+        alt: "Solivio",
+        replacesTitle: true
+      },
+      customCss: ["./src/styles/solivio.css"],
+      head: [
+        { tag: "meta", attrs: { name: "theme-color", content: "#facc15" } }
+      ],
       components: {
         Header: "./src/components/Header.astro"
       },
@@ -51,6 +60,7 @@ export default defineConfig({
           items: [
             { label: "Overview", link: "/guides/" },
             { label: "Getting started", link: "/guides/getting-started/" },
+            { label: "Brand", link: "/guides/brand/" },
             { label: "API contract", link: "/guides/api-contract/" },
             { label: "Publishing", link: "/guides/publishing/" }
           ]

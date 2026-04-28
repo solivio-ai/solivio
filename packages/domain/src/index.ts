@@ -43,6 +43,7 @@ export type OfferItem = {
 export type Offer = {
   id: string;
   requestId: string;
+  clientRequest?: string;
   status: "draft" | "reviewed" | "accepted";
   generatedAt: string;
   items: OfferItem[];
@@ -146,6 +147,7 @@ export const demoRequest: CustomerRequest = {
 export const demoOffer: Offer = {
   id: "offer-demo-001",
   requestId: demoRequest.id,
+  clientRequest: demoRequest.text,
   status: "draft",
   generatedAt: "2026-04-28T00:00:00.000Z",
   items: [

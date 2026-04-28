@@ -29,9 +29,9 @@ Migration files are generated into `apps/solivio/drizzle/` and committed to vers
 
 When adding or changing tables:
 1. Edit `apps/solivio/src/server/database/schema.ts`.
-2. During local development, run `npm run db:push` to apply changes instantly.
-3. Before committing schema changes, run `npm run db:generate` to produce a migration file and commit it together with the schema change.
-4. Use `npm run db:migrate` to apply migrations in non-local environments.
+2. During local development, run `yarn db:push` to apply changes instantly.
+3. Before committing schema changes, run `yarn db:generate` to produce a migration file and commit it together with the schema change.
+4. Use `yarn db:migrate` to apply migrations in non-local environments.
 
 As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
 
@@ -39,10 +39,11 @@ As the schema grows, split tables into `apps/solivio/src/server/database/schema/
 
 The app uses **shadcn/ui** components with **Tailwind CSS v4**.
 
-- Install new UI components with `npx shadcn@latest add <component>` from `apps/solivio`.
+- Public copy should come from the README. Brand implementation notes live in `apps/docs/src/content/docs/guides/brand.md`.
+- Install new UI components with `yarn dlx shadcn@latest add <component>` from `apps/solivio`.
 - Import components from `@/components/ui/<component>`.
 - Use shadcn primitives (`Button`, `Card`, `Badge`, `Textarea`, etc.) for all UI — do not write custom CSS classes.
-- Before building any UI element, check if a matching shadcn component exists at https://ui.shadcn.com/docs/components and add it with `npx shadcn@latest add <component>` if so.
+- Before building any UI element, check if a matching shadcn component exists at https://ui.shadcn.com/docs/components and add it with `yarn dlx shadcn@latest add <component>` if so.
 - Style layout and spacing with Tailwind utility classes only; avoid adding rules to `globals.css`.
 - Theme tokens live in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is dark-first (Solivio brand: yellow primary `#FACC15`, teal secondary `#134E4A`). Do not add a light-mode variant unless explicitly requested.
 - `globals.css` must stay clean: Tailwind imports, `@theme inline` token mapping, and the `@layer base` theme block only.

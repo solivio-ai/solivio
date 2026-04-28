@@ -5,18 +5,18 @@
   "type": "module",
   "engines": {
     "node": ">=24.15.0",
-    "npm": ">=10.0.0"
+    "yarn": ">=4.14.1"
   },
   "scripts": {
     "openapi:generate": "tsx ../../scripts/generate-openapi.ts",
-    "predev": "npm run openapi:generate",
-    "dev": "astro dev --port 4321",
-    "prebuild": "npm run openapi:generate",
-    "build": "astro build",
+    "dev": "yarn openapi:generate && astro dev --port 4321",
+    "build": "yarn openapi:generate && astro build",
     "preview": "astro preview --port 4321"
   },
   "devDependencies": {
+    "@astrojs/markdown-remark": "^7.1.1",
     "@astrojs/starlight": "^0.38.4",
+    "@solivio/theme": "workspace:*",
     "astro": "^6.1.9",
     "starlight-openapi": "^0.22.1"
   }

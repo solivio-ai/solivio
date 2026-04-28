@@ -18,7 +18,7 @@ PostgreSQL 18 stores data below `/var/lib/postgresql/<major>/docker`, so the com
 
 ```bash
 cp .env.example .env
-npm run db:up
+yarn db:up
 ```
 
 ## Verify pgvector
@@ -42,7 +42,7 @@ curl http://localhost:3000/api/health
 For a disposable local database created with an older PostgreSQL major:
 
 ```bash
-npm run db:down
+yarn db:down
 docker volume rm solivio_solivio-db
-npm run db:up
+yarn db:up
 ```

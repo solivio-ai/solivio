@@ -1,0 +1,57 @@
+@import "@solivio/theme/tokens.css";
+
+@layer starlight.base {
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"],
+  ::backdrop {
+    color-scheme: dark;
+    --sl-color-white: var(--solivio-color-foreground);
+    --sl-color-gray-1: var(--solivio-color-foreground);
+    --sl-color-gray-2: var(--solivio-color-subtle-foreground);
+    --sl-color-gray-3: var(--solivio-color-muted-foreground);
+    --sl-color-gray-4: var(--solivio-color-soft-border);
+    --sl-color-gray-5: var(--solivio-color-muted);
+    --sl-color-gray-6: var(--solivio-color-card);
+    --sl-color-gray-7: var(--solivio-color-card);
+    --sl-color-black: var(--solivio-color-background);
+    --sl-color-accent-low: var(--solivio-color-secondary);
+    --sl-color-accent: var(--solivio-color-primary);
+    --sl-color-accent-high: var(--solivio-color-primary);
+    --sl-color-text: var(--solivio-color-foreground);
+    --sl-color-text-accent: var(--solivio-color-primary);
+    --sl-color-text-invert: var(--solivio-color-primary-foreground);
+    --sl-color-bg: var(--solivio-color-background);
+    --sl-color-bg-nav: var(--solivio-color-card);
+    --sl-color-bg-sidebar: var(--solivio-color-card);
+    --sl-color-bg-inline-code: var(--solivio-color-muted);
+    --sl-color-bg-accent: var(--solivio-color-primary);
+    --sl-color-hairline-light: var(--solivio-color-muted);
+    --sl-color-hairline: var(--solivio-color-muted);
+    --sl-color-hairline-shade: var(--solivio-color-background);
+    --sl-color-backdrop-overlay: rgb(var(--solivio-color-background-rgb) / 72%);
+  }
+}
+
+@layer starlight.core {
+  body {
+    background: var(--sl-color-bg);
+  }
+
+  a {
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+  }
+
+  .site-title img {
+    border-radius: 0.5rem;
+  }
+
+  .header {
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+
+  .sl-markdown-content code:not(:where(pre *)) {
+    border: 1px solid var(--sl-color-hairline);
+  }
+}

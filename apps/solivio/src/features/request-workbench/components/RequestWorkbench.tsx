@@ -1,68 +1,40 @@
-"use client";
+import { CheckCircle2, PackageSearch, Sparkles } from "lucide-react";
 
-import { CheckCircle2, FileText, PackageSearch, Send, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
-
-import { demoOffer, demoProducts, demoRequest, workflowSteps, type Product } from "@solivio/domain";
+import { demoOffer, demoProducts, workflowSteps } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+
+const workflowStatusStyles = {
+  mocked: "border-primary/35 bg-primary/10",
+  planned: "border-secondary/70 bg-secondary/35",
+  ready: "border-chart-4/60 bg-chart-4/15"
+};
 
 export function RequestWorkbench() {
-  const [requestText, setRequestText] = useState(demoRequest.text);
-  const [notice, setNotice] = useState("Mock offer ready for review.");
-
-  const matchedProducts = useMemo(
-    () => rankProducts(requestText, demoProducts),
-    [requestText]
-  );
-
-  async function submitRequest() {
-    setNotice("Creating draft request...");
-
-    try {
-      const response = await fetch("/api/requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          customerName: demoRequest.customerName,
-          customerText: requestText
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      setNotice("Draft request accepted by API.");
-    } catch {
-      setNotice("Working from local mock data until the API is reachable.");
-    }
-  }
-
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.9fr)_minmax(320px,1.2fr)_minmax(320px,1.1fr)]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.9fr)_minmax(320px,1.1fr)]">
       <Card className="lg:row-span-2" aria-label="Workflow">
+        <CardHeader className="pb-0">
+          <CardTitle className="text-base">Offer workflow</CardTitle>
+        </CardHeader>
         <CardContent className="grid gap-3 p-4">
           {workflowSteps.map((step, index) => (
             <article
-              className={`grid min-h-[110px] grid-cols-[36px_1fr] items-start gap-3 rounded-lg border p-3 ${
-                step.status === "mocked"
-                  ? "bg-blue-950/40"
-                  : step.status === "planned"
-                    ? "bg-amber-950/40"
-                    : "bg-emerald-950/40"
-              }`}
               key={step.id}
+              className={cn(
+                "grid min-h-[118px] grid-cols-[36px_1fr] items-start gap-3 rounded-lg border p-3",
+                workflowStatusStyles[step.status]
+              )}
             >
-              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-muted text-xs font-bold">
+              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-background text-xs font-bold text-primary ring-1 ring-border">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <div>
-                <h2 className="mb-1 text-base leading-tight font-semibold">{step.title}</h2>
+              <div className="grid gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-base leading-tight font-semibold">{step.title}</h2>
+                  <Badge variant={step.status === "planned" ? "secondary" : "outline"}>{step.status}</Badge>
+                </div>
                 <p className="mb-0 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
               </div>
             </article>
@@ -70,60 +42,29 @@ export function RequestWorkbench() {
         </CardContent>
       </Card>
 
-      <Card className="min-h-[330px]" aria-label="Customer request">
+      <Card aria-label="Product matches">
         <CardHeader className="flex flex-row items-center gap-2 pb-3">
-          <FileText size={18} aria-hidden="true" />
-          <CardTitle className="text-base">Request</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={requestText}
-            onChange={(event) => setRequestText(event.target.value)}
-            rows={8}
-            aria-label="Customer request text"
-            className="min-h-[180px]"
-          />
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <Button type="button" onClick={submitRequest}>
-              <Send size={16} aria-hidden="true" />
-              Send to API
-            </Button>
-            <p className="mb-0 text-sm leading-relaxed text-muted-foreground sm:text-right">{notice}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="lg:row-span-2" aria-label="Product matches">
-        <CardHeader className="flex flex-row items-center gap-2 pb-3">
-          <PackageSearch size={18} aria-hidden="true" />
+          <PackageSearch size={18} aria-hidden="true" className="text-primary" />
           <CardTitle className="text-base">Product matches</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3">
-          {matchedProducts.map((product) => (
-            <Card key={product.id}>
-              <CardContent className="grid min-h-[128px] gap-3 p-3.5">
-                <div>
-                  <h3 className="mb-1 text-base leading-tight font-semibold">{product.name}</h3>
-                  <p className="mb-0 text-sm leading-relaxed text-muted-foreground">{product.summary}</p>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Badge variant="secondary">{product.category}</Badge>
-                  <strong className="text-sm">{formatMoney(product.priceNet, product.currency)}</strong>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Semantic product matching runs after offer generation.
+          </p>
+          <p className="rounded-lg border bg-background/60 p-3 text-sm text-muted-foreground">
+            Start a new offer to extract requirements and match embedded products.
+          </p>
         </CardContent>
       </Card>
 
-      <Card className="min-h-[260px]" aria-label="Offer preview">
+      <Card aria-label="Offer preview">
         <CardHeader className="flex flex-row items-center gap-2 pb-3">
-          <Sparkles size={18} aria-hidden="true" />
+          <Sparkles size={18} aria-hidden="true" className="text-primary" />
           <CardTitle className="text-base">Draft offer</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-3.5 flex items-center justify-between">
-            <strong>{demoOffer.id}</strong>
+            <strong className="text-sm">{demoOffer.id}</strong>
             <Badge variant="outline" className="uppercase">
               {demoOffer.status}
             </Badge>
@@ -131,11 +72,13 @@ export function RequestWorkbench() {
           <ul className="m-0 grid list-none gap-2.5 p-0">
             {demoOffer.items.map((item) => {
               const product = demoProducts.find((candidate) => candidate.id === item.productId);
-
               return (
-                <li key={item.productId} className="flex min-h-11 items-center gap-2.5 rounded-lg border bg-muted/30 p-2.5">
-                  <CheckCircle2 size={16} aria-hidden="true" className="text-primary" />
-                  <span>
+                <li
+                  key={item.productId}
+                  className="flex min-h-11 items-center gap-2.5 rounded-lg border bg-muted/30 p-2.5"
+                >
+                  <CheckCircle2 size={16} aria-hidden="true" className="shrink-0 text-primary" />
+                  <span className="text-sm">
                     {item.quantity} x {product?.name ?? item.productId}
                   </span>
                 </li>
@@ -146,25 +89,4 @@ export function RequestWorkbench() {
       </Card>
     </div>
   );
-}
-
-function rankProducts(requestText: string, products: Product[]) {
-  const tokens = requestText
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter(Boolean);
-
-  return [...products].sort((left, right) => scoreProduct(right, tokens) - scoreProduct(left, tokens));
-}
-
-function scoreProduct(product: Product, tokens: string[]) {
-  return product.tags.reduce((score, tag) => score + (tokens.includes(tag) ? 1 : 0), 0);
-}
-
-function formatMoney(amount: number, currency: Product["currency"]) {
-  return new Intl.NumberFormat("pl-PL", {
-    currency,
-    maximumFractionDigits: 0,
-    style: "currency"
-  }).format(amount);
 }

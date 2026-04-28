@@ -1,6 +1,6 @@
 # MVP Scope
 
-This document turns the process board into implementation slices.
+This document turns Solivio's README flow into implementation slices: Data → AI → Structured draft → Review → Send.
 
 ## Foundation
 

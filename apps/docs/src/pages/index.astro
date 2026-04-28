@@ -3,6 +3,8 @@ const links = [
   { href: "/guides/", label: "Guides" },
   { href: "/api/", label: "API Reference" }
 ];
+
+const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
 ---
 
 <!doctype html>
@@ -13,34 +15,68 @@ const links = [
     <title>Solivio</title>
     <meta
       name="description"
-      content="Open-source sales workflow documentation and API reference for Solivio."
+      content="Solivio is an open-source AI system that transforms how B2B companies create offers."
     />
+    <meta name="theme-color" content="#facc15" />
+    <meta property="og:title" content="Solivio" />
+    <meta
+      property="og:description"
+      content="Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds."
+    />
+    <meta property="og:image" content="/solivio-logo.png" />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">Solivio</a>
+      <a class="brand" href="/" aria-label="Solivio home">
+        <img src="/solivio-logo.png" alt="Solivio" width="180" height="60" />
+      </a>
       <nav aria-label="Primary navigation">
-        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        {links.map((link) => <a class="nav-button" href={link.href}>{link.label}</a>)}
       </nav>
     </header>
 
-    <main class="landing-shell">
-      <section class="landing-panel" aria-labelledby="landing-title">
-        <h1 id="landing-title">Solivio</h1>
-        <div class="landing-actions">
-          {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <main>
+      <section class="hero" aria-labelledby="landing-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Open-source AI system</p>
+          <h1 id="landing-title">Solivio</h1>
+          <p>
+            Instead of building every quote manually, Solivio generates structured offer drafts based
+            on your data — in seconds.
+          </p>
+          <div class="landing-actions">
+            {
+              links.map((link, index) => (
+                <a class:list={["landing-action", index === 0 ? "primary" : "secondary"]} href={link.href}>
+                  {link.label}
+                </a>
+              ))
+            }
+          </div>
         </div>
+      </section>
+
+      <section class="flow" aria-label="Solivio workflow">
+        {flow.map((item, index) => (
+          <article>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{item}</strong>
+          </article>
+        ))}
       </section>
     </main>
   </body>
 </html>
 
 <style>
+  @import "@solivio/theme/tokens.css";
+
   :global(html) {
-    color-scheme: light;
-    background: #ffffff;
-    color: #111827;
-    font-family: Arial, Helvetica, sans-serif;
+    background: var(--solivio-color-background);
+    color: var(--solivio-color-foreground);
+    color-scheme: dark;
+    font-family: var(--solivio-font-sans);
   }
 
   :global(body) {
@@ -50,75 +86,148 @@ const links = [
 
   .site-header {
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--solivio-color-card);
+    border-bottom: 1px solid var(--solivio-color-muted);
     display: flex;
     gap: 24px;
     justify-content: space-between;
-    min-height: 68px;
+    min-height: 72px;
     padding: 0 24px;
   }
 
-  .brand,
-  nav a,
-  .landing-actions a {
-    color: inherit;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
   .brand {
-    color: #0f766e;
-    font-size: 22px;
+    align-items: center;
+    display: inline-flex;
+    min-width: 0;
   }
 
-  nav {
+  .brand img {
+    display: block;
+    height: 44px;
+    max-width: min(180px, 54vw);
+    object-fit: contain;
+    width: auto;
+  }
+
+  nav,
+  .landing-actions {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
-  nav a,
-  .landing-actions a {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+  .nav-button,
+  .landing-action {
+    align-items: center;
+    border: 1px solid var(--solivio-color-muted);
+    border-radius: var(--solivio-radius);
+    box-sizing: border-box;
+    color: var(--solivio-color-foreground);
+    display: inline-flex;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .nav-button {
     min-height: 40px;
-    padding: 10px 14px;
+    padding: 0 14px;
   }
 
-  nav a:hover,
-  .landing-actions a:hover {
-    background: #f3f4f6;
+  .landing-action {
+    min-height: 52px;
+    padding: 0 18px;
   }
 
-  .landing-shell {
+  .nav-button:hover,
+  .landing-action.secondary:hover {
+    background: var(--solivio-color-muted);
+  }
+
+  .hero {
+    align-items: center;
     display: grid;
-    min-height: calc(100vh - 69px);
-    place-items: center;
-    padding: 24px;
+    min-height: calc(100svh - 200px);
+    padding: 48px 24px;
   }
 
-  .landing-panel {
+  .hero-copy {
     display: grid;
-    gap: 16px;
-    max-width: 760px;
+    gap: 18px;
+    margin: 0 auto;
+    max-width: 860px;
     text-align: center;
     width: 100%;
   }
 
-  .landing-panel h1 {
-    font-size: clamp(48px, 10vw, 104px);
+  .eyebrow {
+    color: var(--solivio-color-primary);
+    font-size: 13px;
+    font-weight: 850;
+    letter-spacing: 0;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: clamp(56px, 10vw, 116px);
     line-height: 0.95;
     margin: 0;
   }
 
+  .hero p {
+    color: var(--solivio-color-muted-foreground);
+    font-size: clamp(18px, 2.4vw, 28px);
+    line-height: 1.45;
+    margin: 0 auto;
+    max-width: 780px;
+  }
+
   .landing-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     justify-content: center;
   }
 
-  @media (max-width: 560px) {
+  .landing-action.primary {
+    background: var(--solivio-color-primary);
+    border-color: var(--solivio-color-primary);
+    color: var(--solivio-color-primary-foreground);
+  }
+
+  .landing-action.primary:hover {
+    background: var(--solivio-color-primary-hover);
+    border-color: var(--solivio-color-primary-hover);
+  }
+
+  .flow {
+    border-top: 1px solid var(--solivio-color-muted);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .flow article {
+    background: var(--solivio-color-card);
+    display: grid;
+    gap: 8px;
+    min-height: 112px;
+    padding: 18px;
+  }
+
+  .flow span {
+    color: var(--solivio-color-primary);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .flow strong {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  @media (max-width: 760px) {
     .site-header {
       align-items: flex-start;
       flex-direction: column;
@@ -127,7 +236,26 @@ const links = [
     }
 
     nav {
-      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .hero {
+      min-height: auto;
+      padding: 44px 16px;
+    }
+
+    .nav-button {
+      min-height: 44px;
+      padding: 0 14px;
+    }
+
+    .landing-action {
+      min-height: 60px;
+      padding: 0 18px;
+    }
+
+    .flow {
+      grid-template-columns: 1fr;
     }
   }
 </style>

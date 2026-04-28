@@ -1,7 +1,34 @@
 "use client";
 
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Database,
+  FileSpreadsheet,
+  RotateCcw,
+  Upload
+} from "lucide-react";
 import type { ProductImportRow } from "@solivio/domain";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import {
   extractProductRows,
   getMissingColumns,
@@ -65,8 +92,7 @@ export function ProductImport() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const text = String(reader.result ?? "");
-        const result = parseCsv(text);
+        const result = parseCsv(String(reader.result ?? ""));
         if (result.headers.length === 0) {
           setParseError("The CSV file appears to be empty.");
           return;
@@ -90,6 +116,7 @@ export function ProductImport() {
   async function handleImport() {
     if (productRows.length === 0 || !selectedModel) return;
     setStatus({ kind: "saving" });
+
     try {
       const response = await fetch("/api/products/import", {
         method: "POST",
@@ -110,113 +137,174 @@ export function ProductImport() {
   }
 
   return (
-    <section className="upload-panel">
-      <p className="upload-hint">
-        Pick a .csv file with columns: <strong>sku</strong>, <strong>name</strong>,{" "}
-        <strong>description</strong>, <strong>manufacturer</strong>. Comma, semicolon, or
-        tab separators are supported.
-      </p>
-
-      <label className="upload-dropzone">
-        <input type="file" accept=".csv,text/csv" onChange={handleFileChange} />
-        <span className="upload-dropzone-title">
-          {fileName ?? "Choose a CSV file"}
-        </span>
-        <span className="upload-dropzone-sub">
-          {fileName ? "Click to pick another file" : "or drop one onto this field"}
-        </span>
-      </label>
-
-      {parseError ? <p className="upload-error">{parseError}</p> : null}
+    <section className="grid gap-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <Upload size={18} aria-hidden="true" className="text-primary" />
+          <CardTitle className="text-base">Catalog upload</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            Pick a CSV file with columns: <strong className="text-foreground">sku</strong>,{" "}
+            <strong className="text-foreground">name</strong>,{" "}
+            <strong className="text-foreground">description</strong>, and{" "}
+            <strong className="text-foreground">manufacturer</strong>. Comma, semicolon, and tab separators
+            are supported.
+          </p>
+          <div className="grid gap-2">
+            <Label
+              htmlFor="csv-input"
+              className="flex min-h-[148px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-5 py-6 text-center transition-colors hover:bg-muted/40"
+            >
+              <FileSpreadsheet size={24} aria-hidden="true" className="text-primary" />
+              <span className="text-base font-semibold">{fileName ?? "Choose a CSV file"}</span>
+              <span className="text-sm text-muted-foreground">
+                {fileName ? "Click to pick another file" : "or drop one onto this field"}
+              </span>
+            </Label>
+            <input
+              id="csv-input"
+              type="file"
+              accept=".csv,text/csv"
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+          </div>
+          {parseError ? (
+            <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
+              {parseError}
+            </StatusNotice>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {parseResult && parseResult.rows.length > 0 ? (
-        <div className="upload-preview">
-          <div className="upload-preview-head">
-            <h2>Preview</h2>
-            <span>
-              {parseResult.rows.length} row{parseResult.rows.length === 1 ? "" : "s"}
-            </span>
-            <button className="icon-button" type="button" onClick={handleReset}>
-              Clear
-            </button>
-          </div>
-
-          {missingColumns.length > 0 ? (
-            <p className="upload-error">
-              Missing required column{missingColumns.length === 1 ? "" : "s"}:{" "}
-              {missingColumns.join(", ")}.
-            </p>
-          ) : (
-            <div className="upload-actions">
-              {models.length > 0 ? (
-                <select
-                  className="upload-model-select"
-                  value={selectedModel}
-                  onChange={(e) => {
-                    setSelectedModel(e.target.value);
-                    setStatus({ kind: "idle" });
-                  }}
-                  disabled={status.kind === "saving"}
-                >
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.label}
-                    </option>
-                  ))}
-                </select>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={handleImport}
-                disabled={
-                  status.kind === "saving" || productRows.length === 0 || !selectedModel
-                }
-              >
-                {status.kind === "saving"
-                  ? "Embedding…"
-                  : `Embed and save ${productRows.length} product${productRows.length === 1 ? "" : "s"}`}
-              </button>
-
-              {status.kind === "done" ? (
-                <span className="upload-status-ok">
-                  Saved {status.count} product{status.count === 1 ? "" : "s"}.
-                </span>
-              ) : null}
-              {status.kind === "error" ? (
-                <span className="upload-status-err">{status.message}</span>
-              ) : null}
+        <Card>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <Database size={18} aria-hidden="true" className="text-primary" />
+              <CardTitle className="text-base">Preview</CardTitle>
+              <Badge variant="outline">
+                {parseResult.rows.length} row{parseResult.rows.length === 1 ? "" : "s"}
+              </Badge>
             </div>
-          )}
+            <Button variant="ghost" type="button" onClick={handleReset}>
+              <RotateCcw size={16} aria-hidden="true" />
+              Clear
+            </Button>
+          </CardHeader>
 
-          <div className="upload-table-wrap">
-            <table className="upload-table">
-              <thead>
-                <tr>
-                  {parseResult.headers.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {parseResult.rows.slice(0, 50).map((row, i) => (
-                  <tr key={i}>
-                    {parseResult.headers.map((header) => (
-                      <td key={header}>{row[header]}</td>
+          <CardContent className="grid gap-4">
+            {missingColumns.length > 0 ? (
+              <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
+                Missing required column{missingColumns.length === 1 ? "" : "s"}: {missingColumns.join(", ")}.
+              </StatusNotice>
+            ) : (
+              <div className="flex flex-col gap-3 rounded-lg border bg-background/60 p-3 sm:flex-row sm:items-center">
+                {models.length > 0 ? (
+                  <Select
+                    value={selectedModel}
+                    onValueChange={(value) => {
+                      setSelectedModel(value);
+                      setStatus({ kind: "idle" });
+                    }}
+                    disabled={status.kind === "saving"}
+                  >
+                    <SelectTrigger className="w-full sm:w-[280px]" aria-label="Embedding model">
+                      <SelectValue placeholder="Embedding model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {models.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {model.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Badge variant="outline">Embedding models unavailable</Badge>
+                )}
+
+                <Button
+                  type="button"
+                  onClick={handleImport}
+                  disabled={status.kind === "saving" || productRows.length === 0 || !selectedModel}
+                >
+                  <Upload size={16} aria-hidden="true" />
+                  {status.kind === "saving"
+                    ? "Embedding..."
+                    : `Embed and save ${productRows.length} product${productRows.length === 1 ? "" : "s"}`}
+                </Button>
+
+                {status.kind === "done" ? (
+                  <StatusNotice tone="success" icon={<CheckCircle2 size={16} aria-hidden="true" />}>
+                    Saved {status.count} product{status.count === 1 ? "" : "s"}.
+                  </StatusNotice>
+                ) : null}
+                {status.kind === "error" ? (
+                  <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
+                    {status.message}
+                  </StatusNotice>
+                ) : null}
+              </div>
+            )}
+
+            <div className="overflow-hidden rounded-lg border bg-background/60">
+              <div className="max-h-[480px] overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {parseResult.headers.map((header) => (
+                        <TableHead key={header}>{header}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parseResult.rows.slice(0, 50).map((row, i) => (
+                      <TableRow key={i}>
+                        {parseResult.headers.map((header) => (
+                          <TableCell key={header} className="max-w-[320px] whitespace-normal text-muted-foreground">
+                            {row[header]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
 
-          {parseResult.rows.length > 50 ? (
-            <p className="upload-hint">
-              Showing the first 50 of {parseResult.rows.length} rows.
-            </p>
-          ) : null}
-        </div>
+            {parseResult.rows.length > 50 ? (
+              <p className="text-sm text-muted-foreground">
+                Showing the first 50 of {parseResult.rows.length} rows.
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
       ) : null}
     </section>
+  );
+}
+
+function StatusNotice({
+  children,
+  icon,
+  tone
+}: {
+  children: ReactNode;
+  icon: ReactNode;
+  tone: "error" | "success";
+}) {
+  return (
+    <span
+      className={`inline-flex w-fit items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm ${
+        tone === "success"
+          ? "border-chart-4/60 bg-chart-4/15 text-foreground"
+          : "border-destructive/50 bg-destructive/10 text-destructive"
+      }`}
+    >
+      {icon}
+      {children}
+    </span>
   );
 }

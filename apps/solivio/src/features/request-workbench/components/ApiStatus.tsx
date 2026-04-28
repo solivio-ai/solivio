@@ -43,15 +43,15 @@ export function ApiStatus() {
 
   return (
     <section className="flex min-h-12 items-center gap-3 rounded-lg border bg-card px-3 py-2 text-card-foreground" aria-label="API status">
-      <Server size={18} aria-hidden="true" />
+      <Server size={18} aria-hidden="true" className="text-primary" />
       <div className="flex min-w-[110px] items-center gap-2 text-sm">
         <span
           className={`inline-block size-2 rounded-full ${
             health.state === "online"
-              ? "bg-emerald-500"
+              ? "bg-chart-4"
               : health.state === "checking"
-                ? "bg-amber-400"
-                : "bg-red-500"
+                ? "bg-primary"
+                : "bg-destructive"
           }`}
         />
         <span>

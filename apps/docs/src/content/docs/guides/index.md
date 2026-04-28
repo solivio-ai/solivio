@@ -1,26 +1,30 @@
 ---
 title: Guides
-description: Guides for the Solivio open-source sales offer workflow.
+description: Guides for Solivio, an open-source AI system that transforms how B2B companies create offers.
 ---
 
-Solivio is an open-source foundation for a sales workflow that converts raw
-customer input into a reviewed product offer.
+Solivio is an open-source AI system that transforms how B2B companies create
+offers.
+
+Instead of building every quote manually, Solivio generates structured offer
+drafts based on your data — in seconds.
 
 The guides are Markdown files in this workspace. API reference pages are kept in
 the separate API tab and generated from route contracts exported by the Next.js
 API implementation.
 
-## Product flow
+## The shift
 
-1. Customer sends a request.
-2. Solivio extracts requirements.
-3. Product search and matching finds candidates.
-4. A draft offer is generated.
-5. A salesperson reviews, edits, validates, and accepts it.
+From:
+Manual work → Searching → Copy-paste → Guessing
+
+To:
+Data → AI → Structured draft → Review → Send
 
 ## Documentation sources
 
 - Human-authored guides: `apps/docs/src/content/docs/guides`
+- Brand guide: `apps/docs/src/content/docs/guides/brand.md`
 - API route contracts: `apps/solivio/src/server/api/contracts.ts`
 - Generated OpenAPI output: `apps/docs/public/openapi/solivio.json`
 - Generated API reference pages: `/api/`
