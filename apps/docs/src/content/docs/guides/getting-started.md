@@ -6,14 +6,14 @@ description: Launch Solivio locally and preview the docs.
 ## Requirements
 
 - Node.js 24.15 or newer.
-- npm 10 or newer.
+- Yarn 4.14.1 CLI.
 - Docker, only for the optional local database.
 
 ## Run the app
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 Open the app at `http://localhost:3000`.
@@ -25,7 +25,7 @@ default demo.
 ## Run the docs
 
 ```bash
-npm run docs:dev
+yarn docs:dev
 ```
 
 Open the docs site at `http://localhost:4321`.
@@ -38,7 +38,7 @@ contracts.
 
 ```bash
 cp .env.example .env
-npm run db:up
+yarn db:up
 ```
 
 API health falls back to the local Docker database URL in development when
@@ -48,10 +48,10 @@ API health falls back to the local Docker database URL in development when
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the Next.js app on port 3000. |
-| `npm run docs:dev` | Start the separate docs site on port 4321. |
-| `npm run openapi:generate` | Generate OpenAPI JSON from API route contracts. |
-| `npm run typecheck` | Type-check all workspaces. |
-| `npm run build` | Build all workspaces, including the docs site. |
-| `npm run db:up` | Start local Postgres with pgvector. |
-| `npm run db:down` | Stop local infrastructure. |
+| `yarn dev` | Start the Next.js app on port 3000. |
+| `yarn docs:dev` | Start the separate docs site on port 4321. |
+| `yarn openapi:generate` | Generate OpenAPI JSON from API route contracts. |
+| `yarn typecheck` | Type-check all workspaces. |
+| `yarn build` | Build all workspaces, including the docs site. |
+| `yarn db:up` | Start local Postgres with pgvector. |
+| `yarn db:down` | Stop local infrastructure. |

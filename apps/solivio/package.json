@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
-    "@solivio/domain": "*",
+    "@solivio/domain": "workspace:*",
     "@tailwindcss/postcss": "^4.2.4",
     "@voltagent/core": "^2.7.3",
     "ai": "^6.0.168",

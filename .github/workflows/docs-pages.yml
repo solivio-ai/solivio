@@ -10,9 +10,11 @@ on:
       - ".tool-versions"
       - "apps/docs/**"
       - "apps/solivio/src/server/api/**"
-      - "package-lock.json"
+      - ".yarn/releases/**"
+      - ".yarnrc.yml"
       - "package.json"
       - "scripts/generate-openapi.ts"
+      - "yarn.lock"
   workflow_dispatch:
 
 permissions:
@@ -39,17 +41,19 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: package-lock.json
+
+      - name: Add Yarn to PATH
+        run: |
+          mkdir -p "$RUNNER_TEMP/yarn"
+          printf '%s\n' '#!/usr/bin/env sh' 'exec node "$GITHUB_WORKSPACE/.yarn/releases/yarn-4.14.1.cjs" "$@"' > "$RUNNER_TEMP/yarn/yarn"
+          chmod +x "$RUNNER_TEMP/yarn/yarn"
+          echo "$RUNNER_TEMP/yarn" >> "$GITHUB_PATH"
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Restore optional native packages
-        run: npm install --include=optional --no-audit --no-fund --package-lock=false
+        run: yarn install --immutable
 
       - name: Build docs
-        run: npm run docs:build
+        run: yarn docs:build
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
