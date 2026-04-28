@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore optional native packages
+        run: npm install --include=optional --no-audit --no-fund --package-lock=false
+
       - name: Build docs
         run: npm run docs:build
 
