@@ -6,15 +6,65 @@ Markdown under `apps/docs/src/content/docs/guides`. The site root is a landing
 page, guides live under `/guides`, and generated API reference pages live under
 `/api`.
 
-## Recommended Deployment
+## GitHub Pages Deployment
+
+The repository includes `.github/workflows/docs-pages.yml`. On every push to
+`main` that changes docs, API contracts, package metadata, or the workflow
+itself, GitHub Actions builds `apps/docs` and deploys `apps/docs/dist` to GitHub
+Pages.
+
+The docs site is configured with `site: "https://solivio.ai"` in
+`apps/docs/astro.config.mjs`. The docs public folder also includes:
+
+- `CNAME`, containing `solivio.ai`.
+- `.nojekyll`, so GitHub Pages serves Astro assets such as `/_astro`.
+
+Repository setup still needs to be enabled once in GitHub:
+
+1. Open `Settings -> Pages` for `solivio-ai/solivio`.
+2. Set the build and deployment source to `GitHub Actions`.
+3. Set the custom domain to `solivio.ai`.
+4. Enable HTTPS after GitHub provisions the certificate.
+
+The docs build runs OpenAPI generation first, so the workflow only needs
+`npm ci` and `npm run docs:build`.
+
+## DNS For solivio.ai
+
+Configure the apex domain with the GitHub Pages `A` records:
+
+```text
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
+
+Optional IPv6 records:
+
+```text
+2606:50c0:8000::153
+2606:50c0:8001::153
+2606:50c0:8002::153
+2606:50c0:8003::153
+```
+
+For `www.solivio.ai`, create a `CNAME` record pointing to:
+
+```text
+solivio-ai.github.io
+```
+
+Avoid wildcard records for `*.solivio.ai`.
+
+## Manual Static Deployment
+
+For any other static host:
 
 1. Install from the repository root with `npm install`.
 2. Generate the API contract with `npm run openapi:generate`.
 3. Build the docs workspace with `npm run docs:build`.
-4. Publish `apps/docs/dist` to any static host.
-
-The docs build runs OpenAPI generation first, so publishing can usually just run
-`npm run docs:build`.
+4. Publish `apps/docs/dist`.
 
 ## API Contract
 

@@ -19,8 +19,36 @@ The docs build runs `openapi:generate` first, then emits static files to:
 apps/docs/dist
 ```
 
-Publish that directory to GitHub Pages, Netlify, Vercel, Cloudflare Pages, or
-any static host.
+The repository includes a GitHub Actions workflow that deploys this directory to
+GitHub Pages for `https://solivio.ai` on pushes to `main`.
+
+For other hosts, publish `apps/docs/dist` to Netlify, Vercel, Cloudflare Pages,
+or any static host.
+
+## GitHub Pages
+
+The workflow is `.github/workflows/docs-pages.yml`. It installs dependencies
+with `npm ci`, runs `npm run docs:build`, uploads `apps/docs/dist`, and deploys
+through GitHub Pages.
+
+Repository setup still needs to be enabled once in GitHub:
+
+1. Open `Settings -> Pages` for `solivio-ai/solivio`.
+2. Set the build and deployment source to `GitHub Actions`.
+3. Set the custom domain to `solivio.ai`.
+4. Enable HTTPS after GitHub provisions the certificate.
+
+Configure DNS for the apex domain with GitHub Pages `A` records:
+
+```text
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
+
+For `www.solivio.ai`, create a `CNAME` record pointing to
+`solivio-ai.github.io`.
 
 ## Recommended release check
 

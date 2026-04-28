@@ -17,6 +17,7 @@ function sectionSidebarPlugin() {
 }
 
 export default defineConfig({
+  site: "https://solivio.ai",
   integrations: [
     starlight({
       title: "Solivio",
