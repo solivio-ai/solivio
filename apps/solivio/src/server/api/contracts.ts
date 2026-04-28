@@ -153,11 +153,34 @@ export const customerRequestResponseSchema = z
 
 export const offerStatusSchema = z.enum(["draft", "reviewed", "accepted"]).meta({ id: "OfferStatus" });
 
+export const offerItemProductSchema = z
+  .object({
+    id: z.string(),
+    sku: z.string().optional(),
+    name: z.string(),
+    description: z.string().optional(),
+    manufacturer: z.string().optional(),
+    availability: availabilitySchema.optional(),
+    priceNet: z.number().nonnegative().optional(),
+    currency: currencySchema.optional(),
+    matchScore: z.number().min(-1).max(1).optional(),
+    source: z.enum(["demo", "database", "semantic-search"])
+  })
+  .strict()
+  .meta({
+    id: "OfferItemProduct",
+    description: "Product snapshot used to render an offer line without frontend fixture lookup."
+  });
+
 export const offerItemSchema = z
   .object({
     productId: z.string(),
     quantity: z.number().int().positive(),
-    rationale: z.string()
+    rationale: z.string(),
+    confidence: z.number().min(0).max(100).optional(),
+    unitPriceNet: z.number().nonnegative().optional(),
+    currency: currencySchema.optional(),
+    product: offerItemProductSchema.optional()
   })
   .strict()
   .meta({
@@ -180,6 +203,7 @@ export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
     requestId: z.string(),
+    customerName: z.string().optional(),
     clientRequest: z.string().optional(),
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
@@ -198,6 +222,30 @@ export const offerResponseSchema = z
   })
   .strict()
   .meta({ id: "OfferResponse" });
+
+export const updateOfferItemRequestSchema = z
+  .object({
+    productId: z.string(),
+    quantity: z.number().int().positive().optional(),
+    unitPriceNet: z.number().nonnegative().optional(),
+    currency: currencySchema.optional()
+  })
+  .strict()
+  .meta({
+    id: "UpdateOfferItemRequest",
+    description: "Editable fields for a reviewed offer item."
+  });
+
+export const updateOfferRequestSchema = z
+  .object({
+    status: offerStatusSchema.optional(),
+    items: z.array(updateOfferItemRequestSchema).optional()
+  })
+  .strict()
+  .meta({
+    id: "UpdateOfferRequest",
+    description: "Review edits that can be applied to a generated offer draft."
+  });
 
 export const databaseStatusSchema = z
   .discriminatedUnion("status", [
