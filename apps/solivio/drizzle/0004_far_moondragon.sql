@@ -1,0 +1,1 @@
+ALTER TABLE "offers" ADD COLUMN "unmatched" text[] DEFAULT '{}' NOT NULL;

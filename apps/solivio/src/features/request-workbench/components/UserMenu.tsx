@@ -29,7 +29,7 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuLabel className="-mt-1">{session?.user.name || session?.user.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
+        <DropdownMenuItem onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } })} className="text-destructive focus:text-destructive">
           <LogOut size={14} aria-hidden="true" />
           Log out
         </DropdownMenuItem>

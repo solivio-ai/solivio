@@ -38,11 +38,27 @@ export type OfferItem = {
   productId: string;
   quantity: number;
   rationale: string;
+  confidence?: number;
+  unitPriceNet?: number;
+  currency?: Product["currency"];
+  product?: {
+    id: string;
+    sku?: string;
+    name: string;
+    description?: string;
+    manufacturer?: string;
+    availability?: Product["availability"];
+    priceNet?: number;
+    currency?: Product["currency"];
+    matchScore?: number;
+    source: "demo" | "database" | "semantic-search";
+  };
 };
 
 export type Offer = {
   id: string;
   requestId: string;
+  customerName?: string;
   clientRequest?: string;
   status: "draft" | "reviewed" | "accepted";
   generatedAt: string;
@@ -147,6 +163,7 @@ export const demoRequest: CustomerRequest = {
 export const demoOffer: Offer = {
   id: "offer-demo-001",
   requestId: demoRequest.id,
+  customerName: demoRequest.customerName,
   clientRequest: demoRequest.text,
   status: "draft",
   generatedAt: "2026-04-28T00:00:00.000Z",
@@ -154,22 +171,66 @@ export const demoOffer: Offer = {
     {
       productId: "solar-panel-430",
       quantity: 24,
-      rationale: "Covers the base photovoltaic requirement for a small office roof."
+      rationale: "Covers the base photovoltaic requirement for a small office roof.",
+      confidence: 94,
+      unitPriceNet: 510,
+      currency: "PLN",
+      product: {
+        id: demoProducts[0].id,
+        name: demoProducts[0].name,
+        availability: demoProducts[0].availability,
+        priceNet: demoProducts[0].priceNet,
+        currency: demoProducts[0].currency,
+        source: "demo"
+      }
     },
     {
       productId: "hybrid-inverter-8kw",
       quantity: 1,
-      rationale: "Supports photovoltaic generation and future storage expansion."
+      rationale: "Supports photovoltaic generation and future storage expansion.",
+      confidence: 82,
+      unitPriceNet: 6800,
+      currency: "PLN",
+      product: {
+        id: demoProducts[1].id,
+        name: demoProducts[1].name,
+        availability: demoProducts[1].availability,
+        priceNet: demoProducts[1].priceNet,
+        currency: demoProducts[1].currency,
+        source: "demo"
+      }
     },
     {
       productId: "battery-storage-12kwh",
       quantity: 1,
-      rationale: "Adds backup and load shifting capacity requested by the customer."
+      rationale: "Adds backup and load shifting capacity requested by the customer.",
+      confidence: 91,
+      unitPriceNet: 14800,
+      currency: "PLN",
+      product: {
+        id: demoProducts[2].id,
+        name: demoProducts[2].name,
+        availability: demoProducts[2].availability,
+        priceNet: demoProducts[2].priceNet,
+        currency: demoProducts[2].currency,
+        source: "demo"
+      }
     },
     {
       productId: "energy-monitor-pro",
       quantity: 1,
-      rationale: "Provides reporting for consumption and production monitoring."
+      rationale: "Provides reporting for consumption and production monitoring.",
+      confidence: 96,
+      unitPriceNet: 1250,
+      currency: "PLN",
+      product: {
+        id: demoProducts[3].id,
+        name: demoProducts[3].name,
+        availability: demoProducts[3].availability,
+        priceNet: demoProducts[3].priceNet,
+        currency: demoProducts[3].currency,
+        source: "demo"
+      }
     }
   ],
   notes: [

@@ -1,23 +1,26 @@
 "use client";
 
+import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Offers", href: "/offers", icon: FileText },
   { label: "New Offer", href: "/offers/new", icon: Plus },
+  { label: "Catalog Upload", href: "/products/upload", icon: Database },
 ];
 
 export function AppSidebar() {
@@ -34,6 +37,14 @@ export function AppSidebar() {
             className="h-8 w-auto shrink-0"
           />
         </Link>
+        <div className="px-2 pb-3">
+          <Button asChild className="w-full" size="sm">
+            <Link href="/offers/new">
+              <Plus size={16} aria-hidden="true" />
+              New offer
+            </Link>
+          </Button>
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="pt-2">

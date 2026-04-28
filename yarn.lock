@@ -1742,6 +1742,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/fast-memoize@npm:3.1.2, @formatjs/fast-memoize@npm:^3.1.0":
+  version: 3.1.2
+  resolution: "@formatjs/fast-memoize@npm:3.1.2"
+  checksum: 10c0/25af387ebb53146c8c09af34cda4ce82768f0855227ec854fb315d6dc2e7859e16724860fdea7991b3c7c5741154e3fcdd5169ef7a11ba1afb3ffd860613931c
+  languageName: node
+  linkType: hard
+
+"@formatjs/icu-messageformat-parser@npm:3.5.5, @formatjs/icu-messageformat-parser@npm:^3.4.0":
+  version: 3.5.5
+  resolution: "@formatjs/icu-messageformat-parser@npm:3.5.5"
+  dependencies:
+    "@formatjs/icu-skeleton-parser": "npm:2.1.5"
+  checksum: 10c0/54ef60422f994699a947b1ff4164cf351a234b604273c97e981d9b8fb7ddb08236e86c5068c93fbaeb200c0113b3af5d7b753d216812ba0c4b3126c7aaa090ef
+  languageName: node
+  linkType: hard
+
+"@formatjs/icu-skeleton-parser@npm:2.1.5":
+  version: 2.1.5
+  resolution: "@formatjs/icu-skeleton-parser@npm:2.1.5"
+  checksum: 10c0/9788b08962bd07e06db2bf12480c27c17a5a213e7d766d92865ed140f1b4e9e89d4c2bf499b07ee063a089827efa96ff5c5d41ccb59264e1c3f7affe133356a5
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl-localematcher@npm:^0.8.1":
+  version: 0.8.4
+  resolution: "@formatjs/intl-localematcher@npm:0.8.4"
+  dependencies:
+    "@formatjs/fast-memoize": "npm:3.1.2"
+  checksum: 10c0/b417042e6b83abbb4e78d4c9fddceb8e9b9e4f6f31e27ff7b5d98aa98a65b5086ac54859b6f93f8e297e828e0d7c0d3512f85cbf6be24cb1f288bd9d98830b51
+  languageName: node
+  linkType: hard
+
 "@gitlab/gitlab-ai-provider@npm:^3.1.1":
   version: 3.6.1
   resolution: "@gitlab/gitlab-ai-provider@npm:3.6.1"
@@ -2759,6 +2791,150 @@ __metadata:
   version: 1.5.2
   resolution: "@pagefind/windows-x64@npm:1.5.2"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-android-arm64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-android-arm64@npm:2.5.6"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-darwin-arm64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-darwin-arm64@npm:2.5.6"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-darwin-x64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-darwin-x64@npm:2.5.6"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-freebsd-x64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-freebsd-x64@npm:2.5.6"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm-glibc@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-arm-glibc@npm:2.5.6"
+  conditions: os=linux & cpu=arm & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm-musl@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-arm-musl@npm:2.5.6"
+  conditions: os=linux & cpu=arm & libc=musl
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm64-glibc@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-arm64-glibc@npm:2.5.6"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm64-musl@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-arm64-musl@npm:2.5.6"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-x64-glibc@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-x64-glibc@npm:2.5.6"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-x64-musl@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-linux-x64-musl@npm:2.5.6"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-arm64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-win32-arm64@npm:2.5.6"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-ia32@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-win32-ia32@npm:2.5.6"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-x64@npm:2.5.6":
+  version: 2.5.6
+  resolution: "@parcel/watcher-win32-x64@npm:2.5.6"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher@npm:^2.4.1":
+  version: 2.5.6
+  resolution: "@parcel/watcher@npm:2.5.6"
+  dependencies:
+    "@parcel/watcher-android-arm64": "npm:2.5.6"
+    "@parcel/watcher-darwin-arm64": "npm:2.5.6"
+    "@parcel/watcher-darwin-x64": "npm:2.5.6"
+    "@parcel/watcher-freebsd-x64": "npm:2.5.6"
+    "@parcel/watcher-linux-arm-glibc": "npm:2.5.6"
+    "@parcel/watcher-linux-arm-musl": "npm:2.5.6"
+    "@parcel/watcher-linux-arm64-glibc": "npm:2.5.6"
+    "@parcel/watcher-linux-arm64-musl": "npm:2.5.6"
+    "@parcel/watcher-linux-x64-glibc": "npm:2.5.6"
+    "@parcel/watcher-linux-x64-musl": "npm:2.5.6"
+    "@parcel/watcher-win32-arm64": "npm:2.5.6"
+    "@parcel/watcher-win32-ia32": "npm:2.5.6"
+    "@parcel/watcher-win32-x64": "npm:2.5.6"
+    detect-libc: "npm:^2.0.3"
+    is-glob: "npm:^4.0.3"
+    node-addon-api: "npm:^7.0.0"
+    node-gyp: "npm:latest"
+    picomatch: "npm:^4.0.3"
+  dependenciesMeta:
+    "@parcel/watcher-android-arm64":
+      optional: true
+    "@parcel/watcher-darwin-arm64":
+      optional: true
+    "@parcel/watcher-darwin-x64":
+      optional: true
+    "@parcel/watcher-freebsd-x64":
+      optional: true
+    "@parcel/watcher-linux-arm-glibc":
+      optional: true
+    "@parcel/watcher-linux-arm-musl":
+      optional: true
+    "@parcel/watcher-linux-arm64-glibc":
+      optional: true
+    "@parcel/watcher-linux-arm64-musl":
+      optional: true
+    "@parcel/watcher-linux-x64-glibc":
+      optional: true
+    "@parcel/watcher-linux-x64-musl":
+      optional: true
+    "@parcel/watcher-win32-arm64":
+      optional: true
+    "@parcel/watcher-win32-ia32":
+      optional: true
+    "@parcel/watcher-win32-x64":
+      optional: true
+  checksum: 10c0/1e1d91f92e94e4640089a7cead243b2b81ca9aa8e1c862a97a25f589e84fbf1ad93abeb503f325c43a8c0e024ae0e74b48ec42c1cd84e8e423a3a87d25ded4f2
   languageName: node
   linkType: hard
 
@@ -4664,6 +4840,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@schummar/icu-type-parser@npm:1.21.5":
+  version: 1.21.5
+  resolution: "@schummar/icu-type-parser@npm:1.21.5"
+  checksum: 10c0/8c2bdb2087b2aeaafb484afefcc5291b21a7179fb92429cabc5f6b46019c6dedbeac6025b1a8f08e8749fb963f8a011e0ccba340ca3761f3c2348aac4b667c2c
+  languageName: node
+  linkType: hard
+
 "@sec-ant/readable-stream@npm:^0.4.1":
   version: 0.4.1
   resolution: "@sec-ant/readable-stream@npm:0.4.1"
@@ -4948,6 +5131,7 @@ __metadata:
     drizzle-orm: "npm:^0.45.2"
     lucide-react: "npm:^1.11.0"
     next: "npm:^16.2.4"
+    next-intl: "npm:^4.9.2"
     pg: "npm:^8.20.0"
     postcss: "npm:^8.5.12"
     radix-ui: "npm:^1.4.3"
@@ -4996,6 +5180,149 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-darwin-arm64@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-darwin-arm64@npm:1.15.32"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-x64@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-darwin-x64@npm:1.15.32"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm-gnueabihf@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.15.32"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-gnu@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.15.32"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-musl@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-arm64-musl@npm:1.15.32"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-ppc64-gnu@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-ppc64-gnu@npm:1.15.32"
+  conditions: os=linux & cpu=ppc64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-s390x-gnu@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-s390x-gnu@npm:1.15.32"
+  conditions: os=linux & cpu=s390x & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-gnu@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-x64-gnu@npm:1.15.32"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-musl@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-linux-x64-musl@npm:1.15.32"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-arm64-msvc@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.15.32"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-ia32-msvc@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.15.32"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-x64-msvc@npm:1.15.32":
+  version: 1.15.32
+  resolution: "@swc/core-win32-x64-msvc@npm:1.15.32"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core@npm:^1.15.2":
+  version: 1.15.32
+  resolution: "@swc/core@npm:1.15.32"
+  dependencies:
+    "@swc/core-darwin-arm64": "npm:1.15.32"
+    "@swc/core-darwin-x64": "npm:1.15.32"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.15.32"
+    "@swc/core-linux-arm64-gnu": "npm:1.15.32"
+    "@swc/core-linux-arm64-musl": "npm:1.15.32"
+    "@swc/core-linux-ppc64-gnu": "npm:1.15.32"
+    "@swc/core-linux-s390x-gnu": "npm:1.15.32"
+    "@swc/core-linux-x64-gnu": "npm:1.15.32"
+    "@swc/core-linux-x64-musl": "npm:1.15.32"
+    "@swc/core-win32-arm64-msvc": "npm:1.15.32"
+    "@swc/core-win32-ia32-msvc": "npm:1.15.32"
+    "@swc/core-win32-x64-msvc": "npm:1.15.32"
+    "@swc/counter": "npm:^0.1.3"
+    "@swc/types": "npm:^0.1.26"
+  peerDependencies:
+    "@swc/helpers": ">=0.5.17"
+  dependenciesMeta:
+    "@swc/core-darwin-arm64":
+      optional: true
+    "@swc/core-darwin-x64":
+      optional: true
+    "@swc/core-linux-arm-gnueabihf":
+      optional: true
+    "@swc/core-linux-arm64-gnu":
+      optional: true
+    "@swc/core-linux-arm64-musl":
+      optional: true
+    "@swc/core-linux-ppc64-gnu":
+      optional: true
+    "@swc/core-linux-s390x-gnu":
+      optional: true
+    "@swc/core-linux-x64-gnu":
+      optional: true
+    "@swc/core-linux-x64-musl":
+      optional: true
+    "@swc/core-win32-arm64-msvc":
+      optional: true
+    "@swc/core-win32-ia32-msvc":
+      optional: true
+    "@swc/core-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@swc/helpers":
+      optional: true
+  checksum: 10c0/114e2d08a588de6dc0b01106368461d471464ec1bd0d046f4007cd2af9f52c0ddbf473a6dc251aa7f71828b74fe8488221718019187bb91a5f503a45b91b5fb1
+  languageName: node
+  linkType: hard
+
+"@swc/counter@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@swc/counter@npm:0.1.3"
+  checksum: 10c0/8424f60f6bf8694cfd2a9bca45845bce29f26105cda8cf19cdb9fd3e78dc6338699e4db77a89ae449260bafa1cc6bec307e81e7fb96dbf7dcfce0eea55151356
+  languageName: node
+  linkType: hard
+
 "@swc/helpers@npm:0.5.15":
   version: 0.5.15
   resolution: "@swc/helpers@npm:0.5.15"
@@ -5011,6 +5338,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.8.0"
   checksum: 10c0/692018ec8a9f7ea5ea3fe576fea5af1a782c8bc1752fcb60f949b482fb2521609d1d3710908aebae67086f152e57d231d59b08f4653fd20a2e3e0fa4a34e6322
+  languageName: node
+  linkType: hard
+
+"@swc/types@npm:^0.1.26":
+  version: 0.1.26
+  resolution: "@swc/types@npm:0.1.26"
+  dependencies:
+    "@swc/counter": "npm:^0.1.3"
+  checksum: 10c0/8449341e8bbff81c14e9918c25421143cf605dff20f70f048847e1f7cede396f8dd73903cbef331a809b4a8e15d0db374a5f6809003e7b440f93df1dd4934d28
   languageName: node
   linkType: hard
 
@@ -8643,6 +8979,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"icu-minify@npm:^4.9.2":
+  version: 4.9.2
+  resolution: "icu-minify@npm:4.9.2"
+  dependencies:
+    "@formatjs/icu-messageformat-parser": "npm:^3.4.0"
+  checksum: 10c0/48e874d221c17d1af26524b511803313d3e232b5c284cf64f5d171612468bf989e84751ceffa611017f7d9f734b5eb524dd088d87a51ab592c966ed48ed56430
+  languageName: node
+  linkType: hard
+
 "ignore@npm:^5.3.0":
   version: 5.3.2
   resolution: "ignore@npm:5.3.2"
@@ -8671,6 +9016,16 @@ __metadata:
   version: 0.2.7
   resolution: "inline-style-parser@npm:0.2.7"
   checksum: 10c0/d884d76f84959517430ae6c22f0bda59bb3f58f539f99aac75a8d786199ec594ed648c6ab4640531f9fc244b0ed5cd8c458078e592d016ef06de793beb1debff
+  languageName: node
+  linkType: hard
+
+"intl-messageformat@npm:^11.1.0":
+  version: 11.2.2
+  resolution: "intl-messageformat@npm:11.2.2"
+  dependencies:
+    "@formatjs/fast-memoize": "npm:3.1.2"
+    "@formatjs/icu-messageformat-parser": "npm:3.5.5"
+  checksum: 10c0/8a0e27584b6c6129f52fc14ac26c3537cdc8b4d6beaa518b56c49946bf5f79dcc75c3b86ebeabc29d14596464c4123a5188c0d30fa60689c0a71b995bdc641fb
   languageName: node
   linkType: hard
 
@@ -8765,7 +9120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-glob@npm:^4.0.1":
+"is-glob@npm:^4.0.1, is-glob@npm:^4.0.3":
   version: 4.0.3
   resolution: "is-glob@npm:4.0.3"
   dependencies:
@@ -10429,6 +10784,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-intl-swc-plugin-extractor@npm:^4.9.2":
+  version: 4.9.2
+  resolution: "next-intl-swc-plugin-extractor@npm:4.9.2"
+  checksum: 10c0/2cea8df717d30a12e5ecb28c1fa414ed4636bd6e7889eebadd2a6ba02cbfc38a9f5003e709593152e8405a38a839f28e115cc560b0336a73cf8ac57fb98dbc70
+  languageName: node
+  linkType: hard
+
+"next-intl@npm:^4.9.2":
+  version: 4.9.2
+  resolution: "next-intl@npm:4.9.2"
+  dependencies:
+    "@formatjs/intl-localematcher": "npm:^0.8.1"
+    "@parcel/watcher": "npm:^2.4.1"
+    "@swc/core": "npm:^1.15.2"
+    icu-minify: "npm:^4.9.2"
+    negotiator: "npm:^1.0.0"
+    next-intl-swc-plugin-extractor: "npm:^4.9.2"
+    po-parser: "npm:^2.1.1"
+    use-intl: "npm:^4.9.2"
+  peerDependencies:
+    next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/a64d1b4c08551a5affa0f5b6f7fe214e20001ba020b19a375c71e0aff9ec88fc40a6b2a376b51d5b37efee4210908886e6e0496636c17a82bc960155dea870e4
+  languageName: node
+  linkType: hard
+
 "next@npm:^16.2.4":
   version: 16.2.4
   resolution: "next@npm:16.2.4"
@@ -10495,6 +10879,15 @@ __metadata:
   dependencies:
     "@types/nlcst": "npm:^2.0.0"
   checksum: 10c0/a192c8b3365a7c076812004e72ae5b4a1734e582be2a6f3c062f3beecf18868a9fe2d1bad870bfead320fb39830f2c4f3752e5ae6574c4e59157126fd1ddba70
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^7.0.0":
+  version: 7.1.1
+  resolution: "node-addon-api@npm:7.1.1"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/fb32a206276d608037fa1bcd7e9921e177fe992fc610d098aa3128baca3c0050fc1e014fa007e9b3874cf865ddb4f5bd9f43ccb7cbbbe4efaff6a83e920b17e9
   languageName: node
   linkType: hard
 
@@ -11182,6 +11575,13 @@ __metadata:
   dependencies:
     fflate: "npm:^0.8.2"
   checksum: 10c0/69f44790c64b99ca7f44280ed13643e7700bc91406842a096471951227e7dfb52e21924dc3691bf65877c0411d8ced63bebaba1d2da17bf45fefed92a229f1a6
+  languageName: node
+  linkType: hard
+
+"po-parser@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "po-parser@npm:2.1.1"
+  checksum: 10c0/dc57f74fc5b74576fe0290937691c54e7f6b36609027e25f5a40251e10d173c23305c2cca340a9497b0950cfe54e63fd3de9181048ba0e8acee56069c48dd5d0
   languageName: node
   linkType: hard
 
@@ -13408,6 +13808,20 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/f887488c6e6075cdad4962979da1714b217bcb1ee009a9e57ce9a844bcfc4c3a99e93983dfc2e5af9e0913824d24e730090ff255e902c516dcb58d2d3837e01c
+  languageName: node
+  linkType: hard
+
+"use-intl@npm:^4.9.2":
+  version: 4.9.2
+  resolution: "use-intl@npm:4.9.2"
+  dependencies:
+    "@formatjs/fast-memoize": "npm:^3.1.0"
+    "@schummar/icu-type-parser": "npm:1.21.5"
+    icu-minify: "npm:^4.9.2"
+    intl-messageformat: "npm:^11.1.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
+  checksum: 10c0/de2adf575e332394185dec89bdf0f06d2969f2fe173cb899dcdb57c45c30dbd7122a9545d69399853737ea1ed21dba88bced75e5558a3e6ca795f8739db1f93b
   languageName: node
   linkType: hard
 

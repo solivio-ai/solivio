@@ -1,8 +1,13 @@
-import { boolean, index, pgTable, text, timestamp, uuid, vector } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, text, timestamp, uuid, vector } from "drizzle-orm/pg-core";
 
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
+  name: text("name").notNull().default("Draft"),
+  customerName: text("customer_name"),
+  clientRequest: text("client_request"),
+  status: text("status").notNull().default("draft"),
+  notes: text("notes").array().notNull().default([]),
+  unmatched: text("unmatched").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -82,3 +87,17 @@ export const products = pgTable(
     )
   ]
 );
+
+export const offerProducts = pgTable("offer_products", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  offerId: uuid("offer_id")
+    .notNull()
+    .references(() => offers.id, { onDelete: "cascade" }),
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => products.id),
+  requestItem: text("request_item").notNull().default(""),
+  quantity: integer("quantity").notNull(),
+  rationale: text("rationale").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
