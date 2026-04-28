@@ -1,0 +1,78 @@
+services:
+  traefik:
+    image: traefik:v3.2
+    container_name: solivio-traefik
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-letsencrypt:/letsencrypt
+
+  db:
+    image: pgvector/pgvector:0.8.2-pg18-trixie
+    container_name: solivio-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - solivio-db:/var/lib/postgresql
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-push:
+    image: ghcr.io/solivioai/solivio-db-push:${IMAGE_TAG:-latest}
+    container_name: solivio-db-push
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+
+  app:
+    image: ghcr.io/solivioai/solivio-app:${IMAGE_TAG:-latest}
+    container_name: solivio-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-push:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      NEXT_PUBLIC_BETTER_AUTH_URL: ${NEXT_PUBLIC_BETTER_AUTH_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      AUTH_ENABLED: ${AUTH_ENABLED:-true}
+      AUTH_SIGNUP_ENABLED: ${AUTH_SIGNUP_ENABLED:-true}
+      AUTH_CREDENTIALS_ENABLED: ${AUTH_CREDENTIALS_ENABLED:-true}
+      AUTH_SSO_ENABLED: ${AUTH_SSO_ENABLED:-false}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`demo.solivio.ai`)
+      - traefik.http.routers.app.entrypoints=websecure
+      - traefik.http.routers.app.tls.certresolver=letsencrypt
+      - traefik.http.services.app.loadbalancer.server.port=3000
+
+volumes:
+  solivio-db:
+  traefik-letsencrypt:
