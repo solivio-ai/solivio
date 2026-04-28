@@ -4745,6 +4745,7 @@ __metadata:
   dependencies:
     "@ai-sdk/openai": "npm:^3.0.53"
     "@solivio/domain": "workspace:*"
+    "@solivio/theme": "workspace:*"
     "@tailwindcss/oxide-darwin-arm64": "npm:^4.2.4"
     "@tailwindcss/postcss": "npm:^4.2.4"
     "@types/node": "npm:25.6.0"
@@ -4783,6 +4784,7 @@ __metadata:
   dependencies:
     "@astrojs/markdown-remark": "npm:^7.1.1"
     "@astrojs/starlight": "npm:^0.38.4"
+    "@solivio/theme": "workspace:*"
     astro: "npm:^6.1.9"
     starlight-openapi: "npm:^0.22.1"
   languageName: unknown
@@ -4791,6 +4793,12 @@ __metadata:
 "@solivio/domain@workspace:*, @solivio/domain@workspace:packages/domain":
   version: 0.0.0-use.local
   resolution: "@solivio/domain@workspace:packages/domain"
+  languageName: unknown
+  linkType: soft
+
+"@solivio/theme@workspace:*, @solivio/theme@workspace:packages/theme":
+  version: 0.0.0-use.local
+  resolution: "@solivio/theme@workspace:packages/theme"
   languageName: unknown
   linkType: soft
 
