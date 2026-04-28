@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-import { ApiStatus, RequestWorkbench } from "../features/request-workbench";
+import { ApiStatus, RequestWorkbench, UserMenu } from "../features/request-workbench";
+import { BrandLockup } from "@/components/brand/BrandLockup";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-[1440px] p-6 max-sm:p-4">
-      <header className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <div>
-          <h1 className="text-4xl leading-none font-semibold tracking-tight sm:text-5xl lg:text-[58px]">Solivio</h1>
+    <main className="mx-auto grid max-w-[1440px] gap-5 p-6 max-sm:p-4">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="flex flex-col gap-3">
+          <BrandLockup href="" tagline="Quotes shouldn’t take hours. They should start from your data." />
+          <div className="flex flex-wrap gap-2">
+            <Badge>Data-driven process</Badge>
+            <Badge variant="secondary">Structured draft</Badge>
+            <Badge variant="outline">Review & adjust</Badge>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
@@ -19,12 +25,12 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="mb-6">
-        <Card className="border-dashed">
+      <div>
+        <Card className="border-primary/30 bg-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Start a new offer</CardTitle>
             <CardDescription>
-              Enter a customer request to generate a draft offer.
+              Generate structured offer drafts based on your data.
             </CardDescription>
           </CardHeader>
           <CardContent>

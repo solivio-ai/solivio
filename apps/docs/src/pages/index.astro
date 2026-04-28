@@ -3,6 +3,8 @@ const links = [
   { href: "/guides/", label: "Guides" },
   { href: "/api/", label: "API Reference" }
 ];
+
+const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
 ---
 
 <!doctype html>
@@ -13,23 +15,49 @@ const links = [
     <title>Solivio</title>
     <meta
       name="description"
-      content="Open-source sales workflow documentation and API reference for Solivio."
+      content="Solivio is an open-source AI system that transforms how B2B companies create offers."
     />
+    <meta name="theme-color" content="#facc15" />
+    <meta property="og:title" content="Solivio" />
+    <meta
+      property="og:description"
+      content="Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds."
+    />
+    <meta property="og:image" content="/solivio-logo.png" />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">Solivio</a>
+      <a class="brand" href="/" aria-label="Solivio home">
+        <img src="/solivio-logo.png" alt="Solivio" width="180" height="60" />
+      </a>
       <nav aria-label="Primary navigation">
         {links.map((link) => <a href={link.href}>{link.label}</a>)}
       </nav>
     </header>
 
-    <main class="landing-shell">
-      <section class="landing-panel" aria-labelledby="landing-title">
-        <h1 id="landing-title">Solivio</h1>
-        <div class="landing-actions">
-          {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <main>
+      <section class="hero" aria-labelledby="landing-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Open-source AI system</p>
+          <h1 id="landing-title">Solivio</h1>
+          <p>
+            Instead of building every quote manually, Solivio generates structured offer drafts based
+            on your data — in seconds.
+          </p>
+          <div class="landing-actions">
+            {links.map((link) => <a href={link.href}>{link.label}</a>)}
+          </div>
         </div>
+      </section>
+
+      <section class="flow" aria-label="Solivio workflow">
+        {flow.map((item, index) => (
+          <article>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{item}</strong>
+          </article>
+        ))}
       </section>
     </main>
   </body>
@@ -37,10 +65,10 @@ const links = [
 
 <style>
   :global(html) {
-    color-scheme: light;
-    background: #ffffff;
-    color: #111827;
-    font-family: Arial, Helvetica, sans-serif;
+    background: #020617;
+    color: #fafafa;
+    color-scheme: dark;
+    font-family: Inter, Arial, Helvetica, sans-serif;
   }
 
   :global(body) {
@@ -50,75 +78,129 @@ const links = [
 
   .site-header {
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
+    background: #0f172a;
+    border-bottom: 1px solid #1e293b;
     display: flex;
     gap: 24px;
     justify-content: space-between;
-    min-height: 68px;
+    min-height: 72px;
     padding: 0 24px;
   }
 
-  .brand,
-  nav a,
-  .landing-actions a {
-    color: inherit;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
   .brand {
-    color: #0f766e;
-    font-size: 22px;
+    align-items: center;
+    display: inline-flex;
+    min-width: 0;
   }
 
-  nav {
+  .brand img {
+    display: block;
+    height: 44px;
+    max-width: min(180px, 54vw);
+    object-fit: contain;
+    width: auto;
+  }
+
+  nav,
+  .landing-actions {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
   nav a,
   .landing-actions a {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #1e293b;
     border-radius: 8px;
+    color: #fafafa;
+    font-weight: 700;
     min-height: 40px;
     padding: 10px 14px;
+    text-decoration: none;
   }
 
   nav a:hover,
   .landing-actions a:hover {
-    background: #f3f4f6;
+    background: #1e293b;
   }
 
-  .landing-shell {
+  .hero {
+    align-items: center;
     display: grid;
-    min-height: calc(100vh - 69px);
-    place-items: center;
-    padding: 24px;
+    min-height: calc(100svh - 200px);
+    padding: 48px 24px;
   }
 
-  .landing-panel {
+  .hero-copy {
     display: grid;
-    gap: 16px;
-    max-width: 760px;
+    gap: 18px;
+    margin: 0 auto;
+    max-width: 860px;
     text-align: center;
     width: 100%;
   }
 
-  .landing-panel h1 {
-    font-size: clamp(48px, 10vw, 104px);
+  .eyebrow {
+    color: #facc15;
+    font-size: 13px;
+    font-weight: 850;
+    letter-spacing: 0;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: clamp(56px, 10vw, 116px);
     line-height: 0.95;
     margin: 0;
   }
 
+  .hero p {
+    color: #a1a1aa;
+    font-size: clamp(18px, 2.4vw, 28px);
+    line-height: 1.45;
+    margin: 0 auto;
+    max-width: 780px;
+  }
+
   .landing-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     justify-content: center;
   }
 
-  @media (max-width: 560px) {
+  .landing-actions a:first-child {
+    background: #facc15;
+    border-color: #facc15;
+    color: #020617;
+  }
+
+  .flow {
+    border-top: 1px solid #1e293b;
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .flow article {
+    background: #0f172a;
+    display: grid;
+    gap: 8px;
+    min-height: 112px;
+    padding: 18px;
+  }
+
+  .flow span {
+    color: #facc15;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .flow strong {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  @media (max-width: 760px) {
     .site-header {
       align-items: flex-start;
       flex-direction: column;
@@ -126,8 +208,13 @@ const links = [
       padding: 16px;
     }
 
-    nav {
-      flex-wrap: wrap;
+    .hero {
+      min-height: auto;
+      padding: 44px 16px;
+    }
+
+    .flow {
+      grid-template-columns: 1fr;
     }
   }
 </style>

@@ -1,6 +1,6 @@
 # API Notes
 
-The API routes run inside the single Next.js app at `http://localhost:3000/api/*` in development.
+The API routes run inside the single Next.js app at `http://localhost:3000/api/*` in development. They support the README flow: Data → AI → Structured draft → Review → Send.
 
 The publishable API contract is generated OpenAPI 3.1:
 
@@ -55,4 +55,4 @@ Returns a mocked draft offer.
 
 ### `POST /api/offers`
 
-Returns a newly timestamped mocked draft offer. This is the future boundary for AI-assisted offer generation.
+Returns a newly timestamped mocked draft offer. This is the future boundary for structured offer drafts based on your data.

@@ -1,5 +1,6 @@
 "use client";
 
+import { FileText, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import type { Offer } from "@solivio/domain";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export function NewOfferForm() {
@@ -45,41 +47,42 @@ export function NewOfferForm() {
 
   return (
     <div className="grid gap-4">
-      <Card>
+      <Card className="border-primary/30">
         <CardHeader>
-          <CardTitle>Create offer</CardTitle>
+          <div className="flex items-center gap-2">
+            <FileText size={18} aria-hidden="true" className="text-primary" />
+            <CardTitle>Create offer</CardTitle>
+          </div>
           <CardDescription>Provide the customer details and request text.</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4" onSubmit={handleSubmit}>
             <div className="grid gap-2">
-              <label htmlFor="customer-name" className="text-sm font-medium">
-                Customer name
-              </label>
+              <Label htmlFor="customer-name">Customer name</Label>
               <Input
                 id="customer-name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="ACME Sp. z o.o."
+                className="bg-background/60"
               />
             </div>
 
             <div className="grid gap-2">
-              <label htmlFor="client-request" className="text-sm font-medium">
-                Customer request
-              </label>
+              <Label htmlFor="client-request">Customer request</Label>
               <Textarea
                 id="client-request"
                 value={clientRequest}
                 onChange={(e) => setClientRequest(e.target.value)}
                 rows={8}
-                className="min-h-[180px]"
+                className="min-h-[180px] bg-background/60"
                 placeholder="Describe what the customer needs..."
               />
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <Button type="submit" disabled={isSubmitting}>
+                <Sparkles size={16} aria-hidden="true" />
                 {isSubmitting ? "Generating..." : "Generate draft offer"}
               </Button>
               <p className="text-sm text-muted-foreground">{notice}</p>
@@ -91,7 +94,10 @@ export function NewOfferForm() {
       {createdOffer ? (
         <Card>
           <CardHeader>
-            <CardTitle>Generated offer</CardTitle>
+            <div className="flex items-center gap-2">
+              <Sparkles size={18} aria-hidden="true" className="text-primary" />
+              <CardTitle>Generated offer</CardTitle>
+            </div>
             <CardDescription>Draft offer created from your request.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 text-sm">
