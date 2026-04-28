@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ProductSearchMatch } from "../hooks/useProductSearch";
+import { fieldLabel, ALL_SEARCHABLE_FIELDS } from "../searchableFields";
+import type { ProductSearchMatch, SearchableField } from "../hooks/useProductSearch";
 import { useProductSearch } from "../hooks/useProductSearch";
 
 type Props = {
@@ -20,11 +21,35 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   quantities: Record<string, number>;
   onQuantityChange: (product: ProductSearchMatch, quantity: number) => void;
+  /** Initial set of columns to search. Defaults to all. */
+  searchFields?: SearchableField[];
+  /** Override how each result row's info section is rendered. Defaults to sku + name. */
+  renderProductInfo?: (product: ProductSearchMatch) => React.ReactNode;
 };
 
-export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantityChange }: Props) {
+function defaultProductInfo(product: ProductSearchMatch) {
+  return (
+    <>
+      <p className="truncate text-xs text-muted-foreground">{product.sku}</p>
+      <p className="truncate text-sm font-medium">{product.name}</p>
+    </>
+  );
+}
+
+export function ProductSearchDialog({
+  open,
+  onOpenChange,
+  quantities,
+  onQuantityChange,
+  searchFields,
+  renderProductInfo = defaultProductInfo,
+}: Props) {
+  const [selectedFields, setSelectedFields] = useState<SearchableField[]>(
+    searchFields ?? ALL_SEARCHABLE_FIELDS
+  );
+
   const { query, setQuery, results, isLoading, error, hasSearched, hasMore, search, loadMore } =
-    useProductSearch();
+    useProductSearch({ searchFields: selectedFields });
 
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +64,17 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [results.length, hasMore]); // re-attach when list grows so sentinel is rechecked
+  }, [results.length, hasMore]);
+
+  function toggleField(field: SearchableField) {
+    setSelectedFields((prev) => {
+      if (prev.includes(field)) {
+        if (prev.length === 1) return prev; // keep at least one active
+        return prev.filter((f) => f !== field);
+      }
+      return [...prev, field];
+    });
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") search(query);
@@ -55,7 +90,6 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* Override sm:max-w-sm with max-w-2xl; overflow-hidden prevents horizontal bleed */}
       <DialogContent className="sm:max-w-[75vw] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Search products</DialogTitle>
@@ -66,7 +100,7 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search by name, SKU, or manufacturer…"
+            placeholder="Search products…"
             disabled={isLoading && results.length === 0}
           />
           <Button
@@ -80,7 +114,26 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
           </Button>
         </div>
 
-        {/* Scrollable results area — max-h keeps the dialog from growing past the viewport */}
+        {/* Field selector */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted-foreground">Search in:</span>
+          {ALL_SEARCHABLE_FIELDS.map((field) => {
+            const active = selectedFields.includes(field);
+            return (
+              <Button
+                key={field}
+                size="xs"
+                variant={active ? "default" : "outline"}
+                onClick={() => toggleField(field)}
+                aria-pressed={active}
+              >
+                {fieldLabel(field)}
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Scrollable results */}
         <div className="max-h-[55vh] overflow-y-auto overflow-x-hidden">
           {results.length > 0 && (
             <div className="grid gap-2 pb-2">
@@ -91,12 +144,7 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
                     key={product.id}
                     className="flex items-center gap-3 rounded-lg border bg-muted/30 px-4 py-3"
                   >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{product.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {product.sku} · {product.manufacturer}
-                      </p>
-                    </div>
+                    <div className="min-w-0 flex-1">{renderProductInfo(product)}</div>
                     <div className="flex shrink-0 items-center gap-1">
                       <Button
                         size="icon"
@@ -123,7 +171,6 @@ export function ProductSearchDialog({ open, onOpenChange, quantities, onQuantity
                 );
               })}
 
-              {/* Sentinel for IntersectionObserver — triggers loadMore when scrolled into view */}
               {hasMore && <div ref={sentinelRef} className="h-1" />}
             </div>
           )}

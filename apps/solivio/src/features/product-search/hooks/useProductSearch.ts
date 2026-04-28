@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import type { SearchableField } from "../searchableFields";
 
 export type ProductSearchMatch = {
   id: string;
@@ -9,6 +10,9 @@ export type ProductSearchMatch = {
   description: string;
   manufacturer: string;
 };
+
+export type { SearchableField } from "../searchableFields";
+export { ALL_SEARCHABLE_FIELDS } from "../searchableFields";
 
 type State = {
   results: ProductSearchMatch[];
@@ -28,26 +32,40 @@ const INITIAL_STATE: State = {
 
 const PAGE_SIZE = 20;
 
-async function fetchPage(query: string, offset: number): Promise<ProductSearchMatch[]> {
+async function fetchPage(
+  query: string,
+  offset: number,
+  searchFields?: SearchableField[]
+): Promise<ProductSearchMatch[]> {
   const response = await fetch("/api/products/text-search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, limit: PAGE_SIZE, offset }),
+    body: JSON.stringify({
+      query,
+      limit: PAGE_SIZE,
+      offset,
+      ...(searchFields?.length ? { searchFields } : {}),
+    }),
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const json = (await response.json()) as { products: ProductSearchMatch[] };
   return json.products;
 }
 
-export function useProductSearch() {
+type Config = {
+  searchFields?: SearchableField[];
+};
+
+export function useProductSearch({ searchFields }: Config = {}) {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<State>(INITIAL_STATE);
 
-  // Refs prevent stale closures in loadMore without needing useCallback
   const currentQueryRef = useRef("");
   const offsetRef = useRef(0);
   const isLoadingRef = useRef(false);
   const hasMoreRef = useRef(false);
+  const searchFieldsRef = useRef(searchFields);
+  searchFieldsRef.current = searchFields;
 
   async function search(searchQuery: string) {
     const trimmed = searchQuery.trim();
@@ -61,7 +79,7 @@ export function useProductSearch() {
     setState({ results: [], isLoading: true, error: null, hasSearched: false, hasMore: false });
 
     try {
-      const products = await fetchPage(trimmed, 0);
+      const products = await fetchPage(trimmed, 0, searchFieldsRef.current);
       const hasMore = products.length === PAGE_SIZE;
       offsetRef.current = products.length;
       hasMoreRef.current = hasMore;
@@ -86,7 +104,11 @@ export function useProductSearch() {
     setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const products = await fetchPage(currentQueryRef.current, offsetRef.current);
+      const products = await fetchPage(
+        currentQueryRef.current,
+        offsetRef.current,
+        searchFieldsRef.current
+      );
       const hasMore = products.length === PAGE_SIZE;
       offsetRef.current += products.length;
       hasMoreRef.current = hasMore;
