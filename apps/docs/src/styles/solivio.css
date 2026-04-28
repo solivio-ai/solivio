@@ -1,0 +1,55 @@
+@layer starlight.base {
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"],
+  ::backdrop {
+    color-scheme: dark;
+    --sl-color-white: #fafafa;
+    --sl-color-gray-1: #fafafa;
+    --sl-color-gray-2: #d4d4d8;
+    --sl-color-gray-3: #a1a1aa;
+    --sl-color-gray-4: #64748b;
+    --sl-color-gray-5: #1e293b;
+    --sl-color-gray-6: #0f172a;
+    --sl-color-gray-7: #0f172a;
+    --sl-color-black: #020617;
+    --sl-color-accent-low: #134e4a;
+    --sl-color-accent: #facc15;
+    --sl-color-accent-high: #facc15;
+    --sl-color-text: #fafafa;
+    --sl-color-text-accent: #facc15;
+    --sl-color-text-invert: #020617;
+    --sl-color-bg: #020617;
+    --sl-color-bg-nav: #0f172a;
+    --sl-color-bg-sidebar: #0f172a;
+    --sl-color-bg-inline-code: #1e293b;
+    --sl-color-bg-accent: #facc15;
+    --sl-color-hairline-light: #1e293b;
+    --sl-color-hairline: #1e293b;
+    --sl-color-hairline-shade: #020617;
+    --sl-color-backdrop-overlay: rgb(2 6 23 / 72%);
+  }
+}
+
+@layer starlight.core {
+  body {
+    background: var(--sl-color-bg);
+  }
+
+  a {
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+  }
+
+  .site-title img {
+    border-radius: 0.5rem;
+  }
+
+  .header {
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+
+  .sl-markdown-content code:not(:where(pre *)) {
+    border: 1px solid var(--sl-color-hairline);
+  }
+}

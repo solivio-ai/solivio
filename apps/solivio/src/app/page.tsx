@@ -13,7 +13,7 @@ export default function Home() {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Start a new offer</CardTitle>
             <CardDescription>
-              Enter a customer request to generate a draft offer.
+              Generate structured offer drafts based on your data.
             </CardDescription>
           </CardHeader>
           <CardContent>

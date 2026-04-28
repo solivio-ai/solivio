@@ -71,9 +71,8 @@ export function LoginForm({
   }
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-6 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
+    <div className="flex w-full flex-col gap-6 rounded-lg border bg-card p-8 text-card-foreground shadow-sm">
       <header>
-        <p className="mb-1 text-xs font-semibold tracking-widest text-primary uppercase">Solivio</p>
         <h1 className="text-2xl font-semibold tracking-tight">
           {mode === "signin" ? "Sign in" : "Create account"}
         </h1>

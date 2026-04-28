@@ -1,10 +1,8 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 
 export async function requireAuth(): Promise<NextResponse | null> {
-  if (process.env.AUTH_ENABLED === "false") return null;
-
+  const { auth } = await import("@/lib/auth");
   const session = await auth.api.getSession({ headers: await headers() });
   if (session) return null;
 
