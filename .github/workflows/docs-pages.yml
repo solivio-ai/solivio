@@ -42,13 +42,6 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Add Yarn to PATH
-        run: |
-          mkdir -p "$RUNNER_TEMP/yarn"
-          printf '%s\n' '#!/usr/bin/env sh' 'exec node "$GITHUB_WORKSPACE/.yarn/releases/yarn-4.14.1.cjs" "$@"' > "$RUNNER_TEMP/yarn/yarn"
-          chmod +x "$RUNNER_TEMP/yarn/yarn"
-          echo "$RUNNER_TEMP/yarn" >> "$GITHUB_PATH"
-
       - name: Install dependencies
         run: yarn install --immutable
 
