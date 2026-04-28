@@ -49,5 +49,4 @@
   "optionalDependencies": {
     "@tailwindcss/oxide-darwin-arm64": "^4.2.4"
   }
-  }
 }

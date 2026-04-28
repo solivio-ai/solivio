@@ -27,8 +27,10 @@ export default defineConfig({
         alt: "Solivio",
         replacesTitle: true
       },
+      favicon: "/favicon.png",
       customCss: ["./src/styles/solivio.css"],
       head: [
+        { tag: "link", attrs: { rel: "apple-touch-icon", href: "/favicon.png" } },
         { tag: "meta", attrs: { name: "theme-color", content: "#facc15" } }
       ],
       components: {
