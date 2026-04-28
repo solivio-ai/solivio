@@ -15,11 +15,13 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
+    "@react-pdf/renderer": "^4.5.1",
     "@solivio/domain": "*",
     "@tailwindcss/postcss": "^4.2.4",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "decimal.js": "^10.6.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.11.0",
@@ -38,7 +40,7 @@
   "devDependencies": {
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
-    "typescript": "6.0.3",
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": "^0.31.10",
+    "typescript": "6.0.3"
   }
 }
