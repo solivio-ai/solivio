@@ -28,12 +28,12 @@ jobs:
 
       - name: Tag :latest
         run: |
-          docker tag ghcr.io/solivioai/solivio-app:${IMAGE_TAG} ghcr.io/solivioai/solivio-app:latest
-          docker tag ghcr.io/solivioai/solivio-db-push:${IMAGE_TAG} ghcr.io/solivioai/solivio-db-push:latest
+          docker tag ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG} ghcr.io/solivio-ai/solivio-app:latest
+          docker tag ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG} ghcr.io/solivio-ai/solivio-db-push:latest
 
       - name: Push images
         run: |
-          docker push ghcr.io/solivioai/solivio-app:${IMAGE_TAG}
-          docker push ghcr.io/solivioai/solivio-app:latest
-          docker push ghcr.io/solivioai/solivio-db-push:${IMAGE_TAG}
-          docker push ghcr.io/solivioai/solivio-db-push:latest
+          docker push ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG}
+          docker push ghcr.io/solivio-ai/solivio-app:latest
+          docker push ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG}
+          docker push ghcr.io/solivio-ai/solivio-db-push:latest

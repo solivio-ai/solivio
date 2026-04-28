@@ -16,14 +16,14 @@ A one-shot `db-push` container syncs `schema.ts` to the database before the app 
 - A Linux host with Docker Engine and Docker Compose v2 installed.
 - A DNS A record `demo.solivio.ai` pointing to the host's public IP.
 - Inbound TCP 80 and 443 open in the host firewall.
-- Read access to the GHCR images `ghcr.io/solivioai/solivio-app` and `ghcr.io/solivioai/solivio-db-push` (a GitHub PAT with `read:packages` if the repo is private).
+- Read access to the GHCR images `ghcr.io/solivio-ai/solivio-app` and `ghcr.io/solivio-ai/solivio-db-push` (a GitHub PAT with `read:packages` if the repo is private).
 
 ## Image build
 
 Two images are built from the same `apps/solivio/Dockerfile`:
 
-- `ghcr.io/solivioai/solivio-app` — Next.js standalone runtime (`runner` stage).
-- `ghcr.io/solivioai/solivio-db-push` — `db-push` stage; ships with `drizzle-kit` and `schema.ts` so it can sync the schema into the database.
+- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime (`runner` stage).
+- `ghcr.io/solivio-ai/solivio-db-push` — `db-push` stage; ships with `drizzle-kit` and `schema.ts` so it can sync the schema into the database.
 
 Both are declared in `docker-compose.build.yml`. CI (`.github/workflows/build-image.yml`) runs on every push to `main`:
 
@@ -47,7 +47,7 @@ sudo mkdir -p /opt/solivio
 sudo chown $USER:$USER /opt/solivio
 cd /opt/solivio
 
-git clone --depth 1 https://github.com/SolivioAI/Solivio.git .
+git clone --depth 1 https://github.com/solivio-ai/Solivio.git .
 
 cp .env.production.example .env
 # Fill in: POSTGRES_PASSWORD, DATABASE_URL, BETTER_AUTH_SECRET, OPENAI_API_KEY, LETSENCRYPT_EMAIL.

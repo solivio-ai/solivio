@@ -23,8 +23,8 @@ docker compose -f docker-compose.build.yml push          # pushes to GHCR (requi
 ```
 
 This produces two images:
-- `ghcr.io/solivioai/solivio-app` — Next.js standalone runtime.
-- `ghcr.io/solivioai/solivio-db-push` — runs `drizzle-kit push --force` once per deploy to sync the schema.
+- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime.
+- `ghcr.io/solivio-ai/solivio-db-push` — runs `drizzle-kit push --force` once per deploy to sync the schema.
 
 CI (`.github/workflows/build-image.yml`) runs the same commands on every push to `main` and tags both images with `:latest` and `:<commit-sha>`.
 
