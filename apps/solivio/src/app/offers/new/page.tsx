@@ -15,7 +15,7 @@ export default function NewOfferPage() {
         <div className="grid gap-3">
           <BrandLockup href="/" tagline="Quotes shouldn’t take hours. They should start from your data." />
           <div className="flex flex-wrap gap-2">
-            <Badge>Structured draft</Badge>
+            <Badge>AI-generated draft</Badge>
             <Badge variant="secondary">Review & adjust</Badge>
           </div>
         </div>

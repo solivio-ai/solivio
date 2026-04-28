@@ -1,21 +1,24 @@
 "use client";
 
-import { FileText, Sparkles } from "lucide-react";
+import { FileText, Package, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { CreatedOffer } from "@/server/offers/offerService";
 
 export function NewOfferForm() {
   const router = useRouter();
   const [customerName, setCustomerName] = useState("");
   const [clientRequest, setClientRequest] = useState("");
   const [notice, setNotice] = useState("Fill in the request and generate a draft offer.");
+  const [createdOffer, setCreatedOffer] = useState<CreatedOffer | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: { preventDefault(): void }) {
@@ -34,7 +37,7 @@ export function NewOfferForm() {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const json = (await response.json()) as { offer: Offer };
+      const json = (await response.json()) as { offer: CreatedOffer };
       setNotice("Draft offer generated.");
       router.push(`/offers/${json.offer.id}`);
     } catch {
@@ -62,7 +65,7 @@ export function NewOfferForm() {
                 id="customer-name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="ACME Sp. z o.o."
+                placeholder="ACME Ltd."
                 className="bg-background/60"
               />
             </div>
@@ -80,7 +83,7 @@ export function NewOfferForm() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !clientRequest.trim()}>
                 <Sparkles size={16} aria-hidden="true" />
                 {isSubmitting ? "Generating..." : "Generate draft offer"}
               </Button>

@@ -175,6 +175,8 @@ export const offerItemProductSchema = z
 export const offerItemSchema = z
   .object({
     productId: z.string(),
+    productName: z.string().optional(),
+    productSku: z.string().optional(),
     quantity: z.number().int().positive(),
     rationale: z.string(),
     confidence: z.number().min(0).max(100).optional(),
@@ -182,7 +184,6 @@ export const offerItemSchema = z
     currency: currencySchema.optional(),
     product: offerItemProductSchema.optional()
   })
-  .strict()
   .meta({
     id: "OfferItem",
     description: "A product line item included in an offer."
@@ -191,7 +192,7 @@ export const offerItemSchema = z
 export const createOfferRequestSchema = z
   .object({
     customerName: z.string().optional(),
-    clientRequest: z.string().optional()
+    clientRequest: z.string().min(1)
   })
   .strict()
   .meta({
@@ -203,14 +204,13 @@ export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
     requestId: z.string(),
-    customerName: z.string().optional(),
-    clientRequest: z.string().optional(),
+    customerName: z.string().nullable().optional(),
+    clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
     notes: z.array(z.string())
   })
-  .strict()
   .meta({
     id: "Offer",
     description: "A draft, reviewed, or accepted offer for a customer request."
