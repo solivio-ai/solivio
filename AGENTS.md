@@ -2,6 +2,45 @@
 
 This repository is intended to stay easy to launch for contributors evaluating the idea.
 
+## Development
+
+```bash
+yarn install
+cp apps/solivio/.env.example apps/solivio/.env.local   # set BETTER_AUTH_SECRET via `openssl rand -base64 32`
+yarn setup                                              # docker compose up db, wait for it, push schema
+yarn dev                                                # Next.js on :3000
+```
+
+`yarn setup` must run on a fresh checkout before `yarn dev`, and again whenever `apps/solivio/src/server/database/schema.ts` changes. `yarn db:push` re-syncs the schema without restarting the database.
+
+## Build
+
+Production images are produced via `docker-compose.build.yml`:
+
+```bash
+docker compose -f docker-compose.build.yml build         # builds both images
+docker compose -f docker-compose.build.yml push          # pushes to GHCR (requires `docker login ghcr.io`)
+```
+
+This produces two images:
+- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime.
+- `ghcr.io/solivio-ai/solivio-db-push` — runs `drizzle-kit push --force` once per deploy to sync the schema.
+
+CI (`.github/workflows/build-image.yml`) runs the same commands on every push to `main` and tags both images with `:latest` and `:<commit-sha>`.
+
+## Deploy
+
+The demo runs on a single OVH VPS at `demo.solivio.ai` as four containers via `docker-compose.prod.yml`: Traefik (TLS), Postgres+pgvector, the one-shot `db-push`, and the app. Manual deploy:
+
+```bash
+ssh ovh
+cd /opt/solivio && git pull
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Full deployment guide (host setup, GHCR auth, rollback, troubleshooting): `apps/docs/src/content/docs/guides/deployment.md`.
+
 ## Architecture
 
 - `apps/solivio` owns the single Next.js app.
@@ -25,13 +64,12 @@ Solivio should help a sales team convert raw customer input into a reviewed offe
 
 Schema is defined in `apps/solivio/src/server/database/schema.ts` using Drizzle ORM. The Drizzle client singleton is exported from `apps/solivio/src/server/database/db.ts` and must only be imported inside server-only code (`apps/solivio/src/server/` or `apps/solivio/src/app/api/`).
 
-Migration files are generated into `apps/solivio/drizzle/` and committed to version control.
+There is no committed migration history; schema is synced via `drizzle-kit push`:
 
-When adding or changing tables:
 1. Edit `apps/solivio/src/server/database/schema.ts`.
-2. During local development, run `yarn db:push` to apply changes instantly.
-3. Before committing schema changes, run `yarn db:generate` to produce a migration file and commit it together with the schema change.
-4. Use `yarn db:migrate` to apply migrations in non-local environments.
+2. Run `yarn db:push` to apply.
+
+The same command runs in production via the `db-push` container on every deploy.
 
 As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
 

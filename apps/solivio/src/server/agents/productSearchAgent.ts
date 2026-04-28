@@ -5,6 +5,7 @@ import { Agent, createTool } from "@voltagent/core";
 import { z } from "zod";
 
 import { searchProductsByPrompt } from "../products/productSearchService";
+import { getOpenAIModel } from "./modelConfig";
 
 const agentResponseSchema = z.object({
   answer: z.string().min(1)
@@ -48,7 +49,7 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
       "Answer in the same language as the user's prompt.",
       "Keep the answer concise and practical for a salesperson."
     ].join(" "),
-    model: "openai/gpt-4o-mini",
+    model: getOpenAIModel(),
     tools: [searchProductsTool]
   });
 

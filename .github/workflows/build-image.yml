@@ -1,0 +1,39 @@
+name: Build & push image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build images
+        run: docker compose -f docker-compose.build.yml build --pull
+
+      - name: Tag :latest
+        run: |
+          docker tag ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG} ghcr.io/solivio-ai/solivio-app:latest
+          docker tag ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG} ghcr.io/solivio-ai/solivio-db-push:latest
+
+      - name: Push images
+        run: |
+          docker push ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG}
+          docker push ghcr.io/solivio-ai/solivio-app:latest
+          docker push ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG}
+          docker push ghcr.io/solivio-ai/solivio-db-push:latest

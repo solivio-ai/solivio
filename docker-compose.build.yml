@@ -1,0 +1,18 @@
+services:
+  app:
+    image: ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/solivio/Dockerfile
+      target: runner
+      cache_from:
+        - ghcr.io/solivio-ai/solivio-app:latest
+
+  db-push:
+    image: ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/solivio/Dockerfile
+      target: db-push
+      cache_from:
+        - ghcr.io/solivio-ai/solivio-db-push:latest
