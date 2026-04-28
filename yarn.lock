@@ -265,6 +265,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/react@npm:^3.0.170":
+  version: 3.0.170
+  resolution: "@ai-sdk/react@npm:3.0.170"
+  dependencies:
+    "@ai-sdk/provider-utils": "npm:4.0.23"
+    ai: "npm:6.0.168"
+    swr: "npm:^2.2.5"
+    throttleit: "npm:2.1.0"
+  peerDependencies:
+    react: ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
+  checksum: 10c0/36bc6415f8e9f8af682d9b740db3139b3a753c1095c55b09332bf545a32af37e77e2e4d2619425e0187c27effcb5c56db76531d3ef8e701bd267b1cde3a65f2b
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/togetherai@npm:^2.0.13":
   version: 2.0.45
   resolution: "@ai-sdk/togetherai@npm:2.0.45"
@@ -4915,6 +4929,7 @@ __metadata:
   resolution: "@solivio/app@workspace:apps/solivio"
   dependencies:
     "@ai-sdk/openai": "npm:^3.0.53"
+    "@ai-sdk/react": "npm:^3.0.170"
     "@react-pdf/renderer": "npm:^4.5.1"
     "@solivio/domain": "workspace:*"
     "@solivio/theme": "workspace:*"
@@ -5496,7 +5511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ai@npm:^6.0.168":
+"ai@npm:6.0.168, ai@npm:^6.0.168":
   version: 6.0.168
   resolution: "ai@npm:6.0.168"
   dependencies:
@@ -6637,7 +6652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dequal@npm:^2.0.0":
+"dequal@npm:^2.0.0, dequal@npm:^2.0.3":
   version: 2.0.3
   resolution: "dequal@npm:2.0.3"
   checksum: 10c0/f98860cdf58b64991ae10205137c0e97d384c3a4edc7f807603887b7c4b850af1224a33d88012009f150861cbee4fa2d322c4cc04b9313bee312e47f6ecaa888
@@ -12764,6 +12779,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"swr@npm:^2.2.5":
+  version: 2.4.1
+  resolution: "swr@npm:2.4.1"
+  dependencies:
+    dequal: "npm:^2.0.3"
+    use-sync-external-store: "npm:^1.6.0"
+  peerDependencies:
+    react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/34d61fb4653ac8875ad24e7c6da37e210b0e90fce0815dc59f013b7554a0bd267e79aac0f8ae5fbf04992e2a1815ee3da581b0dab3ed6ac4c2ce0e82b351320f
+  languageName: node
+  linkType: hard
+
 "tagged-tag@npm:^1.0.0":
   version: 1.0.0
   resolution: "tagged-tag@npm:1.0.0"
@@ -12809,6 +12836,13 @@ __metadata:
   version: 1.0.0
   resolution: "text-hex@npm:1.0.0"
   checksum: 10c0/57d8d320d92c79d7c03ffb8339b825bb9637c2cbccf14304309f51d8950015c44464b6fd1b6820a3d4821241c68825634f09f5a2d9d501e84f7c6fd14376860d
+  languageName: node
+  linkType: hard
+
+"throttleit@npm:2.1.0":
+  version: 2.1.0
+  resolution: "throttleit@npm:2.1.0"
+  checksum: 10c0/1696ae849522cea6ba4f4f3beac1f6655d335e51b42d99215e196a718adced0069e48deaaf77f7e89f526ab31de5b5c91016027da182438e6f9280be2f3d5265
   languageName: node
   linkType: hard
 
@@ -13393,7 +13427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.5.0":
+"use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.6.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:
