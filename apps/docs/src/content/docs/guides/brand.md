@@ -16,21 +16,23 @@ the repository README.
 ## Theme
 
 ```css
-@theme {
-  --color-background: #020617;
-  --color-foreground: #fafafa;
-  --color-card: #0f172a;
-  --color-primary: #facc15;
-  --color-primary-foreground: #020617;
-  --color-secondary: #134e4a;
-  --color-muted: #1e293b;
-  --color-muted-foreground: #a1a1aa;
-  --color-ring: #facc15;
+:root {
+  --solivio-color-background: #020617;
+  --solivio-color-foreground: #fafafa;
+  --solivio-color-card: #0f172a;
+  --solivio-color-primary: #facc15;
+  --solivio-color-primary-foreground: #020617;
+  --solivio-color-secondary: #134e4a;
+  --solivio-color-muted: #1e293b;
+  --solivio-color-muted-foreground: #a1a1aa;
+  --solivio-radius: 0.5rem;
 }
 ```
 
-The full token set lives in `apps/solivio/src/app/globals.css`. Docs mirror the
-same palette in `apps/docs/src/styles/solivio.css`.
+The canonical token set lives in `packages/theme/src/tokens.css`. The Next app
+maps those tokens to shadcn/Tailwind variables in
+`apps/solivio/src/app/globals.css`, while docs map the same tokens to Starlight
+variables in `apps/docs/src/styles/solivio.css`.
 
 ## Copy
 
