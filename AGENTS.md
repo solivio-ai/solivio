@@ -35,6 +35,18 @@ When adding or changing tables:
 
 As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
 
+## UI
+
+The app uses **shadcn/ui** components with **Tailwind CSS v4**.
+
+- Install new UI components with `npx shadcn@latest add <component>` from `apps/solivio`.
+- Import components from `@/components/ui/<component>`.
+- Use shadcn primitives (`Button`, `Card`, `Badge`, `Textarea`, etc.) for all UI — do not write custom CSS classes.
+- Before building any UI element, check if a matching shadcn component exists at https://ui.shadcn.com/docs/components and add it with `npx shadcn@latest add <component>` if so.
+- Style layout and spacing with Tailwind utility classes only; avoid adding rules to `globals.css`.
+- Theme tokens live in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is dark-first (Solivio brand: yellow primary `#FACC15`, teal secondary `#134E4A`). Do not add a light-mode variant unless explicitly requested.
+- `globals.css` must stay clean: Tailwind imports, `@theme inline` token mapping, and the `@layer base` theme block only.
+
 ## Implementation Rules
 
 - Preserve the internal API/frontend/server separation inside `apps/solivio`.

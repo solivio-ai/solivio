@@ -2,6 +2,7 @@
 
 import { RefreshCcw, Server } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type HealthState =
   | { state: "checking" }
@@ -41,10 +42,18 @@ export function ApiStatus() {
   }, [checkHealth]);
 
   return (
-    <section className="api-status" aria-label="API status">
+    <section className="flex min-h-12 items-center gap-3 rounded-lg border bg-card px-3 py-2 text-card-foreground" aria-label="API status">
       <Server size={18} aria-hidden="true" />
-      <div>
-        <span className={`status-dot ${health.state}`} />
+      <div className="flex min-w-[110px] items-center gap-2 text-sm">
+        <span
+          className={`inline-block size-2 rounded-full ${
+            health.state === "online"
+              ? "bg-emerald-500"
+              : health.state === "checking"
+                ? "bg-amber-400"
+                : "bg-red-500"
+          }`}
+        />
         <span>
           {health.state === "online"
             ? "API online"
@@ -53,9 +62,9 @@ export function ApiStatus() {
               : "API offline"}
         </span>
       </div>
-      <button type="button" className="icon-button" onClick={checkHealth} aria-label="Refresh API status">
+      <Button type="button" variant="ghost" size="icon" onClick={checkHealth} aria-label="Refresh API status">
         <RefreshCcw size={16} aria-hidden="true" />
-      </button>
+      </Button>
     </section>
   );
 }
