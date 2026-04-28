@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The frontend and API use mocked data by default. Start Postgres only when working on persistence, imports, search, or embeddings:
+The app uses mocked data by default. Start Postgres only when working on persistence, imports, search, or embeddings:
 
 ```bash
 cp .env.example .env
@@ -18,8 +18,9 @@ npm run db:up
 
 ## Development Guidelines
 
-- Keep frontend code in `apps/web`.
-- Keep API code in `apps/api`.
+- Keep frontend feature code in `apps/solivio/src/features`.
+- Keep API routes in `apps/solivio/src/app/api`.
+- Keep server-only integration code in `apps/solivio/src/server`.
 - Put shared domain types and demo fixtures in `packages/domain`.
 - Prefer a working mock over an unfinished integration.
 - Document any new environment variable in the relevant `.env.example`.

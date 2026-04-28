@@ -1,5 +1,4 @@
-import { ApiStatus } from "../components/ApiStatus";
-import { RequestWorkbench } from "../components/RequestWorkbench";
+import { ApiStatus, RequestWorkbench } from "../features/request-workbench";
 
 export default function Home() {
   return (

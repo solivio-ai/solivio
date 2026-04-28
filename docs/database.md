@@ -36,7 +36,7 @@ Expected extension version:
 The API health endpoint also reports the live PostgreSQL and pgvector versions when the database is running:
 
 ```bash
-curl http://localhost:4000/api/health
+curl http://localhost:3000/api/health
 ```
 
 For a disposable local database created with an older PostgreSQL major:

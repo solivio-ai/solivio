@@ -4,8 +4,10 @@ This repository is intended to stay easy to launch for contributors evaluating t
 
 ## Architecture
 
-- `apps/web` owns the user-facing Next.js app.
-- `apps/api` owns HTTP API routes and future service integrations.
+- `apps/solivio` owns the single Next.js app.
+- `apps/solivio/src/app/api` owns HTTP API routes.
+- `apps/solivio/src/features` owns user-facing feature UI.
+- `apps/solivio/src/server` owns server-only service integrations.
 - `packages/domain` owns shared types, workflow constants, and mock fixtures.
 - `infra/postgres` owns local database bootstrap files.
 
@@ -21,8 +23,8 @@ Solivio should help a sales team convert raw customer input into a reviewed offe
 
 ## Implementation Rules
 
-- Preserve the API/frontend split.
+- Preserve the internal API/frontend/server separation inside `apps/solivio`.
 - Keep setup commands simple and documented.
 - Avoid adding required external services to the default demo path.
 - Use mocks until the data model and integration boundaries are clear.
-- Add database and AI integrations behind API routes, not directly in the frontend.
+- Add database and AI integrations behind server helpers and API routes, not directly in frontend components.

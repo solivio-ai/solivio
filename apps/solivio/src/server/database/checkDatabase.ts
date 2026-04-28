@@ -1,22 +1,8 @@
 import { Client } from "pg";
-import { NextResponse } from "next/server";
-
-export const runtime = "nodejs";
 
 const localDatabaseUrl = "postgresql://solivio:solivio@localhost:5432/solivio";
 
-export async function GET() {
-  const database = await checkDatabase();
-
-  return NextResponse.json({
-    app: "solivio-api",
-    status: "ok",
-    database,
-    timestamp: new Date().toISOString()
-  });
-}
-
-async function checkDatabase() {
+export async function checkDatabase() {
   const databaseUrl =
     process.env.DATABASE_URL ?? (process.env.NODE_ENV === "development" ? localDatabaseUrl : undefined);
 

@@ -1,5 +1,5 @@
 {
-  "name": "@solivio/web",
+  "name": "@solivio/app",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,6 +13,7 @@
     "@solivio/domain": "*",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
+    "pg": "^8.20.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   }

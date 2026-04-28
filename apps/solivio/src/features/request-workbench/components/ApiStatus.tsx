@@ -8,8 +8,6 @@ type HealthState =
   | { state: "online"; timestamp: string }
   | { state: "offline"; message: string };
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
 export function ApiStatus() {
   const [health, setHealth] = useState<HealthState>({ state: "checking" });
 
@@ -17,7 +15,7 @@ export function ApiStatus() {
     setHealth({ state: "checking" });
 
     try {
-      const response = await fetch(`${apiUrl}/api/health`, {
+      const response = await fetch("/api/health", {
         cache: "no-store"
       });
 

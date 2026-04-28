@@ -17,12 +17,10 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "concurrently -n api,web -c cyan,green \"npm run dev --workspace @solivio/api\" \"npm run dev --workspace @solivio/web\"",
-    "dev:api": "npm run dev --workspace @solivio/api",
-    "dev:web": "npm run dev --workspace @solivio/web",
+    "dev": "npm run dev --workspace @solivio/app",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "start": "concurrently -n api,web -c cyan,green \"npm run start --workspace @solivio/api\" \"npm run start --workspace @solivio/web\"",
+    "start": "npm run start --workspace @solivio/app",
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down"
   },
@@ -31,7 +29,6 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "concurrently": "^9.2.1",
     "typescript": "^6.0.3"
   }
 }

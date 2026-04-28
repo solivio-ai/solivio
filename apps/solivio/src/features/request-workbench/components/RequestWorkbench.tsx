@@ -5,8 +5,6 @@ import { useMemo, useState } from "react";
 
 import { demoOffer, demoProducts, demoRequest, workflowSteps, type Product } from "@solivio/domain";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
 export function RequestWorkbench() {
   const [requestText, setRequestText] = useState(demoRequest.text);
   const [notice, setNotice] = useState("Mock offer ready for review.");
@@ -20,7 +18,7 @@ export function RequestWorkbench() {
     setNotice("Creating draft request...");
 
     try {
-      const response = await fetch(`${apiUrl}/api/requests`, {
+      const response = await fetch("/api/requests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

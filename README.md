@@ -1,11 +1,13 @@
 # Solivio
 
-Solivio is an open-source groundwork for a sales workflow that turns a customer request into a reviewed product offer. The first version keeps the system deliberately small: a Next.js frontend, a separate Next.js API surface, shared domain mocks, and local Postgres with pgvector ready for product embeddings.
+Solivio is an open-source groundwork for a sales workflow that turns a customer request into a reviewed product offer. The first version keeps the system deliberately small: one Next.js app with clearly separated frontend, API, server, and shared domain layers, plus local Postgres with pgvector ready for product embeddings.
 
 ## What This Repo Contains
 
-- `apps/web` - frontend workbench on `http://localhost:3000`
-- `apps/api` - API service on `http://localhost:4000`
+- `apps/solivio` - the Next.js app on `http://localhost:3000`
+- `apps/solivio/src/app/api` - API route handlers
+- `apps/solivio/src/features` - frontend product/workflow features
+- `apps/solivio/src/server` - server-only helpers and integrations
 - `packages/domain` - shared process, product, request, and offer types
 - `infra/postgres` - database initialization for pgvector
 - `docs` - API, database, and MVP implementation notes
@@ -26,7 +28,7 @@ npm run dev
 Open:
 
 - Frontend: `http://localhost:3000`
-- API health: `http://localhost:4000/api/health`
+- API health: `http://localhost:3000/api/health`
 
 Start the optional database:
 
@@ -42,9 +44,8 @@ The current app uses mocked domain data, so the database is not required for the
 ## Useful Commands
 
 ```bash
-npm run dev        # run API and web together
-npm run dev:api    # run API only
-npm run dev:web    # run frontend only
+npm run dev        # run the Next.js app
+npm run start      # run the production Next server after a build
 npm run typecheck  # type-check all workspaces
 npm run build      # build all workspaces
 npm run db:up      # start Postgres with pgvector

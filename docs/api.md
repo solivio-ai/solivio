@@ -1,8 +1,6 @@
 # API Notes
 
-The API app runs on `http://localhost:4000` in development.
-
-The API allows browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` by default. Override this with `API_ALLOWED_ORIGINS` when testing another frontend origin.
+The API routes run inside the single Next.js app at `http://localhost:3000/api/*` in development.
 
 ## Endpoints
 
