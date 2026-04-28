@@ -22,7 +22,11 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "start": "npm run start --workspace @solivio/app",
     "db:up": "docker compose up -d db",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:generate": "npm run db:generate --workspace @solivio/app",
+    "db:migrate": "npm run db:migrate --workspace @solivio/app",
+    "db:push": "npm run db:push --workspace @solivio/app",
+    "db:studio": "npm run db:studio --workspace @solivio/app"
   },
   "devDependencies": {
     "@types/node": "^24.12.2",

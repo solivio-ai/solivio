@@ -21,6 +21,20 @@ Solivio should help a sales team convert raw customer input into a reviewed offe
 4. A draft offer is generated.
 5. A salesperson reviews, edits, validates, and accepts it.
 
+## Database
+
+Schema is defined in `apps/solivio/src/server/database/schema.ts` using Drizzle ORM. The Drizzle client singleton is exported from `apps/solivio/src/server/database/db.ts` and must only be imported inside server-only code (`apps/solivio/src/server/` or `apps/solivio/src/app/api/`).
+
+Migration files are generated into `apps/solivio/drizzle/` and committed to version control.
+
+When adding or changing tables:
+1. Edit `apps/solivio/src/server/database/schema.ts`.
+2. During local development, run `npm run db:push` to apply changes instantly.
+3. Before committing schema changes, run `npm run db:generate` to produce a migration file and commit it together with the schema change.
+4. Use `npm run db:migrate` to apply migrations in non-local environments.
+
+As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
+
 ## Implementation Rules
 
 - Preserve the internal API/frontend/server separation inside `apps/solivio`.
