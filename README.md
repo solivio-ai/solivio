@@ -1,118 +1,149 @@
-
 <p align="center">
   <img src="./solivio-logo.png" alt="Solivio" width="360" />
 </p>
 
-> **Quotes shouldn’t take hours. They should start from your data.**
+<p align="center">
+  <strong>Quotes shouldn't take hours. They should start from your data.</strong>
+  <br />
+  </p>
 
-Solivio is an open-source AI system that transforms how B2B companies create offers.
+Solivio is an open-source product created by Derave Software.
 
-Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds.
+It combines an implementation process with an open-source software foundation built for companies where product catalogs contain thousands of items and offers often include dozens of line items.
 
+Solivio helps sales teams move from manual quoting to data-driven quoting. Instead of rebuilding every offer from scratch, it uses AI and company knowledge to prepare a draft offer that a salesperson reviews, adjusts, validates, and moves further through the organization.
 
-## 💡 The Problem
+## 💡 What Solivio Is
 
-Creating offers in complex B2B environments is slow, manual, and inconsistent.
+Solivio is designed for companies where quoting is too complex, too manual, and too dependent on individual experience.
 
-- 📦 Thousands of products
-- 🧩 Multi-line, configurable offers
-- 🧠 Knowledge spread across systems and people
-- 📝 Every offer built from scratch
+It is especially relevant when the business operates with:
 
-**What this leads to:**
+- 📦 large product catalogs
+- 🧩 many configurable or multi-line offers
+- 🧠 data scattered across ERP, CRM, price lists, documents, and people's heads
+- ✅ approval-heavy processes
+- ⏳ long onboarding time for new salespeople
 
-- ⏳ Long response times
-- ❌ Errors and inconsistencies
-- 🔁 Repetitive manual work
-- 📉 Lost revenue opportunities
+The goal is not to replace the salesperson. The goal is to reduce repetitive operational work, standardize quoting, and help the team respond faster with more consistency.
 
+Solivio is also meant to support consultative selling. It should connect many data points and help teams build the best possible offer, not only the fastest one.
 
-## ⚡ The Shift
+## 🚨 Why Solivio Exists
 
-Solivio changes offer creation from a manual task into a data-driven process.
+In many organizations, quoting is still a fragmented process:
 
-From:
-Manual work → Searching → Copy-paste → Guessing
+- 🧑‍💼 senior salespeople spend time on operational work instead of selling
+- 🌱 junior salespeople need months to become effective
+- 📝 every offer is built slightly differently
+- 🚦 approvals, pricing, and product knowledge create bottlenecks
+- 🔗 ERP, CRM, Excel, price lists, and internal know-how do not work as one system
 
-To:
-Data → AI → Structured draft → Review → Send
+The result is slow response time, inconsistent quality, onboarding friction, and limited ability to scale sales operations.
 
-- Node.js 24.15 or newer
-- Yarn 4.14.1 CLI
+Solivio exists to solve that operational gap.
+
+## 🛠️ How Solivio Works
+
+Solivio shortens the quoting process through an AI-assisted workflow:
+
+1. 📥 A customer sends an inquiry.
+2. 🔎 Solivio reads the inquiry together with connected business data.
+3. 🧠 The system extracts requirements, searches for matching products, and prepares recommendations.
+4. 🧾 Solivio generates a draft offer.
+5. 👤 A salesperson reviews, edits, validates, and accepts it.
+6. 🚀 The accepted draft moves into downstream steps defined during implementation, such as ERP sync or final PDF generation.
+
+Each implementation starts with mapping the real quoting process inside the client organization. What happens after the draft is generated depends on that mapped workflow.
+
+## 🔥 Business Problems Solivio Solves
+
+Solivio focuses on the bottlenecks that make quoting difficult to scale:
+
+1. ⏳ Onboarding slows down growth. New salespeople need months to become effective, so team expansion takes too long.
+2. 💸 Senior salespeople are trapped in operations. Top performers spend time building offers and supporting juniors instead of generating revenue.
+3. 📏 Offer quality depends on the person, not the process. Juniors work slower, seniors work faster, and consistency suffers.
+4. 📈 Quoting does not scale with demand. Every additional inquiry creates more manual work and more chaos.
+5. 🔌 Data is fragmented across systems. ERP, CRM, Excel, price lists, and internal know-how require repeated copy-paste work.
+
+## 📈 What Business Outcome It Aims For
+
+Solivio is meant to help companies:
+
+- ⚡ shorten quote turnaround time
+- 🧹 reduce manual operational work
+- 📏 standardize offer quality across the team
+- 🧑‍🏫 make onboarding less dependent on senior employees
+- 🚀 improve sales capacity without growing chaos
+- 🔁 create a more scalable quoting process
+
+## 🔮 Product Direction
+
+Solivio aims to become the layer between customer inquiry and final offer by providing:
+
+- 🤖 automatic draft offer generation based on data
+- 🔗 CRM, ERP, and price-list integration
+- 🧩 support for configurable products and bundles
+- ✅ approval-aware workflows such as discount acceptance
+- 📍 a central source of truth about product and customer context
+- 🚀 faster onboarding for salespeople
+- 📬 support for multiple channels such as email, phone, and partner or account-based workflows
+
+## 🌍 Open-Source Repository
+
+This repository contains the open-source groundwork for Solivio and is intentionally kept easy to launch for contributors evaluating the idea.
+
+- 🖥️ `apps/solivio` contains the main Next.js app
+- 🌐 `apps/solivio/src/app/api` contains HTTP API routes
+- ✨ `apps/solivio/src/features` contains user-facing feature UI
+- 🔒 `apps/solivio/src/server` contains server-only integrations and services
+- 📦 `packages/domain` contains shared types, workflow constants, and mock fixtures
+- 🐘 `infra/postgres` contains local database bootstrap files
+
+Mocks are preferred until data models and integration boundaries are clear.
+
+## 🚀 Local Setup
+
+Requirements:
+
+- Node.js `>=24.15.0`
+- Yarn `>=4.14.1`
 - Docker, only if you want the local database
 
-## 🚀 What Solivio Does
+Start the app:
 
-Solivio generates ready-to-review offer drafts using your internal data.
+```bash
+yarn install
+yarn dev
+```
 
-- 🧠 Understands incoming inquiries
-- 🔗 Connects multiple data sources
-- 🧾 Builds structured offers automatically
-- 👤 Keeps humans in control (review & adjust)
+The app uses mocked data by default.
 
-**Result:**
+Start Postgres only when working on persistence, imports, search, or embeddings:
 
-Faster offers. Better consistency. Less operational overhead.
+```bash
+cp .env.example .env
+yarn db:up
+yarn db:migrate
+```
 
+Useful commands:
 
-## 📈 Business Impact
-
-Solivio is not about features. It’s about outcomes.
-
-- ⚡ Faster response to customers
-- 📊 Higher conversion potential
-- 🧑‍💼 More time for actual selling
-- 📏 Standardized offer quality
-- 🔁 Scalable sales operations
-
-## 🧠 How It Thinks
-
-Solivio uses context from your business:
-
-- 📦 Product data
-- 💰 Pricing logic
-- 👤 Customer context
-- 📚 Internal knowledge
-- 📊 Historical patterns
-
-The system doesn’t just generate offers — it reconstructs decision-making behind them.
-
-
-## 🌍 Why Open Source?
-
-We believe offer generation should be:
-
-- 🔓 Transparent
-- 🔧 Customizable
-- 🌐 Extensible
-- 🤝 Community-driven
-
-Solivio is built as an open foundation that can be adapted to different industries and workflows.
-
-
-## 🔮 Vision
-
-Turn offer creation into a real-time, data-driven system — not a manual process.
-
-Solivio aims to become the standard layer between customer inquiry and final offer.
-
+```bash
+yarn typecheck
+yarn docs:dev
+yarn db:down
+```
 
 ## 🤝 Contributing
 
-We’re building this in the open.
+Contributions should keep the default demo path simple, documented, and runnable without mandatory external services.
 
-You can contribute by:
+When adding new functionality:
 
-- 💡 Sharing ideas
-- 🧠 Challenging assumptions
-- 🔌 Proposing use cases
-- 📣 Spreading the word
+- preserve the frontend, API, and server separation
+- keep AI and database integrations behind server helpers and API routes
+- prefer a working mock over an unfinished integration
+- document any new setup or environment requirements
 
-
-## ⭐ Support
-
-If this resonates:
-
-- ⭐ Star the repo
-- 🧵 Share feedback
-- 👀 Follow the project
+If you want to help shape Solivio, contributions are welcome in product thinking, workflow design, quoting use cases, and implementation details.
