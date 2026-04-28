@@ -1,4 +1,4 @@
-import { ApiStatus, RequestWorkbench } from "../features/request-workbench";
+import { ApiStatus, RequestWorkbench, UserMenu } from "../features/request-workbench";
 import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
@@ -8,7 +8,10 @@ export default function Home() {
         <div>
           <h1 className="text-4xl leading-none font-semibold tracking-tight sm:text-5xl lg:text-[58px]">Solivio</h1>
         </div>
-        <ApiStatus />
+        <div className="flex items-center gap-2">
+          <UserMenu />
+          <ApiStatus />
+        </div>
       </header>
       <RequestWorkbench />
     </main>

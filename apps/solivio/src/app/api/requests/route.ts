@@ -4,18 +4,25 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   createCustomerRequestRequestSchema,
   customerRequestResponseSchema
-} from "../../../server/api/contracts";
-import { apiError } from "../../../server/api/errors";
+} from "@/server/api/contracts";
+import { apiError } from "@/server/api/errors";
+import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
 
-export function GET() {
+export async function GET() {
+  const unauthorized = await requireAuth();
+  if (unauthorized) return unauthorized;
+
   return NextResponse.json(customerRequestResponseSchema.parse({
     request: demoRequest
   }));
 }
 
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAuth();
+  if (unauthorized) return unauthorized;
+
   const json = await request.json().catch(() => ({}));
   const input = createCustomerRequestRequestSchema.safeParse(json);
 
