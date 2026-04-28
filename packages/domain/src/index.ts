@@ -1,3 +1,10 @@
+export type ProductImportRow = {
+  sku: string;
+  name: string;
+  description: string;
+  manufacturer: string;
+};
+
 export type WorkflowStatus = "planned" | "mocked" | "ready";
 
 export type WorkflowStep = {

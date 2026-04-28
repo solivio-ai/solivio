@@ -25,5 +25,8 @@ pnpm-debug.log*
 # system
 .DS_Store
 
+# editors
+.idea/
+
 # docker volumes / local data
 .volumes/

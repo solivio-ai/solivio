@@ -26,6 +26,9 @@
     "react-dom": "^19.2.5"
   },
   "devDependencies": {
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "typescript": "6.0.3",
     "drizzle-kit": "^0.31.10"
   }
 }
