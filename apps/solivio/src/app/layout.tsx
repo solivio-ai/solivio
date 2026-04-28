@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     template: "%s | Solivio"
   },
   description: "Solivio is an open-source AI system that transforms how B2B companies create offers.",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    apple: [{ url: "/favicon.png", type: "image/png" }]
+  },
   openGraph: {
     title: "Solivio",
     description:

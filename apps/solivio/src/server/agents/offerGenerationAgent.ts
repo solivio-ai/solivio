@@ -5,6 +5,7 @@ import { Agent, createTool } from "@voltagent/core";
 import { z } from "zod";
 
 import { searchProductsByPrompt } from "../products/productSearchService";
+import { getOpenAIModel } from "./modelConfig";
 
 // ── Output schema ──────────────────────────────────────────────────────────────
 
@@ -87,7 +88,7 @@ export async function generateOfferWithAgent(
   const agent = new Agent({
     name: "offer-generation-agent",
     instructions: buildInstructions(customerName),
-    model: "openai/gpt-4o-mini",
+    model: getOpenAIModel(),
     tools: [searchProductsTool]
   });
 
