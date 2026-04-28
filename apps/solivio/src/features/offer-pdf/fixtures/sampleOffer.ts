@@ -8,10 +8,10 @@ export const sampleOffer: PdfOfferRequest = {
     currency: "PLN",
   },
   seller: {
-    name: "Solivio Sp. z o.o.",
-    address: "ul. Technologiczna 12, 00-001 Warszawa",
-    nip: "5213000001",
-    contact: "oferty@solivio.pl | +48 22 123 45 67",
+    name: "Nordic Instalacje Sp. z o.o.",
+    address: "ul. Kwiatowa 18, 60-175 Poznań",
+    nip: "7822913046",
+    contact: "oferty@nordicinstalacje.pl | +48 61 441 82 19",
   },
   buyer: {
     name: "Elektroinwest Sp. z o.o.",

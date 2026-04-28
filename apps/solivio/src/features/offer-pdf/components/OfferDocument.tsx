@@ -11,6 +11,13 @@ import { calculateTotals } from "../lib/calculateTotals";
 import { formatDate, formatMoney, formatNumber, formatVatRate } from "../lib/formatters";
 import type { PdfOfferRequest } from "../lib/schema";
 
+Font.register({
+  family: "Arial",
+  fonts: [
+    { src: "/System/Library/Fonts/Supplemental/Arial.ttf", fontWeight: 400 },
+    { src: "/System/Library/Fonts/Supplemental/Arial Bold.ttf", fontWeight: 700 },
+  ],
+});
 Font.registerHyphenationCallback((word) => [word]);
 
 const YELLOW = "#FACC15";
@@ -22,7 +29,7 @@ const BLACK = "#111827";
 
 const s = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
+    fontFamily: "Arial",
     fontSize: 9,
     color: BLACK,
     paddingTop: 36,
@@ -32,10 +39,10 @@ const s = StyleSheet.create({
 
   // Header
   header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
-  brand: { fontSize: 20, fontFamily: "Helvetica-Bold", color: TEAL, letterSpacing: 1 },
+  brand: { fontSize: 20, fontWeight: 700, color: TEAL, letterSpacing: 1 },
   brandTagline: { fontSize: 7, color: GRAY_500, marginTop: 2 },
   offerMeta: { alignItems: "flex-end" },
-  offerTitle: { fontSize: 14, fontFamily: "Helvetica-Bold", color: TEAL },
+  offerTitle: { fontSize: 14, fontWeight: 700, color: TEAL },
   offerNumber: { fontSize: 9, color: GRAY_500, marginTop: 2 },
   offerDate: { fontSize: 9, color: GRAY_500, marginTop: 1 },
 
@@ -46,8 +53,8 @@ const s = StyleSheet.create({
   // Parties
   parties: { flexDirection: "row", gap: 16, marginBottom: 20 },
   partyBox: { flex: 1, backgroundColor: GRAY_50, borderRadius: 4, padding: 10 },
-  partyLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: TEAL, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
-  partyName: { fontSize: 10, fontFamily: "Helvetica-Bold", color: BLACK, marginBottom: 2 },
+  partyLabel: { fontSize: 7, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
+  partyName: { fontSize: 10, fontWeight: 700, color: BLACK, marginBottom: 2 },
   partyDetail: { fontSize: 8, color: GRAY_500, marginTop: 1, lineHeight: 1.4 },
 
   // Intro
@@ -55,7 +62,7 @@ const s = StyleSheet.create({
 
   // Table
   tableHeader: { flexDirection: "row", backgroundColor: TEAL, padding: "5 6", borderRadius: "3 3 0 0" },
-  tableHeaderText: { fontFamily: "Helvetica-Bold", color: "#FFFFFF", fontSize: 7.5 },
+  tableHeaderText: { fontWeight: 700, color: "#FFFFFF", fontSize: 7.5 },
   tableRow: { flexDirection: "row", padding: "5 6", borderBottomWidth: 0.5, borderBottomColor: GRAY_200 },
   tableRowAlt: { backgroundColor: GRAY_50 },
   tableCell: { fontSize: 8.5, color: BLACK, lineHeight: 1.3 },
@@ -78,12 +85,12 @@ const s = StyleSheet.create({
   totalsLabel: { fontSize: 9, color: GRAY_500 },
   totalsValue: { fontSize: 9, color: BLACK },
   totalGrossRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 4, paddingTop: 4, borderTopWidth: 0.5, borderTopColor: GRAY_200 },
-  totalGrossLabel: { fontSize: 11, fontFamily: "Helvetica-Bold", color: TEAL },
-  totalGrossValue: { fontSize: 11, fontFamily: "Helvetica-Bold", color: TEAL },
+  totalGrossLabel: { fontSize: 11, fontWeight: 700, color: TEAL },
+  totalGrossValue: { fontSize: 11, fontWeight: 700, color: TEAL },
 
   // Terms
   termsSection: { marginTop: 20 },
-  termsSectionTitle: { fontSize: 8, fontFamily: "Helvetica-Bold", color: TEAL, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
+  termsSectionTitle: { fontSize: 8, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
   termsRow: { flexDirection: "row", marginBottom: 3 },
   termsKey: { fontSize: 8, color: GRAY_500, width: 90 },
   termsVal: { fontSize: 8, color: BLACK, flex: 1 },
@@ -118,8 +125,8 @@ export function OfferDocument({ data }: Props) {
         {/* Header */}
         <View style={s.header}>
           <View>
-            <Text style={s.brand}>SOLIVIO</Text>
-            <Text style={s.brandTagline}>Platforma ofertowania B2B</Text>
+            <Text style={s.brand}>{seller.name}</Text>
+            <Text style={s.brandTagline}>Oferta handlowa</Text>
           </View>
           <View style={s.offerMeta}>
             <Text style={s.offerTitle}>OFERTA</Text>
@@ -152,7 +159,7 @@ export function OfferDocument({ data }: Props) {
         {/* Intro */}
         <Text style={s.intro}>
           W odpowiedzi na Państwa zapytanie ofertowe, uprzejmie przedstawiamy ofertę na
-          dostawę poniższych produktów. Wszystkie ceny podane są w {offer.currency}.
+          dostawę poniższych produktów.{"\n"}Wszystkie ceny podane są w {offer.currency}.
         </Text>
 
         {/* Table */}

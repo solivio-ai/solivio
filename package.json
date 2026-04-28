@@ -33,10 +33,12 @@
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@tailwindcss/oxide-darwin-arm64": "^4.2.4",
     "@types/node": "^24.12.2",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "lightningcss-darwin-arm64": "^1.32.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
