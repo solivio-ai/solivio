@@ -2,7 +2,9 @@
 
 Solivio docs are publishable separately from the Next.js app. The docs site lives
 in `apps/docs`, uses Astro Starlight, and writes human-authored pages in
-Markdown.
+Markdown under `apps/docs/src/content/docs/guides`. The site root is a landing
+page, guides live under `/guides`, and generated API reference pages live under
+`/api`.
 
 ## Recommended Deployment
 
@@ -20,7 +22,7 @@ Use `apps/solivio/src/server/api/contracts.ts` as the source of truth. The
 generated schema is written to `apps/docs/public/openapi/solivio.json` during the
 docs build and is consumed by the Starlight OpenAPI plugin.
 
-Before a public release, lint the generated file on a Node 22.12+ CI image:
+Before a public release, lint the generated file on a Node 24.15+ CI image:
 
 ```bash
 npm run openapi:generate

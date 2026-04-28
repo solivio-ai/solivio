@@ -17,7 +17,7 @@ Solivio is an open-source groundwork for a sales workflow that turns a customer 
 
 Requirements:
 
-- Node.js 22.12 or newer
+- Node.js 24.15 or newer
 - npm 10 or newer
 - Docker, only if you want the local database
 
@@ -40,6 +40,7 @@ npm run docs:dev
 Open:
 
 - Docs: `http://localhost:4321`
+- Guides: `http://localhost:4321/guides`
 - Generated API reference: `http://localhost:4321/api`
 - Generated OpenAPI schema: `http://localhost:4321/openapi/solivio.json`
 
@@ -96,7 +97,9 @@ Migration files are checked into version control so schema history is tracked al
 ## Documentation
 
 The publishable docs are a separate static Astro Starlight site in `apps/docs`.
-Guides are Markdown files in `apps/docs/src/content/docs`.
+The root route is a small landing page, guides are Markdown files under
+`apps/docs/src/content/docs/guides`, and generated API reference pages live under
+`/api`.
 
 The OpenAPI schema is generated from route contracts in
 `apps/solivio/src/server/api/contracts.ts`:

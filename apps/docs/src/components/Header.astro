@@ -1,0 +1,139 @@
+---
+import config from "virtual:starlight/user-config";
+
+import LanguageSelect from "virtual:starlight/components/LanguageSelect";
+import Search from "virtual:starlight/components/Search";
+import SiteTitle from "virtual:starlight/components/SiteTitle";
+import SocialIcons from "virtual:starlight/components/SocialIcons";
+import ThemeSelect from "virtual:starlight/components/ThemeSelect";
+
+const shouldRenderSearch =
+  config.pagefind || config.components.Search !== "@astrojs/starlight/components/Search.astro";
+
+const pathname = Astro.url.pathname;
+const tabs = [
+  { href: "/", label: "Home", active: pathname === "/" },
+  { href: "/guides/", label: "Guides", active: pathname.startsWith("/guides") },
+  { href: "/api/", label: "API", active: pathname.startsWith("/api") }
+];
+---
+
+<div class="header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+  <nav class="docs-tabs" aria-label="Primary documentation sections">
+    {
+      tabs.map((tab) => (
+        <a href={tab.href} aria-current={tab.active ? "page" : undefined} class:list={{ active: tab.active }}>
+          {tab.label}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="sl-flex print:hidden">
+    {shouldRenderSearch && <Search />}
+  </div>
+  <div class="sl-hidden md:sl-flex print:hidden right-group">
+    <div class="sl-flex social-icons">
+      <SocialIcons />
+    </div>
+    <ThemeSelect />
+    <LanguageSelect />
+  </div>
+</div>
+
+<style>
+  @layer starlight.core {
+    .header {
+      align-items: center;
+      display: flex;
+      gap: var(--sl-nav-gap);
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .title-wrapper {
+      margin: -0.25rem;
+      min-width: 0;
+      overflow: clip;
+      padding: 0.25rem;
+    }
+
+    .docs-tabs {
+      align-items: center;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .docs-tabs a {
+      border-radius: 999px;
+      color: var(--sl-color-gray-2);
+      font-size: var(--sl-text-sm);
+      font-weight: 600;
+      line-height: 1;
+      padding: 0.55rem 0.75rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .docs-tabs a:hover,
+    .docs-tabs a.active {
+      background: var(--sl-color-gray-6);
+      color: var(--sl-color-white);
+    }
+
+    .right-group,
+    .social-icons {
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .social-icons::after {
+      border-inline-end: 1px solid var(--sl-color-gray-5);
+      content: "";
+      height: 2rem;
+    }
+
+    @media (max-width: 50rem) {
+      .docs-tabs {
+        gap: 0.125rem;
+      }
+
+      .docs-tabs a {
+        padding-inline: 0.55rem;
+      }
+    }
+
+    @media (min-width: 50rem) {
+      :global(:root[data-has-sidebar]) {
+        --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+      }
+
+      :global(:root:not([data-has-toc])) {
+        --__toc-width: 0rem;
+      }
+
+      .header {
+        --__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+        --__main-column-fr: calc(
+          (
+              100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+                (2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+                var(--sl-content-width)
+            ) / 2
+        );
+        align-content: center;
+        display: grid;
+        grid-template-columns:
+          minmax(
+            calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+            auto
+          )
+          auto
+          1fr
+          auto;
+      }
+    }
+  }
+</style>
