@@ -5,7 +5,7 @@ description: Launch Solivio locally and preview the docs.
 
 ## Requirements
 
-- Node.js 22.12 or newer.
+- Node.js 24.15 or newer.
 - npm 10 or newer.
 - Docker, only for the optional local database.
 

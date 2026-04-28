@@ -1,14 +1,14 @@
 ---
-title: Solivio Docs
-description: Documentation for the Solivio open-source sales offer workflow.
+title: Guides
+description: Guides for the Solivio open-source sales offer workflow.
 ---
 
 Solivio is an open-source foundation for a sales workflow that converts raw
 customer input into a reviewed product offer.
 
-The documentation is a separate static site built with Astro Starlight. The
-guides are Markdown files in this workspace, and the API reference is generated
-from route contracts exported by the Next.js API implementation.
+The guides are Markdown files in this workspace. API reference pages are kept in
+the separate API tab and generated from route contracts exported by the Next.js
+API implementation.
 
 ## Product flow
 
@@ -20,7 +20,7 @@ from route contracts exported by the Next.js API implementation.
 
 ## Documentation sources
 
-- Human-authored docs: `apps/docs/src/content/docs`
+- Human-authored guides: `apps/docs/src/content/docs/guides`
 - API route contracts: `apps/solivio/src/server/api/contracts.ts`
 - Generated OpenAPI output: `apps/docs/public/openapi/solivio.json`
 - Generated API reference pages: `/api/`

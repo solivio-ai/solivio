@@ -32,8 +32,7 @@ npx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
 npm run docs:build
 ```
 
-Use a Node 22.12+ CI image for Redocly CLI because current Redocly releases
-require a newer Node patch than the minimum app runtime.
+Use a Node 24.15+ CI image for Redocly CLI and the docs build.
 
 ## Why this setup
 

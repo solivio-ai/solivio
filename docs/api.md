@@ -8,6 +8,7 @@ The publishable API contract is generated OpenAPI 3.1:
 - Generator: `scripts/generate-openapi.ts`
 - Generated schema: `apps/docs/public/openapi/solivio.json`
 - Docs reference route: `http://localhost:4321/api`
+- Guide route for API contract notes: `http://localhost:4321/guides/api-contract`
 
 Route handlers import the same Zod schemas used by the generator. Keep new
 endpoints self-described in the contract file and validate request/response
