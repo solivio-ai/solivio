@@ -17,11 +17,13 @@
     "@ai-sdk/openai": "^3.0.53",
     "@solivio/domain": "*",
     "@tailwindcss/postcss": "^4.2.4",
+    "@voltagent/core": "^2.7.3",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
+    "lightningcss-darwin-arm64": "^1.32.0",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
     "pg": "^8.20.0",
@@ -38,7 +40,10 @@
   "devDependencies": {
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
-    "typescript": "6.0.3",
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": "^0.31.10",
+    "typescript": "6.0.3"
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-darwin-arm64": "^4.2.4"
   }
 }

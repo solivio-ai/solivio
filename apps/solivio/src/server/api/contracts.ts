@@ -73,6 +73,48 @@ export const productsResponseSchema = z
   .strict()
   .meta({ id: "ProductsResponse" });
 
+export const productSearchRequestSchema = z
+  .object({
+    prompt: z.string().trim().min(1).meta({
+      examples: ["Need a battery-ready photovoltaic setup for a small office."]
+    }),
+    limit: z.number().int().positive().max(10).optional()
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchRequest",
+    description: "Prompt used for semantic product matching."
+  });
+
+export const productSearchMatchSchema = z
+  .object({
+    id: z.string(),
+    sku: z.string(),
+    name: z.string(),
+    description: z.string(),
+    manufacturer: z.string(),
+    nameSimilarity: z.number().min(-1).max(1),
+    descriptionSimilarity: z.number().min(-1).max(1),
+    similarity: z.number().min(-1).max(1)
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchMatch",
+    description: "A database product matched semantically against the prompt."
+  });
+
+export const productSearchResponseSchema = z
+  .object({
+    prompt: z.string(),
+    answer: z.string(),
+    products: z.array(productSearchMatchSchema)
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchResponse",
+    description: "Semantic product matches plus an agent summary."
+  });
+
 export const customerRequestSourceSchema = z
   .enum(["manual", "chat", "email"])
   .meta({ id: "CustomerRequestSource" });
@@ -218,6 +260,32 @@ export const apiContracts = [
       200: {
         description: "Mocked product candidates available for request matching.",
         schema: productsResponseSchema
+      }
+    }
+  },
+  {
+    method: "post",
+    path: "/api/products/search",
+    operationId: "searchProducts",
+    summary: "Search products from a prompt",
+    tags: ["Products"],
+    requestBody: {
+      description: "Prompt used for semantic product matching against embedded products.",
+      required: true,
+      schema: productSearchRequestSchema
+    },
+    responses: {
+      200: {
+        description: "Semantic matches from the products table with an AI summary.",
+        schema: productSearchResponseSchema
+      },
+      400: {
+        description: "The request body could not be parsed or validated.",
+        schema: errorResponseSchema
+      },
+      500: {
+        description: "The server could not complete the semantic product search.",
+        schema: errorResponseSchema
       }
     }
   },
