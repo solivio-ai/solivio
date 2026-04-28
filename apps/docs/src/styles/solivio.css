@@ -1,4 +1,4 @@
-@import "@solivio/theme/tokens.css";
+@import "@solivio/theme";
 
 @layer starlight.base {
   :root,
