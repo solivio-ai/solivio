@@ -1,25 +1,40 @@
 import { demoRequest } from "@solivio/domain";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  createCustomerRequestRequestSchema,
+  customerRequestResponseSchema
+} from "../../../server/api/contracts";
+import { apiError } from "../../../server/api/errors";
+
 export const runtime = "nodejs";
 
-type RequestInput = {
-  customerName?: string;
-  customerText?: string;
-};
-
 export function GET() {
-  return NextResponse.json({
+  return NextResponse.json(customerRequestResponseSchema.parse({
     request: demoRequest
-  });
+  }));
 }
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json().catch(() => ({}))) as RequestInput;
+  const json = await request.json().catch(() => ({}));
+  const input = createCustomerRequestRequestSchema.safeParse(json);
+
+  if (!input.success) {
+    return NextResponse.json(
+      apiError(
+        "invalid_request",
+        "Request body must match the customer request contract.",
+        input.error.issues.map((issue) => issue.message)
+      ),
+      { status: 400 }
+    );
+  }
+
+  const body = input.data;
   const customerText = body.customerText?.trim() || demoRequest.text;
 
   return NextResponse.json(
-    {
+    customerRequestResponseSchema.parse({
       request: {
         ...demoRequest,
         id: `request-${Date.now()}`,
@@ -27,7 +42,7 @@ export async function POST(request: NextRequest) {
         text: customerText,
         requirements: extractMockRequirements(customerText)
       }
-    },
+    }),
     { status: 201 }
   );
 }

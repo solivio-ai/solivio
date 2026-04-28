@@ -1,0 +1,23 @@
+{
+  "name": "@solivio/docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "openapi:generate": "tsx ../../scripts/generate-openapi.ts",
+    "predev": "npm run openapi:generate",
+    "dev": "astro dev --port 4321",
+    "prebuild": "npm run openapi:generate",
+    "build": "astro build",
+    "preview": "astro preview --port 4321"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.38.4",
+    "astro": "^6.1.9",
+    "starlight-openapi": "^0.22.1"
+  }
+}

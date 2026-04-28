@@ -5,18 +5,19 @@ Solivio is an open-source groundwork for a sales workflow that turns a customer 
 ## What This Repo Contains
 
 - `apps/solivio` - the Next.js app on `http://localhost:3000`
+- `apps/docs` - the standalone Astro Starlight docs site on `http://localhost:4321`
 - `apps/solivio/src/app/api` - API route handlers
 - `apps/solivio/src/features` - frontend product/workflow features
 - `apps/solivio/src/server` - server-only helpers and integrations
 - `packages/domain` - shared process, product, request, and offer types
 - `infra/postgres` - database initialization for pgvector
-- `docs` - API, database, and MVP implementation notes
+- `docs` - repo-level API, database, and MVP implementation notes
 
 ## Quick Start
 
 Requirements:
 
-- Node.js 22 or newer
+- Node.js 22.12 or newer
 - npm 10 or newer
 - Docker, only if you want the local database
 
@@ -29,6 +30,18 @@ Open:
 
 - Frontend: `http://localhost:3000`
 - API health: `http://localhost:3000/api/health`
+
+Run the standalone docs site:
+
+```bash
+npm run docs:dev
+```
+
+Open:
+
+- Docs: `http://localhost:4321`
+- Generated API reference: `http://localhost:4321/api`
+- Generated OpenAPI schema: `http://localhost:4321/openapi/solivio.json`
 
 Start the optional database:
 
@@ -47,6 +60,9 @@ The current app uses mocked domain data, so the database is not required for the
 
 ```bash
 npm run dev        # run the Next.js app
+npm run docs:dev   # run the standalone docs site
+npm run docs:build # build the static docs site
+npm run openapi:generate # generate OpenAPI from route contracts
 npm run start      # run the production Next server after a build
 npm run typecheck  # type-check all workspaces
 npm run build      # build all workspaces
@@ -76,6 +92,22 @@ npm run db:migrate   # runs all pending migrations against the DB
 ```
 
 Migration files are checked into version control so schema history is tracked alongside code.
+
+## Documentation
+
+The publishable docs are a separate static Astro Starlight site in `apps/docs`.
+Guides are Markdown files in `apps/docs/src/content/docs`.
+
+The OpenAPI schema is generated from route contracts in
+`apps/solivio/src/server/api/contracts.ts`:
+
+```bash
+npm run openapi:generate
+```
+
+Publishing target: build `apps/docs` and publish `apps/docs/dist` to any static
+host. The docs build generates the OpenAPI file before rendering API reference
+pages.
 
 ## MVP Direction
 
