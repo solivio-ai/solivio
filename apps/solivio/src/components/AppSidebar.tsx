@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { FileText, LayoutDashboard, Plus } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,11 +13,12 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "New Offer", href: "/offers/new", icon: Plus },
+  { label: "Offers", href: "/offers", icon: FileText },
 ];
 
 export function AppSidebar() {
@@ -34,6 +35,14 @@ export function AppSidebar() {
             className="h-8 w-auto shrink-0"
           />
         </Link>
+        <div className="px-2 pb-3">
+          <Button asChild className="w-full" size="sm">
+            <Link href="/offers/new">
+              <Plus size={16} aria-hidden="true" />
+              New offer
+            </Link>
+          </Button>
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="pt-2">
