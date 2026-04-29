@@ -36,7 +36,7 @@ RUN mkdir -p apps/solivio/public \
 FROM build AS db-push
 WORKDIR /app/apps/solivio
 ENV NODE_ENV=production
-CMD ["yarn", "drizzle-kit", "push", "--force"]
+CMD ["yarn", "drizzle-kit", "migrate"]
 
 FROM node:24-alpine AS runner
 WORKDIR /app
