@@ -147,9 +147,11 @@ export async function addProductToOffer(
   productId: string,
   quantity: number,
   requestItem = ""
-): Promise<CreatedOffer | null> {
+): Promise<CreatedOffer | null | "duplicate"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+  const duplicate = existing.items.find((i) => i.productId === productId);
+  if (duplicate) return "duplicate";
   await insertOfferProduct({ offerId, productId, requestItem, quantity, rationale: "" });
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
