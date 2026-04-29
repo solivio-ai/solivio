@@ -11,6 +11,7 @@ import { OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferDebugPanel } from "./OfferDebugPanel";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
+import { OfferValidationDialog, type ValidationResult } from "./OfferValidationDialog";
 import type { DraftLine, SaveState } from "./offer-builder-types";
 
 type OfferBuilderProps = {
@@ -96,6 +97,8 @@ export function OfferBuilder({
     if (fromCustomer) return fromCustomer;
     return tBuilder("titleFallback");
   }, [offer.name, customerName, offer.customerName, tBuilder]);
+  const [validateState, setValidateState] = useState<"idle" | "loading">("idle");
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
@@ -335,6 +338,19 @@ export function OfferBuilder({
     void saveReview(nextStatus);
   }
 
+  async function handleValidate() {
+    setValidateState("loading");
+    try {
+      const response = await fetch(`/api/offers/${offer.id}/validate`, { method: "POST" });
+      const payload = await response.json().catch(() => null);
+      if (response.ok && payload?.validation) {
+        setValidationResult(payload.validation as ValidationResult);
+      }
+    } finally {
+      setValidateState("idle");
+    }
+  }
+
   async function handleSaveRevision() {
     setSaveRevisionState("saving");
     try {
@@ -392,6 +408,8 @@ export function OfferBuilder({
         offerTitle={offerHeaderTitle}
         onAccept={() => void saveReview("accepted")}
         onReopen={() => void saveReview("draft")}
+        onValidate={() => void handleValidate()}
+        validateState={validateState}
         onAddProduct={() => setSearchOpen(true)}
         onRetrySave={retrySave}
         onSaveRevision={() => void handleSaveRevision()}
@@ -445,6 +463,15 @@ export function OfferBuilder({
           </div>
         }
       />
+
+      {validationResult && (
+        <OfferValidationDialog
+          open
+          onOpenChange={(open) => { if (!open) setValidationResult(null); }}
+          result={validationResult}
+          onAccept={() => updateStatus("accepted")}
+        />
+      )}
     </section>
   );
 }
