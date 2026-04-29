@@ -45,6 +45,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en" className={cn("dark", inter.variable)}>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__ENV=${JSON.stringify({ BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? "" })};`,
+          }}
+        />
         <TooltipProvider>
           {session ? (
             <SidebarProvider>
