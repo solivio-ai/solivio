@@ -7,11 +7,16 @@ import {
   ClipboardCheck,
   FileText,
   PackageSearch,
+  Plus,
   RotateCcw,
   Send,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  ProductSearchDialog,
+  type ProductSearchMatch,
+} from "@/features/product-search";
 import { useMemo, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
@@ -61,6 +66,7 @@ export function OfferBuilder({ customerName, offer, onReset }: OfferBuilderProps
     "Prices are net values. Final availability, installation scope, and delivery dates should be confirmed before sending."
   );
   const [discountPercent, setDiscountPercent] = useState(3);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() =>
     offer.items.map((item) => ({
       productId: item.productId,
@@ -80,6 +86,9 @@ export function OfferBuilder({ customerName, offer, onReset }: OfferBuilderProps
   );
 
   const currency = lines[0]?.currency ?? "PLN";
+  const searchQuantities = Object.fromEntries(
+    lines.map((line) => [line.productId, line.quantity])
+  );
   const subtotal = useMemo(
     () => lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0),
     [lines]
@@ -121,6 +130,35 @@ export function OfferBuilder({ customerName, offer, onReset }: OfferBuilderProps
           : line
       )
     );
+  }
+
+  function handleSearchQuantityChange(product: ProductSearchMatch, quantity: number) {
+    setLines((current) => {
+      const existing = current.find((l) => l.productId === product.id);
+      if (quantity <= 0) {
+        return current.filter((l) => l.productId !== product.id);
+      }
+      if (existing) {
+        return current.map((l) =>
+          l.productId === product.id ? { ...l, quantity } : l
+        );
+      }
+      return [
+        ...current,
+        {
+          productId: product.id,
+          sku: product.sku,
+          name: product.name,
+          description: product.description,
+          manufacturer: product.manufacturer,
+          quantity,
+          unitPrice: 0,
+          currency: "PLN" as const,
+          confidence: 100,
+          rationale: "Manually added",
+        },
+      ];
+    });
   }
 
   function applyConservativeDiscount() {
@@ -250,9 +288,15 @@ export function OfferBuilder({ customerName, offer, onReset }: OfferBuilderProps
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <PackageSearch size={18} aria-hidden="true" className="text-primary" />
-              <CardTitle className="text-base">Draft offer document</CardTitle>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PackageSearch size={18} aria-hidden="true" className="text-primary" />
+                <CardTitle className="text-base">Draft offer document</CardTitle>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setSearchOpen(true)}>
+                <Plus size={14} aria-hidden="true" />
+                Add product
+              </Button>
             </div>
             <CardDescription>Editable quotation with matched products and commercial terms.</CardDescription>
           </CardHeader>
@@ -441,6 +485,12 @@ export function OfferBuilder({ customerName, offer, onReset }: OfferBuilderProps
           </Card>
         </div>
       </div>
+      <ProductSearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        quantities={searchQuantities}
+        onQuantityChange={handleSearchQuantityChange}
+      />
     </section>
   );
 }
