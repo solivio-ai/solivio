@@ -1,8 +1,10 @@
 import "server-only";
 
+import { inArray, eq } from "drizzle-orm";
 import type { Offer } from "@solivio/domain";
 
 import { db } from "../database/db";
+import { products } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import type { OfferDebugFragment } from "@solivio/domain";
 import {
@@ -129,14 +131,28 @@ export async function createOffer(
       tx
     );
 
+    // Step 2: Fetch current catalog prices for all items.
+    const productIds = items.map((i) => i.productId);
+    const catalogProducts = await tx
+      .select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
+      .from(products)
+      .where(inArray(products.id, productIds));
+
+    const priceMap = new Map(catalogProducts.map((p) => [p.id, p]));
+
     await insertOfferProducts(
-      items.map((item) => ({
-        offerId: offer.id,
-        productId: item.productId,
-        requestItem: item.requestItem,
-        quantity: item.quantity,
-        rationale: item.rationale
-      })),
+      items.map((item) => {
+        const catalog = priceMap.get(item.productId);
+        return {
+          offerId: offer.id,
+          productId: item.productId,
+          requestItem: item.requestItem,
+          quantity: item.quantity,
+          unitPriceNet: catalog?.priceNet ?? 0,
+          currency: catalog?.currency ?? "PLN",
+          rationale: item.rationale
+        };
+      }),
       tx
     );
 
@@ -170,7 +186,23 @@ export async function addProductToOffer(
   if (!existing) return null;
   const duplicate = existing.items.find((i) => i.productId === productId);
   if (duplicate) return "duplicate";
-  await insertOfferProduct({ offerId, productId, requestItem, quantity, rationale: "" });
+  const product = await db
+    .select({ priceNet: products.priceNet, currency: products.currency })
+    .from(products)
+    .where(eq(products.id, productId))
+    .then((rows) => rows[0]);
+
+  if (!product) return null;
+
+  await insertOfferProduct({ 
+    offerId, 
+    productId, 
+    requestItem, 
+    quantity, 
+    unitPriceNet: product.priceNet ?? 0, 
+    currency: product.currency ?? "PLN", 
+    rationale: "" 
+  });
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
@@ -199,6 +231,10 @@ export async function removeOfferLineItem(
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);
   return true;
+}
+
+export async function getOffers() {
+  return await getRecentOffers(100);
 }
 
 export { getRecentOffers };

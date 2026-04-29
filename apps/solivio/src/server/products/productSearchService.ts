@@ -16,6 +16,8 @@ export type ProductSearchMatch = {
   name: string;
   description: string;
   manufacturer: string;
+  priceNet: number | null;
+  currency: string | null;
   nameSimilarity: number;
   descriptionSimilarity: number;
   similarity: number;
@@ -89,6 +91,8 @@ export async function searchProductsByPrompt(
       name: products.name,
       description: products.description,
       manufacturer: products.manufacturer,
+      priceNet: products.priceNet,
+      currency: products.currency,
       nameSimilarity,
       descriptionSimilarity,
       similarity: weightedSimilarity

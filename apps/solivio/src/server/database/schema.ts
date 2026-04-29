@@ -78,6 +78,8 @@ export const products = pgTable(
     name: text("name").notNull(),
     description: text("description").notNull(),
     manufacturer: text("manufacturer").notNull(),
+    priceNet: integer("price_net").default(0),
+    currency: text("currency").default("PLN"),
     nameEmbedding: vector("name_embedding", { dimensions: 1536 }).notNull(),
     descriptionEmbedding: vector("description_embedding", { dimensions: 1536 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
@@ -101,6 +103,8 @@ export const offerProducts = pgTable("offer_products", {
     .references(() => products.id),
   requestItem: text("request_item").notNull().default(""),
   quantity: integer("quantity").notNull(),
+  unitPriceNet: integer("unit_price_net").default(0),
+  currency: text("currency").default("PLN"),
   rationale: text("rationale").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
 });
