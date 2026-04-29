@@ -30,7 +30,7 @@ export const offerLineItemTools = {
         input.quantity,
         input.requestItem
       );
-      if (!offer) return { error: "offer_not_found" };
+      if (!offer) return { error: "not_found" };
       return { offer: toOfferDomain(offer) };
     }
   }),
