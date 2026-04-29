@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { offerProducts, offers, products } from "../database/schema";
@@ -140,4 +140,17 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
         rationale: row.rationale!
       }))
   };
+}
+
+export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
+  return await tx
+    .select({
+      id: offers.id,
+      name: offers.name,
+      createdAt: offers.createdAt,
+      updatedAt: offers.updatedAt
+    })
+    .from(offers)
+    .orderBy(desc(offers.createdAt))
+    .limit(limit);
 }

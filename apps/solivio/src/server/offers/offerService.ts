@@ -11,6 +11,7 @@ import {
   insertOfferProduct,
   updateOfferProduct,
   deleteOfferProduct,
+  getRecentOffers,
   type OfferRow
 } from "./offerRepository";
 
@@ -184,3 +185,5 @@ export async function removeOfferLineItem(
   await deleteOfferProduct(offerProductId, offerId);
   return true;
 }
+
+export { getRecentOffers };
