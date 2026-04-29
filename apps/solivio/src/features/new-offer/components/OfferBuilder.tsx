@@ -17,6 +17,7 @@ type OfferBuilderProps = {
   customerName?: string;
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
+  onAccepted?: (offer: Offer) => void;
 };
 
 type FailedSaveAction =
@@ -72,7 +73,7 @@ async function parseOfferResponse(response: Response): Promise<Offer> {
   return payload.offer as Offer;
 }
 
-export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChange }: OfferBuilderProps) {
+export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChange, onAccepted }: OfferBuilderProps) {
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
   const [failedAction, setFailedAction] = useState<FailedSaveAction | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -300,6 +301,9 @@ export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChan
 
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
+      if (nextStatus === "accepted") {
+        onAccepted?.(nextOffer);
+      }
 
       markSaved();
     } catch {
