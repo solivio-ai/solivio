@@ -13,6 +13,7 @@ import {
   Plus,
   RotateCcw,
   Send,
+  ShieldCheck,
   Trash2,
   User,
 } from "lucide-react";
@@ -65,6 +66,8 @@ type OfferBuilderHeaderProps = {
   offerTitle: string;
   onAccept: () => void;
   onReopen: () => void;
+  onValidate: () => void;
+  validateState: "idle" | "loading";
   onAddProduct: () => void;
   onRetrySave: () => void;
   saveState: SaveState;
@@ -85,6 +88,8 @@ export function OfferBuilderHeader({
   offerTitle,
   onAccept,
   onReopen,
+  onValidate,
+  validateState,
   onAddProduct,
   onRetrySave,
   saveState,
@@ -237,10 +242,15 @@ export function OfferBuilderHeader({
           <Button
             className="w-full sm:w-auto"
             size="sm"
-            onClick={onAccept}
+            onClick={onValidate}
+            disabled={validateState === "loading"}
           >
-            <Send size={16} aria-hidden="true" />
-            {t("acceptDraft")}
+            {validateState === "loading" ? (
+              <Loader2 size={16} aria-hidden="true" className="animate-spin" />
+            ) : (
+              <ShieldCheck size={16} aria-hidden="true" />
+            )}
+            {validateState === "loading" ? "Sprawdzam..." : "Sprawdź z AI"}
           </Button>
         )}
         {persisted ? (

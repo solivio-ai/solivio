@@ -78,6 +78,20 @@
       "when": 1777463860000,
       "tag": "0010_offer_products_unit_price_numeric",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1777494100000,
+      "tag": "0011_offer_audit_trail",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1777550000000,
+      "tag": "0011_audit_columns_and_revisions",
+      "breakpoints": true
     }
   ]
 }
