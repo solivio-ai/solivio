@@ -15,6 +15,8 @@ const offerItemSchema = z.object({
   productSku: z.string().describe("SKU of the matched product"),
   requestItem: z.string().describe("The requestFragment value passed to search_products"),
   quantity: z.number().int().positive().describe("Quantity the customer requested"),
+  unitPriceNet: z.number().describe("Catalog price of the product").optional(),
+  currency: z.string().describe("Currency of the product price").optional(),
   rationale: z.string().describe("Why this product matches the request")
 });
 
@@ -72,7 +74,7 @@ For each distinct item in the request:
    If the best match is already taken by another item, add this requestFragment to unmatched instead.
 
 Output rules:
-- items: only products where catalogHasMatch was true and the product was not already used
+- items: only products where catalogHasMatch was true and the product was not already used. Include the unitPriceNet and currency from the search result.
 - unmatched: requestFragment values where catalogHasMatch was false or the match was already taken
 - notes: any relevant observations
 - Write rationale and notes in English.

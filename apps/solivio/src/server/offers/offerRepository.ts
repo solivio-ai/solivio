@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { offerProducts, offers, products } from "../database/schema";
@@ -20,6 +20,8 @@ export type InsertOfferProductData = {
   productId: string;
   requestItem: string;
   quantity: number;
+  unitPriceNet: number;
+  currency: string;
   rationale: string;
 };
 
@@ -121,6 +123,8 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       productManufacturer: products.manufacturer,
       requestItem: offerProducts.requestItem,
       quantity: offerProducts.quantity,
+      unitPriceNet: offerProducts.unitPriceNet,
+      currency: offerProducts.currency,
       rationale: offerProducts.rationale
     })
     .from(offers)
@@ -150,6 +154,8 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
         productManufacturer: row.productManufacturer!,
         requestItem: row.requestItem!,
         quantity: row.quantity!,
+        unitPriceNet: row.unitPriceNet ?? 0,
+        currency: row.currency ?? "PLN",
         rationale: row.rationale!
       }))
   };
@@ -159,11 +165,15 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
   return await tx
     .select({
       id: offers.id,
-      name: offers.name,
+      status: offers.status,
+      customerName: offers.customerName,
       createdAt: offers.createdAt,
-      updatedAt: offers.updatedAt
+      updatedAt: offers.updatedAt,
+      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * ${offerProducts.unitPriceNet}), 0)`.mapWith(Number)
     })
     .from(offers)
+    .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))
+    .groupBy(offers.id)
     .orderBy(desc(offers.createdAt))
     .limit(limit);
 }
