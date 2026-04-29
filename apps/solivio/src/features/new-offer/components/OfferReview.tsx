@@ -8,6 +8,7 @@ import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { OfferBuilder } from "./OfferBuilder";
+import { OfferChat } from "@/features/offer-chat/components/OfferChat";
 
 type OfferReviewProps = {
   offerId: string;
@@ -88,5 +89,10 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     );
   }
 
-  return <OfferBuilder offer={state.offer} />;
+  return (
+    <>
+      <OfferChat offer={state.offer} />
+      <OfferBuilder offer={state.offer} />
+    </>
+  );
 }
