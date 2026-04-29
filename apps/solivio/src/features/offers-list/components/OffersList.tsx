@@ -26,6 +26,7 @@ type OfferRow = {
   status: string;
   totalPrice: number;
   createdAt: Date;
+  updatedAt: Date;
 };
 
 type Props = {

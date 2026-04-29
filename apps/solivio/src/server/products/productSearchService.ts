@@ -145,6 +145,8 @@ export async function searchProductsBatch(
           name: products.name,
           description: products.description,
           manufacturer: products.manufacturer,
+          priceNet: products.priceNet,
+          currency: products.currency,
           nameSimilarity: nameSim,
           descriptionSimilarity: descSim,
           similarity: weightedSim
