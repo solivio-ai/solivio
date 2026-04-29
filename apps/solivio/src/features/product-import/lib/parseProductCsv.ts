@@ -9,8 +9,19 @@ const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
   sku: ["sku", "id", "kod", "index", "symbol"],
   name: ["name", "nazwa", "product", "produkt"],
   description: ["description", "opis", "summary"],
-  manufacturer: ["manufacturer", "marka", "brand", "producent", "vendor"]
+  manufacturer: ["manufacturer", "marka", "brand", "producent", "vendor"],
+  priceNet: ["price_net", "pricenet", "cena_netto", "net_price", "netto"],
+  priceGross: ["price_gross", "pricegross", "cena_brutto", "gross_price", "brutto"],
+  vatRate: ["vat_rate", "vatrate", "vat", "stawka_vat", "tax_rate"],
+  currency: ["currency", "waluta", "ccy"]
 };
+
+function parseDecimal(raw: string): number | null {
+  if (!raw) return null;
+  const cleaned = raw.replace(/\s/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+  const value = Number(cleaned);
+  return Number.isFinite(value) ? value : null;
+}
 
 export function parseCsv(text: string): CsvParseResult {
   const rawRows: string[][] = [];
@@ -86,19 +97,49 @@ export function extractProductRows(
   rows: Record<string, string>[],
   columnMap: Partial<Record<keyof ProductImportRow, string>>
 ): ProductImportRow[] {
-  if (!columnMap.sku || !columnMap.name || !columnMap.description || !columnMap.manufacturer) {
+  if (
+    !columnMap.sku ||
+    !columnMap.name ||
+    !columnMap.description ||
+    !columnMap.manufacturer ||
+    !columnMap.priceNet ||
+    !columnMap.priceGross ||
+    !columnMap.vatRate ||
+    !columnMap.currency
+  ) {
     return [];
   }
   const result: ProductImportRow[] = [];
   for (const row of rows) {
-    const product: ProductImportRow = {
-      sku: row[columnMap.sku] ?? "",
-      name: row[columnMap.name] ?? "",
-      description: row[columnMap.description] ?? "",
-      manufacturer: row[columnMap.manufacturer] ?? ""
-    };
-    if (product.sku && product.name && product.description && product.manufacturer) {
-      result.push(product);
+    const sku = row[columnMap.sku] ?? "";
+    const name = row[columnMap.name] ?? "";
+    const description = row[columnMap.description] ?? "";
+    const manufacturer = row[columnMap.manufacturer] ?? "";
+    const currency = (row[columnMap.currency] ?? "").toUpperCase();
+    const priceNet = parseDecimal(row[columnMap.priceNet] ?? "");
+    const priceGross = parseDecimal(row[columnMap.priceGross] ?? "");
+    const vatRate = parseDecimal(row[columnMap.vatRate] ?? "");
+
+    if (
+      sku &&
+      name &&
+      description &&
+      manufacturer &&
+      currency &&
+      priceNet !== null &&
+      priceGross !== null &&
+      vatRate !== null
+    ) {
+      result.push({
+        sku,
+        name,
+        description,
+        manufacturer,
+        priceNet,
+        priceGross,
+        vatRate,
+        currency
+      });
     }
   }
   return result;

@@ -29,6 +29,10 @@ export async function importProductsWithEmbeddings(
         name: row.name,
         description: row.description,
         manufacturer: row.manufacturer,
+        priceNet: row.priceNet.toFixed(2),
+        priceGross: row.priceGross.toFixed(2),
+        vatRate: row.vatRate.toFixed(2),
+        currency: row.currency,
         nameEmbedding: nameEmbeddings[i],
         descriptionEmbedding: descriptionEmbeddings[i]
       }))
@@ -39,6 +43,10 @@ export async function importProductsWithEmbeddings(
         name: sql`excluded.name`,
         description: sql`excluded.description`,
         manufacturer: sql`excluded.manufacturer`,
+        priceNet: sql`excluded.price_net`,
+        priceGross: sql`excluded.price_gross`,
+        vatRate: sql`excluded.vat_rate`,
+        currency: sql`excluded.currency`,
         nameEmbedding: sql`excluded.name_embedding`,
         descriptionEmbedding: sql`excluded.description_embedding`
       }

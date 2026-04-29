@@ -1,4 +1,14 @@
-import { boolean, index, integer, pgTable, text, timestamp, uuid, vector } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  integer,
+  numeric,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  vector
+} from "drizzle-orm/pg-core";
 
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -75,6 +85,10 @@ export const products = pgTable(
     name: text("name").notNull(),
     description: text("description").notNull(),
     manufacturer: text("manufacturer").notNull(),
+    priceNet: numeric("price_net", { precision: 12, scale: 2 }).notNull(),
+    priceGross: numeric("price_gross", { precision: 12, scale: 2 }).notNull(),
+    vatRate: numeric("vat_rate", { precision: 5, scale: 2 }).notNull(),
+    currency: text("currency").notNull(),
     nameEmbedding: vector("name_embedding", { dimensions: 1536 }).notNull(),
     descriptionEmbedding: vector("description_embedding", { dimensions: 1536 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
