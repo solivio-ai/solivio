@@ -1,16 +1,25 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Info } from "lucide-react";
+import { Info, Loader2, Trash2 } from "lucide-react";
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 
 type ProductLineCardProps = {
+  commitQuantity: (productId: string) => void;
+  isPending?: boolean;
   line: DraftLine;
+  removeProduct: (productId: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
-  updateUnitPrice: (productId: string, nextPrice: number) => void;
 };
 
-export function ProductLineCard({ line, updateQuantity, updateUnitPrice }: ProductLineCardProps) {
+export function ProductLineCard({
+  commitQuantity,
+  isPending,
+  line,
+  removeProduct,
+  updateQuantity,
+}: ProductLineCardProps) {
   return (
     <div className={`grid gap-4 rounded-lg border p-3 ${line.confidence < 80 ? "bg-muted/30" : "bg-background/60"}`}>
       <div className="grid gap-2">
@@ -59,28 +68,36 @@ export function ProductLineCard({ line, updateQuantity, updateUnitPrice }: Produ
             type="number"
             value={line.quantity}
             onChange={(event) => updateQuantity(line.productId, Number(event.target.value))}
+            onBlur={() => commitQuantity(line.productId)}
+            disabled={isPending}
           />
         </div>
         <div className="grid gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground" htmlFor={`${line.productId}-unit-price`}>
-            Unit price
-          </label>
-          <Input
-            id={`${line.productId}-unit-price`}
-            aria-label={`Unit price for ${line.name}`}
-            className="text-right"
-            min={0}
-            step="0.01"
-            type="number"
-            value={line.unitPrice}
-            onChange={(event) => updateUnitPrice(line.productId, Number(event.target.value))}
-          />
+          <span className="text-xs font-medium text-muted-foreground">Unit price</span>
+          <span className="flex h-9 items-center justify-end text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t pt-3">
         <span className="text-sm text-muted-foreground">Line total</span>
-        <span className="font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="size-8 text-muted-foreground hover:text-destructive"
+            onClick={() => removeProduct(line.productId)}
+            disabled={isPending}
+            aria-label={`Remove ${line.name}`}
+          >
+            {isPending ? (
+              <Loader2 size={14} aria-hidden="true" className="animate-spin" />
+            ) : (
+              <Trash2 size={14} aria-hidden="true" />
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -248,6 +248,12 @@ export const offerResponseSchema = z
   .strict()
   .meta({ id: "OfferResponse" });
 
+/** Product snapshot for update payloads — priceNet and currency are stripped to prevent price overwrites. */
+const updateOfferItemProductSchema = offerItemProductSchema.omit({ priceNet: true, currency: true }).meta({
+  id: "UpdateOfferItemProduct",
+  description: "Product snapshot without pricing fields. Prices are read-only from the catalog."
+});
+
 export const updateOfferItemRequestSchema = z
   .object({
     productId: z.string(),
@@ -255,14 +261,12 @@ export const updateOfferItemRequestSchema = z
     requestItem: z.string().optional(),
     rationale: z.string().optional(),
     confidence: z.number().min(0).max(100).optional(),
-    unitPriceNet: z.number().nonnegative().optional(),
-    currency: currencySchema.optional(),
-    product: offerItemProductSchema.optional()
+    product: updateOfferItemProductSchema.optional()
   })
   .strict()
   .meta({
     id: "UpdateOfferItemRequest",
-    description: "Editable fields for a reviewed offer item."
+    description: "Editable fields for a reviewed offer item. Unit price and currency are read-only from the product catalog."
   });
 
 export const updateOfferRequestSchema = z

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { PackageSearch, Info, AlertTriangle } from "lucide-react";
+import { PackageSearch, Info, AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,10 +13,12 @@ import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 
 type OfferProductsReviewProps = {
+  commitQuantity: (productId: string) => void;
   lines: DraftLine[];
   unmatched: string[];
+  pendingProductIds: Set<string>;
+  removeProduct: (productId: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
-  updateUnitPrice: (productId: string, nextPrice: number) => void;
 };
 
 function lineFingerprint(line: DraftLine) {
@@ -30,10 +33,12 @@ function lineFingerprint(line: DraftLine) {
 }
 
 export function OfferProductsReview({
+  commitQuantity,
   lines,
   unmatched,
+  pendingProductIds,
+  removeProduct,
   updateQuantity,
-  updateUnitPrice,
 }: OfferProductsReviewProps) {
   const previousSignaturesRef = useRef<Map<string, string>>(new Map());
   const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -130,9 +135,11 @@ export function OfferProductsReview({
                 )}
               >
                 <ProductLineCard
+                  commitQuantity={commitQuantity}
+                  isPending={pendingProductIds.has(line.productId)}
                   line={line}
+                  removeProduct={removeProduct}
                   updateQuantity={updateQuantity}
-                  updateUnitPrice={updateUnitPrice}
                 />
               </div>
             ))
@@ -147,12 +154,15 @@ export function OfferProductsReview({
                 <TableHead className="w-28 text-right">Qty</TableHead>
                 <TableHead className="w-36 text-right">Unit price</TableHead>
                 <TableHead className="w-40 text-right">Line total</TableHead>
+                <TableHead className="w-12 text-right">
+                  <span className="sr-only">Actions</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {lines.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-28 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={5} className="h-28 text-center text-sm text-muted-foreground">
                     No products in this offer yet.
                   </TableCell>
                 </TableRow>
@@ -219,21 +229,32 @@ export function OfferProductsReview({
                         type="number"
                         value={line.quantity}
                         onChange={(event) => updateQuantity(line.productId, Number(event.target.value))}
+                        onBlur={() => commitQuantity(line.productId)}
+                        disabled={pendingProductIds.has(line.productId)}
                       />
                     </TableCell>
                     <TableCell className="text-right align-top pt-5">
-                      <Input
-                        aria-label={`Unit price for ${line.name}`}
-                        className="ml-auto w-28 text-right"
-                        min={0}
-                        step="0.01"
-                        type="number"
-                        value={line.unitPrice}
-                        onChange={(event) => updateUnitPrice(line.productId, Number(event.target.value))}
-                      />
+                      <span className="text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
                     </TableCell>
                     <TableCell className="text-right text-base font-semibold align-top pt-5">
                       {formatCurrency(line.quantity * line.unitPrice, line.currency)}
+                    </TableCell>
+                    <TableCell className="w-12 text-right align-top pt-4">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="size-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeProduct(line.productId)}
+                        disabled={pendingProductIds.has(line.productId)}
+                        aria-label={`Remove ${line.name}`}
+                      >
+                        {pendingProductIds.has(line.productId) ? (
+                          <Loader2 size={14} aria-hidden="true" className="animate-spin" />
+                        ) : (
+                          <Trash2 size={14} aria-hidden="true" />
+                        )}
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
