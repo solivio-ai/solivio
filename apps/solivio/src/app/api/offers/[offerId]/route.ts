@@ -6,7 +6,7 @@ import {
   updateOfferRequestSchema
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { getOffer } from "@/server/offers/offerService";
+import { getOffer, updateOfferStatusAndFetch } from "@/server/offers/offerService";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 
 export const runtime = "nodejs";
@@ -17,13 +17,17 @@ type RouteContext = {
   }>;
 };
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 export async function GET(_request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
 
-  const offer = getOfferDraft(offerId) ?? await getOffer(offerId);
+  const offer = isUuid(offerId) ? (await getOffer(offerId)) ?? getOfferDraft(offerId) : getOfferDraft(offerId);
 
   if (!offer) {
     return NextResponse.json(
@@ -41,8 +45,8 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
   const input = updateOfferRequestSchema.safeParse(await request.json().catch(() => ({})));
@@ -60,7 +64,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
-  const offer = updateOfferDraft(offerId, input.data);
+  const offer =
+    isUuid(offerId) && input.data.status
+      ? (await updateOfferStatusAndFetch(offerId, input.data.status)) ?? updateOfferDraft(offerId, input.data)
+      : updateOfferDraft(offerId, input.data);
 
   if (!offer) {
     return NextResponse.json(

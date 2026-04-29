@@ -151,7 +151,15 @@ export const customerRequestResponseSchema = z
   .strict()
   .meta({ id: "CustomerRequestResponse" });
 
-export const offerStatusSchema = z.enum(["draft", "reviewed", "accepted"]).meta({ id: "OfferStatus" });
+export const offerStatusSchema = z.enum(["draft", "accepted"]).meta({ id: "OfferStatus" });
+
+export const debugFragmentSchema = z.object({
+  requestFragment: z.string(),
+  query: z.string(),
+  kind: z.enum(["sku", "description"]),
+  quantity: z.number(),
+  topMatches: z.array(z.object({ id: z.string(), sku: z.string(), name: z.string(), similarity: z.number() }))
+});
 
 export const offerItemProductSchema = z
   .object({
@@ -174,10 +182,12 @@ export const offerItemProductSchema = z
 
 export const offerItemSchema = z
   .object({
+    offerProductId: z.string().optional(),
     productId: z.string(),
     productName: z.string().optional(),
     productSku: z.string().optional(),
     quantity: z.number().int().positive(),
+    requestItem: z.string().optional(),
     rationale: z.string(),
     confidence: z.number().min(0).max(100).optional(),
     unitPriceNet: z.number().nonnegative().optional(),
@@ -200,6 +210,28 @@ export const createOfferRequestSchema = z
     description: "Input accepted when generating a new draft offer."
   });
 
+export const addOfferProductRequestSchema = z
+  .object({
+    productId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+    requestItem: z.string().optional()
+  })
+  .strict()
+  .meta({
+    id: "AddOfferProductRequest",
+    description: "Product and quantity to add as a line item to an offer."
+  });
+
+export const updateOfferLineItemRequestSchema = z
+  .object({
+    quantity: z.number().int().positive()
+  })
+  .strict()
+  .meta({
+    id: "UpdateOfferLineItemRequest",
+    description: "New quantity for an existing offer line item."
+  });
+
 export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
@@ -209,11 +241,13 @@ export const offerSchema = z
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
-    notes: z.array(z.string())
+    notes: z.array(z.string()),
+    unmatched: z.array(z.string()).optional(),
+    debugFragments: z.array(debugFragmentSchema).optional()
   })
   .meta({
     id: "Offer",
-    description: "A draft, reviewed, or accepted offer for a customer request."
+    description: "A draft or accepted offer for a customer request."
   });
 
 export const offerResponseSchema = z
@@ -223,26 +257,32 @@ export const offerResponseSchema = z
   .strict()
   .meta({ id: "OfferResponse" });
 
+/** Product snapshot for update payloads — priceNet and currency are stripped to prevent price overwrites. */
+const updateOfferItemProductSchema = offerItemProductSchema.omit({ priceNet: true, currency: true }).meta({
+  id: "UpdateOfferItemProduct",
+  description: "Product snapshot without pricing fields. Prices are read-only from the catalog."
+});
+
 export const updateOfferItemRequestSchema = z
   .object({
     productId: z.string(),
     quantity: z.number().int().positive().optional(),
+    requestItem: z.string().optional(),
     rationale: z.string().optional(),
     confidence: z.number().min(0).max(100).optional(),
-    unitPriceNet: z.number().nonnegative().optional(),
-    currency: currencySchema.optional(),
-    product: offerItemProductSchema.optional()
+    product: updateOfferItemProductSchema.optional()
   })
   .strict()
   .meta({
     id: "UpdateOfferItemRequest",
-    description: "Editable fields for a reviewed offer item."
+    description: "Editable fields for an offer item. Unit price and currency are read-only from the product catalog."
   });
 
 export const updateOfferRequestSchema = z
   .object({
     status: offerStatusSchema.optional(),
-    items: z.array(updateOfferItemRequestSchema).optional()
+    items: z.array(updateOfferItemRequestSchema).optional(),
+    unmatched: z.array(z.string()).optional()
   })
   .strict()
   .meta({

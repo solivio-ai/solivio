@@ -7,8 +7,8 @@ import { requireAuth } from "@/server/auth/session";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   return NextResponse.json(productsResponseSchema.parse({
     products: demoProducts

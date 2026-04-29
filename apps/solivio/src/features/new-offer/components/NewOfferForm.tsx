@@ -1,30 +1,60 @@
 "use client";
 
-import { FileText, Package, Sparkles } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { CreatedOffer } from "@/server/offers/offerService";
+import { OfferGenerationProgress } from "./OfferGenerationProgress";
+
+type GenerationState = "idle" | "running" | "complete";
 
 export function NewOfferForm() {
   const router = useRouter();
+  const t = useTranslations("NewOffer.form");
+  const generationT = useTranslations("NewOffer.generation");
   const [customerName, setCustomerName] = useState("");
   const [clientRequest, setClientRequest] = useState("");
-  const [notice, setNotice] = useState("Fill in the request and generate a draft offer.");
-  const [createdOffer, setCreatedOffer] = useState<CreatedOffer | null>(null);
+  const [notice, setNotice] = useState(t("notices.initial"));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generationState, setGenerationState] = useState<GenerationState>("idle");
+  const [generationStartedAt, setGenerationStartedAt] = useState<number | null>(null);
+  const [generationElapsedMs, setGenerationElapsedMs] = useState(0);
+
+  useEffect(() => {
+    if (generationState !== "running" || generationStartedAt === null) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setGenerationElapsedMs(Date.now() - generationStartedAt);
+    }, 500);
+
+    return () => window.clearInterval(intervalId);
+  }, [generationStartedAt, generationState]);
 
   async function handleSubmit(event: { preventDefault(): void }) {
     event.preventDefault();
+    const startedAt = Date.now();
+
     setIsSubmitting(true);
-    setNotice("Generating draft offer...");
+    setGenerationState("running");
+    setGenerationStartedAt(startedAt);
+    setGenerationElapsedMs(0);
+    setNotice(t("notices.preparing"));
 
     try {
       const response = await fetch("/api/offers", {
@@ -38,60 +68,86 @@ export function NewOfferForm() {
       }
 
       const json = (await response.json()) as { offer: CreatedOffer };
-      setNotice("Draft offer generated.");
+      setGenerationState("complete");
+      setGenerationElapsedMs(Date.now() - startedAt);
+      setNotice(t("notices.generated"));
       router.push(`/offers/${json.offer.id}`);
     } catch {
-      setNotice("Could not generate offer right now. Please try again.");
-    } finally {
+      setNotice(t("notices.error"));
+      setGenerationState("idle");
+      setGenerationStartedAt(null);
+      setGenerationElapsedMs(0);
       setIsSubmitting(false);
     }
   }
 
   return (
     <div className="grid gap-4">
-      <Card className="border-primary/30">
-        <CardHeader>
+      <Card className="border-primary/30" size="sm">
+        <CardHeader className="pb-1">
           <div className="flex items-center gap-2">
             <FileText size={18} aria-hidden="true" className="text-primary" />
-            <CardTitle>Create offer</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
           </div>
-          <CardDescription>Provide the customer details and request text.</CardDescription>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4" onSubmit={handleSubmit}>
+          <form className="grid gap-3.5" onSubmit={handleSubmit}>
             <div className="grid gap-2">
-              <Label htmlFor="customer-name">Customer name</Label>
+              <Label htmlFor="customer-name">{t("customerName.label")}</Label>
               <Input
                 id="customer-name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="ACME Ltd."
+                placeholder={t("customerName.placeholder")}
                 className="bg-background/60"
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="client-request">Customer request</Label>
+              <Label htmlFor="client-request">{t("clientRequest.label")}</Label>
               <Textarea
                 id="client-request"
                 value={clientRequest}
                 onChange={(e) => setClientRequest(e.target.value)}
-                rows={8}
-                className="min-h-[180px] bg-background/60"
-                placeholder="Describe what the customer needs..."
+                rows={6}
+                className="min-h-36 bg-background/60"
+                placeholder={t("clientRequest.placeholder")}
+                disabled={isSubmitting}
               />
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="submit" disabled={isSubmitting || !clientRequest.trim()}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <Button type="submit" size="sm" disabled={isSubmitting || !clientRequest.trim()}>
                 <Sparkles size={16} aria-hidden="true" />
-                {isSubmitting ? "Generating..." : "Generate draft offer"}
+                {isSubmitting ? t("actions.preparing") : t("actions.generate")}
               </Button>
               <p className="text-sm text-muted-foreground">{notice}</p>
             </div>
           </form>
         </CardContent>
       </Card>
+
+      <Dialog open={generationState !== "idle"}>
+        <DialogContent
+          className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto sm:max-w-3xl"
+          showCloseButton={false}
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>{generationT("dialogTitle")}</DialogTitle>
+            <DialogDescription>{generationT("dialogDescription")}</DialogDescription>
+          </DialogHeader>
+          {generationState !== "idle" ? (
+            <OfferGenerationProgress
+              clientRequest={clientRequest}
+              customerName={customerName}
+              elapsedMs={generationElapsedMs}
+              state={generationState}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

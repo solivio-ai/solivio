@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ export function LoginForm({
   googleEnabled,
   microsoftEnabled,
 }: Props) {
-  const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -64,15 +62,14 @@ export function LoginForm({
         }
       }
 
-      router.push("/");
-      router.refresh();
+      window.location.assign("/");
     });
   }
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-lg border bg-card p-8 text-card-foreground shadow-sm">
+    <div className="flex w-full flex-col gap-5 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-xl font-semibold tracking-tight">
           {mode === "signin" ? "Sign in" : "Create account"}
         </h1>
       </header>
@@ -80,7 +77,7 @@ export function LoginForm({
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {credentialsEnabled && (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
           {mode === "signup" && (
             <Field htmlFor="username" label="Username">
               <Input id="username" name="username" type="text" required autoComplete="username" disabled={isPending} />
@@ -108,7 +105,7 @@ export function LoginForm({
             />
           </Field>
 
-          <Button type="submit" disabled={isPending} className="mt-1">
+          <Button type="submit" disabled={isPending}>
             {isPending
               ? mode === "signin" ? "Signing in…" : "Creating account…"
               : mode === "signin" ? "Sign in" : "Create account"}

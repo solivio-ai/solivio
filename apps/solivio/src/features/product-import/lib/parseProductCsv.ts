@@ -23,7 +23,24 @@ function parseDecimal(raw: string): number | null {
   return Number.isFinite(value) ? value : null;
 }
 
+function detectDelimiter(text: string): string {
+  const newlineIdx = text.search(/\r?\n/);
+  const headerLine = newlineIdx >= 0 ? text.slice(0, newlineIdx) : text;
+  const candidates = [";", "\t", ","];
+  let best = ",";
+  let bestCount = -1;
+  for (const d of candidates) {
+    const count = headerLine.split(d).length - 1;
+    if (count > bestCount) {
+      best = d;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
 export function parseCsv(text: string): CsvParseResult {
+  const delimiter = detectDelimiter(text);
   const rawRows: string[][] = [];
   let field = "";
   let row: string[] = [];
@@ -48,7 +65,7 @@ export function parseCsv(text: string): CsvParseResult {
 
     if (char === '"') {
       inQuotes = true;
-    } else if (char === "," || char === ";" || char === "\t") {
+    } else if (char === delimiter) {
       row.push(field);
       field = "";
     } else if (char === "\n" || char === "\r") {

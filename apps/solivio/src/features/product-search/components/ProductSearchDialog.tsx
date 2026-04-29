@@ -26,6 +26,8 @@ type Props = {
   searchFields?: SearchableField[];
   /** Override how each result row's info section is rendered. Defaults to sku + name. */
   renderProductInfo?: (product: ProductSearchMatch) => React.ReactNode;
+  /** Optional footer content. */
+  renderFooter?: React.ReactNode;
 };
 
 function defaultProductInfo(product: ProductSearchMatch) {
@@ -44,6 +46,7 @@ export function ProductSearchDialog({
   onQuantityChange,
   searchFields,
   renderProductInfo = defaultProductInfo,
+  renderFooter,
 }: Props) {
   const [selectedFields, setSelectedFields] = useState<SearchableField[]>(
     [...(searchFields ?? ALL_SEARCHABLE_FIELDS)]
@@ -218,6 +221,7 @@ export function ProductSearchDialog({
             <p className="py-4 text-center text-sm text-muted-foreground">No results found.</p>
           )}
         </div>
+        {renderFooter}
       </DialogContent>
     </Dialog>
   );

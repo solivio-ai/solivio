@@ -28,11 +28,11 @@ export function updateOfferDraft(
       productId: string;
       quantity?: number;
       rationale?: string;
+      requestItem?: string;
       confidence?: number;
-      unitPriceNet?: number;
-      currency?: Offer["items"][number]["currency"];
       product?: Offer["items"][number]["product"];
     }>;
+    unmatched?: string[];
   }
 ) {
   const offer = getOfferDraft(id);
@@ -48,9 +48,8 @@ export function updateOfferDraft(
             productId: itemUpdate.productId,
             quantity: itemUpdate.quantity ?? 1,
             rationale: itemUpdate.rationale ?? "Manually added",
+            requestItem: itemUpdate.requestItem,
             confidence: itemUpdate.confidence,
-            unitPriceNet: itemUpdate.unitPriceNet,
-            currency: itemUpdate.currency,
             product: itemUpdate.product
           };
         }
@@ -59,9 +58,8 @@ export function updateOfferDraft(
           ...existingItem,
           quantity: itemUpdate.quantity ?? existingItem.quantity,
           rationale: itemUpdate.rationale ?? existingItem.rationale,
+          requestItem: itemUpdate.requestItem ?? existingItem.requestItem,
           confidence: itemUpdate.confidence ?? existingItem.confidence,
-          unitPriceNet: itemUpdate.unitPriceNet ?? existingItem.unitPriceNet,
-          currency: itemUpdate.currency ?? existingItem.currency,
           product: itemUpdate.product ?? existingItem.product
         };
       })
@@ -70,6 +68,7 @@ export function updateOfferDraft(
   const nextOffer: Offer = {
     ...offer,
     status: update.status ?? offer.status,
+    unmatched: update.unmatched ?? offer.unmatched,
     items: nextItems
   };
 

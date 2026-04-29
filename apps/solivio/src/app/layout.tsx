@@ -3,12 +3,15 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/AppSidebar";
-import { auth } from "@/lib/auth";
+import { getCurrentSession } from "@/server/auth/session";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -35,36 +38,42 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Solivio",
-    description: "Quotes shouldn't take hours. They should start from your data."
+    description: "AI-assisted offer drafts from customer requests and catalog data."
   }
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, headerList, locale] = await Promise.all([
+    getCurrentSession(),
+    headers(),
+    getLocale(),
+  ]);
+  const pathname = headerList.get("x-pathname") ?? "";
+
+  if (!session && !pathname.startsWith("/login")) {
+    redirect("/login");
+  }
 
   return (
-    <html lang="en" className={cn("dark", inter.variable)}>
+    <html lang={locale} className={cn("dark", inter.variable)}>
       <body>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.__ENV=${JSON.stringify({ BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? "" })};`,
-          }}
-        />
-        <TooltipProvider>
-          {session ? (
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <header className="flex h-10 shrink-0 items-center border-b border-border px-3">
-                  <SidebarTrigger />
-                </header>
-                {children}
-              </SidebarInset>
-            </SidebarProvider>
-          ) : (
-            children
-          )}
-        </TooltipProvider>
+        <NextIntlClientProvider>
+          <TooltipProvider>
+            {session ? (
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <header className="flex h-9 shrink-0 items-center border-b border-border px-2">
+                    <SidebarTrigger />
+                  </header>
+                  {children}
+                </SidebarInset>
+              </SidebarProvider>
+            ) : (
+              children
+            )}
+          </TooltipProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

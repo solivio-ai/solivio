@@ -39,8 +39,10 @@ export type CustomerRequest = {
 };
 
 export type OfferItem = {
+  offerProductId?: string;
   productId: string;
   quantity: number;
+  requestItem?: string;
   rationale: string;
   confidence?: number;
   unitPriceNet?: number;
@@ -59,15 +61,27 @@ export type OfferItem = {
   };
 };
 
+export type OfferFragmentKind = "sku" | "description";
+
+export type OfferDebugFragment = {
+  requestFragment: string;
+  query: string;
+  kind: OfferFragmentKind;
+  quantity: number;
+  topMatches: { id: string; sku: string; name: string; similarity: number }[];
+};
+
 export type Offer = {
   id: string;
   requestId: string;
   customerName?: string;
   clientRequest?: string;
-  status: "draft" | "reviewed" | "accepted";
+  status: "draft" | "accepted";
   generatedAt: string;
   items: OfferItem[];
   notes: string[];
+  unmatched?: string[];
+  debugFragments?: OfferDebugFragment[];
 };
 
 export const workflowSteps: WorkflowStep[] = [

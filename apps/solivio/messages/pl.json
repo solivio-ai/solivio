@@ -1,0 +1,212 @@
+{
+  "AppSidebar": {
+    "nav": {
+      "dashboard": "Panel",
+      "offers": "Oferty",
+      "newOffer": "Nowa oferta",
+      "catalogUpload": "Import katalogu"
+    },
+    "actions": {
+      "newOffer": "Nowa oferta"
+    }
+  },
+  "LanguageSwitcher": {
+    "label": "Język",
+    "languages": {
+      "en": "English",
+      "pl": "Polski"
+    }
+  },
+  "NewOffer": {
+    "page": {
+      "title": "Nowa oferta",
+      "badges": {
+        "generatedDraft": "Draft generowany przez AI",
+        "review": "Sprawdź i dopracuj"
+      },
+      "back": "Wróć"
+    },
+    "form": {
+      "title": "Utwórz ofertę",
+      "description": "Wprowadź dane klienta i treść zapytania.",
+      "customerName": {
+        "label": "Nazwa klienta",
+        "placeholder": "ACME Sp. z o.o."
+      },
+      "clientRequest": {
+        "label": "Zapytanie klienta",
+        "placeholder": "Opisz, czego potrzebuje klient..."
+      },
+      "actions": {
+        "generate": "Wygeneruj draft oferty",
+        "preparing": "Przygotowuję draft..."
+      },
+      "notices": {
+        "initial": "Uzupełnij zapytanie i wygeneruj draft oferty.",
+        "preparing": "Przygotowuję draft oferty...",
+        "generated": "Draft oferty wygenerowany. Otwieram przegląd...",
+        "error": "Nie udało się teraz wygenerować oferty. Spróbuj ponownie."
+      }
+    },
+    "generation": {
+      "dialogTitle": "Postęp generowania oferty",
+      "dialogDescription": "Draft oferty jest przygotowywany na podstawie zapytania klienta.",
+      "title": "Przygotowuję draft oferty",
+      "activeStep": "{title}: {description}",
+      "draftReady": "Draft gotowy",
+      "elapsed": "{seconds} s",
+      "progressLabel": "Postęp generowania oferty",
+      "stepCounter": "Krok {current} z {total}",
+      "progressValue": "{progress}%",
+      "requestSnapshot": "Podgląd zapytania",
+      "unnamedCustomer": "Klient bez nazwy",
+      "catalogPreview": "Wstępne dopasowania z katalogu",
+      "steps": {
+        "readingRequest": {
+          "title": "Czytam zapytanie",
+          "description": "Zapisuję kontekst klienta i treść zapytania.",
+          "detail": "Przyjęcie"
+        },
+        "extractingNeeds": {
+          "title": "Wyodrębniam potrzeby",
+          "description": "Wyszukuję pozycje produktowe, ilości i ograniczenia.",
+          "detail": "Wymagania"
+        },
+        "preparingSearches": {
+          "title": "Przygotowuję wyszukiwania",
+          "description": "Buduję zapytania katalogowe dla każdej pozycji.",
+          "detail": "Plan wyszukiwania"
+        },
+        "searchingCatalog": {
+          "title": "Przeszukuję katalog",
+          "description": "Sprawdzam kandydatów i wyniki podobieństwa semantycznego.",
+          "detail": "Dopasowanie"
+        },
+        "checkingGaps": {
+          "title": "Sprawdzam braki",
+          "description": "Oddzielam pewne dopasowania od elementów do przeglądu.",
+          "detail": "Walidacja"
+        },
+        "composingDraft": {
+          "title": "Składam draft",
+          "description": "Wyceniam dopasowane produkty i zapisuję draft oferty.",
+          "detail": "Draft"
+        }
+      }
+    }
+  },
+  "OfferChat": {
+    "title": "Asystent Solivio",
+    "status": {
+      "thinking": "Myślę",
+      "ready": "Gotowy"
+    },
+    "threads": {
+      "label": "Wątek czatu",
+      "newChat": "Nowy czat"
+    },
+    "welcome": "Mogę wyjaśnić tę ofertę, podsumować zapytanie klienta, przejrzeć dopasowania produktów i zaproponować ulepszenia.",
+    "input": {
+      "placeholder": "Powiedz AI, co zmienić lub zadaj pytanie..."
+    },
+    "suggestions": {
+      "summarize": "Podsumuj zapytanie klienta",
+      "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
+      "upsell": "Zaproponuj dodatkowe produkty do dosprzedaży"
+    },
+    "errors": {
+      "loadThreads": "Nie udało się wczytać wątków czatu.",
+      "loadMessages": "Nie udało się wczytać wiadomości czatu.",
+      "createThread": "Nie udało się utworzyć wątku czatu.",
+      "startChat": "Nie udało się rozpocząć nowego czatu.",
+      "loadHistory": "Nie udało się wczytać historii czatu.",
+      "switchThread": "Nie udało się przełączyć wątku czatu."
+    }
+  },
+  "OffersList": {
+    "actions": {
+      "clearFilters": "Wyczyść filtry",
+      "newDraft": "Nowy draft",
+      "newOffer": "Nowa oferta",
+      "offerActions": "Akcje oferty",
+      "openActions": "Otwórz akcje dla {name}",
+      "openReview": "Otwórz przegląd",
+      "reviewOffer": "Przejrzyj ofertę"
+    },
+    "activity": {
+      "created": "Utworzono {date}",
+      "updated": "Zaktualizowano {relativeTime}"
+    },
+    "attention": {
+      "allMatched": "Wszystko dopasowane",
+      "gapCount": "{count, plural, one {# luka} few {# luki} many {# luk} other {# luki}}"
+    },
+    "badges": {
+      "accepted": "{count} zaakceptowano",
+      "draftsToReview": "{count} do przeglądu",
+      "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
+      "needsAttention": "{count} z lukami",
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
+      "salesWorkspace": "Obszar sprzedaży"
+    },
+    "empty": {
+      "description": "Generuj uporządkowane drafty ofert na podstawie zapytań klientów.",
+      "title": "Nie ma jeszcze ofert"
+    },
+    "filters": {
+      "accepted": "Zaakceptowana",
+      "all": "Wszystkie oferty",
+      "draft": "Draft",
+      "label": "Filtruj oferty",
+      "needsAttention": "Wymaga uwagi"
+    },
+    "fallbacks": {
+      "customStatus": "Status niestandardowy",
+      "request": "Nie zapisano jeszcze zapytania klienta.",
+      "customer": "Nieprzypisany klient",
+      "noValue": "—",
+      "unnamedOffer": "Draft oferty"
+    },
+    "matchingEmpty": {
+      "description": "Zmień wyszukiwanie lub filtr statusu, aby poszerzyć kolejkę.",
+      "title": "Brak pasujących ofert"
+    },
+    "notes": {
+      "generation": "{count, plural, one {# notatka generowania} few {# notatki generowania} many {# notatek generowania} other {# notatki generowania}}",
+      "short": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}"
+    },
+    "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktu}}",
+    "queue": "Kolejka",
+    "recent": {
+      "title": "Ostatnie oferty"
+    },
+    "relative": {
+      "justNow": "Teraz"
+    },
+    "search": {
+      "label": "Szukaj ofert",
+      "placeholder": "Szukaj klienta, zapytania lub oferty"
+    },
+    "status": {
+      "accepted": {
+        "description": "Zatwierdzona oferta",
+        "label": "Zaakceptowana"
+      },
+      "draft": {
+        "description": "Wymaga przeglądu sprzedaży",
+        "label": "Draft"
+      }
+    },
+    "table": {
+      "actions": "Akcje",
+      "activity": "Aktywność",
+      "coverage": "Pokrycie",
+      "customerRequest": "Zapytanie klienta",
+      "offer": "Oferta",
+      "status": "Status",
+      "value": "Wartość"
+    },
+    "title": "Oferty",
+    "subtitle": "Przeglądaj wygenerowane drafty, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
+  }
+}

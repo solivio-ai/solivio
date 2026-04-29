@@ -47,8 +47,29 @@
     {
       "idx": 6,
       "version": "7",
+      "when": 1777452745672,
+      "tag": "0006_rainy_liz_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777456722095,
+      "tag": "0007_polite_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777460000000,
+      "tag": "0008_combined_embedding",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
       "when": 1777463750459,
-      "tag": "0006_flawless_selene",
+      "tag": "0009_price_columns",
       "breakpoints": true
     }
   ]
