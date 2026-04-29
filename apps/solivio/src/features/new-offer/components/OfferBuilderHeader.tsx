@@ -76,6 +76,7 @@ type OfferBuilderHeaderProps = {
   createdAt?: string;
   updatedBy?: { id: string; name: string } | null;
   updatedAt?: string;
+  onUpdate?: (offer: Offer) => void;
 };
 
 export function OfferBuilderHeader({
@@ -98,6 +99,7 @@ export function OfferBuilderHeader({
   createdAt,
   updatedBy,
   updatedAt,
+  onUpdate,
 }: OfferBuilderHeaderProps) {
   const router = useRouter();
   const t = useTranslations("NewOffer.builder");
@@ -146,6 +148,10 @@ export function OfferBuilderHeader({
         }),
       });
       if (!response.ok) return;
+      const payload = await response.json().catch(() => null);
+      if (payload?.offer) {
+        onUpdate?.(payload.offer as Offer);
+      }
       onEditOpenChange(false);
       router.refresh();
     } finally {

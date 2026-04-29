@@ -16,10 +16,13 @@ import {
   setOfferUpdatedBy,
 } from "./offerRepository";
 
+type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
+
 function rowToRevision(row: {
   id: string;
   offerId: string;
   revisionNumber: number;
+  name?: string | null;
   createdById: string | null;
   createdByName: string | null;
   createdAt: Date;
@@ -30,6 +33,7 @@ function rowToRevision(row: {
     id: row.id,
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
+    name: row.name ?? undefined,
     snapshot: row.snapshot,
     createdBy: row.createdById
       ? { id: row.createdById, name: row.createdByName ?? "" }
@@ -42,9 +46,10 @@ function rowToRevision(row: {
 export async function saveRevision(
   offerId: string,
   userId: string | null,
-  acceptedAt?: Date | null
+  acceptedAt?: Date | null,
+  tx: Tx = db
 ): Promise<OfferRevision | null> {
-  const row = await findOfferById(offerId);
+  const row = await findOfferById(offerId, tx);
   if (!row) return null;
 
   const snapshot: OfferRevisionSnapshot = {
@@ -67,8 +72,8 @@ export async function saveRevision(
     })),
   };
 
-  const revision = await insertRevision({ offerId, snapshot, createdBy: userId, acceptedAt });
-  await setOfferUpdatedBy(offerId, userId);
+  const revision = await insertRevision({ offerId, snapshot, createdBy: userId, acceptedAt }, tx);
+  await setOfferUpdatedBy(offerId, userId, tx);
 
   return rowToRevision(revision);
 }

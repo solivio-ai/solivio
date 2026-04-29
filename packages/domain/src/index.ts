@@ -114,6 +114,7 @@ export type OfferRevision = {
   id: string;
   offerId: string;
   revisionNumber: number;
+  name?: string;
   snapshot?: OfferRevisionSnapshot;
   createdBy: { id: string; name: string } | null;
   createdAt: string;

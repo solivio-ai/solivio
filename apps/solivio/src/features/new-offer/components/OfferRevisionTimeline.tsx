@@ -58,6 +58,11 @@ export function OfferRevisionTimeline({
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium">
                 Revision {revision.revisionNumber}
+                {revision.name && (
+                  <span className="ml-2 font-normal text-muted-foreground italic">
+                    — {revision.name}
+                  </span>
+                )}
                 {index === 0 ? (
                   <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary">
                     Latest

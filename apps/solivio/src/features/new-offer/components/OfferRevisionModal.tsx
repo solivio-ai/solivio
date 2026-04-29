@@ -72,7 +72,14 @@ export function OfferRevisionModal({
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-semibold">Revision {revision?.revisionNumber}</h2>
+              <h2 className="font-semibold">
+                Revision {revision?.revisionNumber}
+                {revision?.name && (
+                  <span className="ml-2 font-normal text-muted-foreground italic">
+                    — {revision.name}
+                  </span>
+                )}
+              </h2>
               {revision?.acceptedAt && (
                 <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
                   Accepted
@@ -102,6 +109,10 @@ export function OfferRevisionModal({
             <div className="flex flex-col gap-4">
               {/* Metadata */}
               <section className="grid gap-1 text-sm">
+                <div className="flex gap-2">
+                  <span className="w-32 text-muted-foreground">Name</span>
+                  <span className="font-medium">{snapshot.name}</span>
+                </div>
                 <div className="flex gap-2">
                   <span className="w-32 text-muted-foreground">Customer</span>
                   <span>{snapshot.customerName ?? "—"}</span>
