@@ -2,6 +2,8 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -39,7 +41,12 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await getCurrentSession();
+  const [session, headerList] = await Promise.all([getCurrentSession(), headers()]);
+  const pathname = headerList.get("x-pathname") ?? "";
+
+  if (!session && !pathname.startsWith("/login")) {
+    redirect("/login");
+  }
 
   return (
     <html lang="en" className={cn("dark", inter.variable)}>
