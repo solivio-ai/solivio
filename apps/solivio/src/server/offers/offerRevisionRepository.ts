@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, max } from "drizzle-orm";
+import { and, desc, eq, max, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { offerRevisions, user } from "../database/schema";
@@ -21,6 +21,7 @@ export type RevisionRow = {
   offerId: string;
   revisionNumber: number;
   snapshot: OfferRevisionSnapshot;
+  name: string | null;
   createdById: string | null;
   createdByName: string | null;
   createdAt: Date;
@@ -54,6 +55,7 @@ export async function insertRevision(
     offerId: revision.offerId,
     revisionNumber: revision.revisionNumber,
     snapshot: revision.snapshot,
+    name: revision.snapshot.name,
     createdById: revision.createdBy,
     createdByName: null,
     createdAt: revision.createdAt,
@@ -70,6 +72,7 @@ export async function findRevisionsByOfferId(
       id: offerRevisions.id,
       offerId: offerRevisions.offerId,
       revisionNumber: offerRevisions.revisionNumber,
+      name: sql<string>`${offerRevisions.snapshot}->>'name'`,
       createdById: offerRevisions.createdBy,
       createdByName: user.name,
       createdAt: offerRevisions.createdAt,
@@ -84,6 +87,7 @@ export async function findRevisionsByOfferId(
     id: row.id,
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
+    name: row.name,
     createdById: row.createdById,
     createdByName: row.createdByName,
     createdAt: row.createdAt,
@@ -102,6 +106,7 @@ export async function findRevisionById(
       offerId: offerRevisions.offerId,
       revisionNumber: offerRevisions.revisionNumber,
       snapshot: offerRevisions.snapshot,
+      name: sql<string>`${offerRevisions.snapshot}->>'name'`,
       createdById: offerRevisions.createdBy,
       createdByName: user.name,
       createdAt: offerRevisions.createdAt,
@@ -123,6 +128,7 @@ export async function findRevisionById(
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
     snapshot: row.snapshot,
+    name: row.name,
     createdById: row.createdById,
     createdByName: row.createdByName,
     createdAt: row.createdAt,

@@ -401,6 +401,7 @@ export function OfferBuilder({
         createdAt={offer.generatedAt}
         updatedBy={offer.updatedBy}
         updatedAt={offer.updatedAt}
+        onUpdate={syncOffer}
       />
 
       <OfferProductsReview

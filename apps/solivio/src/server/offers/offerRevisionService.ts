@@ -22,6 +22,7 @@ function rowToRevision(row: {
   id: string;
   offerId: string;
   revisionNumber: number;
+  name?: string | null;
   createdById: string | null;
   createdByName: string | null;
   createdAt: Date;
@@ -32,6 +33,7 @@ function rowToRevision(row: {
     id: row.id,
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
+    name: row.name ?? undefined,
     snapshot: row.snapshot,
     createdBy: row.createdById
       ? { id: row.createdById, name: row.createdByName ?? "" }
