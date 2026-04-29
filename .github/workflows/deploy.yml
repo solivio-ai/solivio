@@ -5,6 +5,11 @@ on:
     workflows: ["Build & push image"]
     types: [completed]
     branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'docker-compose.prod.yml'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 concurrency:
@@ -13,13 +18,13 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: read
     env:
-      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
       REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
       REMOTE_USER: ${{ secrets.DEPLOY_USER }}
       REMOTE_PATH: ${{ secrets.DEPLOY_PATH }}

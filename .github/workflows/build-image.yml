@@ -3,6 +3,18 @@ name: Build & push image
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/solivio/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - '.yarn/releases/**'
+      - 'tsconfig.base.json'
+      - 'docker-compose.build.yml'
+      - 'solivio-logo*.png'
+      - 'favicon.png'
+      - '.github/workflows/build-image.yml'
   workflow_dispatch:
 
 concurrency:
