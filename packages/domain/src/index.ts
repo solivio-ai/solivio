@@ -35,8 +35,10 @@ export type CustomerRequest = {
 };
 
 export type OfferItem = {
+  offerProductId?: string;
   productId: string;
   quantity: number;
+  requestItem?: string;
   rationale: string;
   confidence?: number;
   unitPriceNet?: number;
@@ -64,6 +66,7 @@ export type Offer = {
   generatedAt: string;
   items: OfferItem[];
   notes: string[];
+  unmatched?: string[];
 };
 
 export const workflowSteps: WorkflowStep[] = [

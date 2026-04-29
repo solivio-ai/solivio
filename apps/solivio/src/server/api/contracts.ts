@@ -174,10 +174,12 @@ export const offerItemProductSchema = z
 
 export const offerItemSchema = z
   .object({
+    offerProductId: z.string().optional(),
     productId: z.string(),
     productName: z.string().optional(),
     productSku: z.string().optional(),
     quantity: z.number().int().positive(),
+    requestItem: z.string().optional(),
     rationale: z.string(),
     confidence: z.number().min(0).max(100).optional(),
     unitPriceNet: z.number().nonnegative().optional(),
@@ -200,6 +202,28 @@ export const createOfferRequestSchema = z
     description: "Input accepted when generating a new draft offer."
   });
 
+export const addOfferProductRequestSchema = z
+  .object({
+    productId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+    requestItem: z.string().optional()
+  })
+  .strict()
+  .meta({
+    id: "AddOfferProductRequest",
+    description: "Product and quantity to add as a line item to an offer."
+  });
+
+export const updateOfferLineItemRequestSchema = z
+  .object({
+    quantity: z.number().int().positive()
+  })
+  .strict()
+  .meta({
+    id: "UpdateOfferLineItemRequest",
+    description: "New quantity for an existing offer line item."
+  });
+
 export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
@@ -209,7 +233,8 @@ export const offerSchema = z
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
-    notes: z.array(z.string())
+    notes: z.array(z.string()),
+    unmatched: z.array(z.string()).optional()
   })
   .meta({
     id: "Offer",
