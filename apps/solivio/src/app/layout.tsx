@@ -2,7 +2,7 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -43,11 +43,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const [session, headerList, locale] = await Promise.all([
+  const [session, headerList, locale, cookieStore] = await Promise.all([
     getCurrentSession(),
     headers(),
     getLocale(),
+    cookies(),
   ]);
+  const theme = cookieStore.get("solivio-theme")?.value === "dark" ? "dark" : "light";
   const pathname = headerList.get("x-pathname") ?? "";
 
   if (!session && !pathname.startsWith("/login")) {
@@ -55,7 +57,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   }
 
   return (
-    <html lang={locale} className={cn("dark", inter.variable)}>
+    <html lang={locale} className={cn(theme === "dark" && "dark", inter.variable)} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider>
           <TooltipProvider>
