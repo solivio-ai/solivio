@@ -10,6 +10,13 @@
       "newOffer": "Nowa oferta"
     }
   },
+  "LanguageSwitcher": {
+    "label": "Język",
+    "languages": {
+      "en": "English",
+      "pl": "Polski"
+    }
+  },
   "OffersList": {
     "actions": {
       "clearFilters": "Wyczyść filtry",

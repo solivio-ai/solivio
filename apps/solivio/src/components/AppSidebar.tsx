@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 const navItems = [
@@ -72,7 +73,8 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border pb-3 pt-2">
+      <SidebarFooter className="gap-2 border-t border-sidebar-border pb-3 pt-2">
+        <LanguageSwitcher />
         <UserMenu />
       </SidebarFooter>
       <SidebarRail />
