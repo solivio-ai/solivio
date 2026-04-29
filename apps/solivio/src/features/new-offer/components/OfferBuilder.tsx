@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
@@ -16,30 +16,37 @@ type OfferBuilderProps = {
   offer: Offer;
 };
 
+function toDraftLines(offer: Offer): DraftLine[] {
+  return offer.items.map((item) => ({
+    productId: item.productId,
+    sku: item.product?.sku,
+    name: item.product?.name ?? item.productId,
+    description: item.product?.description,
+    manufacturer: item.product?.manufacturer,
+    availability: item.product?.availability,
+    source: item.product?.source,
+    quantity: item.quantity,
+    requestItem: item.requestItem,
+    unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
+    currency: item.currency ?? item.product?.currency ?? "PLN",
+    confidence:
+      item.confidence ?? (item.product?.matchScore ? Math.round(item.product.matchScore * 100) : 75),
+    rationale: item.rationale
+  }));
+}
+
 export function OfferBuilder({ assistantToggle, customerName, offer }: OfferBuilderProps) {
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const displayCustomerName = customerName ?? offer.customerName ?? "Demo customer";
   const [discountPercent, setDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [lines, setLines] = useState<DraftLine[]>(() =>
-    offer.items.map((item) => ({
-      productId: item.productId,
-      sku: item.product?.sku,
-      name: item.product?.name ?? item.productId,
-      description: item.product?.description,
-      manufacturer: item.product?.manufacturer,
-      availability: item.product?.availability,
-      source: item.product?.source,
-      quantity: item.quantity,
-      requestItem: item.requestItem,
-      unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-      currency: item.currency ?? item.product?.currency ?? "PLN",
-      confidence:
-        item.confidence ?? (item.product?.matchScore ? Math.round(item.product.matchScore * 100) : 75),
-      rationale: item.rationale,
-    }))
-  );
+  const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
+
+  useEffect(() => {
+    setLines(toDraftLines(offer));
+    setStatus(offer.status);
+  }, [offer]);
 
   const currency = lines[0]?.currency ?? "PLN";
   const searchQuantities = Object.fromEntries(

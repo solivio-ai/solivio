@@ -17,6 +17,7 @@ type OfferChatProps = {
   className?: string;
   headerAction?: ReactNode;
   offer?: Offer;
+  onOfferChanged?: () => void;
 };
 
 type OfferChatThread = {
@@ -130,7 +131,7 @@ async function readJsonResponse(response: Response) {
   }
 }
 
-export function OfferChat({ className, headerAction, offer }: OfferChatProps) {
+export function OfferChat({ className, headerAction, offer, onOfferChanged }: OfferChatProps) {
   const [threads, setThreads] = useState<OfferChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
@@ -168,7 +169,15 @@ export function OfferChat({ className, headerAction, offer }: OfferChatProps) {
       }),
     []
   );
-  const { messages, sendMessage, setMessages, status } = useChat({ transport });
+  const { messages, sendMessage, setMessages, status } = useChat({
+    transport,
+    onFinish: ({ message }) => {
+      const hasToolResult = message.parts.some(
+        (p) => p.type.startsWith("tool-") && "state" in p && p.state === "output-available"
+      );
+      if (hasToolResult) onOfferChanged?.();
+    }
+  });
   const [input, setInput] = useState("");
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);

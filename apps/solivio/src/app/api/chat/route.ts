@@ -60,6 +60,7 @@ function formatOfferContext(offer: Offer) {
       lines.push(
         [
           `${index + 1}. ${product?.name ?? itemSnapshot.productName ?? item.productId}`,
+          `   Line item ID: ${item.offerProductId ?? "not available"}`,
           `   Product ID: ${item.productId}`,
           `   SKU: ${product?.sku ?? itemSnapshot.productSku ?? "not provided"}`,
           `   Manufacturer: ${product?.manufacturer ?? "not provided"}`,
@@ -139,7 +140,7 @@ export async function POST(request: Request) {
               type: "text" as const,
               text: [
                 "Use this offer context to answer the user's questions.",
-                "Do not claim that you changed the offer; only suggest edits for now.",
+                "When the user requests a change to the offer, use the available tools to apply it directly.",
                 "",
                 offerContext
               ].join("\n")

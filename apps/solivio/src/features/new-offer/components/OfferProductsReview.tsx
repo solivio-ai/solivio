@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { PackageSearch, Info, AlertTriangle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { ProductLineCard } from "./ProductLineCard";
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
@@ -16,12 +18,77 @@ type OfferProductsReviewProps = {
   updateUnitPrice: (productId: string, nextPrice: number) => void;
 };
 
+function lineFingerprint(line: DraftLine) {
+  return [
+    line.productId,
+    line.quantity,
+    line.unitPrice,
+    line.requestItem ?? "",
+    line.rationale,
+    line.confidence
+  ].join("|");
+}
+
 export function OfferProductsReview({
   lines,
   unmatched,
   updateQuantity,
   updateUnitPrice,
 }: OfferProductsReviewProps) {
+  const previousSignaturesRef = useRef<Map<string, string>>(new Map());
+  const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const [updatedLineIds, setUpdatedLineIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const nextSignatures = new Map<string, string>();
+    const changedIds = new Set<string>();
+
+    for (const line of lines) {
+      const signature = lineFingerprint(line);
+      nextSignatures.set(line.productId, signature);
+
+      const previousSignature = previousSignaturesRef.current.get(line.productId);
+      if (previousSignature !== undefined && previousSignature !== signature) {
+        changedIds.add(line.productId);
+      }
+    }
+
+    previousSignaturesRef.current = nextSignatures;
+    if (changedIds.size === 0) return;
+
+    setUpdatedLineIds((current) => {
+      const next = new Set(current);
+      for (const id of changedIds) next.add(id);
+      return next;
+    });
+
+    for (const id of changedIds) {
+      const existingTimer = clearTimersRef.current.get(id);
+      if (existingTimer) clearTimeout(existingTimer);
+
+      const timeoutId = setTimeout(() => {
+        setUpdatedLineIds((current) => {
+          if (!current.has(id)) return current;
+          const next = new Set(current);
+          next.delete(id);
+          return next;
+        });
+        clearTimersRef.current.delete(id);
+      }, 1200);
+
+      clearTimersRef.current.set(id, timeoutId);
+    }
+  }, [lines]);
+
+  useEffect(() => {
+    return () => {
+      for (const timeoutId of clearTimersRef.current.values()) {
+        clearTimeout(timeoutId);
+      }
+      clearTimersRef.current.clear();
+    };
+  }, []);
+
   return (
     <Card className="min-w-0">
       <CardHeader>
@@ -55,12 +122,19 @@ export function OfferProductsReview({
             </div>
           ) : (
             lines.map((line) => (
-              <ProductLineCard
+              <div
                 key={line.productId}
-                line={line}
-                updateQuantity={updateQuantity}
-                updateUnitPrice={updateUnitPrice}
-              />
+                className={cn(
+                  "rounded-lg transition-colors duration-700",
+                  updatedLineIds.has(line.productId) ? "bg-primary/10" : "bg-transparent"
+                )}
+              >
+                <ProductLineCard
+                  line={line}
+                  updateQuantity={updateQuantity}
+                  updateUnitPrice={updateUnitPrice}
+                />
+              </div>
             ))
           )}
         </div>
@@ -84,7 +158,14 @@ export function OfferProductsReview({
                 </TableRow>
               ) : (
                 lines.map((line) => (
-                  <TableRow key={line.productId} className={line.confidence < 80 ? "bg-muted/30" : ""}>
+                  <TableRow
+                    key={line.productId}
+                    className={cn(
+                      "transition-colors duration-700",
+                      line.confidence < 80 ? "bg-muted/30" : "",
+                      updatedLineIds.has(line.productId) ? "bg-primary/10" : ""
+                    )}
+                  >
                     <TableCell className="whitespace-normal py-4">
                       <div className="grid gap-2">
                         {line.requestItem && (

@@ -9,7 +9,7 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
@@ -63,39 +63,43 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     assistantPanel.collapse();
   }, [assistantOpen, isWideLayout]);
 
+  const fetchOffer = useCallback(async (): Promise<Offer> => {
+    const response = await fetch(`/api/offers/${offerId}`);
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload?.error?.message ?? `HTTP ${response.status}`);
+    }
+    return payload.offer as Offer;
+  }, [offerId]);
+
   useEffect(() => {
     let ignore = false;
 
-    async function loadOffer() {
-      setState({ kind: "loading" });
+    setState({ kind: "loading" });
 
-      try {
-        const response = await fetch(`/api/offers/${offerId}`);
-        const payload = await response.json();
-
-        if (!response.ok) {
-          throw new Error(payload?.error?.message ?? `HTTP ${response.status}`);
-        }
-
-        if (!ignore) {
-          setState({ kind: "ready", offer: payload.offer as Offer });
-        }
-      } catch (error) {
+    fetchOffer()
+      .then((offer: Offer) => { if (!ignore) setState({ kind: "ready", offer }); })
+      .catch((error: unknown) => {
         if (!ignore) {
           setState({
             kind: "error",
             message: error instanceof Error ? error.message : "Could not load this offer."
           });
         }
-      }
-    }
-
-    void loadOffer();
+      });
 
     return () => {
       ignore = true;
     };
-  }, [offerId]);
+  }, [fetchOffer]);
+
+  const refreshOffer = useCallback(() => {
+    fetchOffer()
+      .then((offer: Offer) => {
+        setState({ kind: "ready", offer });
+      })
+      .catch(() => {});
+  }, [fetchOffer]);
 
   if (state.kind === "loading") {
     return (
@@ -203,6 +207,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   offer={state.offer}
                   className="h-full"
                   headerAction={renderAssistantToggle(true)}
+                  onOfferChanged={refreshOffer}
                 />
               </div>
             </ResizablePanel>
