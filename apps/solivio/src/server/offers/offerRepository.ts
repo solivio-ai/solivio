@@ -188,7 +188,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       productManufacturer: products.manufacturer,
       requestItem: offerProducts.requestItem,
       quantity: offerProducts.quantity,
-      unitPriceNet: offerProducts.unitPriceNet,
+      unitPriceNet: sql<number>`CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END`.mapWith(Number),
       currency: offerProducts.currency,
       rationale: offerProducts.rationale,
       position: offerProducts.position
@@ -251,10 +251,11 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
       productCount: sql<number>`COUNT(${offerProducts.id})`.mapWith(Number),
-      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * ${offerProducts.unitPriceNet}), 0)`.mapWith(Number)
+      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number)
     })
     .from(offers)
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))
+    .leftJoin(products, eq(products.id, offerProducts.productId))
     .groupBy(offers.id)
     .orderBy(desc(offers.createdAt))
     .limit(limit);

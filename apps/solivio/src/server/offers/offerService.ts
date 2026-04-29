@@ -1,10 +1,10 @@
 import "server-only";
 
-import { inArray, eq } from "drizzle-orm";
+import { inArray, eq, and } from "drizzle-orm";
 import type { Offer } from "@solivio/domain";
 
 import { db } from "../database/db";
-import { products } from "../database/schema";
+import { products, offerProducts } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import type { OfferDebugFragment } from "@solivio/domain";
 import {
@@ -214,26 +214,39 @@ export async function updateOfferMeta(
   data: UpdateOfferMetaInput,
   userId?: string | null
 ): Promise<Offer | null> {
-  const existing = await findOfferById(offerId);
-  if (!existing) return null;
- 
-  // If the offer is accepted, only allow changing status back to draft (reopening)
-  if (existing.status === "accepted" && data.status !== "draft") {
-    return null;
-  }
- 
-  const updated = await persistOfferMeta(offerId, data);
-  if (!updated) return null;
- 
-  // If the offer was just accepted, lock the prices by saving a final revision
-  const hasContentChanges = Object.keys(data).some((key) => key !== "status");
-  if (data.status === "accepted") {
-    await saveRevision(offerId, userId ?? null, new Date());
-  } else if (hasContentChanges) {
-    await saveRevision(offerId, userId ?? null);
-  }
- 
-  return getOffer(offerId);
+  return db.transaction(async (tx) => {
+    const existing = await findOfferById(offerId, tx);
+    if (!existing) return null;
+
+    // If the offer is accepted, only allow changing status back to draft (reopening)
+    if (existing.status === "accepted" && data.status !== "draft") {
+      return null;
+    }
+
+    const updated = await persistOfferMeta(offerId, data, tx);
+    if (!updated) return null;
+
+    // If the offer was just accepted, sync prices from catalog and lock them by saving a final revision
+    const hasContentChanges = Object.keys(data).some((key) => key !== "status");
+    if (data.status === "accepted") {
+      // Sync current catalog prices to offer_products before locking
+      await tx
+        .update(offerProducts)
+        .set({
+          unitPriceNet: products.priceNet,
+          currency: products.currency
+        })
+        .from(products)
+        .where(and(eq(offerProducts.offerId, offerId), eq(offerProducts.productId, products.id)));
+
+      await saveRevision(offerId, userId ?? null, new Date(), tx);
+    } else if (hasContentChanges) {
+      await saveRevision(offerId, userId ?? null, undefined, tx);
+    }
+
+    const row = await findOfferById(offerId, tx);
+    return row ? toOfferDomain(rowToCreatedOffer(row)) : null;
+  });
 }
 
 export async function deleteOffer(offerId: string): Promise<boolean> {
