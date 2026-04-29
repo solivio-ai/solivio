@@ -111,7 +111,7 @@ export const offerProducts = pgTable("offer_products", {
     .references(() => products.id),
   requestItem: text("request_item").notNull().default(""),
   quantity: integer("quantity").notNull(),
-  unitPriceNet: integer("unit_price_net").default(0),
+  unitPriceNet: numeric("unit_price_net", { precision: 12, scale: 2, mode: "number" }).default(0),
   currency: text("currency").default("PLN"),
   rationale: text("rationale").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
