@@ -16,6 +16,9 @@ const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
   currency: ["currency", "waluta", "ccy"]
 };
 
+// Accepts European-formatted prices ("1.234,56" / "112,98") alongside
+// plain "112.98" — strips dots that sit before three-digit groups, then
+// promotes a trailing decimal comma to a dot before parsing.
 function parseDecimal(raw: string): number | null {
   if (!raw) return null;
   const cleaned = raw.replace(/\s/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
