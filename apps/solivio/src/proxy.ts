@@ -8,7 +8,7 @@ export function proxy(request: NextRequest) {
   headers.set("x-pathname", pathname);
   const passthrough = NextResponse.next({ request: { headers } });
 
-  if (pathname.startsWith("/api/") && !getSessionCookie(request)) {
+  if (pathname.startsWith("/api/") && pathname !== "/api/health" && !getSessionCookie(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

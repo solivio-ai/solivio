@@ -65,10 +65,14 @@ export default defineConfig({
           items: [
             { label: "Overview", link: "/guides/" },
             { label: "Getting started", link: "/guides/getting-started/" },
-            { label: "Brand", link: "/guides/brand/" },
-            { label: "API contract", link: "/guides/api-contract/" },
             { label: "Deployment", link: "/guides/deployment/" },
-            { label: "Publishing", link: "/guides/publishing/" }
+            { label: "Feature walkthrough", link: "/guides/features/" }
+          ]
+        },
+        {
+          label: "Development",
+          items: [
+            { label: "API contract", link: "/dev/api-contract/" }
           ]
         },
         ...openAPISidebarGroups
