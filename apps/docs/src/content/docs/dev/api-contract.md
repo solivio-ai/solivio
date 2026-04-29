@@ -58,6 +58,10 @@ The generated API reference covers every Next.js route handler under
 - `POST /api/offers/{offerId}/products`
 - `PATCH /api/offers/{offerId}/products/{offerProductId}`
 - `DELETE /api/offers/{offerId}/products/{offerProductId}`
+- `GET /api/offers/{offerId}/revisions`
+- `POST /api/offers/{offerId}/revisions`
+- `GET /api/offers/{offerId}/revisions/{revisionId}`
+- `POST /api/offers/{offerId}/revisions/{revisionId}/restore`
 - `GET /api/offers/pdf`
 - `POST /api/offers/pdf`
 - `POST /api/offers/quick`

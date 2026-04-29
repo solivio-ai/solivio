@@ -281,6 +281,84 @@ export const offerResponseSchema = z
   .strict()
   .meta({ id: "OfferResponse" });
 
+export const offerRevisionSnapshotLineItemSchema = z
+  .object({
+    productId: z.string(),
+    sku: z.string(),
+    name: z.string(),
+    requestItem: z.string(),
+    quantity: z.number().int().positive(),
+    unitPriceNet: z.number().nonnegative(),
+    currency: z.string(),
+    rationale: z.string()
+  })
+  .strict()
+  .meta({
+    id: "OfferRevisionSnapshotLineItem",
+    description: "Line item captured in an offer revision snapshot."
+  });
+
+export const offerRevisionSnapshotSchema = z
+  .object({
+    name: z.string(),
+    customerName: z.string().nullable(),
+    clientRequest: z.string().nullable(),
+    status: offerStatusSchema,
+    notes: z.array(z.string()),
+    unmatched: z.array(z.string()),
+    lineItems: z.array(offerRevisionSnapshotLineItemSchema)
+  })
+  .strict()
+  .meta({
+    id: "OfferRevisionSnapshot",
+    description: "Stored offer state that can be restored later."
+  });
+
+export const offerRevisionUserSchema = z
+  .object({
+    id: z.string(),
+    name: z.string()
+  })
+  .strict()
+  .meta({ id: "OfferRevisionUser" });
+
+export const offerRevisionSchema = z
+  .object({
+    id: z.string(),
+    offerId: z.string(),
+    revisionNumber: z.number().int().positive(),
+    snapshot: offerRevisionSnapshotSchema.optional(),
+    createdBy: offerRevisionUserSchema.nullable(),
+    createdAt: z.string().datetime()
+  })
+  .strict()
+  .meta({
+    id: "OfferRevision",
+    description: "Saved revision metadata and optional snapshot for an offer."
+  });
+
+export const offerRevisionResponseSchema = z
+  .object({
+    revision: offerRevisionSchema
+  })
+  .strict()
+  .meta({ id: "OfferRevisionResponse" });
+
+export const offerRevisionsResponseSchema = z
+  .object({
+    revisions: z.array(offerRevisionSchema)
+  })
+  .strict()
+  .meta({ id: "OfferRevisionsResponse" });
+
+export const restoreOfferRevisionResponseSchema = z
+  .object({
+    offer: offerSchema.nullable(),
+    revision: offerRevisionSchema
+  })
+  .strict()
+  .meta({ id: "RestoreOfferRevisionResponse" });
+
 /** Product snapshot for update payloads — priceNet and currency are stripped to prevent price overwrites. */
 const updateOfferItemProductSchema = offerItemProductSchema.omit({ priceNet: true, currency: true }).meta({
   id: "UpdateOfferItemProduct",
@@ -410,6 +488,14 @@ export const offerProductPathParamsSchema = z
   })
   .strict()
   .meta({ id: "OfferProductPathParams" });
+
+export const offerRevisionPathParamsSchema = z
+  .object({
+    offerId: z.string(),
+    revisionId: z.string()
+  })
+  .strict()
+  .meta({ id: "OfferRevisionPathParams" });
 
 export const offerChatMessagesPathParamsSchema = z
   .object({
@@ -986,6 +1072,78 @@ export const apiContracts = [
       },
       404: {
         description: "The offer was not found.",
+        schema: errorResponseSchema
+      }
+    })
+  },
+  {
+    method: "get",
+    path: "/api/offers/{offerId}/revisions",
+    operationId: "listOfferRevisions",
+    summary: "List offer revisions",
+    tags: ["Offers"],
+    requiresAuth: true,
+    requestParams: offerPathParamsSchema,
+    responses: authenticatedResponses({
+      200: {
+        description: "Revision history for the offer.",
+        schema: offerRevisionsResponseSchema
+      }
+    })
+  },
+  {
+    method: "post",
+    path: "/api/offers/{offerId}/revisions",
+    operationId: "saveOfferRevision",
+    summary: "Save an offer revision",
+    tags: ["Offers"],
+    requiresAuth: true,
+    requestParams: offerPathParamsSchema,
+    responses: authenticatedResponses({
+      201: {
+        description: "The saved offer revision.",
+        schema: offerRevisionResponseSchema
+      },
+      404: {
+        description: "The offer was not found.",
+        schema: errorResponseSchema
+      }
+    })
+  },
+  {
+    method: "get",
+    path: "/api/offers/{offerId}/revisions/{revisionId}",
+    operationId: "getOfferRevision",
+    summary: "Get an offer revision",
+    tags: ["Offers"],
+    requiresAuth: true,
+    requestParams: offerRevisionPathParamsSchema,
+    responses: authenticatedResponses({
+      200: {
+        description: "The requested offer revision.",
+        schema: offerRevisionResponseSchema
+      },
+      404: {
+        description: "The revision was not found.",
+        schema: errorResponseSchema
+      }
+    })
+  },
+  {
+    method: "post",
+    path: "/api/offers/{offerId}/revisions/{revisionId}/restore",
+    operationId: "restoreOfferRevision",
+    summary: "Restore an offer revision",
+    tags: ["Offers"],
+    requiresAuth: true,
+    requestParams: offerRevisionPathParamsSchema,
+    responses: authenticatedResponses({
+      200: {
+        description: "The restored offer and the revision created by the restore action.",
+        schema: restoreOfferRevisionResponseSchema
+      },
+      404: {
+        description: "The revision was not found.",
         schema: errorResponseSchema
       }
     })
