@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 type OfferChatProps = {
   className?: string;
+  discountPercent?: number;
   headerAction?: ReactNode;
   offer?: Offer;
   onOfferChanged?: () => void;
@@ -131,16 +132,24 @@ async function readJsonResponse(response: Response) {
   }
 }
 
-export function OfferChat({ className, headerAction, offer, onOfferChanged }: OfferChatProps) {
+export function OfferChat({
+  className,
+  discountPercent,
+  headerAction,
+  offer,
+  onOfferChanged
+}: OfferChatProps) {
   const [threads, setThreads] = useState<OfferChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
   const [threadError, setThreadError] = useState<string | null>(null);
   const offerChatRequestContextRef = useRef<{
+    discountPercent?: number;
     offerId: string | null;
     threadId: string | null;
   }>({ offerId: null, threadId: null });
   offerChatRequestContextRef.current = {
+    discountPercent,
     offerId: offer?.id ?? null,
     threadId: activeThreadId
   };
@@ -152,7 +161,7 @@ export function OfferChat({ className, headerAction, offer, onOfferChanged }: Of
           const ctx = offerChatRequestContextRef.current;
           const threadBody =
             ctx.offerId && ctx.threadId
-              ? { offerId: ctx.offerId, threadId: ctx.threadId }
+              ? { discountPercent: ctx.discountPercent, offerId: ctx.offerId, threadId: ctx.threadId }
               : {};
 
           return {

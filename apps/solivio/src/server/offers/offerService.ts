@@ -30,6 +30,8 @@ export type OfferLineItem = {
   productManufacturer: string;
   requestItem: string;
   quantity: number;
+  unitPriceNet: number;
+  currency: string;
   rationale: string;
 };
 
@@ -97,12 +99,16 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
       quantity: item.quantity,
       rationale: item.rationale,
       requestItem: item.requestItem,
+      unitPriceNet: item.unitPriceNet,
+      currency: item.currency as Offer["items"][number]["currency"],
       product: {
         id: item.productId,
         sku: item.productSku,
         name: item.productName,
         description: item.productDescription,
         manufacturer: item.productManufacturer,
+        priceNet: item.unitPriceNet,
+        currency: item.currency as NonNullable<Offer["items"][number]["product"]>["currency"],
         source: "semantic-search" as const
       }
     }))

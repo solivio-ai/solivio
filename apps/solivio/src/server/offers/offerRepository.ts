@@ -49,6 +49,8 @@ export type OfferItemRow = {
   productManufacturer: string;
   requestItem: string;
   quantity: number;
+  unitPriceNet: number;
+  currency: string;
   rationale: string;
 };
 

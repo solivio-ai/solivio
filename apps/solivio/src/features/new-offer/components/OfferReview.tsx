@@ -48,6 +48,7 @@ function useMediaQuery(query: string) {
 export function OfferReview({ offerId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [assistantOpen, setAssistantOpen] = useState(true);
+  const [discountPercent, setDiscountPercent] = useState(3);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
@@ -186,7 +187,12 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               className="min-h-0"
             >
               <div className="h-full min-h-0 overflow-y-auto pr-1">
-                <OfferBuilder offer={state.offer} onOfferChange={handleOfferChange} />
+                <OfferBuilder
+                  discountPercent={discountPercent}
+                  offer={state.offer}
+                  onDiscountPercentChange={setDiscountPercent}
+                  onOfferChange={handleOfferChange}
+                />
               </div>
             </ResizablePanel>
 
@@ -208,6 +214,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             >
               <div className="h-full min-h-0 overflow-hidden pl-0 pt-3 xl:pl-3 xl:pt-0">
                 <OfferChat
+                  discountPercent={discountPercent}
                   offer={state.offer}
                   className="h-full"
                   headerAction={renderAssistantToggle(true)}
@@ -219,7 +226,9 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         ) : (
           <div className="h-full min-h-0 overflow-y-auto pr-1">
             <OfferBuilder
+              discountPercent={discountPercent}
               offer={state.offer}
+              onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
               assistantToggle={renderAssistantToggle()}
             />
