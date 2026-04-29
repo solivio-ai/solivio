@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { NewOfferForm } from "../../../features/new-offer";
-import { BrandLockup } from "@/components/brand/BrandLockup";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -13,16 +12,16 @@ export default async function NewOfferPage() {
   const t = await getTranslations("NewOffer.page");
 
   return (
-    <main className="mx-auto grid max-w-[1440px] gap-5 p-6 max-sm:p-4">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-        <div className="grid gap-3">
-          <BrandLockup href="/" tagline={t("tagline")} />
+    <main className="mx-auto grid max-w-[1180px] gap-4 p-4">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <div className="flex flex-wrap gap-2">
             <Badge>{t("badges.generatedDraft")}</Badge>
             <Badge variant="secondary">{t("badges.review")}</Badge>
           </div>
         </div>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" size="sm">
           <Link href="/">
             <ArrowLeft size={16} aria-hidden="true" />
             {t("back")}

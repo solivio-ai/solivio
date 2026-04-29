@@ -19,7 +19,7 @@
   },
   "NewOffer": {
     "page": {
-      "tagline": "Oferty nie powinny zajmować godzin. Powinny powstawać z Twoich danych.",
+      "title": "Nowa oferta",
       "badges": {
         "generatedDraft": "Draft generowany przez AI",
         "review": "Sprawdź i dopracuj"

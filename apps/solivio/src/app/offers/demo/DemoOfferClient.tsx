@@ -32,17 +32,17 @@ export function DemoOfferClient() {
   );
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Offer products</h1>
-        <Button onClick={() => setOpen(true)}>
+        <Button size="sm" onClick={() => setOpen(true)}>
           <Plus size={16} aria-hidden="true" />
           Add product
         </Button>
       </div>
 
       {addedList.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center">
+        <div className="rounded-lg border border-dashed p-6 text-center">
           <p className="text-sm text-muted-foreground">No products added yet</p>
         </div>
       ) : (

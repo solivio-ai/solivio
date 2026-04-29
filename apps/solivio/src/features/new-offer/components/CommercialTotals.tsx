@@ -23,7 +23,7 @@ export function CommercialTotals({
   total,
 }: CommercialTotalsProps) {
   return (
-    <section className="grid min-w-0 content-start gap-4 rounded-lg border bg-background/60 p-4">
+    <section className="grid min-w-0 content-start gap-3 rounded-lg border bg-background/60 p-3">
       <h2 className="text-sm font-medium">Commercial totals</h2>
       <div className="grid gap-3 text-sm">
         <div className="flex items-center justify-between gap-4">

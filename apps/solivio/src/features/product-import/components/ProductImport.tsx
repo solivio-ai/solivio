@@ -137,13 +137,13 @@ export function ProductImport() {
   }
 
   return (
-    <section className="grid gap-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
+    <section className="grid gap-3">
+      <Card size="sm">
+        <CardHeader className="flex flex-row items-center gap-2 pb-1">
           <Upload size={18} aria-hidden="true" className="text-primary" />
           <CardTitle className="text-base">Catalog upload</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4">
+        <CardContent className="grid gap-3">
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
             Pick a CSV file with columns: <strong className="text-foreground">sku</strong>,{" "}
             <strong className="text-foreground">name</strong>,{" "}
@@ -154,7 +154,7 @@ export function ProductImport() {
           <div className="grid gap-2">
             <Label
               htmlFor="csv-input"
-              className="flex min-h-[148px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-5 py-6 text-center transition-colors hover:bg-muted/40"
+              className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-4 py-4 text-center transition-colors hover:bg-muted/40"
             >
               <FileSpreadsheet size={24} aria-hidden="true" className="text-primary" />
               <span className="text-base font-semibold">{fileName ?? "Choose a CSV file"}</span>
@@ -179,8 +179,8 @@ export function ProductImport() {
       </Card>
 
       {parseResult && parseResult.rows.length > 0 ? (
-        <Card>
-          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Card size="sm">
+          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <Database size={18} aria-hidden="true" className="text-primary" />
               <CardTitle className="text-base">Preview</CardTitle>
@@ -194,13 +194,13 @@ export function ProductImport() {
             </Button>
           </CardHeader>
 
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-3">
             {missingColumns.length > 0 ? (
               <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
                 Missing required column{missingColumns.length === 1 ? "" : "s"}: {missingColumns.join(", ")}.
               </StatusNotice>
             ) : (
-              <div className="flex flex-col gap-3 rounded-lg border bg-background/60 p-3 sm:flex-row sm:items-center">
+              <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
                 {models.length > 0 ? (
                   <Select
                     value={selectedModel}
@@ -227,6 +227,7 @@ export function ProductImport() {
 
                 <Button
                   type="button"
+                  size="sm"
                   onClick={handleImport}
                   disabled={status.kind === "saving" || productRows.length === 0 || !selectedModel}
                 >
@@ -250,7 +251,7 @@ export function ProductImport() {
             )}
 
             <div className="overflow-hidden rounded-lg border bg-background/60">
-              <div className="max-h-[480px] overflow-auto">
+              <div className="max-h-[420px] overflow-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
