@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 type OfferChatProps = {
+  className?: string;
+  headerAction?: ReactNode;
   offer?: Offer;
 };
 
@@ -43,7 +45,6 @@ function renderInlineMarkdown(text: string) {
   });
 }
 
-/** ATX headings: ### Title (optional trailing # trimmed per CommonMark) */
 function renderHeading(line: string, index: number): ReactNode {
   const match = line.match(/^(#{1,6})\s+(.*?)(\s+#*)?$/);
   if (!match) return null;
@@ -129,16 +130,11 @@ async function readJsonResponse(response: Response) {
   }
 }
 
-export function OfferChat({ offer }: OfferChatProps) {
+export function OfferChat({ className, headerAction, offer }: OfferChatProps) {
   const [threads, setThreads] = useState<OfferChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
   const [threadError, setThreadError] = useState<string | null>(null);
-  /**
-   * `useChat` keeps the first `DefaultChatTransport` instance forever unless `id` changes.
-   * On mount, `activeThreadId` is still null, so a transport created with inline `body` would
-   * never send `offerId` / `threadId`. Merge them on every request instead.
-   */
   const offerChatRequestContextRef = useRef<{
     offerId: string | null;
     threadId: string | null;
@@ -175,17 +171,10 @@ export function OfferChat({ offer }: OfferChatProps) {
   const { messages, sendMessage, setMessages, status } = useChat({ transport });
   const [input, setInput] = useState("");
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isLoading = status === "streaming" || status === "submitted";
   const isInputDisabled = isLoading || isThreadLoading || Boolean(offer && !activeThreadId);
 
-  /**
-   * Scrolls the message container to the bottom.
-   * `instant` is used when loading history (thread switch / init) so there's no visible jump.
-   * `smooth` is used when a new message or streaming chunk arrives.
-   * Auto-scroll is skipped when the user has scrolled up more than 120 px from the bottom.
-   */
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -200,7 +189,7 @@ export function OfferChat({ offer }: OfferChatProps) {
 
   useEffect(() => {
     scrollToBottom("smooth");
-  }, [messages, scrollToBottom]);
+  }, [messages, isLoading, scrollToBottom]);
 
   const refreshThreads = useCallback(async () => {
     if (!offer) return [] as OfferChatThread[];
@@ -229,7 +218,6 @@ export function OfferChat({ offer }: OfferChatProps) {
       }
 
       setMessages(payload.messages as UIMessage[]);
-      // Use rAF so the DOM has painted the loaded messages before we jump to the bottom.
       requestAnimationFrame(() => scrollToBottom("instant"));
     },
     [offer, scrollToBottom, setMessages]
@@ -289,6 +277,7 @@ export function OfferChat({ offer }: OfferChatProps) {
       setThreads((current) => [thread, ...current]);
       setActiveThreadId(thread.id);
       setMessages([]);
+      requestAnimationFrame(() => scrollToBottom("instant"));
     } catch (error) {
       setThreadError(error instanceof Error ? error.message : "Could not start a new chat.");
     } finally {
@@ -297,7 +286,12 @@ export function OfferChat({ offer }: OfferChatProps) {
   }
 
   useEffect(() => {
-    if (!offer) return;
+    if (!offer) {
+      setThreads([]);
+      setActiveThreadId(null);
+      setThreadError(null);
+      return;
+    }
 
     let ignore = false;
 
@@ -358,168 +352,170 @@ export function OfferChat({ offer }: OfferChatProps) {
   }
 
   return (
-    <main className="flex h-[calc(100vh-2.5rem)] justify-center bg-background p-4">
-      <Card className="flex min-h-0 w-full max-w-md flex-1 gap-0 rounded-2xl py-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border px-4 py-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-primary">
-            <span className="flex size-6 items-center justify-center rounded-full bg-primary/10">
-              <Image src="/favicon.png" alt="" width={16} height={16} className="size-4" />
-            </span>
-            Solivio Assistant
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            {offer ? (
-              <>
-                <select
-                  value={activeThreadId ?? ""}
-                  onChange={(event) => void switchThread(event.target.value)}
-                  disabled={isThreadLoading || isLoading}
-                  className="h-7 max-w-32 rounded-md border border-input bg-background px-2 text-xs text-muted-foreground"
-                >
-                  {threads.map((thread) => (
-                    <option key={thread.id} value={thread.id}>
-                      {thread.title}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-xs"
-                  onClick={() => void startNewThread()}
-                  disabled={isThreadLoading || isLoading}
-                >
-                  <Plus className="size-3" />
-                </Button>
-              </>
-            ) : null}
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span
-                className={cn(
-                  "size-2 rounded-full",
-                  isLoading ? "bg-yellow-500" : "bg-green-600"
-                )}
-              />
-              {isLoading ? "Thinking" : "Ready"}
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4 space-y-4">
-          {threadError ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-              {threadError}
-            </div>
-          ) : null}
-
-          {messages.length === 0 && (
-            <div className="flex gap-3">
-              <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
-              </div>
-              <div className="max-w-[82%] rounded-xl border border-border bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
-                I can explain this offer, summarize the client request, review product matches, and suggest improvements.
-              </div>
-            </div>
-          )}
-
-          {messages.map((message) => {
-            const isUser = message.role === "user";
-            const textContent = message.parts
-              .filter((p): p is Extract<typeof p, { type: "text" }> => p.type === "text")
-              .map((p) => p.text)
-              .join("");
-
-            return (
-              <div
-                key={message.id}
-                className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}
+    <Card className={cn("flex min-h-0 w-full flex-1 gap-0 py-0 shadow-sm", className)}>
+      <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <CardTitle className="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <Image src="/favicon.png" alt="" width={16} height={16} className="size-4" />
+          </span>
+          <span className="truncate">Solivio Assistant</span>
+        </CardTitle>
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
+          {offer ? (
+            <>
+              <select
+                value={activeThreadId ?? ""}
+                onChange={(event) => void switchThread(event.target.value)}
+                disabled={isThreadLoading || isLoading || threads.length === 0}
+                aria-label="Chat thread"
+                className="h-7 max-w-32 rounded-md border border-input bg-background px-2 text-xs text-muted-foreground"
               >
-                {!isUser && (
-                  <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <Image
-                      src="/favicon.png"
-                      alt=""
-                      width={18}
-                      height={18}
-                      className="size-[18px]"
-                    />
-                  </div>
-                )}
-                <div
-                  className={cn(
-                    "max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
-                    isUser
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border bg-muted/60 text-foreground"
-                  )}
-                >
-                  {isUser ? textContent : <MarkdownMessage>{textContent}</MarkdownMessage>}
-                </div>
-                {isUser && (
-                  <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
-                    <User className="size-4 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <div className="flex gap-3 justify-start">
-              <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
-              </div>
-              <div className="rounded-xl border border-border bg-muted/60 px-3.5 py-2.5">
-                <span className="flex gap-1 items-center h-5">
-                  <span className="size-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:0ms]" />
-                  <span className="size-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:150ms]" />
-                  <span className="size-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:300ms]" />
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </CardContent>
-
-        <CardFooter className="flex flex-col gap-2 border-t border-border bg-background px-4 py-3">
-          <div className="flex w-full flex-wrap gap-1.5">
-            {questionSuggestions.map((question) => (
+                {threads.map((thread) => (
+                  <option key={thread.id} value={thread.id}>
+                    {thread.title}
+                  </option>
+                ))}
+              </select>
               <Button
-                key={question}
                 type="button"
                 variant="outline"
-                size="xs"
-                disabled={isInputDisabled}
-                onClick={() => sendSuggestion(question)}
-                className="h-6 rounded-full bg-muted/30 px-2 text-xs"
+                size="icon-xs"
+                onClick={() => void startNewThread()}
+                disabled={isThreadLoading || isLoading}
+                aria-label="Start new chat"
               >
-                {question}
+                <Plus className="size-3" />
               </Button>
-            ))}
-          </div>
-          <div className="flex w-full items-end gap-2 rounded-xl border border-input bg-background p-1.5 focus-within:ring-3 focus-within:ring-ring/50">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isInputDisabled}
-              placeholder="Tell the AI what to change or ask..."
-              className="min-h-9 max-h-40 resize-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
-              rows={1}
+            </>
+          ) : null}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span
+              className={cn(
+                "size-2 rounded-full",
+                isLoading ? "bg-yellow-500" : "bg-green-600"
+              )}
             />
-            <Button
-              size="icon"
-              onClick={submit}
-              disabled={isInputDisabled || !input.trim()}
-              className="size-8 shrink-0 rounded-lg"
-            >
-              <ArrowUp className="size-4" />
-            </Button>
+            {isLoading ? "Thinking" : "Ready"}
           </div>
-        </CardFooter>
-      </Card>
-    </main>
+          {headerAction}
+        </div>
+      </CardHeader>
+
+      <CardContent
+        ref={scrollContainerRef}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+      >
+        {threadError ? (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {threadError}
+          </div>
+        ) : null}
+
+        {messages.length === 0 && (
+          <div className="flex gap-3">
+            <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
+            </div>
+            <div className="max-w-[82%] rounded-lg border border-border bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
+              I can explain this offer, summarize the client request, review product matches, and suggest improvements.
+            </div>
+          </div>
+        )}
+
+        {messages.map((message) => {
+          const isUser = message.role === "user";
+          const textContent = message.parts
+            .filter((p): p is Extract<typeof p, { type: "text" }> => p.type === "text")
+            .map((p) => p.text)
+            .join("");
+
+          return (
+            <div
+              key={message.id}
+              className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}
+            >
+              {!isUser && (
+                <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Image
+                    src="/favicon.png"
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="size-[18px]"
+                  />
+                </div>
+              )}
+              <div
+                className={cn(
+                  "max-w-[82%] whitespace-pre-wrap rounded-lg px-3.5 py-2.5 text-sm leading-relaxed",
+                  isUser
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-muted/60 text-foreground"
+                )}
+              >
+                {isUser ? textContent : <MarkdownMessage>{textContent}</MarkdownMessage>}
+              </div>
+              {isUser && (
+                <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+                  <User className="size-4 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {isLoading && messages[messages.length - 1]?.role === "user" && (
+          <div className="flex justify-start gap-3">
+            <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
+            </div>
+            <div className="rounded-lg border border-border bg-muted/60 px-3.5 py-2.5">
+              <span className="flex h-5 items-center gap-1">
+                <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0ms]" />
+                <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:150ms]" />
+                <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:300ms]" />
+              </span>
+            </div>
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="flex flex-col gap-2 border-t border-border bg-background px-4 py-3">
+        <div className="flex w-full flex-wrap gap-1.5">
+          {questionSuggestions.map((question) => (
+            <Button
+              key={question}
+              type="button"
+              variant="outline"
+              size="xs"
+              disabled={isInputDisabled}
+              onClick={() => sendSuggestion(question)}
+              className="h-6 max-w-full rounded-full bg-muted/30 px-2 text-xs"
+            >
+              <span className="truncate">{question}</span>
+            </Button>
+          ))}
+        </div>
+        <div className="flex w-full items-end gap-2 rounded-lg border border-input bg-background p-1.5 focus-within:ring-3 focus-within:ring-ring/50">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isInputDisabled}
+            placeholder="Tell the AI what to change or ask..."
+            className="max-h-40 min-h-9 resize-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
+            rows={1}
+          />
+          <Button
+            size="icon"
+            onClick={submit}
+            disabled={isInputDisabled || !input.trim()}
+            className="size-8 shrink-0 rounded-lg"
+          >
+            <ArrowUp className="size-4" />
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
   );
 }

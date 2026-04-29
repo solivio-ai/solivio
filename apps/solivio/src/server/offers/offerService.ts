@@ -78,10 +78,12 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     status: offer.status as Offer["status"],
     generatedAt: offer.generatedAt,
     notes: offer.notes,
+    unmatched: offer.unmatched,
     items: offer.items.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
       rationale: item.rationale,
+      requestItem: item.requestItem,
       product: {
         id: item.productId,
         sku: item.productSku,

@@ -178,6 +178,7 @@ export const offerItemSchema = z
     productName: z.string().optional(),
     productSku: z.string().optional(),
     quantity: z.number().int().positive(),
+    requestItem: z.string().optional(),
     rationale: z.string(),
     confidence: z.number().min(0).max(100).optional(),
     unitPriceNet: z.number().nonnegative().optional(),
@@ -209,7 +210,8 @@ export const offerSchema = z
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
-    notes: z.array(z.string())
+    notes: z.array(z.string()),
+    unmatched: z.array(z.string()).optional()
   })
   .meta({
     id: "Offer",
