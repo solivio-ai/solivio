@@ -1,13 +1,20 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { LoginForm } from "./login-form";
 import { BrandLockup } from "@/components/brand/BrandLockup";
+import { auth } from "@/lib/auth";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (session) redirect("/");
+
   const ssoEnabled = process.env.AUTH_SSO_ENABLED !== "false";
 
   return (
     <main className="grid min-h-screen place-items-center bg-background px-4 py-10 text-foreground">
       <section className="grid w-full max-w-sm gap-6" aria-label="Solivio sign in">
-        <BrandLockup href="/" tagline="Quotes shouldn’t take hours. They should start from your data." />
+        <BrandLockup href="/" tagline="Quotes shouldn't take hours. They should start from your data." />
         <LoginForm
           credentialsEnabled={process.env.AUTH_CREDENTIALS_ENABLED !== "false"}
           signUpEnabled={process.env.AUTH_SIGNUP_ENABLED !== "false"}
