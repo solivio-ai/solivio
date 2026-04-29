@@ -50,6 +50,13 @@
       "when": 1777452745672,
       "tag": "0006_rainy_liz_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777456722095,
+      "tag": "0007_polite_blue_blade",
+      "breakpoints": true
     }
   ]
 }
