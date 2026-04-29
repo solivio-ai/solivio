@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -45,13 +46,29 @@ export function ProductSearchDialog({
   renderProductInfo = defaultProductInfo,
 }: Props) {
   const [selectedFields, setSelectedFields] = useState<SearchableField[]>(
-    searchFields ?? ALL_SEARCHABLE_FIELDS
+    [...(searchFields ?? ALL_SEARCHABLE_FIELDS)]
   );
 
-  const { query, setQuery, results, isLoading, error, hasSearched, hasMore, search, loadMore } =
+  const { query, setQuery, results, totalCount, isLoading, error, hasSearched, hasMore, search, loadMore, resetSearch } =
     useProductSearch({ searchFields: selectedFields });
 
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const trimmed = query.trim();
+    if (!trimmed) {
+      resetSearch();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      void search(trimmed);
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [open, query, resetSearch, search, selectedFields]);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -90,9 +107,12 @@ export function ProductSearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[75vw] overflow-hidden">
+      <DialogContent className="max-h-[calc(100svh-2rem)] overflow-hidden sm:max-w-[min(920px,calc(100vw-2rem))]">
         <DialogHeader>
           <DialogTitle>Search products</DialogTitle>
+          <DialogDescription>
+            Search the catalog and adjust quantities before adding products to the offer.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex gap-2">
@@ -101,36 +121,43 @@ export function ProductSearchDialog({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search products…"
-            disabled={isLoading && results.length === 0}
           />
           <Button
             variant="outline"
             size="icon"
             onClick={() => search(query)}
-            disabled={isLoading && results.length === 0}
             aria-label="Search"
           >
             <Search size={16} aria-hidden="true" />
           </Button>
         </div>
 
-        {/* Field selector */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-muted-foreground">Search in:</span>
-          {ALL_SEARCHABLE_FIELDS.map((field) => {
-            const active = selectedFields.includes(field);
-            return (
-              <Button
-                key={field}
-                size="xs"
-                variant={active ? "default" : "outline"}
-                onClick={() => toggleField(field)}
-                aria-pressed={active}
-              >
-                {fieldLabel(field)}
-              </Button>
-            );
-          })}
+        <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">Search in:</span>
+            {ALL_SEARCHABLE_FIELDS.map((field) => {
+              const active = selectedFields.includes(field);
+              return (
+                <Button
+                  key={field}
+                  size="xs"
+                  variant={active ? "default" : "outline"}
+                  onClick={() => toggleField(field)}
+                  aria-pressed={active}
+                >
+                  {fieldLabel(field)}
+                </Button>
+              );
+            })}
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {totalCount !== null && totalCount > 0 ? (
+              <span>{totalCount} products found</span>
+            ) : isLoading ? (
+              <span>Searching...</span>
+            ) : null}
+          </div>
         </div>
 
         {/* Scrollable results */}

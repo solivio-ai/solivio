@@ -11,8 +11,8 @@ import { requireAuth } from "@/server/auth/session";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   return NextResponse.json(customerRequestResponseSchema.parse({
     request: demoRequest
@@ -20,8 +20,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const json = await request.json().catch(() => ({}));
   const input = createCustomerRequestRequestSchema.safeParse(json);

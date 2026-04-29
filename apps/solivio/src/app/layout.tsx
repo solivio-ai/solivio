@@ -3,12 +3,13 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/AppSidebar";
-import { auth } from "@/lib/auth";
+import { getCurrentSession } from "@/server/auth/session";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -40,16 +41,16 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, headerList] = await Promise.all([getCurrentSession(), headers()]);
+  const pathname = headerList.get("x-pathname") ?? "";
+
+  if (!session && !pathname.startsWith("/login")) {
+    redirect("/login");
+  }
 
   return (
     <html lang="en" className={cn("dark", inter.variable)}>
       <body>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.__ENV=${JSON.stringify({ BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? "" })};`,
-          }}
-        />
         <TooltipProvider>
           {session ? (
             <SidebarProvider>

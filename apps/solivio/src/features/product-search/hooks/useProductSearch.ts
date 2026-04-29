@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { SearchableField } from "../searchableFields";
 
 export type ProductSearchMatch = {
@@ -16,6 +16,7 @@ export { ALL_SEARCHABLE_FIELDS } from "../searchableFields";
 
 type State = {
   results: ProductSearchMatch[];
+  totalCount: number | null;
   isLoading: boolean;
   error: string | null;
   hasSearched: boolean;
@@ -24,6 +25,7 @@ type State = {
 
 const INITIAL_STATE: State = {
   results: [],
+  totalCount: null,
   isLoading: false,
   error: null,
   hasSearched: false,
@@ -36,7 +38,7 @@ async function fetchPage(
   query: string,
   offset: number,
   searchFields?: SearchableField[]
-): Promise<ProductSearchMatch[]> {
+): Promise<{ products: ProductSearchMatch[]; totalCount: number }> {
   const response = await fetch("/api/products/text-search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -47,9 +49,25 @@ async function fetchPage(
       ...(searchFields?.length ? { searchFields } : {}),
     }),
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const json = (await response.json()) as { products: ProductSearchMatch[] };
-  return json.products;
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as
+      | { error?: string | { message?: string } }
+      | null;
+    const message =
+      typeof payload?.error === "string"
+        ? payload.error
+        : payload?.error?.message;
+
+    if (response.status === 401) {
+      throw new Error("Your session expired. Sign in again to search products.");
+    }
+
+    throw new Error(message ?? `Product search failed with HTTP ${response.status}.`);
+  }
+  return (await response.json()) as {
+    products: ProductSearchMatch[];
+    totalCount: number;
+  };
 }
 
 type Config = {
@@ -64,62 +82,96 @@ export function useProductSearch({ searchFields }: Config = {}) {
   const offsetRef = useRef(0);
   const isLoadingRef = useRef(false);
   const hasMoreRef = useRef(false);
+  const requestIdRef = useRef(0);
   const searchFieldsRef = useRef(searchFields);
   searchFieldsRef.current = searchFields;
 
-  async function search(searchQuery: string) {
+  const resetSearch = useCallback(() => {
+    requestIdRef.current += 1;
+    currentQueryRef.current = "";
+    offsetRef.current = 0;
+    isLoadingRef.current = false;
+    hasMoreRef.current = false;
+    setState(INITIAL_STATE);
+  }, []);
+
+  const search = useCallback(async (searchQuery: string) => {
     const trimmed = searchQuery.trim();
     if (!trimmed) return;
+    const requestId = requestIdRef.current + 1;
 
+    requestIdRef.current = requestId;
     currentQueryRef.current = trimmed;
     offsetRef.current = 0;
     isLoadingRef.current = true;
     hasMoreRef.current = false;
 
-    setState({ results: [], isLoading: true, error: null, hasSearched: false, hasMore: false });
+    setState({
+      results: [],
+      totalCount: null,
+      isLoading: true,
+      error: null,
+      hasSearched: false,
+      hasMore: false,
+    });
 
     try {
-      const products = await fetchPage(trimmed, 0, searchFieldsRef.current);
-      const hasMore = products.length === PAGE_SIZE;
+      const { products, totalCount } = await fetchPage(trimmed, 0, searchFieldsRef.current);
+      if (requestId !== requestIdRef.current) return;
+      const hasMore = products.length < totalCount;
       offsetRef.current = products.length;
       hasMoreRef.current = hasMore;
       isLoadingRef.current = false;
-      setState({ results: products, isLoading: false, error: null, hasSearched: true, hasMore });
+      setState({
+        results: products,
+        totalCount,
+        isLoading: false,
+        error: null,
+        hasSearched: true,
+        hasMore,
+      });
     } catch (err) {
+      if (requestId !== requestIdRef.current) return;
       isLoadingRef.current = false;
       setState({
         results: [],
+        totalCount: null,
         isLoading: false,
         error: err instanceof Error ? err.message : "Search failed.",
         hasSearched: true,
         hasMore: false,
       });
     }
-  }
+  }, []);
 
-  async function loadMore() {
+  const loadMore = useCallback(async () => {
     if (!currentQueryRef.current || isLoadingRef.current || !hasMoreRef.current) return;
+    const requestId = requestIdRef.current;
 
     isLoadingRef.current = true;
     setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const products = await fetchPage(
+      const { products, totalCount } = await fetchPage(
         currentQueryRef.current,
         offsetRef.current,
         searchFieldsRef.current
       );
-      const hasMore = products.length === PAGE_SIZE;
-      offsetRef.current += products.length;
+      if (requestId !== requestIdRef.current) return;
+      const nextOffset = offsetRef.current + products.length;
+      const hasMore = nextOffset < totalCount;
+      offsetRef.current = nextOffset;
       hasMoreRef.current = hasMore;
       isLoadingRef.current = false;
       setState((prev) => ({
         ...prev,
         results: [...prev.results, ...products],
+        totalCount,
         isLoading: false,
         hasMore,
       }));
     } catch (err) {
+      if (requestId !== requestIdRef.current) return;
       isLoadingRef.current = false;
       setState((prev) => ({
         ...prev,
@@ -127,7 +179,7 @@ export function useProductSearch({ searchFields }: Config = {}) {
         error: err instanceof Error ? err.message : "Load more failed.",
       }));
     }
-  }
+  }, []);
 
-  return { query, setQuery, ...state, search, loadMore };
+  return { query, setQuery, ...state, search, loadMore, resetSearch };
 }
