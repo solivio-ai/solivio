@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,7 +43,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const [session, headerList] = await Promise.all([getCurrentSession(), headers()]);
+  const [session, headerList, locale] = await Promise.all([
+    getCurrentSession(),
+    headers(),
+    getLocale(),
+  ]);
   const pathname = headerList.get("x-pathname") ?? "";
 
   if (!session && !pathname.startsWith("/login")) {
@@ -49,23 +55,25 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   }
 
   return (
-    <html lang="en" className={cn("dark", inter.variable)}>
+    <html lang={locale} className={cn("dark", inter.variable)}>
       <body>
-        <TooltipProvider>
-          {session ? (
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <header className="flex h-10 shrink-0 items-center border-b border-border px-3">
-                  <SidebarTrigger />
-                </header>
-                {children}
-              </SidebarInset>
-            </SidebarProvider>
-          ) : (
-            children
-          )}
-        </TooltipProvider>
+        <NextIntlClientProvider>
+          <TooltipProvider>
+            {session ? (
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <header className="flex h-10 shrink-0 items-center border-b border-border px-3">
+                    <SidebarTrigger />
+                  </header>
+                  {children}
+                </SidebarInset>
+              </SidebarProvider>
+            ) : (
+              children
+            )}
+          </TooltipProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

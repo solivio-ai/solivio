@@ -25,8 +25,8 @@ export async function POST(request: Request) {
     debugFragments: [],
     items: items.map((i: any) => ({
       productId: i.productId,
-      productName: i.productName ?? "",
-      productSku: i.productSku ?? "",
+      productName: typeof i.productName === "string" ? i.productName : "Manual selection",
+      productSku: typeof i.productSku === "string" ? i.productSku : i.productId,
       quantity: i.quantity,
       requestItem: "Manual Selection",
       rationale: "Selected by user",

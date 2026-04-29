@@ -1,7 +1,35 @@
-import Link from "next/link";
-import { FileText, Plus } from "lucide-react";
+"use client";
 
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  CircleDashed,
+  Clock3,
+  FileText,
+  ListFilter,
+  MoreHorizontal,
+  PackageCheck,
+  Plus,
+  Search,
+  Sparkles,
+  TriangleAlert,
+  UserRound,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyContent,
@@ -10,7 +38,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -19,14 +53,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
+type OfferStatus = "draft" | "reviewed" | "accepted";
+type StatusFilter = "all" | OfferStatus | "needs-attention";
+type T = ReturnType<typeof useTranslations<"OffersList">>;
 
 type OfferRow = {
   id: string;
+  name?: string | null;
   customerName: string | null;
+  clientRequest?: string | null;
   status: string;
-  totalPrice: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+  productCount?: number;
+  unmatchedCount?: number;
+  notesCount?: number;
+  unmatched?: string[];
+  notes?: string[];
+  totalPrice?: number;
+};
+
+type NormalizedOfferRow = {
+  id: string;
+  name: string;
+  customerName: string | null;
+  clientRequest: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  productCount: number;
+  unmatchedCount: number;
+  notesCount: number;
+  totalPrice: number | null;
 };
 
 type Props = {
@@ -34,98 +95,576 @@ type Props = {
   hideHeader?: boolean;
 };
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-GB", {
+const statusConfig: Record<
+  OfferStatus,
+  {
+    icon: typeof CircleDashed;
+    badge: "default" | "secondary" | "outline";
+  }
+> = {
+  draft: {
+    icon: CircleDashed,
+    badge: "outline",
+  },
+  reviewed: {
+    icon: Clock3,
+    badge: "secondary",
+  },
+  accepted: {
+    icon: CheckCircle2,
+    badge: "default",
+  },
+};
+
+function isKnownStatus(status: string): status is OfferStatus {
+  return status === "draft" || status === "reviewed" || status === "accepted";
+}
+
+function toIsoString(value: string | Date | undefined) {
+  if (!value) return new Date().toISOString();
+  return value instanceof Date ? value.toISOString() : value;
+}
+
+function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
+  const createdAt = toIsoString(offer.createdAt);
+
+  return {
+    id: offer.id,
+    name: offer.name?.trim() || offer.customerName?.trim() || t("fallbacks.unnamedOffer"),
+    customerName: offer.customerName,
+    clientRequest: offer.clientRequest ?? null,
+    status: offer.status,
+    createdAt,
+    updatedAt: toIsoString(offer.updatedAt) || createdAt,
+    productCount: offer.productCount ?? 0,
+    unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
+    notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
+    totalPrice: typeof offer.totalPrice === "number" ? offer.totalPrice : null,
+  };
+}
+
+function getStatusConfig(status: string) {
+  return isKnownStatus(status)
+    ? statusConfig[status]
+    : {
+        icon: CircleDashed,
+        badge: "outline" as const,
+      };
+}
+
+function getStatusLabel(status: string, t: T) {
+  return isKnownStatus(status) ? t(`status.${status}.label`) : status;
+}
+
+function getStatusDescription(status: string, t: T) {
+  return isKnownStatus(status)
+    ? t(`status.${status}.description`)
+    : t("fallbacks.customStatus");
+}
+
+function getFilterLabel(filter: StatusFilter, t: T) {
+  if (filter === "needs-attention") return t("filters.needsAttention");
+  if (filter === "all") return t("filters.all");
+  return t(`filters.${filter}`);
+}
+
+function formatDate(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  });
+  }).format(new Date(value));
 }
 
-function formatNumber(amount: number) {
-  return new Intl.NumberFormat("en-GB", {
-    minimumFractionDigits: 0,
+function formatRelative(value: string, locale: string, justNow: string) {
+  const date = new Date(value).getTime();
+  const diffMs = Date.now() - date;
+  const diffMinutes = Math.floor(diffMs / 60000);
+  const formatter = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+    style: "narrow",
+  });
+
+  if (diffMinutes < 1) return justNow;
+  if (diffMinutes < 60) return formatter.format(-diffMinutes, "minute");
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return formatter.format(-diffHours, "hour");
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return formatter.format(-diffDays, "day");
+
+  return formatDate(value, locale);
+}
+
+function formatNumber(value: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(value);
+}
+
+function getCustomerLabel(offer: NormalizedOfferRow, t: T) {
+  return offer.customerName?.trim() || t("fallbacks.customer");
+}
+
+function getRequestPreview(offer: NormalizedOfferRow, t: T) {
+  return offer.clientRequest?.trim() || t("fallbacks.request");
+}
+
+function StatusBadge({ status, label }: { status: string; label: string }) {
+  const config = getStatusConfig(status);
+  const Icon = config.icon;
+
+  return (
+    <Badge variant={config.badge} className="capitalize">
+      <Icon size={12} aria-hidden="true" />
+      {label}
+    </Badge>
+  );
+}
+
+function OfferActions({
+  offer,
+  fullWidth = false,
+}: {
+  offer: NormalizedOfferRow;
+  fullWidth?: boolean;
+}) {
+  const locale = useLocale();
+  const t = useTranslations("OffersList");
+
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-end gap-1",
+        fullWidth && "w-full sm:w-auto"
+      )}
+    >
+      <Button asChild size="sm" className={cn(fullWidth && "flex-1 sm:flex-none")}>
+        <Link href={`/offers/${offer.id}`}>
+          {t("actions.reviewOffer")}
+          <ArrowUpRight size={14} aria-hidden="true" />
+        </Link>
+      </Button>
+
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t("actions.openActions", { name: offer.name })}
+              >
+                <MoreHorizontal size={16} aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{t("actions.offerActions")}</TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuLabel>{t("table.offer")}</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href={`/offers/${offer.id}`}>
+              <FileText size={14} aria-hidden="true" />
+              {t("actions.openReview")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/offers/new">
+              <Sparkles size={14} aria-hidden="true" />
+              {t("actions.newDraft")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href={`/offers/${offer.id}`} className="text-muted-foreground">
+              {t("activity.updated", {
+                relativeTime: formatRelative(offer.updatedAt, locale, t("relative.justNow")),
+              })}
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+function AttentionBadge({ offer }: { offer: NormalizedOfferRow }) {
+  const t = useTranslations("OffersList");
+
+  if (offer.unmatchedCount === 0) {
+    return (
+      <Badge variant="secondary">
+        <PackageCheck size={12} aria-hidden="true" />
+        {t("attention.allMatched")}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge variant="destructive">
+      <TriangleAlert size={12} aria-hidden="true" />
+      {t("attention.gapCount", { count: offer.unmatchedCount })}
+    </Badge>
+  );
 }
 
 export function OffersList({ offers, hideHeader }: Props) {
+  const locale = useLocale();
+  const t = useTranslations("OffersList");
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+
+  const normalizedOffers = useMemo(
+    () => offers.map((offer) => normalizeOffer(offer, t)),
+    [offers, t]
+  );
+
+  const metrics = useMemo(() => {
+    const total = normalizedOffers.length;
+    const drafts = normalizedOffers.filter((offer) => offer.status === "draft").length;
+    const accepted = normalizedOffers.filter((offer) => offer.status === "accepted").length;
+    const needsAttention = normalizedOffers.filter((offer) => offer.unmatchedCount > 0).length;
+    const matchedProducts = normalizedOffers.reduce((sum, offer) => sum + offer.productCount, 0);
+
+    return { total, drafts, accepted, needsAttention, matchedProducts };
+  }, [normalizedOffers]);
+
+  const filteredOffers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return normalizedOffers.filter((offer) => {
+      const matchesStatus =
+        statusFilter === "all" ||
+        offer.status === statusFilter ||
+        (statusFilter === "needs-attention" && offer.unmatchedCount > 0);
+
+      if (!matchesStatus) return false;
+      if (!normalizedQuery) return true;
+
+      return [
+        offer.name,
+        offer.customerName,
+        offer.clientRequest,
+        offer.status,
+        String(offer.productCount),
+      ]
+        .filter(Boolean)
+        .some((value) => value!.toLowerCase().includes(normalizedQuery));
+    });
+  }, [normalizedOffers, query, statusFilter]);
+
+  const visibleOffers = hideHeader ? normalizedOffers : filteredOffers;
+
   return (
-    <div>
-      {!hideHeader && (
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight">Offers</h1>
-          <Button asChild size="sm">
+    <div className="grid gap-6">
+      {hideHeader ? (
+        <h2 className="text-xl font-semibold tracking-tight">{t("recent.title")}</h2>
+      ) : (
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0">
+            <div className="mb-2 flex items-center gap-2">
+              <Badge variant="secondary">{t("badges.salesWorkspace")}</Badge>
+              <Badge variant="outline">
+                {t("badges.offerCount", { count: metrics.total })}
+              </Badge>
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              {t("subtitle")}
+            </p>
+          </div>
+          <Button asChild className="w-full sm:w-auto sm:self-start lg:self-auto">
             <Link href="/offers/new">
               <Plus size={16} aria-hidden="true" />
-              New offer
+              {t("actions.newOffer")}
             </Link>
           </Button>
         </div>
       )}
 
-      {hideHeader && (
-        <h2 className="mb-4 text-xl font-semibold tracking-tight">Recent Offers</h2>
-      )}
-
-      {offers.length === 0 ? (
+      {normalizedOffers.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <FileText />
             </EmptyMedia>
-            <EmptyTitle>No offers yet</EmptyTitle>
-            <EmptyDescription>
-              Generate structured offer drafts based on your customer requests.
-            </EmptyDescription>
+            <EmptyTitle>{t("empty.title")}</EmptyTitle>
+            <EmptyDescription>{t("empty.description")}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <Button asChild>
               <Link href="/offers/new">
                 <Plus size={16} aria-hidden="true" />
-                New offer
+                {t("actions.newOffer")}
               </Link>
             </Button>
           </EmptyContent>
         </Empty>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Company</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Total Price</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-[80px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {offers.map((offer) => (
-              <TableRow key={offer.id}>
-                <TableCell className="font-medium">{offer.customerName || "—"}</TableCell>
-                <TableCell>
-                  <Badge variant={offer.status === "accepted" ? "default" : "secondary"} className="capitalize">
-                    {offer.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right font-medium">
-                  {formatNumber(offer.totalPrice)}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(offer.createdAt)}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(offer.updatedAt)}
-                </TableCell>
-                <TableCell>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link href={`/offers/${offer.id}`}>View</Link>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <>
+          {!hideHeader ? (
+            <>
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm">
+                <span className="mr-1 font-medium">{t("queue")}</span>
+                <Badge variant="outline">
+                  <FileText size={12} aria-hidden="true" />
+                  {t("badges.offerCount", { count: metrics.total })}
+                </Badge>
+                <Badge variant="outline">
+                  <CircleDashed size={12} aria-hidden="true" />
+                  {t("badges.draftsToReview", { count: metrics.drafts })}
+                </Badge>
+                <Badge variant={metrics.needsAttention > 0 ? "destructive" : "secondary"}>
+                  <TriangleAlert size={12} aria-hidden="true" />
+                  {t("badges.needsAttention", { count: metrics.needsAttention })}
+                </Badge>
+                <Badge variant="outline">
+                  <PackageCheck size={12} aria-hidden="true" />
+                  {t("badges.matchedProducts", { count: metrics.matchedProducts })}
+                </Badge>
+                <Badge variant="outline">
+                  <CheckCircle2 size={12} aria-hidden="true" />
+                  {t("badges.accepted", { count: metrics.accepted })}
+                </Badge>
+              </div>
+
+              <div className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full sm:max-w-md">
+                  <Search
+                    size={16}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder={t("search.placeholder")}
+                    className="pl-8"
+                    aria-label={t("search.label")}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <ListFilter
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground"
+                  />
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+                  >
+                    <SelectTrigger className="w-48" aria-label={t("filters.label")}>
+                      <span className="truncate">{getFilterLabel(statusFilter, t)}</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("filters.all")}</SelectItem>
+                      <SelectItem value="draft">{t("filters.draft")}</SelectItem>
+                      <SelectItem value="reviewed">{t("filters.reviewed")}</SelectItem>
+                      <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
+                      <SelectItem value="needs-attention">
+                        {t("filters.needsAttention")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {visibleOffers.length === 0 ? (
+            <Empty className="rounded-lg border">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Search />
+                </EmptyMedia>
+                <EmptyTitle>{t("matchingEmpty.title")}</EmptyTitle>
+                <EmptyDescription>{t("matchingEmpty.description")}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setQuery("");
+                    setStatusFilter("all");
+                  }}
+                >
+                  {t("actions.clearFilters")}
+                </Button>
+              </EmptyContent>
+            </Empty>
+          ) : (
+            <>
+              <div className="hidden overflow-hidden rounded-lg border bg-card lg:block">
+                <Table className="table-fixed">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[18%]">{t("table.offer")}</TableHead>
+                      <TableHead className="w-[26%]">
+                        {t("table.customerRequest")}
+                      </TableHead>
+                      <TableHead className="w-[11%]">{t("table.status")}</TableHead>
+                      <TableHead className="w-[13%]">{t("table.coverage")}</TableHead>
+                      <TableHead className="w-[10%] text-right">
+                        {t("table.value")}
+                      </TableHead>
+                      <TableHead className="w-[12%]">{t("table.activity")}</TableHead>
+                      <TableHead className="w-[150px] text-right">
+                        {t("table.actions")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {visibleOffers.map((offer) => {
+                      const statusLabel = getStatusLabel(offer.status, t);
+                      const statusDescription = getStatusDescription(offer.status, t);
+                      return (
+                        <TableRow key={offer.id} className="align-top">
+                          <TableCell className="whitespace-normal">
+                            <div className="grid min-w-0 gap-1">
+                              <Link
+                                href={`/offers/${offer.id}`}
+                                className="truncate font-medium hover:text-primary hover:underline"
+                              >
+                                {offer.name}
+                              </Link>
+                              <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+                                <UserRound size={14} aria-hidden="true" />
+                                <span className="min-w-0 truncate">
+                                  {getCustomerLabel(offer, t)}
+                                </span>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="whitespace-normal">
+                            <p className="line-clamp-2 min-w-0 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
+                              {getRequestPreview(offer, t)}
+                            </p>
+                          </TableCell>
+                          <TableCell className="whitespace-normal">
+                            <div className="grid gap-1">
+                              <StatusBadge status={offer.status} label={statusLabel} />
+                              <span className="text-xs text-muted-foreground">
+                                {statusDescription}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="whitespace-normal">
+                            <div className="grid min-w-0 gap-2">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <Badge variant="outline">
+                                  <PackageCheck size={12} aria-hidden="true" />
+                                  {t("productCount", { count: offer.productCount })}
+                                </Badge>
+                                <AttentionBadge offer={offer} />
+                              </div>
+                              {offer.notesCount > 0 ? (
+                                <span className="text-xs text-muted-foreground">
+                                  {t("notes.generation", { count: offer.notesCount })}
+                                </span>
+                              ) : null}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {offer.totalPrice === null
+                              ? t("fallbacks.noValue")
+                              : formatNumber(offer.totalPrice, locale)}
+                          </TableCell>
+                          <TableCell className="whitespace-normal text-sm">
+                            <div className="grid gap-1">
+                              <span>
+                                {t("activity.updated", {
+                                  relativeTime: formatRelative(
+                                    offer.updatedAt,
+                                    locale,
+                                    t("relative.justNow")
+                                  ),
+                                })}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {t("activity.created", {
+                                  date: formatDate(offer.createdAt, locale),
+                                })}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <OfferActions offer={offer} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
+                {visibleOffers.map((offer) => {
+                  const statusLabel = getStatusLabel(offer.status, t);
+
+                  return (
+                    <Card key={offer.id} size="sm">
+                      <CardHeader>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <CardTitle className="truncate">{offer.name}</CardTitle>
+                            <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                              <UserRound size={14} aria-hidden="true" />
+                              <span className="truncate">
+                                {getCustomerLabel(offer, t)}
+                              </span>
+                            </div>
+                          </div>
+                          <StatusBadge status={offer.status} label={statusLabel} />
+                        </div>
+                      </CardHeader>
+                      <CardContent className="grid gap-4">
+                        <p className="line-clamp-3 min-w-0 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
+                          {getRequestPreview(offer, t)}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <Badge variant="outline">
+                            <PackageCheck size={12} aria-hidden="true" />
+                            {t("productCount", { count: offer.productCount })}
+                          </Badge>
+                          <AttentionBadge offer={offer} />
+                          {offer.notesCount > 0 ? (
+                            <Badge variant="outline">
+                              {t("notes.short", { count: offer.notesCount })}
+                            </Badge>
+                          ) : null}
+                          {offer.totalPrice !== null ? (
+                            <Badge variant="outline">{formatNumber(offer.totalPrice, locale)}</Badge>
+                          ) : null}
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                          <span>
+                            {t("activity.updated", {
+                              relativeTime: formatRelative(
+                                offer.updatedAt,
+                                locale,
+                                t("relative.justNow")
+                              ),
+                            })}
+                          </span>
+                          <span>{formatDate(offer.createdAt, locale)}</span>
+                        </div>
+
+                        <OfferActions offer={offer} fullWidth />
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </>
       )}
     </div>
   );

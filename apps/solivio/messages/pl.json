@@ -1,0 +1,104 @@
+{
+  "AppSidebar": {
+    "nav": {
+      "dashboard": "Panel",
+      "offers": "Oferty",
+      "newOffer": "Nowa oferta",
+      "catalogUpload": "Import katalogu"
+    },
+    "actions": {
+      "newOffer": "Nowa oferta"
+    }
+  },
+  "OffersList": {
+    "actions": {
+      "clearFilters": "Wyczyść filtry",
+      "newDraft": "Nowy szkic",
+      "newOffer": "Nowa oferta",
+      "offerActions": "Akcje oferty",
+      "openActions": "Otwórz akcje dla {name}",
+      "openReview": "Otwórz przegląd",
+      "reviewOffer": "Przejrzyj ofertę"
+    },
+    "activity": {
+      "created": "Utworzono {date}",
+      "updated": "Zaktualizowano {relativeTime}"
+    },
+    "attention": {
+      "allMatched": "Wszystko dopasowane",
+      "gapCount": "{count, plural, one {# luka} few {# luki} many {# luk} other {# luki}}"
+    },
+    "badges": {
+      "accepted": "{count} zaakceptowano",
+      "draftsToReview": "{count} do przeglądu",
+      "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
+      "needsAttention": "{count} z lukami",
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
+      "salesWorkspace": "Obszar sprzedaży"
+    },
+    "empty": {
+      "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
+      "title": "Nie ma jeszcze ofert"
+    },
+    "filters": {
+      "accepted": "Zaakceptowana",
+      "all": "Wszystkie oferty",
+      "draft": "Szkic",
+      "label": "Filtruj oferty",
+      "needsAttention": "Wymaga uwagi",
+      "reviewed": "Sprawdzona"
+    },
+    "fallbacks": {
+      "customStatus": "Status niestandardowy",
+      "request": "Nie zapisano jeszcze zapytania klienta.",
+      "customer": "Nieprzypisany klient",
+      "noValue": "—",
+      "unnamedOffer": "Szkic oferty"
+    },
+    "matchingEmpty": {
+      "description": "Zmień wyszukiwanie lub filtr statusu, aby poszerzyć kolejkę.",
+      "title": "Brak pasujących ofert"
+    },
+    "notes": {
+      "generation": "{count, plural, one {# notatka generowania} few {# notatki generowania} many {# notatek generowania} other {# notatki generowania}}",
+      "short": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}"
+    },
+    "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktu}}",
+    "queue": "Kolejka",
+    "recent": {
+      "title": "Ostatnie oferty"
+    },
+    "relative": {
+      "justNow": "Teraz"
+    },
+    "search": {
+      "label": "Szukaj ofert",
+      "placeholder": "Szukaj klienta, zapytania lub oferty"
+    },
+    "status": {
+      "accepted": {
+        "description": "Zatwierdzona oferta",
+        "label": "Zaakceptowana"
+      },
+      "draft": {
+        "description": "Wymaga przeglądu sprzedaży",
+        "label": "Szkic"
+      },
+      "reviewed": {
+        "description": "Gotowa do końcowej akceptacji",
+        "label": "Sprawdzona"
+      }
+    },
+    "table": {
+      "actions": "Akcje",
+      "activity": "Aktywność",
+      "coverage": "Pokrycie",
+      "customerRequest": "Zapytanie klienta",
+      "offer": "Oferta",
+      "status": "Status",
+      "value": "Wartość"
+    },
+    "title": "Oferty",
+    "subtitle": "Przeglądaj wygenerowane szkice, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
+  }
+}

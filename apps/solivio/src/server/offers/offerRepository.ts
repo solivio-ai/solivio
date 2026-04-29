@@ -171,10 +171,15 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
   return await tx
     .select({
       id: offers.id,
+      name: offers.name,
       status: offers.status,
       customerName: offers.customerName,
+      clientRequest: offers.clientRequest,
+      notes: offers.notes,
+      unmatched: offers.unmatched,
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
+      productCount: sql<number>`COUNT(${offerProducts.id})`.mapWith(Number),
       totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * ${offerProducts.unitPriceNet}), 0)`.mapWith(Number)
     })
     .from(offers)

@@ -1,8 +1,9 @@
 "use client";
 
-import { Database, FileText, LayoutDashboard, MessageSquare, Plus } from "lucide-react";
+import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,15 +19,15 @@ import {
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 const navItems = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Offers", href: "/offers", icon: FileText },
-  { label: "New Offer", href: "/offers/new", icon: Plus },
-  { label: "Chat", href: "/chat", icon: MessageSquare },
-  { label: "Catalog Upload", href: "/products/upload", icon: Database },
-];
+  { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
+  { labelKey: "offers", href: "/offers", icon: FileText },
+  { labelKey: "newOffer", href: "/offers/new", icon: Plus },
+  { labelKey: "catalogUpload", href: "/products/upload", icon: Database },
+] as const;
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const t = useTranslations("AppSidebar");
 
   return (
     <Sidebar>
@@ -43,7 +44,7 @@ export function AppSidebar() {
           <Button asChild className="w-full" size="sm">
             <Link href="/offers/new">
               <Plus size={16} aria-hidden="true" />
-              New offer
+              {t("actions.newOffer")}
             </Link>
           </Button>
         </div>
@@ -51,7 +52,7 @@ export function AppSidebar() {
 
       <SidebarContent className="pt-2">
         <SidebarMenu>
-          {navItems.map(({ label, href, icon: Icon }) => {
+          {navItems.map(({ labelKey, href, icon: Icon }) => {
             const active = pathname === href;
             return (
               <SidebarMenuItem key={href}>
@@ -62,7 +63,7 @@ export function AppSidebar() {
                 >
                   <Link href={href}>
                     <Icon size={16} aria-hidden="true" />
-                    <span>{label}</span>
+                    <span>{t(`nav.${labelKey}`)}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

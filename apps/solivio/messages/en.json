@@ -1,0 +1,104 @@
+{
+  "AppSidebar": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "offers": "Offers",
+      "newOffer": "New Offer",
+      "catalogUpload": "Catalog Upload"
+    },
+    "actions": {
+      "newOffer": "New offer"
+    }
+  },
+  "OffersList": {
+    "actions": {
+      "clearFilters": "Clear filters",
+      "newDraft": "New draft",
+      "newOffer": "New offer",
+      "offerActions": "Offer actions",
+      "openActions": "Open actions for {name}",
+      "openReview": "Open review",
+      "reviewOffer": "Review offer"
+    },
+    "activity": {
+      "created": "Created {date}",
+      "updated": "Updated {relativeTime}"
+    },
+    "attention": {
+      "allMatched": "All matched",
+      "gapCount": "{count, plural, one {# gap} other {# gaps}}"
+    },
+    "badges": {
+      "accepted": "{count} accepted",
+      "draftsToReview": "{count} to review",
+      "matchedProducts": "{count, plural, one {# matched product} other {# matched products}}",
+      "needsAttention": "{count} with gaps",
+      "offerCount": "{count, plural, one {# offer} other {# offers}}",
+      "salesWorkspace": "Sales workspace"
+    },
+    "empty": {
+      "description": "Generate structured offer drafts based on your customer requests.",
+      "title": "No offers yet"
+    },
+    "filters": {
+      "accepted": "Accepted",
+      "all": "All offers",
+      "draft": "Draft",
+      "label": "Filter offers",
+      "needsAttention": "Needs attention",
+      "reviewed": "Reviewed"
+    },
+    "fallbacks": {
+      "customStatus": "Custom status",
+      "request": "No customer request captured yet.",
+      "customer": "Unassigned customer",
+      "noValue": "—",
+      "unnamedOffer": "Draft offer"
+    },
+    "matchingEmpty": {
+      "description": "Adjust the search term or status filter to widen the queue.",
+      "title": "No matching offers"
+    },
+    "notes": {
+      "generation": "{count, plural, one {# generation note} other {# generation notes}}",
+      "short": "{count, plural, one {# note} other {# notes}}"
+    },
+    "productCount": "{count, plural, one {# product} other {# products}}",
+    "queue": "Queue",
+    "recent": {
+      "title": "Recent Offers"
+    },
+    "relative": {
+      "justNow": "Just now"
+    },
+    "search": {
+      "label": "Search offers",
+      "placeholder": "Search customer, request, or offer"
+    },
+    "status": {
+      "accepted": {
+        "description": "Approved offer",
+        "label": "Accepted"
+      },
+      "draft": {
+        "description": "Needs sales review",
+        "label": "Draft"
+      },
+      "reviewed": {
+        "description": "Ready for final approval",
+        "label": "Reviewed"
+      }
+    },
+    "table": {
+      "actions": "Actions",
+      "activity": "Activity",
+      "coverage": "Coverage",
+      "customerRequest": "Customer request",
+      "offer": "Offer",
+      "status": "Status",
+      "value": "Total Price"
+    },
+    "title": "Offers",
+    "subtitle": "Review generated drafts, spot missing product matches, and continue the customer conversation from one queue."
+  }
+}
