@@ -71,6 +71,7 @@ export const offerLineItemTools = [
     }),
     execute: async (input) => {
       const offer = await updateOfferLineItem(input.offerProductId, input.offerId, input.quantity);
+      if (offer === "locked") return { error: "locked" };
       if (offer === null) return { error: "not_found" };
       if (offer === "locked") return { error: "offer_locked" };
       return { offer: toOfferDomain(offer) };

@@ -114,11 +114,13 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     }
   }, [offerId]);
 
+  const offerUpdatedAt = state.kind === "ready" ? state.offer.updatedAt : null;
+
   useEffect(() => {
     if (rightPanel === "revisions") {
       void loadRevisions();
     }
-  }, [rightPanel, loadRevisions]);
+  }, [rightPanel, loadRevisions, offerUpdatedAt]);
 
   const refreshOffer = useCallback(() => {
     fetchOffer()
@@ -128,13 +130,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       .catch(() => {});
   }, [fetchOffer]);
 
-  async function handleSaveRevision() {
-    const response = await fetch(`/api/offers/${offerId}/revisions`, { method: "POST" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    if (rightPanel === "revisions") {
-      void loadRevisions();
-    }
-  }
+
 
   if (state.kind === "loading") {
     return (
@@ -300,7 +296,6 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   onDiscountPercentChange={setDiscountPercent}
                   onOfferChange={handleOfferChange}
                   onAccepted={handleOfferChange}
-                  onSaveRevision={handleSaveRevision}
                 />
               </div>
             </ResizablePanel>
@@ -334,7 +329,6 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
               onAccepted={handleOfferChange}
-              onSaveRevision={handleSaveRevision}
               assistantToggle={renderAssistantToggle()}
             />
           </div>

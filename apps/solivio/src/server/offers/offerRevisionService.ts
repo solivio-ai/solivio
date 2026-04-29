@@ -54,7 +54,7 @@ export async function saveRevision(
     status: row.status,
     notes: row.notes,
     unmatched: row.unmatched,
-    lineItems: row.items.map((item) => ({
+    lineItems: row.items.map((item, index) => ({
       productId: item.productId,
       sku: item.productSku,
       name: item.productName,
@@ -63,6 +63,7 @@ export async function saveRevision(
       unitPriceNet: item.unitPriceNet,
       currency: item.currency,
       rationale: item.rationale,
+      position: index,
     })),
   };
 
@@ -115,6 +116,7 @@ export async function restoreRevision(
           unitPriceNet: item.unitPriceNet,
           currency: item.currency,
           rationale: item.rationale,
+          position: item.position,
         })),
         tx
       );
