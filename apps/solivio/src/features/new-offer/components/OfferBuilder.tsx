@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
+import { Button } from "@/components/ui/button";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
 import { OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
@@ -327,6 +328,11 @@ export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChan
         onOpenChange={setSearchOpen}
         quantities={searchQuantities}
         onQuantityChange={handleSearchQuantityChange}
+        renderFooter={
+          <div className="flex items-center justify-end gap-2 pt-4 border-t w-full mt-auto">
+            <Button onClick={() => setSearchOpen(false)}>Done</Button>
+          </div>
+        }
       />
     </section>
   );

@@ -28,6 +28,7 @@ type OfferRow = {
 
 type Props = {
   offers: OfferRow[];
+  hideHeader?: boolean;
 };
 
 function formatDate(date: Date) {
@@ -38,18 +39,24 @@ function formatDate(date: Date) {
   });
 }
 
-export function OffersList({ offers }: Props) {
+export function OffersList({ offers, hideHeader }: Props) {
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Offers</h1>
-        <Button asChild size="sm">
-          <Link href="/offers/new">
-            <Plus size={16} aria-hidden="true" />
-            New offer
-          </Link>
-        </Button>
-      </div>
+      {!hideHeader && (
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-semibold tracking-tight">Offers</h1>
+          <Button asChild size="sm">
+            <Link href="/offers/new">
+              <Plus size={16} aria-hidden="true" />
+              New offer
+            </Link>
+          </Button>
+        </div>
+      )}
+
+      {hideHeader && (
+        <h2 className="mb-4 text-xl font-semibold tracking-tight">Recent Offers</h2>
+      )}
 
       {offers.length === 0 ? (
         <Empty>
