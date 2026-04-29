@@ -79,10 +79,43 @@ export type Offer = {
   clientRequest?: string;
   status: "draft" | "accepted";
   generatedAt: string;
+  updatedAt?: string;
   items: OfferItem[];
   notes: string[];
   unmatched?: string[];
   debugFragments?: OfferDebugFragment[];
+  createdBy?: { id: string; name: string } | null;
+  updatedBy?: { id: string; name: string } | null;
+};
+
+export type OfferRevisionSnapshotLineItem = {
+  productId: string;
+  sku: string;
+  name: string;
+  requestItem: string;
+  quantity: number;
+  unitPriceNet: number;
+  currency: string;
+  rationale: string;
+};
+
+export type OfferRevisionSnapshot = {
+  name: string;
+  customerName: string | null;
+  clientRequest: string | null;
+  status: "draft" | "accepted";
+  notes: string[];
+  unmatched: string[];
+  lineItems: OfferRevisionSnapshotLineItem[];
+};
+
+export type OfferRevision = {
+  id: string;
+  offerId: string;
+  revisionNumber: number;
+  snapshot?: OfferRevisionSnapshot;
+  createdBy: { id: string; name: string } | null;
+  createdAt: string;
 };
 
 export const workflowSteps: WorkflowStep[] = [

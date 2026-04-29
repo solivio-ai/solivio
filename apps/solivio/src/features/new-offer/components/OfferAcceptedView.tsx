@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, User } from "lucide-react";
 
 import type { Offer } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
@@ -91,6 +91,32 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             </div>
           </div>
         </section>
+
+        {(offer.createdBy?.name || offer.updatedBy?.name) && (
+          <section className="rounded-lg border bg-card p-4">
+            <h2 className="mb-2 text-sm font-semibold">Attribution</h2>
+            <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+              {offer.createdBy?.name && (
+                <span
+                  className="flex items-center gap-1.5"
+                  title={new Date(offer.generatedAt).toLocaleString("pl-PL")}
+                >
+                  <User size={11} aria-hidden="true" />
+                  Created by {offer.createdBy.name}
+                </span>
+              )}
+              {offer.updatedBy?.name && (
+                <span
+                  className="flex items-center gap-1.5"
+                  title={offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined}
+                >
+                  <User size={11} aria-hidden="true" />
+                  Last modified by {offer.updatedBy.name}
+                </span>
+              )}
+            </div>
+          </section>
+        )}
 
         <div className="grid w-full max-w-sm content-start auto-rows-min gap-2 self-start rounded-lg border bg-card p-3">
           <Button onClick={() => downloadPdf(offer.id)}>

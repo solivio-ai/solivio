@@ -17,6 +17,7 @@ import {
   updateOfferProduct,
   deleteOfferProduct,
   getRecentOffers,
+  setOfferUpdatedBy,
   type OfferRow,
   type UpdateOfferMetaInput
 } from "./offerRepository";
@@ -44,10 +45,15 @@ export type CreatedOffer = {
   clientRequest: string | null;
   status: Offer["status"];
   generatedAt: string;
+  updatedAt: string;
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
   debugFragments: OfferDebugFragment[];
+  createdBy: string | null;
+  createdByName: string | null;
+  updatedBy: string | null;
+  updatedByName: string | null;
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -79,10 +85,15 @@ function rowToCreatedOffer(row: OfferRow): CreatedOffer {
     clientRequest: row.clientRequest,
     status: row.status,
     generatedAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
     items: row.items,
     unmatched: row.unmatched,
     notes: row.notes,
-    debugFragments: row.debugFragments
+    debugFragments: row.debugFragments,
+    createdBy: row.createdBy,
+    createdByName: row.createdByName,
+    updatedBy: row.updatedBy,
+    updatedByName: row.updatedByName,
   };
 }
 
@@ -95,9 +106,12 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     clientRequest: offer.clientRequest ?? undefined,
     status: offer.status as Offer["status"],
     generatedAt: offer.generatedAt,
+    updatedAt: offer.updatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
     debugFragments: offer.debugFragments,
+    createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
+    updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
     items: offer.items.map((item) => ({
       offerProductId: item.offerProductId,
       productId: item.productId,
@@ -125,9 +139,23 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
 export async function createOffer(
   customerName: string | undefined,
   clientRequest: string,
-  generated: GeneratedOffer
+  generated: GeneratedOffer,
+  userId?: string | null
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
+
+  // Pre-validate product IDs outside transaction to build unmatched list.
+  const productIds = items.map((i) => i.productId);
+  const existingProducts = productIds.length > 0
+    ? await db.select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
+        .from(products)
+        .where(inArray(products.id, productIds))
+    : [];
+  const priceMap = new Map(existingProducts.map((p) => [p.id, p]));
+  const validItems = items.filter((item) => priceMap.has(item.productId));
+  const hallucinated = items
+    .filter((item) => !priceMap.has(item.productId))
+    .map((item) => item.requestItem);
 
   return db.transaction(async (tx) => {
     const offer = await insertOffer(
@@ -136,31 +164,24 @@ export async function createOffer(
         clientRequest,
         status: "draft",
         notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched],
-        debugFragments: generated.debugFragments
+        unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
+        debugFragments: generated.debugFragments,
+        createdBy: userId ?? null,
+        updatedBy: userId ?? null,
       },
       tx
     );
 
-    // Step 2: Fetch current catalog prices for all items.
-    const productIds = items.map((i) => i.productId);
-    const catalogProducts = await tx
-      .select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
-      .from(products)
-      .where(inArray(products.id, productIds));
-
-    const priceMap = new Map(catalogProducts.map((p) => [p.id, p]));
-
     await insertOfferProducts(
-      items.map((item) => {
-        const catalog = priceMap.get(item.productId);
+      validItems.map((item) => {
+        const catalog = priceMap.get(item.productId)!;
         return {
           offerId: offer.id,
           productId: item.productId,
           requestItem: item.requestItem,
           quantity: item.quantity,
-          unitPriceNet: catalog?.priceNet ?? 0,
-          currency: catalog?.currency ?? "PLN",
+          unitPriceNet: catalog.priceNet ?? 0,
+          currency: catalog.currency ?? "PLN",
           rationale: item.rationale
         };
       }),
@@ -180,7 +201,8 @@ export async function getOffer(id: string): Promise<Offer | null> {
 
 export async function updateOfferStatusAndFetch(
   offerId: string,
-  status: Offer["status"]
+  status: Offer["status"],
+  userId?: string | null
 ): Promise<Offer | null> {
   return updateOfferMeta(offerId, { status });
 }
@@ -207,7 +229,8 @@ export async function addProductToOffer(
   offerId: string,
   productId: string,
   quantity: number,
-  requestItem = ""
+  requestItem = "",
+  userId?: string | null
 ): Promise<CreatedOffer | null | "duplicate"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
@@ -221,15 +244,16 @@ export async function addProductToOffer(
 
   if (!product) return null;
 
-  await insertOfferProduct({ 
-    offerId, 
-    productId, 
-    requestItem, 
-    quantity, 
-    unitPriceNet: product.priceNet ?? 0, 
-    currency: product.currency ?? "PLN", 
-    rationale: "" 
+  await insertOfferProduct({
+    offerId,
+    productId,
+    requestItem,
+    quantity,
+    unitPriceNet: product.priceNet ?? 0,
+    currency: product.currency ?? "PLN",
+    rationale: ""
   });
+  await setOfferUpdatedBy(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
@@ -237,26 +261,30 @@ export async function addProductToOffer(
 export async function updateOfferLineItem(
   offerProductId: string,
   offerId: string,
-  quantity: number
+  quantity: number,
+  userId?: string | null
 ): Promise<CreatedOffer | null> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return null;
   await updateOfferProduct(offerProductId, offerId, { quantity });
+  await setOfferUpdatedBy(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
 
 export async function removeOfferLineItem(
   offerProductId: string,
-  offerId: string
+  offerId: string,
+  userId?: string | null
 ): Promise<boolean> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);
+  await setOfferUpdatedBy(offerId, userId ?? null);
   return true;
 }
 
