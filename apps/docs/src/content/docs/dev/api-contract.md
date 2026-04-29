@@ -38,18 +38,39 @@ reference pages under `/api/`.
 
 ## Documented endpoints
 
+The generated API reference covers every Next.js route handler under
+`apps/solivio/src/app/api`:
+
+- `GET /api/auth/{authPath}`
+- `POST /api/auth/{authPath}`
+- `POST /api/chat`
+- `GET /api/embedding-models`
 - `GET /api/health`
-- `GET /api/products`
-- `POST /api/products/search`
-- `GET /api/requests`
-- `POST /api/requests`
 - `GET /api/offers`
 - `POST /api/offers`
+- `GET /api/offers/{offerId}`
+- `PATCH /api/offers/{offerId}`
+- `DELETE /api/offers/{offerId}`
+- `GET /api/offers/{offerId}/chat/threads`
+- `POST /api/offers/{offerId}/chat/threads`
+- `GET /api/offers/{offerId}/chat/threads/{threadId}/messages`
+- `GET /api/offers/{offerId}/pdf`
+- `POST /api/offers/{offerId}/products`
+- `PATCH /api/offers/{offerId}/products/{offerProductId}`
+- `DELETE /api/offers/{offerId}/products/{offerProductId}`
+- `GET /api/offers/pdf`
+- `POST /api/offers/pdf`
+- `POST /api/offers/quick`
+- `GET /api/products`
+- `POST /api/products/import`
+- `POST /api/products/search`
+- `POST /api/products/text-search`
+- `GET /api/requests`
+- `POST /api/requests`
 
-The app also has internal routes for offer review edits, quick offers, product
-import, offer chat, and PDF rendering. Add those to
-`apps/solivio/src/server/api/contracts.ts` before treating them as public API
-surface.
+The Better Auth route is documented as a catch-all because the concrete
+subroutes are owned by the Better Auth handler rather than by Solivio route
+code.
 
 ## Validation policy
 

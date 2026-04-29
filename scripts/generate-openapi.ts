@@ -19,6 +19,24 @@ const outputFile = path.join(rootDirectory, "apps/docs/public/openapi/solivio.js
 const registry = new OpenAPIRegistry();
 
 for (const contract of apiContracts) {
+  const request = {
+    ...(contract.requestParams ? { params: contract.requestParams } : {}),
+    ...(contract.requestQuery ? { query: contract.requestQuery } : {}),
+    ...(contract.requestBody
+      ? {
+          body: {
+            description: contract.requestBody.description,
+            required: contract.requestBody.required ?? true,
+            content: {
+              "application/json": {
+                schema: contract.requestBody.schema
+              }
+            }
+          }
+        }
+      : {})
+  };
+
   registry.registerPath({
     method: contract.method,
     path: contract.path,
@@ -26,21 +44,8 @@ for (const contract of apiContracts) {
     summary: contract.summary,
     description: contract.description,
     tags: contract.tags,
-    ...(contract.requestBody
-      ? {
-          request: {
-            body: {
-              description: contract.requestBody.description,
-              required: contract.requestBody.required ?? true,
-              content: {
-                "application/json": {
-                  schema: contract.requestBody.schema
-                }
-              }
-            }
-          }
-        }
-      : {}),
+    ...(contract.requiresAuth ? { security: [{ sessionCookie: [] }] } : {}),
+    ...(Object.keys(request).length > 0 ? { request } : {}),
     responses: toOpenApiResponses(contract.responses)
   });
 }
@@ -72,6 +77,19 @@ const document = generator.generateDocument({
   security: []
 });
 
+document.components = {
+  ...document.components,
+  securitySchemes: {
+    ...document.components?.securitySchemes,
+    sessionCookie: {
+      type: "apiKey",
+      in: "cookie",
+      name: "better-auth.session_token",
+      description: "Better Auth session cookie. Secure deployments may use a prefixed cookie name."
+    }
+  }
+};
+
 await mkdir(path.dirname(outputFile), { recursive: true });
 await writeFile(outputFile, `${JSON.stringify(document, null, 2)}\n`);
 
@@ -81,18 +99,28 @@ function toOpenApiResponses(responses: Record<number, ApiResponseContract>) {
   return Object.fromEntries(
     Object.entries(responses).map(([status, response]) => [
       status,
-      response.schema
+      response.content
         ? {
             description: response.description,
-            content: {
-              "application/json": {
-                schema: response.schema
+            content: Object.fromEntries(
+              Object.entries(response.content).map(([mediaType, content]) => [
+                mediaType,
+                content.schema ? { schema: content.schema } : {}
+              ])
+            )
+          }
+        : response.schema
+          ? {
+              description: response.description,
+              content: {
+                "application/json": {
+                  schema: response.schema
+                }
               }
             }
-          }
-        : {
-            description: response.description
-          }
+          : {
+              description: response.description
+            }
     ])
   );
 }
