@@ -299,7 +299,6 @@ export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChan
         lineCount={lines.length}
         onAccept={() => updateStatus("accepted")}
         onAddProduct={() => setSearchOpen(true)}
-        onMarkReviewed={() => updateStatus("reviewed")}
         onSave={() => void saveReview()}
         saveState={saveState}
         status={status}

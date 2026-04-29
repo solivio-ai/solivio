@@ -37,7 +37,7 @@ export type CreatedOffer = {
   id: string;
   customerName: string | null;
   clientRequest: string | null;
-  status: string;
+  status: Offer["status"];
   generatedAt: string;
   items: OfferLineItem[];
   unmatched: string[];
@@ -167,7 +167,7 @@ export async function getOffer(id: string): Promise<Offer | null> {
   return toOfferDomain(rowToCreatedOffer(row));
 }
 
-export async function updateOfferReviewStatus(
+export async function updateOfferStatusAndFetch(
   offerId: string,
   status: Offer["status"]
 ): Promise<Offer | null> {

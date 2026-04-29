@@ -7,7 +7,6 @@ import {
   ArrowUpRight,
   CheckCircle2,
   CircleDashed,
-  Clock3,
   FileText,
   ListFilter,
   MoreHorizontal,
@@ -56,7 +55,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-type OfferStatus = "draft" | "reviewed" | "accepted";
+type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
 type T = ReturnType<typeof useTranslations<"OffersList">>;
 
@@ -106,10 +105,6 @@ const statusConfig: Record<
     icon: CircleDashed,
     badge: "outline",
   },
-  reviewed: {
-    icon: Clock3,
-    badge: "secondary",
-  },
   accepted: {
     icon: CheckCircle2,
     badge: "default",
@@ -117,7 +112,7 @@ const statusConfig: Record<
 };
 
 function isKnownStatus(status: string): status is OfferStatus {
-  return status === "draft" || status === "reviewed" || status === "accepted";
+  return status === "draft" || status === "accepted";
 }
 
 function toIsoString(value: string | Date | undefined) {
@@ -463,7 +458,6 @@ export function OffersList({ offers, hideHeader }: Props) {
                     <SelectContent>
                       <SelectItem value="all">{t("filters.all")}</SelectItem>
                       <SelectItem value="draft">{t("filters.draft")}</SelectItem>
-                      <SelectItem value="reviewed">{t("filters.reviewed")}</SelectItem>
                       <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
                       <SelectItem value="needs-attention">
                         {t("filters.needsAttention")}

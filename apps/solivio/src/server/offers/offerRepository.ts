@@ -3,7 +3,7 @@ import "server-only";
 import { and, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
-import type { OfferDebugFragment } from "@solivio/domain";
+import type { Offer, OfferDebugFragment } from "@solivio/domain";
 
 import { offerProducts, offers, products } from "../database/schema";
 
@@ -12,7 +12,7 @@ import { offerProducts, offers, products } from "../database/schema";
 export type InsertOfferData = {
   customerName: string | null;
   clientRequest: string;
-  status: string;
+  status: Offer["status"];
   notes: string[];
   unmatched: string[];
   debugFragments: OfferDebugFragment[];
@@ -32,7 +32,7 @@ export type OfferRow = {
   id: string;
   customerName: string | null;
   clientRequest: string | null;
-  status: string;
+  status: Offer["status"];
   createdAt: Date;
   notes: string[];
   unmatched: string[];
@@ -76,7 +76,7 @@ export async function insertOfferProduct(data: InsertOfferProductData, tx: Tx = 
 
 export async function updateOfferStatus(
   offerId: string,
-  status: string,
+  status: Offer["status"],
   tx: Tx = db
 ) {
   const [offer] = await tx

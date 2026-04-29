@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ClipboardCheck, Plus, Save, Send } from "lucide-react";
+import { Plus, Save, Send } from "lucide-react";
 
 import type { Offer } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,6 @@ type OfferBuilderHeaderProps = {
   lineCount: number;
   onAccept: () => void;
   onAddProduct: () => void;
-  onMarkReviewed: () => void;
   onSave: () => void;
   saveState: SaveState;
   status: Offer["status"];
@@ -26,7 +25,6 @@ export function OfferBuilderHeader({
   lineCount,
   onAccept,
   onAddProduct,
-  onMarkReviewed,
   onSave,
   saveState,
   status,
@@ -36,7 +34,7 @@ export function OfferBuilderHeader({
       <div className="grid min-w-0 gap-2">
         <h1 className="text-xl leading-tight font-semibold">Offer for {customerName}</h1>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={status === "accepted" ? "default" : status === "reviewed" ? "secondary" : "outline"}>
+          <Badge variant={status === "accepted" ? "default" : "outline"}>
             {status}
           </Badge>
           <Badge variant="secondary">{lineCount} products</Badge>
@@ -53,10 +51,6 @@ export function OfferBuilderHeader({
         <Button className="w-full sm:w-auto" variant="outline" onClick={onSave}>
           <Save size={16} aria-hidden="true" />
           Save review
-        </Button>
-        <Button className="w-full sm:w-auto" variant="secondary" onClick={onMarkReviewed}>
-          <ClipboardCheck size={16} aria-hidden="true" />
-          Mark reviewed
         </Button>
         <Button className="w-full sm:w-auto" onClick={onAccept}>
           <Send size={16} aria-hidden="true" />

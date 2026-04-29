@@ -151,7 +151,7 @@ export const customerRequestResponseSchema = z
   .strict()
   .meta({ id: "CustomerRequestResponse" });
 
-export const offerStatusSchema = z.enum(["draft", "reviewed", "accepted"]).meta({ id: "OfferStatus" });
+export const offerStatusSchema = z.enum(["draft", "accepted"]).meta({ id: "OfferStatus" });
 
 export const debugFragmentSchema = z.object({
   requestFragment: z.string(),
@@ -246,7 +246,7 @@ export const offerSchema = z
   })
   .meta({
     id: "Offer",
-    description: "A draft, reviewed, or accepted offer for a customer request."
+    description: "A draft or accepted offer for a customer request."
   });
 
 export const offerResponseSchema = z
@@ -274,7 +274,7 @@ export const updateOfferItemRequestSchema = z
   .strict()
   .meta({
     id: "UpdateOfferItemRequest",
-    description: "Editable fields for a reviewed offer item. Unit price and currency are read-only from the product catalog."
+    description: "Editable fields for an offer item. Unit price and currency are read-only from the product catalog."
   });
 
 export const updateOfferRequestSchema = z

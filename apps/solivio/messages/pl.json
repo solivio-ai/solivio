@@ -130,8 +130,7 @@
       "all": "Wszystkie oferty",
       "draft": "Draft",
       "label": "Filtruj oferty",
-      "needsAttention": "Wymaga uwagi",
-      "reviewed": "Sprawdzona"
+      "needsAttention": "Wymaga uwagi"
     },
     "fallbacks": {
       "customStatus": "Status niestandardowy",
@@ -168,10 +167,6 @@
       "draft": {
         "description": "Wymaga przeglądu sprzedaży",
         "label": "Draft"
-      },
-      "reviewed": {
-        "description": "Gotowa do końcowej akceptacji",
-        "label": "Sprawdzona"
       }
     },
     "table": {

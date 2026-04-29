@@ -68,7 +68,7 @@ export function OfferSummary({
                     : `${limitedLineCount} line needs availability confirmation`
                 }
               />
-              <ValidationRow ok={status !== "draft"} text="Sales review marked complete" />
+              <ValidationRow ok={status === "accepted"} text="Offer accepted" />
             </div>
           </section>
 
