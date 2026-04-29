@@ -37,6 +37,7 @@ export type CustomerRequest = {
 export type OfferItem = {
   productId: string;
   quantity: number;
+  requestItem?: string;
   rationale: string;
   confidence?: number;
   unitPriceNet?: number;
@@ -64,6 +65,7 @@ export type Offer = {
   generatedAt: string;
   items: OfferItem[];
   notes: string[];
+  unmatched?: string[];
 };
 
 export const workflowSteps: WorkflowStep[] = [

@@ -13,6 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
@@ -73,6 +74,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border pb-3 pt-2">
         <UserMenu />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
