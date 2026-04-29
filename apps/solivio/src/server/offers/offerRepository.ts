@@ -3,6 +3,8 @@ import "server-only";
 import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "../database/db";
+import type { OfferDebugFragment } from "@solivio/domain";
+
 import { offerProducts, offers, products } from "../database/schema";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -13,6 +15,7 @@ export type InsertOfferData = {
   status: string;
   notes: string[];
   unmatched: string[];
+  debugFragments: OfferDebugFragment[];
 };
 
 export type InsertOfferProductData = {
@@ -31,6 +34,7 @@ export type OfferRow = {
   createdAt: Date;
   notes: string[];
   unmatched: string[];
+  debugFragments: OfferDebugFragment[];
   items: OfferItemRow[];
 };
 
@@ -113,6 +117,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       createdAt: offers.createdAt,
       notes: offers.notes,
       unmatched: offers.unmatched,
+      debugFragments: offers.debugFragments,
       offerProductId: offerProducts.id,
       productId: offerProducts.productId,
       productName: products.name,
@@ -139,6 +144,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     createdAt: first.createdAt,
     notes: first.notes,
     unmatched: first.unmatched,
+    debugFragments: first.debugFragments,
     items: rows
       .filter((row) => row.productId !== null)
       .map((row) => ({

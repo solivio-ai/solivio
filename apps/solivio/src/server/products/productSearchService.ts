@@ -1,7 +1,7 @@
 import "server-only";
 
 import { openai } from "@ai-sdk/openai";
-import { embed } from "ai";
+import { embed, embedMany } from "ai";
 import { type AnyColumn, desc, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
@@ -108,4 +108,59 @@ export async function searchProductsByPrompt(
       similarity: roundScore(row.similarity)
     }))
     .filter((row) => row.similarity >= minSimilarity);
+}
+
+export async function searchProductsBatch(
+  prompts: string[],
+  options: SearchProductsOptions = {}
+): Promise<Map<string, ProductSearchMatch[]>> {
+  const nonEmpty = prompts.filter((p) => p.trim().length > 0);
+  if (nonEmpty.length === 0) return new Map();
+
+  // One API call for all embeddings
+  const { embeddings } = await embedMany({
+    model: openai.embedding(options.model ?? "text-embedding-3-small"),
+    values: nonEmpty.map((p) => p.trim())
+  });
+
+  const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
+  const limit = clampLimit(options.limit);
+
+  // Parallel SQL queries — one per fragment
+  const entries = await Promise.all(
+    embeddings.map(async (embedding, i) => {
+      const pgVector = toPostgresVector(embedding);
+      const nameSim = cosineSimilarity(products.nameEmbedding, pgVector);
+      const descSim = cosineSimilarity(products.descriptionEmbedding, pgVector);
+      const weightedSim = sql<number>`(${nameSim} * ${NAME_WEIGHT}) + (${descSim} * ${DESCRIPTION_WEIGHT})`;
+
+      const rows = await db
+        .select({
+          id: products.id,
+          sku: products.sku,
+          name: products.name,
+          description: products.description,
+          manufacturer: products.manufacturer,
+          nameSimilarity: nameSim,
+          descriptionSimilarity: descSim,
+          similarity: weightedSim
+        })
+        .from(products)
+        .orderBy(desc(weightedSim))
+        .limit(limit);
+
+      const matches = rows
+        .map((row) => ({
+          ...row,
+          nameSimilarity: roundScore(row.nameSimilarity),
+          descriptionSimilarity: roundScore(row.descriptionSimilarity),
+          similarity: roundScore(row.similarity)
+        }))
+        .filter((row) => row.similarity >= minSimilarity);
+
+      return [nonEmpty[i]!, matches] as const;
+    })
+  );
+
+  return new Map(entries);
 }

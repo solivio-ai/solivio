@@ -7,6 +7,7 @@ import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
 import { OfferBuilderHeader } from "./OfferBuilderHeader";
+import { OfferDebugPanel } from "./OfferDebugPanel";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
 import type { DraftLine, SaveState } from "./offer-builder-types";
@@ -306,6 +307,11 @@ export function OfferBuilder({ assistantToggle, customerName, offer, onOfferChan
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
         updateQuantity={updateQuantity}
+      />
+
+      <OfferDebugPanel
+        clientRequest={offer.clientRequest ?? ""}
+        fragments={offer.debugFragments ?? []}
       />
 
       <OfferSummary

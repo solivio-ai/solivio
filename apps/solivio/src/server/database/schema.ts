@@ -1,5 +1,7 @@
 import { boolean, index, integer, jsonb, pgTable, text, timestamp, uuid, vector } from "drizzle-orm/pg-core";
 
+import type { OfferDebugFragment } from "@solivio/domain";
+
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull().default("Draft"),
@@ -8,6 +10,7 @@ export const offers = pgTable("offers", {
   status: text("status").notNull().default("draft"),
   notes: text("notes").array().notNull().default([]),
   unmatched: text("unmatched").array().notNull().default([]),
+  debugFragments: jsonb("debug_fragments").$type<OfferDebugFragment[]>().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

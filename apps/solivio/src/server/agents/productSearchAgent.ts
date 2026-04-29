@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { searchProductsByPrompt } from "../products/productSearchService";
 import { getOpenAIModel } from "./modelConfig";
+import { voltOpsClient } from "./voltOpsClient";
 
 const agentResponseSchema = z.object({
   answer: z.string().min(1)
@@ -50,7 +51,8 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
       "Keep the answer concise and practical for a salesperson."
     ].join(" "),
     model: getOpenAIModel(),
-    tools: [searchProductsTool]
+    tools: [searchProductsTool],
+    voltOpsClient
   });
 
   const result = await agent.generateText(
