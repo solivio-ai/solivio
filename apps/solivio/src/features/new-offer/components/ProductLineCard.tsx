@@ -126,9 +126,6 @@ export function ProductLineCard({
                   <p>{line.rationale}</p>
                 </div>
               ) : null}
-              {line.description ? (
-                <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">{line.description}</p>
-              ) : null}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

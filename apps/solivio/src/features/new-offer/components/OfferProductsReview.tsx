@@ -201,7 +201,7 @@ export function OfferProductsReview({
                         ) : null}
 
                         {/* Collapsible details */}
-                        {(line.availability || line.manufacturer || line.rationale || line.description) ? (
+                        {(line.availability || line.manufacturer || line.rationale) ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
                               <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
@@ -232,11 +232,6 @@ export function OfferProductsReview({
                                     <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
                                     <p>{line.rationale}</p>
                                   </div>
-                                ) : null}
-                                {line.description ? (
-                                  <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">
-                                    {line.description}
-                                  </p>
                                 ) : null}
                               </AccordionContent>
                             </AccordionItem>

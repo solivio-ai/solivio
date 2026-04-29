@@ -141,6 +141,9 @@
     },
     "builder": {
       "titleFallback": "Draft offer",
+      "lineItem": {
+        "requested": "Requested:"
+      },
       "status": {
         "draft": "Draft",
         "accepted": "Accepted"

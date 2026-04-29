@@ -149,17 +149,15 @@ export function OfferValidationDialog({
               {t("transferToChat")}
             </Button>
           )}
-          {result.verdict !== "fail" && (
-            <Button
-              onClick={() => {
-                onOpenChange(false);
-                onAccept();
-              }}
-            >
-              <Send size={16} aria-hidden="true" />
-              {t("acceptOffer")}
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              onOpenChange(false);
+              onAccept();
+            }}
+          >
+            <Send size={16} aria-hidden="true" />
+            {t("acceptOffer")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
