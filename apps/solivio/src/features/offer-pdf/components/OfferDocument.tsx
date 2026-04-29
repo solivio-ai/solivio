@@ -34,7 +34,7 @@ const s = StyleSheet.create({
     fontSize: 9,
     color: BLACK,
     paddingTop: 36,
-    paddingBottom: 54,
+    paddingBottom: 90,
     paddingHorizontal: 36,
   },
 
@@ -80,7 +80,7 @@ const s = StyleSheet.create({
   colGross: { width: 68, textAlign: "right" },
 
   // Totals
-  totalsSection: { marginTop: 8, alignItems: "flex-end" },
+  totalsSection: { marginTop: 12, alignItems: "flex-end" },
   totalsBox: { width: 240, borderTopWidth: 1.5, borderTopColor: YELLOW, paddingTop: 8 },
   totalsRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
   totalsLabel: { fontSize: 9, color: GRAY_500 },
@@ -99,7 +99,7 @@ const s = StyleSheet.create({
   // Footer
   footer: {
     position: "absolute",
-    bottom: 18,
+    bottom: 20,
     left: 36,
     right: 36,
     flexDirection: "row",
@@ -107,7 +107,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 0.5,
     borderTopColor: GRAY_200,
-    paddingTop: 6,
+    paddingTop: 8,
   },
   footerBrand: { fontSize: 7, color: GRAY_500 },
   footerPowered: { fontSize: 7, color: GRAY_500 },
@@ -205,7 +205,7 @@ export function OfferDocument({ data }: Props) {
         ))}
 
         {/* Totals */}
-        <View style={s.totalsSection}>
+        <View style={s.totalsSection} wrap={false} minPresenceAhead={120}>
           <View style={s.totalsBox}>
             <View style={s.totalsRow}>
               <Text style={s.totalsLabel}>Razem netto</Text>
@@ -230,7 +230,7 @@ export function OfferDocument({ data }: Props) {
 
         {/* Terms */}
         {terms && (terms.delivery || terms.payment || terms.notes) && (
-          <View style={s.termsSection}>
+          <View style={s.termsSection} wrap={false}>
             <View style={s.dividerThin} />
             <Text style={s.termsSectionTitle}>Warunki oferty</Text>
             {terms.delivery && (
