@@ -25,7 +25,7 @@ export function CommercialTotals({
   isLocked,
 }: CommercialTotalsProps) {
   return (
-    <section className="grid min-w-0 content-start gap-3 rounded-lg border bg-background/60 p-3">
+    <section className="grid min-w-0 content-start gap-3 rounded-lg border border-foreground/15 bg-background/60 p-3">
       <h2 className="text-sm font-medium">Commercial totals</h2>
       <div className="grid gap-3 text-sm">
         <div className="flex items-center justify-between gap-4">
@@ -50,7 +50,7 @@ export function CommercialTotals({
             <span className="text-muted-foreground">%</span>
           </div>
         </div>
-        <div className="flex items-center justify-between gap-4 border-t pt-3">
+        <div className="flex items-center justify-between gap-4 border-t border-foreground/15 pt-3">
           <span className="text-muted-foreground">Discount value</span>
           <span className="font-medium">{formatCurrency(discount, currency)}</span>
         </div>

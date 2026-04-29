@@ -17,6 +17,51 @@
       "pl": "Polski"
     }
   },
+  "ThemeToggle": {
+    "switchTo": "Switch to {mode} mode",
+    "modes": {
+      "light": "light",
+      "dark": "dark"
+    }
+  },
+  "LoginPage": {
+    "sectionLabel": "Solivio authentication",
+    "homeLabel": "Solivio home",
+    "tagline": "Quotes shouldn't take hours. They should start from your data."
+  },
+  "LoginForm": {
+    "title": {
+      "signin": "Sign in",
+      "signup": "Create account"
+    },
+    "fields": {
+      "username": "Username",
+      "identifier": "Email or username",
+      "email": "Email",
+      "password": "Password"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "signingIn": "Signing in...",
+      "creatingAccount": "Creating account..."
+    },
+    "switch": {
+      "noAccount": "No account?",
+      "hasAccount": "Already have an account?",
+      "signUp": "Sign up",
+      "signIn": "Sign in"
+    },
+    "divider": "or",
+    "social": {
+      "google": "Continue with Google",
+      "microsoft": "Continue with Microsoft"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid credentials.",
+      "signUpFailed": "Could not create account."
+    }
+  },
   "NewOffer": {
     "page": {
       "title": "New offer",

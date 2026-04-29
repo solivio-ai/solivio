@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { signIn, signUp } from "@/lib/auth-client";
 
 type Props = {
+  initialMode: Mode;
   credentialsEnabled: boolean;
   signUpEnabled: boolean;
   googleEnabled: boolean;
@@ -17,16 +20,25 @@ type Props = {
 type Mode = "signin" | "signup";
 
 export function LoginForm({
+  initialMode,
   credentialsEnabled,
   signUpEnabled,
   googleEnabled,
   microsoftEnabled,
 }: Props) {
-  const [mode, setMode] = useState<Mode>("signin");
+  const t = useTranslations("LoginForm");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const hasSocial = googleEnabled || microsoftEnabled;
+  const isSignIn = mode === "signin";
+  const nextMode = isSignIn ? "signup" : "signin";
+  const modeHref = nextMode === "signup" ? "/login?mode=signup" : "/login";
+  const title = isSignIn ? t("title.signin") : t("title.signup");
+  const submitLabel = isPending
+    ? isSignIn ? t("actions.signingIn") : t("actions.creatingAccount")
+    : isSignIn ? t("actions.signIn") : t("actions.signUp");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +46,7 @@ export function LoginForm({
     setError(null);
 
     startTransition(async () => {
-      if (mode === "signin") {
+      if (isSignIn) {
         const identifier = String(form.get("identifier") ?? "").trim();
         const password = String(form.get("password") ?? "");
         const isEmail = identifier.includes("@");
@@ -44,7 +56,7 @@ export function LoginForm({
           : await signIn.username({ username: identifier, password });
 
         if (signInError) {
-          setError("Invalid credentials.");
+          setError(t("errors.invalidCredentials"));
           return;
         }
       } else {
@@ -57,7 +69,7 @@ export function LoginForm({
         });
 
         if (signUpError) {
-          setError(signUpError.message ?? "Sign up failed.");
+          setError(t("errors.signUpFailed"));
           return;
         }
       }
@@ -69,63 +81,72 @@ export function LoginForm({
   return (
     <div className="flex w-full flex-col gap-5 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight">
-          {mode === "signin" ? "Sign in" : "Create account"}
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
       </header>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {credentialsEnabled && (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-          {mode === "signup" && (
-            <Field htmlFor="username" label="Username">
-              <Input id="username" name="username" type="text" required autoComplete="username" disabled={isPending} />
+          {!isSignIn && (
+            <Field htmlFor="username" label={t("fields.username")}>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                required
+                autoComplete="username"
+                disabled={isPending}
+              />
             </Field>
           )}
 
-          {mode === "signin" ? (
-            <Field htmlFor="identifier" label="Email or username">
-              <Input id="identifier" name="identifier" type="text" required autoComplete="username" disabled={isPending} />
+          {isSignIn ? (
+            <Field htmlFor="identifier" label={t("fields.identifier")}>
+              <Input
+                id="identifier"
+                name="identifier"
+                type="text"
+                required
+                autoComplete="username"
+                disabled={isPending}
+              />
             </Field>
           ) : (
-            <Field htmlFor="email" label="Email">
+            <Field htmlFor="email" label={t("fields.email")}>
               <Input id="email" name="email" type="email" required autoComplete="email" disabled={isPending} />
             </Field>
           )}
 
-          <Field htmlFor="password" label="Password">
+          <Field htmlFor="password" label={t("fields.password")}>
             <Input
               id="password"
               name="password"
               type="password"
               required
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete={isSignIn ? "current-password" : "new-password"}
               disabled={isPending}
             />
           </Field>
 
-          <Button type="submit" disabled={isPending}>
-            {isPending
-              ? mode === "signin" ? "Signing in…" : "Creating account…"
-              : mode === "signin" ? "Sign in" : "Create account"}
-          </Button>
+          <Button type="submit" disabled={isPending}>{submitLabel}</Button>
         </form>
       )}
 
       {credentialsEnabled && signUpEnabled && (
         <p className="text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "No account?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
+          {isSignIn ? t("switch.noAccount") : t("switch.hasAccount")}{" "}
+          <Link
+            href={modeHref}
+            onClick={(event) => {
+              event.preventDefault();
+              setMode(nextMode);
               setError(null);
             }}
             className="font-semibold text-primary hover:underline"
           >
-            {mode === "signin" ? "Sign up" : "Sign in"}
-          </button>
+            {isSignIn ? t("switch.signUp") : t("switch.signIn")}
+          </Link>
         </p>
       )}
 
@@ -133,7 +154,7 @@ export function LoginForm({
         <>
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">or</span>
+            <span className="text-xs text-muted-foreground">{t("divider")}</span>
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="flex flex-col gap-2">
@@ -143,7 +164,7 @@ export function LoginForm({
                 variant="outline"
                 onClick={() => signIn.social({ provider: "google", callbackURL: "/" })}
               >
-                Continue with Google
+                {t("social.google")}
               </Button>
             )}
             {microsoftEnabled && (
@@ -152,7 +173,7 @@ export function LoginForm({
                 variant="outline"
                 onClick={() => signIn.social({ provider: "microsoft", callbackURL: "/" })}
               >
-                Continue with Microsoft
+                {t("social.microsoft")}
               </Button>
             )}
           </div>

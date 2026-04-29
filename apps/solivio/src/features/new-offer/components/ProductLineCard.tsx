@@ -26,7 +26,7 @@ export function ProductLineCard({
   const hasDetails = line.availability || line.manufacturer || line.rationale || line.description;
 
   return (
-    <div className="rounded-lg border p-3 bg-background/60">
+    <div className="rounded-lg border border-foreground/15 bg-background/60 p-3">
       {/* Always visible: name + SKU */}
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-semibold">{line.name}</span>
@@ -35,14 +35,14 @@ export function ProductLineCard({
 
       {/* Highlighted requested item */}
       {line.requestItem ? (
-        <div className="mt-1.5 flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs">
-          <span className="font-medium text-green-600 shrink-0">Requested:</span>
+        <div className="mt-1.5 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
+          <span className="shrink-0 font-medium text-secondary">Requested:</span>
           <span className="italic text-foreground">{line.requestItem}</span>
         </div>
       ) : null}
 
       {/* Quantity / unit price / line total / remove */}
-      <div className="mt-3 grid grid-cols-[1fr_auto_auto_auto] items-end gap-3">
+      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[minmax(8rem,1fr)_auto_auto_auto] sm:items-end">
         <div className="grid gap-1.5">
           <label className="text-xs font-medium text-muted-foreground" htmlFor={`${line.productId}-quantity`}>
             Quantity
@@ -72,7 +72,7 @@ export function ProductLineCard({
           <span className="text-xs font-medium text-muted-foreground">Line total</span>
           <span className="flex h-9 items-center justify-end font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
         </div>
-        <div className="flex h-9 items-center">
+        <div className="flex h-9 items-center justify-end self-end">
           <Button
             type="button"
             size="icon"
@@ -102,7 +102,15 @@ export function ProductLineCard({
               {line.availability ? (
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">Availability:</span>
-                  <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
+                  <Badge
+                    variant={
+                      line.availability === "limited"
+                        ? "secondary"
+                        : line.availability === "unavailable"
+                          ? "destructive"
+                          : "outline"
+                    }
+                  >
                     {line.availability}
                   </Badge>
                 </div>

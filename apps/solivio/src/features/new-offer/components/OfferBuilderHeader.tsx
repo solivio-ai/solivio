@@ -183,7 +183,7 @@ export function OfferBuilderHeader({
 
 
   return (
-    <header className="grid min-w-0 gap-2 rounded-lg border bg-card p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+    <header className="grid min-w-0 gap-2 rounded-xl border border-foreground/15 bg-card p-3 shadow-sm lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
       <div className="grid min-w-0 gap-2">
         <h1 className="truncate text-lg leading-tight font-semibold">{offerTitle}</h1>
         <div className="flex flex-wrap items-center gap-1.5">

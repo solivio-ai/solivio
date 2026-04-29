@@ -17,6 +17,51 @@
       "pl": "Polski"
     }
   },
+  "ThemeToggle": {
+    "switchTo": "Przełącz na tryb {mode}",
+    "modes": {
+      "light": "jasny",
+      "dark": "ciemny"
+    }
+  },
+  "LoginPage": {
+    "sectionLabel": "Logowanie i rejestracja w Solivio",
+    "homeLabel": "Strona główna Solivio",
+    "tagline": "Tworzenie ofert nie powinno zajmować godzin. Powinno zaczynać się od Twoich danych."
+  },
+  "LoginForm": {
+    "title": {
+      "signin": "Zaloguj się",
+      "signup": "Utwórz konto"
+    },
+    "fields": {
+      "username": "Nazwa użytkownika",
+      "identifier": "Email lub nazwa użytkownika",
+      "email": "Email",
+      "password": "Hasło"
+    },
+    "actions": {
+      "signIn": "Zaloguj się",
+      "signUp": "Utwórz konto",
+      "signingIn": "Logowanie...",
+      "creatingAccount": "Tworzenie konta..."
+    },
+    "switch": {
+      "noAccount": "Nie masz konta?",
+      "hasAccount": "Masz już konto?",
+      "signUp": "Zarejestruj się",
+      "signIn": "Zaloguj się"
+    },
+    "divider": "lub",
+    "social": {
+      "google": "Kontynuuj z Google",
+      "microsoft": "Kontynuuj z Microsoft"
+    },
+    "errors": {
+      "invalidCredentials": "Nieprawidłowe dane logowania.",
+      "signUpFailed": "Nie udało się utworzyć konta."
+    }
+  },
   "NewOffer": {
     "page": {
       "title": "Nowa oferta",

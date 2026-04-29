@@ -11,10 +11,15 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { defaultLocale, isLocale, localeCookieName, locales } from "@/i18n/locales";
+import { cn } from "@/lib/utils";
 
 const cookieMaxAgeSeconds = 60 * 60 * 24 * 365;
 
-export function LanguageSwitcher() {
+type LanguageSwitcherProps = {
+  className?: string;
+};
+
+export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   const router = useRouter();
   const activeLocale = useLocale();
   const t = useTranslations("LanguageSwitcher");
@@ -33,7 +38,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="px-2">
+    <div className={cn("px-2", className)}>
       <Select value={value} onValueChange={handleLocaleChange}>
         <SelectTrigger className="w-full" aria-label={t("label")}>
           <Languages size={16} aria-hidden="true" />
