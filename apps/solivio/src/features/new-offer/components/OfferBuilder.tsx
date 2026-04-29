@@ -44,8 +44,6 @@ function toDraftLines(offer: Offer): DraftLine[] {
     requestItem: item.requestItem,
     unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
     currency: item.currency ?? item.product?.currency ?? "PLN",
-    confidence:
-      item.confidence ?? (item.product?.matchScore ? Math.round(item.product.matchScore * 100) : 75),
     rationale: item.rationale,
   }));
 }
@@ -56,7 +54,6 @@ function toUpdateItems(lines: DraftLine[]) {
     quantity: line.quantity,
     rationale: line.rationale,
     requestItem: line.requestItem,
-    confidence: line.confidence,
     product: {
       id: line.productId,
       sku: line.sku,
@@ -278,7 +275,6 @@ export function OfferBuilder({
       requestItem: "Manually added",
       unitPrice: 0,
       currency: "PLN",
-      confidence: 100,
       rationale: "Manually added",
       source: "database",
     };

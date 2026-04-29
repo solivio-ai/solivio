@@ -21,10 +21,10 @@ export function ProductLineCard({
   removeProduct,
   updateQuantity,
 }: ProductLineCardProps) {
-  const hasDetails = line.confidence || line.availability || line.manufacturer || line.rationale || line.description;
+  const hasDetails = line.availability || line.manufacturer || line.rationale || line.description;
 
   return (
-    <div className={`rounded-lg border p-3 ${line.confidence < 80 ? "bg-muted/30" : "bg-background/60"}`}>
+    <div className="rounded-lg border p-3 bg-background/60">
       {/* Always visible: name + SKU */}
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-semibold">{line.name}</span>
@@ -97,9 +97,6 @@ export function ProductLineCard({
               Details
             </AccordionTrigger>
             <AccordionContent className="grid gap-2 pb-0">
-              <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"} className="w-fit">
-                {line.confidence}% Match
-              </Badge>
               {line.availability ? (
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">Availability:</span>

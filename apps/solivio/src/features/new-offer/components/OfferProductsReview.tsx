@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ProductLineCard } from "./ProductLineCard";
 import type { DraftLine } from "./offer-builder-types";
@@ -29,7 +28,6 @@ function lineFingerprint(line: DraftLine) {
     line.unitPrice,
     line.requestItem ?? "",
     line.rationale,
-    line.confidence
   ].join("|");
 }
 
@@ -173,7 +171,6 @@ export function OfferProductsReview({
                     key={line.productId}
                     className={cn(
                       "transition-colors duration-700",
-                      line.confidence < 80 ? "bg-muted/30" : "",
                       updatedLineIds.has(line.productId) ? "bg-primary/10" : ""
                     )}
                   >
@@ -192,27 +189,13 @@ export function OfferProductsReview({
                         ) : null}
 
                         {/* Collapsible details */}
-                        {(line.confidence || line.availability || line.manufacturer || line.rationale || line.description) ? (
+                        {(line.availability || line.manufacturer || line.rationale || line.description) ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
                               <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
                                 Details
                               </AccordionTrigger>
                               <AccordionContent className="grid gap-2 pb-0">
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="w-fit">
-                                        <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"}>
-                                          {line.confidence}% Match
-                                        </Badge>
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      {line.confidence >= 90 ? "High confidence match based on request" : line.confidence >= 70 ? "Good potential match" : "Low confidence match, please review carefully"}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
                                 {line.availability ? (
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs text-muted-foreground">Availability:</span>

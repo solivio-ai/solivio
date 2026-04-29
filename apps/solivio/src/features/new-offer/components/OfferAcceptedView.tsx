@@ -27,8 +27,6 @@ function toDraftLines(offer: Offer): DraftLine[] {
     requestItem: item.requestItem,
     unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
     currency: item.currency ?? item.product?.currency ?? "PLN",
-    confidence:
-      item.confidence ?? (item.product?.matchScore ? Math.round(item.product.matchScore * 100) : 75),
     rationale: item.rationale,
   }));
 }

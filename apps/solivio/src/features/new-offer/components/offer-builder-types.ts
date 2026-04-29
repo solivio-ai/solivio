@@ -13,7 +13,6 @@ export type DraftLine = {
   requestItem?: string;
   unitPrice: number;
   currency: "PLN" | "EUR";
-  confidence: number;
   rationale: string;
 };
 
