@@ -230,6 +230,11 @@ export function OfferProductsReview({
                         value={line.quantity}
                         onChange={(event) => updateQuantity(line.productId, Number(event.target.value))}
                         onBlur={() => commitQuantity(line.productId)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.currentTarget.blur();
+                          }
+                        }}
                         disabled={pendingProductIds.has(line.productId)}
                       />
                     </TableCell>

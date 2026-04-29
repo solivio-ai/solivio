@@ -1,11 +1,11 @@
 "use client";
 
 import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -38,13 +38,23 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border p-2">
-        <Button asChild className="w-full justify-start" size="sm">
-          <Link href="/offers/new" onClick={closeMobileSidebar}>
-            <Plus size={16} aria-hidden="true" />
-            {t("actions.newOffer")}
-          </Link>
-        </Button>
+      <SidebarHeader className="border-b border-sidebar-border px-3 py-3">
+        <Link
+          href="/"
+          onClick={closeMobileSidebar}
+          className="flex min-w-0 items-center"
+          aria-label="Solivio home"
+        >
+          <Image
+            src="/solivio-logo.png"
+            alt="Solivio"
+            width={180}
+            height={60}
+            sizes="180px"
+            className="h-8 w-auto max-w-[160px] object-contain"
+            priority
+          />
+        </Link>
       </SidebarHeader>
 
       <SidebarContent className="pt-1.5">
