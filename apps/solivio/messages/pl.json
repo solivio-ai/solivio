@@ -141,6 +141,9 @@
     },
     "builder": {
       "titleFallback": "Szkic oferty",
+      "lineItem": {
+        "requested": "Zapytanie:"
+      },
       "status": {
         "draft": "Szkic",
         "accepted": "Zaakceptowana"

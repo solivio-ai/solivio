@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,8 @@ export function ProductLineCard({
   removeProduct,
   updateQuantity,
 }: ProductLineCardProps) {
-  const hasDetails = line.availability || line.manufacturer || line.rationale || line.description;
+  const t = useTranslations("NewOffer.builder.lineItem");
+  const hasDetails = line.availability || line.manufacturer || line.rationale;
 
   return (
     <div className="rounded-lg border border-foreground/15 bg-background/60 p-3">
@@ -36,7 +39,7 @@ export function ProductLineCard({
       {/* Highlighted requested item */}
       {line.requestItem ? (
         <div className="mt-1.5 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
-          <span className="shrink-0 font-medium text-secondary">Requested:</span>
+          <span className="shrink-0 font-medium text-secondary">{t("requested")}</span>
           <span className="italic text-foreground">{line.requestItem}</span>
         </div>
       ) : null}
@@ -123,9 +126,6 @@ export function ProductLineCard({
                   <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
                   <p>{line.rationale}</p>
                 </div>
-              ) : null}
-              {line.description ? (
-                <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">{line.description}</p>
               ) : null}
             </AccordionContent>
           </AccordionItem>

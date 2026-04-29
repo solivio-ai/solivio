@@ -8,6 +8,18 @@ import { lookupProductsBySkus, searchProductsBatch } from "../products/productSe
 import { getOpenAIModel } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
+const LOCALE_LANGUAGE_MAP: Record<string, string> = {
+  pl: "Polish",
+  en: "English",
+  de: "German",
+  fr: "French",
+};
+
+function getRationaleLanguage(): string {
+  const locale = (process.env.APP_LOCALE ?? "pl").toLowerCase().split("-")[0];
+  return LOCALE_LANGUAGE_MAP[locale] ?? "Polish";
+}
+
 const OFFER_AGENT_INSTRUCTIONS = `
 You generate a structured offer from a customer request.
 
@@ -43,7 +55,7 @@ Rules:
 - Never add multiple products for the same request fragment. Pick exactly ONE.
 - Use the "id" field (UUID) as productId — never use SKU as productId.
 - Each product id may appear in "items" AT MOST ONCE across all fragments. If best match for fragment B is already used by fragment A, add fragment B's requestFragment to "unmatched".
-- Write rationale in English. Briefly explain WHY this product matched (e.g., "exact category match: terminal block" or "same SKU").
+- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match: terminal block" or "same SKU").
 - requestItem must be the exact phrase from the customer request (the requestFragment).
 - ALWAYS populate "debugFragments": one entry per extracted fragment with requestFragment, query, kind, quantity, and topMatches (up to 3 from the tool result). Include this even when no products are matched.
 `.trim();

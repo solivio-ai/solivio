@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PackageSearch, Info, AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -42,6 +43,7 @@ export function OfferProductsReview({
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
+  const t = useTranslations("NewOffer.builder.lineItem");
   const previousSignaturesRef = useRef<Map<string, string>>(new Map());
   const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [updatedLineIds, setUpdatedLineIds] = useState<Set<string>>(new Set());
@@ -192,14 +194,14 @@ export function OfferProductsReview({
                         {line.requestItem ? (
                           <div className="mt-1 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
                             <span className="shrink-0 font-medium text-secondary">
-                              Requested:
+                              {t("requested")}
                             </span>
                             <span className="italic text-foreground">{line.requestItem}</span>
                           </div>
                         ) : null}
 
                         {/* Collapsible details */}
-                        {(line.availability || line.manufacturer || line.rationale || line.description) ? (
+                        {(line.availability || line.manufacturer || line.rationale) ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
                               <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
@@ -230,11 +232,6 @@ export function OfferProductsReview({
                                     <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
                                     <p>{line.rationale}</p>
                                   </div>
-                                ) : null}
-                                {line.description ? (
-                                  <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">
-                                    {line.description}
-                                  </p>
                                 ) : null}
                               </AccordionContent>
                             </AccordionItem>
