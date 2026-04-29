@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ export function LoginForm({
   googleEnabled,
   microsoftEnabled,
 }: Props) {
-  const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -64,7 +62,7 @@ export function LoginForm({
         }
       }
 
-      router.push("/");
+      window.location.assign("/");
     });
   }
 
