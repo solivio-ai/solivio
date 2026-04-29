@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { OfferReview } from "../../../features/new-offer";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export default async function OfferReviewPage({ params }: OfferReviewPageProps) 
       <header className="flex min-w-0 justify-end">
         <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
           <Link href="/offers/new">
-            <ArrowLeft size={16} aria-hidden="true" />
+            <Plus size={16} aria-hidden="true" />
             New offer
           </Link>
         </Button>
