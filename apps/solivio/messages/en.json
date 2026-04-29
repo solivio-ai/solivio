@@ -95,6 +95,34 @@
       }
     }
   },
+  "OfferChat": {
+    "title": "Solivio Assistant",
+    "status": {
+      "thinking": "Thinking",
+      "ready": "Ready"
+    },
+    "threads": {
+      "label": "Chat thread",
+      "newChat": "Start new chat"
+    },
+    "welcome": "I can explain this offer, summarize the client request, review product matches, and suggest improvements.",
+    "input": {
+      "placeholder": "Tell the AI what to change or ask..."
+    },
+    "suggestions": {
+      "summarize": "Summarize client request",
+      "mostExpensive": "List 3 most expensive items in offer",
+      "upsell": "Suggest additional products for upsell"
+    },
+    "errors": {
+      "loadThreads": "Could not load chat threads.",
+      "loadMessages": "Could not load chat messages.",
+      "createThread": "Could not create chat thread.",
+      "startChat": "Could not start a new chat.",
+      "loadHistory": "Could not load chat history.",
+      "switchThread": "Could not switch chat thread."
+    }
+  },
   "OffersList": {
     "actions": {
       "clearFilters": "Clear filters",

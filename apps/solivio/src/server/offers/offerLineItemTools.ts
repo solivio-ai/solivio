@@ -3,6 +3,7 @@ import "server-only";
 import { createTool } from "@voltagent/core";
 import { z } from "zod";
 
+import { searchProductsByPrompt } from "../products/productSearchService";
 import {
   addProductToOffer,
   removeOfferLineItem,
@@ -12,9 +13,30 @@ import {
 
 export const offerLineItemTools = [
   createTool({
+    name: "search_products",
+    description:
+      "Search the product catalog using a natural-language query and return the best semantic matches. Use this to discover product IDs before adding them to an offer.",
+    parameters: z.object({
+      query: z.string().min(1).describe("Natural-language description of the product to search for"),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(20)
+        .optional()
+        .describe("Maximum number of results to return (default 5, max 20)")
+    }),
+    execute: async (input) => {
+      const matches = await searchProductsByPrompt(input.query, { limit: input.limit ?? 5, minSimilarity: 0.6 });
+      return { products: matches };
+    }
+  }),
+
+
+  createTool({
     name: "add_product_to_offer",
     description:
-      "Add a product to an offer. Use this when the user asks to add a product by ID to the current offer.",
+      "Add a product to an offer by its exact UUID. Only call this after you have resolved the product ID — use search_products first if the user gave a name or description instead of an ID.",
     parameters: z.object({
       offerId: z.string().uuid().describe("ID of the offer to add the product to"),
       productId: z.string().uuid().describe("ID of the product to add"),

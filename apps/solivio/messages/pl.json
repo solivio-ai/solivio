@@ -95,6 +95,34 @@
       }
     }
   },
+  "OfferChat": {
+    "title": "Asystent Solivio",
+    "status": {
+      "thinking": "Myślę",
+      "ready": "Gotowy"
+    },
+    "threads": {
+      "label": "Wątek czatu",
+      "newChat": "Nowy czat"
+    },
+    "welcome": "Mogę wyjaśnić tę ofertę, podsumować zapytanie klienta, przejrzeć dopasowania produktów i zaproponować ulepszenia.",
+    "input": {
+      "placeholder": "Powiedz AI, co zmienić lub zadaj pytanie..."
+    },
+    "suggestions": {
+      "summarize": "Podsumuj zapytanie klienta",
+      "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
+      "upsell": "Zaproponuj dodatkowe produkty do dosprzedaży"
+    },
+    "errors": {
+      "loadThreads": "Nie udało się wczytać wątków czatu.",
+      "loadMessages": "Nie udało się wczytać wiadomości czatu.",
+      "createThread": "Nie udało się utworzyć wątku czatu.",
+      "startChat": "Nie udało się rozpocząć nowego czatu.",
+      "loadHistory": "Nie udało się wczytać historii czatu.",
+      "switchThread": "Nie udało się przełączyć wątku czatu."
+    }
+  },
   "OffersList": {
     "actions": {
       "clearFilters": "Wyczyść filtry",

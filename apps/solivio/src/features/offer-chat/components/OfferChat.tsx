@@ -6,6 +6,7 @@ import { useChat } from "@ai-sdk/react";
 import type { Offer } from "@solivio/domain";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { ArrowUp, Plus, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -28,12 +29,6 @@ type OfferChatThread = {
   createdAt: string;
   updatedAt: string;
 };
-
-const questionSuggestions = [
-  "Summarize client request",
-  "List 3 most expensive items in offer",
-  "Suggest additional products for upsell"
-];
 
 function renderInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -139,6 +134,13 @@ export function OfferChat({
   offer,
   onOfferChanged
 }: OfferChatProps) {
+  const t = useTranslations("OfferChat");
+  const questionSuggestions = [
+    t("suggestions.summarize"),
+    t("suggestions.mostExpensive"),
+    t("suggestions.upsell")
+  ];
+
   const [threads, setThreads] = useState<OfferChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
@@ -216,7 +218,7 @@ export function OfferChat({
     const payload = await readJsonResponse(response);
 
     if (!response.ok) {
-      throw new Error(payload.error?.message ?? "Could not load chat threads.");
+      throw new Error(payload.error?.message ?? t("errors.loadThreads"));
     }
 
     const nextThreads = payload.threads as OfferChatThread[];
@@ -232,7 +234,7 @@ export function OfferChat({
       const payload = await readJsonResponse(response);
 
       if (!response.ok) {
-        throw new Error(payload.error?.message ?? "Could not load chat messages.");
+        throw new Error(payload.error?.message ?? t("errors.loadMessages"));
       }
 
       setMessages(payload.messages as UIMessage[]);
@@ -248,7 +250,7 @@ export function OfferChat({
     const payload = await readJsonResponse(response);
 
     if (!response.ok) {
-      throw new Error(payload.error?.message ?? "Could not create chat thread.");
+      throw new Error(payload.error?.message ?? t("errors.createThread"));
     }
 
     return payload.thread as OfferChatThread;
@@ -297,7 +299,7 @@ export function OfferChat({
       setMessages([]);
       requestAnimationFrame(() => scrollToBottom("instant"));
     } catch (error) {
-      setThreadError(error instanceof Error ? error.message : "Could not start a new chat.");
+      setThreadError(error instanceof Error ? error.message : t("errors.startChat"));
     } finally {
       setIsThreadLoading(false);
     }
@@ -337,7 +339,7 @@ export function OfferChat({
         }
       } catch (error) {
         if (!ignore) {
-          setThreadError(error instanceof Error ? error.message : "Could not load chat history.");
+          setThreadError(error instanceof Error ? error.message : t("errors.loadHistory"));
           setMessages([]);
         }
       } finally {
@@ -362,7 +364,7 @@ export function OfferChat({
     try {
       await loadThreadMessages(threadId);
     } catch (error) {
-      setThreadError(error instanceof Error ? error.message : "Could not switch chat thread.");
+      setThreadError(error instanceof Error ? error.message : t("errors.switchThread"));
       setMessages([]);
     } finally {
       setIsThreadLoading(false);
@@ -376,7 +378,7 @@ export function OfferChat({
           <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
             <Image src="/favicon.png" alt="" width={16} height={16} className="size-4" />
           </span>
-          <span className="truncate">Solivio Assistant</span>
+          <span className="truncate">{t("title")}</span>
         </CardTitle>
         <div className="flex min-w-0 shrink-0 items-center gap-2">
           {offer ? (
@@ -385,7 +387,7 @@ export function OfferChat({
                 value={activeThreadId ?? ""}
                 onChange={(event) => void switchThread(event.target.value)}
                 disabled={isThreadLoading || isLoading || threads.length === 0}
-                aria-label="Chat thread"
+                aria-label={t("threads.label")}
                 className="h-7 max-w-32 rounded-md border border-input bg-background px-2 text-xs text-muted-foreground"
               >
                 {threads.map((thread) => (
@@ -400,7 +402,7 @@ export function OfferChat({
                 size="icon-xs"
                 onClick={() => void startNewThread()}
                 disabled={isThreadLoading || isLoading}
-                aria-label="Start new chat"
+                aria-label={t("threads.newChat")}
               >
                 <Plus className="size-3" />
               </Button>
@@ -413,7 +415,7 @@ export function OfferChat({
                 isLoading ? "bg-yellow-500" : "bg-green-600"
               )}
             />
-            {isLoading ? "Thinking" : "Ready"}
+            {isLoading ? t("status.thinking") : t("status.ready")}
           </div>
           {headerAction}
         </div>
@@ -435,7 +437,7 @@ export function OfferChat({
               <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
             </div>
             <div className="max-w-[82%] rounded-lg border border-border bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
-              I can explain this offer, summarize the client request, review product matches, and suggest improvements.
+              {t("welcome")}
             </div>
           </div>
         )}
@@ -520,7 +522,7 @@ export function OfferChat({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isInputDisabled}
-            placeholder="Tell the AI what to change or ask..."
+            placeholder={t("input.placeholder")}
             className="max-h-40 min-h-9 resize-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
             rows={1}
           />
