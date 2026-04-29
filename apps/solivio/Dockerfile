@@ -23,10 +23,14 @@ COPY --from=deps /app/.yarn ./.yarn
 COPY --from=deps /app/.yarnrc.yml ./
 
 COPY package.json yarn.lock tsconfig.base.json ./
+COPY solivio-logo.png favicon.png ./
 COPY packages ./packages
 COPY apps/solivio ./apps/solivio
 
 RUN mkdir -p apps/solivio/public \
+ && cp -RL apps/solivio/public apps/solivio/public.deref \
+ && rm -rf apps/solivio/public \
+ && mv apps/solivio/public.deref apps/solivio/public \
  && yarn workspace @solivio/app build
 
 FROM build AS db-push
