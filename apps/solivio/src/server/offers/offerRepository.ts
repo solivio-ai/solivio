@@ -1,11 +1,15 @@
 import "server-only";
 
 import { and, desc, eq, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "../database/db";
 import type { Offer, OfferDebugFragment } from "@solivio/domain";
 
-import { offerProducts, offers, products } from "../database/schema";
+import { offerProducts, offers, products, user } from "../database/schema";
+
+const createdByUser = alias(user, "created_by_user");
+const updatedByUser = alias(user, "updated_by_user");
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -16,6 +20,8 @@ export type InsertOfferData = {
   notes: string[];
   unmatched: string[];
   debugFragments: OfferDebugFragment[];
+  createdBy?: string | null;
+  updatedBy?: string | null;
 };
 
 export type InsertOfferProductData = {
@@ -35,9 +41,14 @@ export type OfferRow = {
   clientRequest: string | null;
   status: Offer["status"];
   createdAt: Date;
+  updatedAt: Date;
   notes: string[];
   unmatched: string[];
   debugFragments: OfferDebugFragment[];
+  createdBy: string | null;
+  createdByName: string | null;
+  updatedBy: string | null;
+  updatedByName: string | null;
   items: OfferItemRow[];
 };
 
@@ -109,6 +120,17 @@ export async function updateOfferMeta(
   return offer ?? null;
 }
 
+export async function setOfferUpdatedBy(
+  offerId: string,
+  updatedBy: string | null,
+  tx: Tx = db
+) {
+  await tx
+    .update(offers)
+    .set({ updatedBy, updatedAt: new Date() })
+    .where(eq(offers.id, offerId));
+}
+
 export async function deleteOffer(offerId: string, tx: Tx = db) {
   const [row] = await tx
     .delete(offers)
@@ -148,9 +170,14 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       clientRequest: offers.clientRequest,
       status: offers.status,
       createdAt: offers.createdAt,
+      updatedAt: offers.updatedAt,
       notes: offers.notes,
       unmatched: offers.unmatched,
       debugFragments: offers.debugFragments,
+      createdBy: offers.createdBy,
+      createdByName: createdByUser.name,
+      updatedBy: offers.updatedBy,
+      updatedByName: updatedByUser.name,
       offerProductId: offerProducts.id,
       productId: offerProducts.productId,
       productName: products.name,
@@ -164,6 +191,8 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       rationale: offerProducts.rationale
     })
     .from(offers)
+    .leftJoin(createdByUser, eq(createdByUser.id, offers.createdBy))
+    .leftJoin(updatedByUser, eq(updatedByUser.id, offers.updatedBy))
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))
     .leftJoin(products, eq(products.id, offerProducts.productId))
     .where(eq(offers.id, id));
@@ -178,9 +207,14 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     clientRequest: first.clientRequest,
     status: first.status,
     createdAt: first.createdAt,
+    updatedAt: first.updatedAt,
     notes: first.notes,
     unmatched: first.unmatched,
     debugFragments: first.debugFragments,
+    createdBy: first.createdBy,
+    createdByName: first.createdByName,
+    updatedBy: first.updatedBy,
+    updatedByName: first.updatedByName,
     items: rows
       .filter((row) => row.productId !== null)
       .map((row) => ({

@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
   const { customerName, clientRequest } = parsed.data;
   const generated = await generateOfferWithAgent(clientRequest, customerName);
-  const offer = await createOffer(customerName, clientRequest, generated);
+  const offer = await createOffer(customerName, clientRequest, generated, auth.session.user.id);
 
   saveOfferDraft(toOfferDomain(offer));
 
