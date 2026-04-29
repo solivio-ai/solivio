@@ -12,7 +12,7 @@ export default async function OfferReviewPage({ params }: OfferReviewPageProps) 
   const { offerId } = await params;
 
   return (
-    <main className="grid min-h-svh w-full gap-3 p-3 lg:p-4">
+    <main className="grid h-[calc(100svh-2.25rem)] min-h-0 w-full p-3 lg:p-4">
       <OfferReview offerId={offerId} />
     </main>
   );
