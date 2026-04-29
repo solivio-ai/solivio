@@ -21,12 +21,12 @@ Font.register({
 });
 Font.registerHyphenationCallback((word) => [word]);
 
-const YELLOW = "#FACC15";
+const YELLOW = "#F6C215";
 const TEAL = "#134E4A";
-const GRAY_50 = "#F9FAFB";
-const GRAY_200 = "#E5E7EB";
-const GRAY_500 = "#6B7280";
-const BLACK = "#111827";
+const GRAY_50 = "#F7FAF9";
+const GRAY_200 = "#D8E2DF";
+const GRAY_500 = "#566661";
+const BLACK = "#10201D";
 
 const s = StyleSheet.create({
   page: {

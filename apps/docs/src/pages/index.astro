@@ -17,7 +17,7 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
       name="description"
       content="Solivio is an open-source AI system that transforms how B2B companies create offers."
     />
-    <meta name="theme-color" content="#facc15" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:title" content="Solivio" />
     <meta
       property="og:description"
@@ -27,14 +27,23 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
     <link rel="apple-touch-icon" href="/favicon.png" />
     <meta property="og:image" content="/solivio-logo.png" />
     <meta name="twitter:card" content="summary" />
+    <script is:inline>
+      (() => {
+        const storedTheme =
+          typeof localStorage !== "undefined" && localStorage.getItem("starlight-theme");
+        document.documentElement.dataset.theme = storedTheme === "dark" ? "dark" : "light";
+      })();
+    </script>
   </head>
   <body>
     <header class="site-header">
       <a class="brand" href="/" aria-label="Solivio home">
-        <img src="/solivio-logo.png" alt="Solivio" width="180" height="60" />
+        <img class="logo logo-light" src="/solivio-logo.png" alt="Solivio" width="180" height="60" />
+        <img class="logo logo-dark" src="/solivio-logo-dark.png" alt="Solivio" width="180" height="60" />
       </a>
       <nav aria-label="Primary navigation">
         {links.map((link) => <a class="nav-button" href={link.href}>{link.label}</a>)}
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode"></button>
       </nav>
     </header>
 
@@ -68,6 +77,25 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
         ))}
       </section>
     </main>
+    <script is:inline>
+      (() => {
+        const storageKey = "starlight-theme";
+        const button = document.querySelector("[data-theme-toggle]");
+        const getTheme = () => document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        const setTheme = (theme) => {
+          document.documentElement.dataset.theme = theme;
+          if (typeof localStorage !== "undefined") localStorage.setItem(storageKey, theme);
+          if (button) button.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
+        };
+
+        if (button) {
+          button.addEventListener("click", () => {
+            setTheme(getTheme() === "dark" ? "light" : "dark");
+          });
+          setTheme(getTheme());
+        }
+      })();
+    </script>
   </body>
 </html>
 
@@ -77,7 +105,6 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
   :global(html) {
     background: var(--solivio-color-background);
     color: var(--solivio-color-foreground);
-    color-scheme: dark;
     font-family: var(--solivio-font-sans);
   }
 
@@ -103,12 +130,24 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
     min-width: 0;
   }
 
-  .brand img {
+  .brand .logo {
     display: block;
     height: 44px;
     max-width: min(180px, 54vw);
     object-fit: contain;
     width: auto;
+  }
+
+  .brand .logo-dark {
+    display: none;
+  }
+
+  :global(html[data-theme="dark"]) .brand .logo-light {
+    display: none;
+  }
+
+  :global(html[data-theme="dark"]) .brand .logo-dark {
+    display: block;
   }
 
   nav,
@@ -120,7 +159,8 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
   }
 
   .nav-button,
-  .landing-action {
+  .landing-action,
+  .theme-toggle {
     align-items: center;
     border: 1px solid var(--solivio-color-muted);
     border-radius: var(--solivio-radius);
@@ -134,6 +174,29 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
     white-space: nowrap;
   }
 
+  .theme-toggle {
+    background: transparent;
+    color: var(--solivio-color-muted-foreground);
+    cursor: pointer;
+    min-height: 40px;
+    padding: 0;
+    width: 40px;
+  }
+
+  .theme-toggle::before {
+    border-radius: 999px;
+    box-shadow: inset 5px -5px 0 0 currentColor;
+    content: "";
+    display: block;
+    height: 16px;
+    width: 16px;
+  }
+
+  :global(html[data-theme="dark"]) .theme-toggle::before {
+    background: currentColor;
+    box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 30%, transparent);
+  }
+
   .nav-button {
     min-height: 40px;
     padding: 0 14px;
@@ -145,8 +208,10 @@ const flow = ["Data", "AI", "Structured draft", "Review", "Send"];
   }
 
   .nav-button:hover,
-  .landing-action.secondary:hover {
+  .landing-action.secondary:hover,
+  .theme-toggle:hover {
     background: var(--solivio-color-muted);
+    color: var(--solivio-color-foreground);
   }
 
   .hero {

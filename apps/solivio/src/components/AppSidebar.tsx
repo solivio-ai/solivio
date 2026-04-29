@@ -1,7 +1,6 @@
 "use client";
 
 import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -18,6 +17,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SolivioLogo } from "@/components/SolivioLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 
 const navItems = [
@@ -45,9 +46,7 @@ export function AppSidebar() {
           className="flex min-w-0 items-center"
           aria-label="Solivio home"
         >
-          <Image
-            src="/solivio-logo.png"
-            alt="Solivio"
+          <SolivioLogo
             width={180}
             height={60}
             sizes="180px"
@@ -80,7 +79,12 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border pb-3 pt-2">
-        <LanguageSwitcher />
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <LanguageSwitcher />
+          </div>
+          <ThemeToggle className="ml-auto" />
+        </div>
         <UserMenu />
       </SidebarFooter>
       <SidebarRail />

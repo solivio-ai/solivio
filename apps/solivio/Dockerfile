@@ -23,7 +23,7 @@ COPY --from=deps /app/.yarn ./.yarn
 COPY --from=deps /app/.yarnrc.yml ./
 
 COPY package.json yarn.lock tsconfig.base.json ./
-COPY solivio-logo.png favicon.png ./
+COPY solivio-logo.png solivio-logo-dark.png favicon.png ./
 COPY packages ./packages
 COPY apps/solivio ./apps/solivio
 

@@ -83,7 +83,7 @@ The app uses **shadcn/ui** components with **Tailwind CSS v4**.
 - Use shadcn primitives (`Button`, `Card`, `Badge`, `Textarea`, etc.) for all UI — do not write custom CSS classes.
 - Before building any UI element, check if a matching shadcn component exists at https://ui.shadcn.com/docs/components and add it with `yarn dlx shadcn@latest add <component>` if so.
 - Style layout and spacing with Tailwind utility classes only; avoid adding rules to `globals.css`.
-- Theme tokens live in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is dark-first (Solivio brand: yellow primary `#FACC15`, teal secondary `#134E4A`). Do not add a light-mode variant unless explicitly requested.
+- Theme tokens live in `packages/theme/src/tokens.css` and are mapped in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is light-first (Solivio brand: yellow primary `#F6C215`, teal secondary `#134E4A`) with dark mode kept as an optional `.dark` / `data-theme="dark"` variant.
 - `globals.css` must stay clean: Tailwind imports, `@theme inline` token mapping, and the `@layer base` theme block only.
 
 ## Implementation Rules
