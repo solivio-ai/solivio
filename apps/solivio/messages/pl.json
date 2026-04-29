@@ -17,6 +17,84 @@
       "pl": "Polski"
     }
   },
+  "NewOffer": {
+    "page": {
+      "tagline": "Oferty nie powinny zajmować godzin. Powinny powstawać z Twoich danych.",
+      "badges": {
+        "generatedDraft": "Szkic generowany przez AI",
+        "review": "Sprawdź i dopracuj"
+      },
+      "back": "Wróć"
+    },
+    "form": {
+      "title": "Utwórz ofertę",
+      "description": "Wprowadź dane klienta i treść zapytania.",
+      "customerName": {
+        "label": "Nazwa klienta",
+        "placeholder": "ACME Sp. z o.o."
+      },
+      "clientRequest": {
+        "label": "Zapytanie klienta",
+        "placeholder": "Opisz, czego potrzebuje klient..."
+      },
+      "actions": {
+        "generate": "Wygeneruj szkic oferty",
+        "preparing": "Przygotowuję szkic..."
+      },
+      "notices": {
+        "initial": "Uzupełnij zapytanie i wygeneruj szkic oferty.",
+        "preparing": "Przygotowuję szkic oferty...",
+        "generated": "Szkic oferty wygenerowany. Otwieram przegląd...",
+        "error": "Nie udało się teraz wygenerować oferty. Spróbuj ponownie."
+      }
+    },
+    "generation": {
+      "dialogTitle": "Postęp generowania oferty",
+      "dialogDescription": "Szkic oferty jest przygotowywany na podstawie zapytania klienta.",
+      "title": "Przygotowuję szkic oferty",
+      "activeStep": "{title}: {description}",
+      "draftReady": "Szkic gotowy",
+      "elapsed": "{seconds} s",
+      "progressLabel": "Postęp generowania oferty",
+      "stepCounter": "Krok {current} z {total}",
+      "progressValue": "{progress}%",
+      "requestSnapshot": "Podgląd zapytania",
+      "unnamedCustomer": "Klient bez nazwy",
+      "catalogPreview": "Wstępne dopasowania z katalogu",
+      "steps": {
+        "readingRequest": {
+          "title": "Czytam zapytanie",
+          "description": "Zapisuję kontekst klienta i treść zapytania.",
+          "detail": "Przyjęcie"
+        },
+        "extractingNeeds": {
+          "title": "Wyodrębniam potrzeby",
+          "description": "Wyszukuję pozycje produktowe, ilości i ograniczenia.",
+          "detail": "Wymagania"
+        },
+        "preparingSearches": {
+          "title": "Przygotowuję wyszukiwania",
+          "description": "Buduję zapytania katalogowe dla każdej pozycji.",
+          "detail": "Plan wyszukiwania"
+        },
+        "searchingCatalog": {
+          "title": "Przeszukuję katalog",
+          "description": "Sprawdzam kandydatów i wyniki podobieństwa semantycznego.",
+          "detail": "Dopasowanie"
+        },
+        "checkingGaps": {
+          "title": "Sprawdzam braki",
+          "description": "Oddzielam pewne dopasowania od elementów do przeglądu.",
+          "detail": "Walidacja"
+        },
+        "composingDraft": {
+          "title": "Składam szkic",
+          "description": "Wyceniam dopasowane produkty i zapisuję szkic oferty.",
+          "detail": "Szkic"
+        }
+      }
+    }
+  },
   "OffersList": {
     "actions": {
       "clearFilters": "Wyczyść filtry",

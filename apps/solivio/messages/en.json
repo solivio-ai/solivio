@@ -17,6 +17,84 @@
       "pl": "Polski"
     }
   },
+  "NewOffer": {
+    "page": {
+      "tagline": "Quotes shouldn’t take hours. They should start from your data.",
+      "badges": {
+        "generatedDraft": "AI-generated draft",
+        "review": "Review & adjust"
+      },
+      "back": "Back"
+    },
+    "form": {
+      "title": "Create offer",
+      "description": "Provide the customer details and request text.",
+      "customerName": {
+        "label": "Customer name",
+        "placeholder": "ACME Ltd."
+      },
+      "clientRequest": {
+        "label": "Customer request",
+        "placeholder": "Describe what the customer needs..."
+      },
+      "actions": {
+        "generate": "Generate draft offer",
+        "preparing": "Preparing draft..."
+      },
+      "notices": {
+        "initial": "Fill in the request and generate a draft offer.",
+        "preparing": "Preparing draft offer...",
+        "generated": "Draft offer generated. Opening review...",
+        "error": "Could not generate offer right now. Please try again."
+      }
+    },
+    "generation": {
+      "dialogTitle": "Offer generation progress",
+      "dialogDescription": "The draft offer is being prepared from the customer request.",
+      "title": "Preparing draft offer",
+      "activeStep": "{title}: {description}",
+      "draftReady": "Draft ready",
+      "elapsed": "{seconds}s elapsed",
+      "progressLabel": "Offer generation progress",
+      "stepCounter": "Step {current} of {total}",
+      "progressValue": "{progress}%",
+      "requestSnapshot": "Request snapshot",
+      "unnamedCustomer": "Unnamed customer",
+      "catalogPreview": "Catalog results taking shape",
+      "steps": {
+        "readingRequest": {
+          "title": "Reading request",
+          "description": "Capturing the customer context and raw request text.",
+          "detail": "Intake"
+        },
+        "extractingNeeds": {
+          "title": "Extracting needs",
+          "description": "Finding product lines, quantities, and constraints.",
+          "detail": "Requirements"
+        },
+        "preparingSearches": {
+          "title": "Preparing searches",
+          "description": "Building catalog-ready queries for each request item.",
+          "detail": "Search plan"
+        },
+        "searchingCatalog": {
+          "title": "Searching catalog",
+          "description": "Checking candidates and semantic similarity scores.",
+          "detail": "Matching"
+        },
+        "checkingGaps": {
+          "title": "Checking gaps",
+          "description": "Separating confident matches from items for review.",
+          "detail": "Validation"
+        },
+        "composingDraft": {
+          "title": "Composing draft",
+          "description": "Pricing matched products and saving the offer draft.",
+          "detail": "Draft"
+        }
+      }
+    }
+  },
   "OffersList": {
     "actions": {
       "clearFilters": "Clear filters",
