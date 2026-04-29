@@ -35,7 +35,6 @@ export type CustomerRequest = {
 };
 
 export type OfferItem = {
-  offerProductId?: string;
   productId: string;
   quantity: number;
   rationale: string;
@@ -63,8 +62,28 @@ export type Offer = {
   clientRequest?: string;
   status: "draft" | "reviewed" | "accepted";
   generatedAt: string;
+  revisionId: string;
+  revisionNumber: number;
   items: OfferItem[];
   notes: string[];
+};
+
+export type OfferSummary = {
+  id: string;
+  name: string;
+  customerName?: string | null;
+  status: "draft" | "reviewed" | "accepted";
+  revisionNumber: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RevisionSummary = {
+  revisionId: string;
+  revisionNumber: number;
+  status: "draft" | "reviewed" | "accepted";
+  userId: string;
+  createdAt: string;
 };
 
 export const workflowSteps: WorkflowStep[] = [
@@ -168,6 +187,8 @@ export const demoOffer: Offer = {
   clientRequest: demoRequest.text,
   status: "draft",
   generatedAt: "2026-04-28T00:00:00.000Z",
+  revisionId: "demo-revision-001",
+  revisionNumber: 1,
   items: [
     {
       productId: "solar-panel-430",

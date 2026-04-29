@@ -174,7 +174,6 @@ export const offerItemProductSchema = z
 
 export const offerItemSchema = z
   .object({
-    offerProductId: z.string().optional(),
     productId: z.string(),
     productName: z.string().optional(),
     productSku: z.string().optional(),
@@ -231,6 +230,8 @@ export const offerSchema = z
     clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
+    revisionId: z.string(),
+    revisionNumber: z.number().int().positive(),
     items: z.array(offerItemSchema),
     notes: z.array(z.string())
   })
@@ -245,6 +246,40 @@ export const offerResponseSchema = z
   })
   .strict()
   .meta({ id: "OfferResponse" });
+
+export const offerSummarySchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    customerName: z.string().nullable().optional(),
+    status: offerStatusSchema,
+    revisionNumber: z.number().int().positive(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime()
+  })
+  .meta({ id: "OfferSummary", description: "Offer list entry with latest revision metadata." });
+
+export const offersListResponseSchema = z
+  .object({ offers: z.array(offerSummarySchema) })
+  .strict()
+  .meta({ id: "OffersListResponse" });
+
+export const revisionSummarySchema = z
+  .object({
+    revisionId: z.string(),
+    revisionNumber: z.number().int().positive(),
+    status: offerStatusSchema,
+    userId: z.string(),
+    createdAt: z.string().datetime()
+  })
+  .meta({ id: "RevisionSummary" });
+
+export const revisionsListResponseSchema = z
+  .object({ revisions: z.array(revisionSummarySchema) })
+  .strict()
+  .meta({ id: "RevisionsListResponse" });
+
+export const restoreOfferRequestSchema = z.object({}).strict().meta({ id: "RestoreOfferRequest" });
 
 export const updateOfferItemRequestSchema = z
   .object({
