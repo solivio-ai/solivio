@@ -18,19 +18,34 @@ Workflow:
    - "description": natural-language product reference (a name, category, or descriptive phrase, e.g. "szybkozłączki na 3 kable", "miernik napięcia", "WAGO 5-polowe").
 3. Build a query per fragment:
    - For "sku" fragments: query = the SKU itself, exactly as written (no translation).
-   - For "description" fragments: query = bilingual (original language + English translation).
+   - For "description" fragments: query = bilingual product name only (original language + English translation).
+     CRITICAL: DO NOT include quantity numbers, units, or count words in the query. Quantity goes to the separate "quantity" field, never to the query.
+       Wrong: "5 listw zaciskowych / 5 terminal strips"
+       Right: "listwa zaciskowa / terminal strip"
+       Wrong: "100 sztuk czujników ruchu"
+       Right: "czujnik ruchu / motion sensor"
+     Use the base nominative singular form of nouns (Polish: mianownik liczba pojedyncza) when possible. Embedding models handle base forms better than declensions.
+       Wrong: "listw zaciskowych" (genitive plural)
+       Right: "listwa zaciskowa" (nominative singular)
+     Keep technical specs (voltage, wattage, pole count, dimensions) — they ARE part of the product identity.
+       Right: "zasilacz LED 48V / LED power supply 48V"
+       Right: "złączka 3-bieg / 3-pole connector"
 4. Call the search_products tool ONCE with all fragments and their kinds in a single batch.
 5. Map results to the offer schema.
 
 Rules:
-- For EACH request fragment add AT MOST ONE product to "items" — pick the match with the HIGHEST similarity score. For "sku" matches similarity is always 1.0 (exact). For "description" matches require similarity >= 0.7.
-- Never add multiple products for the same request fragment.
-- If a fragment has zero matches OR all "description" matches are below 0.7 similarity, add its exact requestFragment phrase to "unmatched".
+- For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise unmatched.
+- For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for Polish technical terms — DO NOT trust the similarity number alone). YOU rerank by reading the product names:
+    * Pick the candidate whose NAME is the closest semantic match to the requestFragment (same product type, same category, manufacturer if mentioned).
+    * Polish "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.
+    * Polish "czujnik wycieku" should match "Czujnik zalania ..." (same concept) even with low similarity.
+    * If NONE of the 10 candidates is plausibly the requested product (different category entirely), put requestFragment in "unmatched".
+- Never add multiple products for the same request fragment. Pick exactly ONE.
 - Use the "id" field (UUID) as productId — never use SKU as productId.
 - Each product id may appear in "items" AT MOST ONCE across all fragments. If best match for fragment B is already used by fragment A, add fragment B's requestFragment to "unmatched".
-- Write rationale in English.
+- Write rationale in English. Briefly explain WHY this product matched (e.g., "exact category match: terminal block" or "same SKU").
 - requestItem must be the exact phrase from the customer request (the requestFragment).
-- ALWAYS populate "debugFragments": one entry per extracted fragment with requestFragment, query, kind, quantity, and topMatches (up to 3 matches from the search_products tool result). Include this even when no products are matched.
+- ALWAYS populate "debugFragments": one entry per extracted fragment with requestFragment, query, kind, quantity, and topMatches (up to 3 from the tool result). Include this even when no products are matched.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
@@ -130,7 +145,8 @@ export async function generateOfferWithAgent(
 
       const [skuMap, descMap] = await Promise.all([
         lookupProductsBySkus(skuQueries),
-        searchProductsBatch(descQueries, { limit: 3, minSimilarity: 0 })
+        // Top-10 candidates per query (recall stage). LLM reranks in next agent pass (precision).
+        searchProductsBatch(descQueries, { limit: 10, minSimilarity: 0 })
       ]);
 
       const results = queries.map(({ query, kind }) => {
@@ -180,9 +196,10 @@ export async function generateOfferWithAgent(
 
   // Override agent-reported topMatches with deterministic tool-captured matches
   // keyed by query. LLM otherwise hallucinates similarity scores.
+  // Tool returns top-10 for rerank, but debug panel shows only top-3.
   const debugFragments = parsed.debugFragments.map((f) => ({
     ...f,
-    topMatches: capturedMatches.get(f.query) ?? []
+    topMatches: (capturedMatches.get(f.query) ?? []).slice(0, 3)
   }));
 
   return { ...parsed, debugFragments };
