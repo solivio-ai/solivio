@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2, MessageSquare, XCircle, Send } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -28,53 +29,55 @@ type OfferValidationDialogProps = {
   onSendToChat?: (message: string) => void;
 };
 
-function formatValidationMessage(result: ValidationResult): string {
-  const verdictLabel = { pass: "Kompletna", partial: "Częściowo spełniona", fail: "Wymagania niespełnione" }[result.verdict];
-  const lines: string[] = [`**Wyniki walidacji AI**\n\n**Status:** ${verdictLabel}\n\n${result.summary}`];
+function formatValidationMessage(result: ValidationResult, t: (key: string) => string): string {
+  const verdictLabel = t(`verdict.${result.verdict}`);
+  const lines: string[] = [`${t("messageHeader")}\n\n**${t("statusLabel")}:** ${verdictLabel}\n\n${result.summary}`];
 
   if (result.missingRequirements.length > 0) {
-    lines.push(`\n**Brakujące wymagania:**\n${result.missingRequirements.map((r) => `• ${r}`).join("\n")}`);
+    lines.push(`\n**${t("missingRequirements")}:**\n${result.missingRequirements.map((r) => `• ${r}`).join("\n")}`);
   }
 
   if (result.issues.length > 0) {
-    lines.push(`\n**Uwagi:**\n${result.issues.map((i) => `• ${i}`).join("\n")}`);
+    lines.push(`\n**${t("notes")}:**\n${result.issues.map((i) => `• ${i}`).join("\n")}`);
   }
 
   if (result.missingRequirements.length > 0) {
-    lines.push("\nCzy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?");
+    lines.push(`\n${t("chatPrompt")}`);
   }
 
   return lines.join("");
 }
 
-const verdictConfig = {
+const getVerdictConfig = (t: (key: string) => string) => ({
   pass: {
     Icon: CheckCircle2,
     iconClass: "text-green-500",
     badgeVariant: "default" as const,
-    label: "Oferta kompletna"
+    label: t("verdict.pass")
   },
   partial: {
     Icon: AlertTriangle,
     iconClass: "text-amber-500",
     badgeVariant: "secondary" as const,
-    label: "Częściowo spełniona"
+    label: t("verdict.partial")
   },
   fail: {
     Icon: XCircle,
     iconClass: "text-destructive",
     badgeVariant: "destructive" as const,
-    label: "Wymagania niespełnione"
+    label: t("verdict.fail")
   }
-};
+});
 
 export function OfferValidationDialog({
   open,
   onOpenChange,
   result,
   onAccept,
-  onSendToChat
+  onSendToChat,
 }: OfferValidationDialogProps) {
+  const t = useTranslations("NewOffer.review.validation");
+  const verdictConfig = getVerdictConfig(t);
   const config = verdictConfig[result.verdict];
   const { Icon } = config;
 
@@ -84,20 +87,20 @@ export function OfferValidationDialog({
         <DialogHeader>
           <div className="flex items-center gap-2">
             <Icon size={20} aria-hidden="true" className={config.iconClass} />
-            <DialogTitle>Wynik walidacji AI</DialogTitle>
+            <DialogTitle>{t("title")}</DialogTitle>
           </div>
           <DialogDescription>{result.summary}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3 py-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-sm text-muted-foreground">{t("statusLabel")}:</span>
             <Badge variant={config.badgeVariant}>{config.label}</Badge>
           </div>
 
           {result.missingRequirements.length > 0 && (
             <section className="grid gap-1.5">
-              <p className="text-sm font-medium text-destructive">Brakujące wymagania</p>
+              <p className="text-sm font-medium text-destructive">{t("missingRequirements")}</p>
               <ul className="grid gap-1">
                 {result.missingRequirements.map((req, i) => (
                   <li key={i} className="flex gap-2 text-sm">
@@ -111,7 +114,7 @@ export function OfferValidationDialog({
 
           {result.issues.length > 0 && (
             <section className="grid gap-1.5">
-              <p className="text-sm font-medium text-amber-600">Uwagi</p>
+              <p className="text-sm font-medium text-amber-600">{t("notes")}</p>
               <ul className="grid gap-1">
                 {result.issues.map((issue, i) => (
                   <li key={i} className="flex gap-2 text-sm">
@@ -125,25 +128,25 @@ export function OfferValidationDialog({
 
           {result.verdict === "pass" && result.issues.length === 0 && result.missingRequirements.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              Wszystkie wymagania klienta są spełnione.
+              {t("allMet")}
             </p>
           )}
         </div>
 
         <DialogFooter className="flex-wrap gap-2 sm:flex-nowrap sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Zamknij
+            {t("close")}
           </Button>
           {onSendToChat && (
             <Button
               variant="outline"
               onClick={() => {
-                onSendToChat(formatValidationMessage(result));
+                onSendToChat(formatValidationMessage(result, t));
                 onOpenChange(false);
               }}
             >
               <MessageSquare size={16} aria-hidden="true" />
-              Przekaż do czatu
+              {t("transferToChat")}
             </Button>
           )}
           {result.verdict !== "fail" && (
@@ -154,7 +157,7 @@ export function OfferValidationDialog({
               }}
             >
               <Send size={16} aria-hidden="true" />
-              Zaakceptuj ofertę
+              {t("acceptOffer")}
             </Button>
           )}
         </DialogFooter>

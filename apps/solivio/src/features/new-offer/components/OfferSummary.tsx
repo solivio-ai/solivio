@@ -1,4 +1,5 @@
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,46 +36,47 @@ export function OfferSummary({
   total,
   unpricedLineCount,
 }: OfferSummaryProps) {
+   const tSummary = useTranslations("NewOffer.review.summary");
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
-        <CardTitle>Summary</CardTitle>
-        <CardDescription>Totals and the checks needed before this draft is sent.</CardDescription>
+        <CardTitle>{tSummary("title")}</CardTitle>
+        <CardDescription>{tSummary("description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
-            <h2 className="text-sm font-medium">Customer request</h2>
+            <h2 className="text-sm font-medium">{tSummary("customerRequest")}</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">{requestText}</p>
           </section>
 
           <section className="grid gap-3">
-            <h2 className="text-sm font-medium">Review checks</h2>
+            <h2 className="text-sm font-medium">{tSummary("reviewChecks")}</h2>
             <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-              <ValidationRow ok={margin >= 28} text={`Target margin: ${margin.toFixed(1)}%`} />
+              <ValidationRow ok={margin >= 28} text={tSummary("checks.targetMargin", { margin: margin.toFixed(1) })} />
               <ValidationRow
                 ok={unpricedLineCount === 0}
                 text={
                   unpricedLineCount === 0
-                    ? "All lines have prices"
-                    : `${unpricedLineCount} line needs a unit price`
+                    ? tSummary("checks.allPriced")
+                    : tSummary("checks.missingPrice", { count: unpricedLineCount })
                 }
               />
               <ValidationRow
                 ok={limitedLineCount === 0}
                 text={
                   limitedLineCount === 0
-                    ? "Availability confirmed"
-                    : `${limitedLineCount} line needs availability confirmation`
+                    ? tSummary("checks.availabilityConfirmed")
+                    : tSummary("checks.missingAvailability", { count: limitedLineCount })
                 }
               />
-              <ValidationRow ok={status === "accepted"} text="Offer accepted" />
+              <ValidationRow ok={status === "accepted"} text={tSummary("checks.offerAccepted")} />
             </div>
           </section>
 
           {notes.length > 0 ? (
             <section className="grid gap-3">
-              <h2 className="text-sm font-medium">Notes</h2>
+              <h2 className="text-sm font-medium">{tSummary("notes")}</h2>
               <div className="grid gap-2">
                 {notes.map((note) => (
                   <div key={note} className="flex gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed">

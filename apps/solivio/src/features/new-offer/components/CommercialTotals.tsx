@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import type { DraftLine } from "./offer-builder-types";
@@ -24,17 +25,18 @@ export function CommercialTotals({
   total,
   isLocked,
 }: CommercialTotalsProps) {
+   const tCommercial = useTranslations("NewOffer.review.commercial");
   return (
     <section className="grid min-w-0 content-start gap-3 rounded-lg border border-foreground/15 bg-background/60 p-3">
-      <h2 className="text-sm font-medium">Commercial totals</h2>
+      <h2 className="text-sm font-medium">{tCommercial("title")}</h2>
       <div className="grid gap-3 text-sm">
         <div className="flex items-center justify-between gap-4">
-          <span className="text-muted-foreground">Subtotal</span>
+          <span className="text-muted-foreground">{tCommercial("subtotal")}</span>
           <span className="font-medium">{formatCurrency(subtotal, currency)}</span>
         </div>
         <div className="flex items-center justify-between gap-4">
           <label className="text-muted-foreground" htmlFor="discount-percent">
-            Discount
+            {tCommercial("discount")}
           </label>
           <div className="flex items-center gap-2">
             <Input
@@ -51,15 +53,15 @@ export function CommercialTotals({
           </div>
         </div>
         <div className="flex items-center justify-between gap-4 border-t border-foreground/15 pt-3">
-          <span className="text-muted-foreground">Discount value</span>
+          <span className="text-muted-foreground">{tCommercial("discountValue")}</span>
           <span className="font-medium">{formatCurrency(discount, currency)}</span>
         </div>
         <div className="flex items-center justify-between gap-4 text-base">
-          <span className="font-medium">Total net</span>
+          <span className="font-medium">{tCommercial("totalNet")}</span>
           <span className="text-lg font-semibold">{formatCurrency(total, currency)}</span>
         </div>
         <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
-          <span>Estimated margin</span>
+          <span>{tCommercial("estimatedMargin")}</span>
           <Badge variant={margin >= 28 ? "outline" : "destructive"}>{margin.toFixed(1)}%</Badge>
         </div>
       </div>

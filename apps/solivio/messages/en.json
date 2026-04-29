@@ -154,7 +154,136 @@
         "saved": "All changes saved.",
         "error": "Could not save changes.",
         "retry": "Retry"
+      },
+      "createdBy": "Created by {name}",
+      "lastModifiedBy": "Last modified by {name}",
+      "backToDraft": "Back to draft",
+      "manuallyAdded": "Manually added",
+      "noRequestText": "No customer request text was attached to this draft.",
+      "done": "Done"
+    },
+    "review": {
+      "loading": "Loading generated offer...",
+      "error": "Could not load this offer.",
+      "notFound": "Offer not available",
+      "createAnother": "Create another draft",
+      "assistant": {
+        "title": "Assistant",
+        "hide": "Hide assistant",
+        "show": "Show assistant"
+      },
+      "revisions": "Revisions",
+      "resizeLabel": "Resize offer review and assistant panes",
+      "validation": {
+        "title": "AI Validation Result",
+        "verdict": {
+          "pass": "Offer complete",
+          "partial": "Partially fulfilled",
+          "fail": "Requirements not met"
+        },
+        "missingRequirements": "Missing requirements",
+        "notes": "Notes",
+        "allMet": "All customer requirements are met.",
+        "close": "Close",
+        "transferToChat": "Transfer to chat",
+        "acceptOffer": "Accept offer",
+        "checking": "Checking...",
+        "checkWithAI": "Check with AI",
+        "messageHeader": "**AI Validation Results**",
+        "statusLabel": "Status",
+        "chatPrompt": "Can you suggest solutions for missing items or comment on these results?"
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Totals and the checks needed before this draft is sent.",
+        "customerRequest": "Customer request",
+        "reviewChecks": "Review checks",
+        "notes": "Notes",
+        "checks": {
+          "targetMargin": "Target margin: {margin}%",
+          "allPriced": "All lines have prices",
+          "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
+          "availabilityConfirmed": "Availability confirmed",
+          "missingAvailability": "{count, plural, one {# line needs availability confirmation} other {# lines need availability confirmation}}",
+          "offerAccepted": "Offer accepted"
+        }
+      },
+      "commercial": {
+        "title": "Commercial totals",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "discountValue": "Discount value",
+        "totalNet": "Total net",
+        "estimatedMargin": "Estimated margin"
+      },
+      "products": {
+        "title": "Products",
+        "description": "Review the matched products, quantities, and pricing first.",
+        "unmatchedTitle": "Unmatched Request Items",
+        "unmatchedDescription": "The following items from the customer's request could not be mapped to any products in our catalog:",
+        "empty": "No products in this offer yet.",
+        "match": "Product Match",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "lineTotal": "Line total",
+        "actions": "Actions",
+        "sku": "SKU",
+        "requested": "Requested",
+        "details": "Details",
+        "availability": "Availability",
+        "brand": "Brand",
+      "quantityAria": "Quantity for {name}",
+        "removeAria": "Remove {name}"
+      },
+      "acceptedView": {
+        "pdfPreviewAria": "Accepted offer PDF preview",
+        "attribution": "Attribution",
+        "downloadPdf": "Generate and download PDF",
+        "goToOffers": "Go to offers list"
       }
+    },
+    "revision": {
+      "timeline": {
+        "justNow": "just now",
+        "ago": "{time} ago",
+        "empty": "No saved revisions yet.",
+        "checkpoint": "Revisions are saved automatically as you edit.",
+        "revisionLabel": "Revision {number}",
+        "latest": "Latest",
+        "accepted": "Accepted"
+      },
+      "modal": {
+        "previewAria": "Revision {number} preview",
+        "title": "Revision {number}",
+        "savedBy": "Saved by {name}",
+        "loading": "Loading revision...",
+        "name": "Name",
+        "customer": "Customer",
+        "status": "Status",
+        "notes": "Notes",
+        "lineItems": "Line items ({count})",
+        "product": "Product",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "total": "Total",
+        "close": "Close",
+        "restoring": "Restoring...",
+        "restoreAction": "Restore this revision"
+      }
+    }
+  },
+  "QuickSearch": {
+    "card": {
+      "title": "Find a product",
+      "description": "Search the catalog and create a draft offer from selected items."
+    },
+    "searchPlaceholder": "Search products...",
+    "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
+    "noItemsSelected": "No items selected",
+    "actions": {
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createDraft": "Create Draft Offer"
     }
   },
   "OfferChat": {
@@ -270,5 +399,44 @@
     },
     "title": "Offers",
     "subtitle": "Review generated drafts, spot missing product matches, and continue the customer conversation from one queue."
+  },
+  "ProductImport": {
+    "page": {
+      "title": "Import products",
+      "badge": "Products",
+      "description": "Upload a CSV catalog, preview parsed rows, then save embeddings behind the server API."
+    },
+    "uploadCard": {
+      "title": "Catalog upload",
+      "description": "Pick a CSV file with columns: sku, name, description, manufacturer, price_net, price_gross, vat_rate, and currency. Comma, semicolon, and tab separators are supported; prices may use either . or , as the decimal mark.",
+      "chooseFile": "Choose a CSV file",
+      "pickAnother": "Click to pick another file",
+      "dropOne": "or drop one onto this field",
+      "emptyError": "The CSV file appears to be empty.",
+      "parseError": "Failed to parse CSV.",
+      "readError": "Failed to read the file."
+    },
+    "previewCard": {
+      "title": "Preview",
+      "rowCount": "{count, plural, one {# row} other {# rows}}",
+      "clear": "Clear",
+      "missingColumns": "Missing required {count, plural, one {column} other {columns}}: {columns}.",
+      "modelLabel": "Embedding model",
+      "modelPlaceholder": "Embedding model",
+      "modelsUnavailable": "Embedding models unavailable",
+      "importAction": {
+        "embedding": "Embedding...",
+        "saveCount": "Embed and save {count, plural, one {# product} other {# products}}"
+      },
+      "importDone": "Saved {count, plural, one {# product} other {# products}}.",
+      "importError": "Import failed.",
+      "showingFirst": "Showing the first 50 of {count} rows."
+    }
+  },
+  "DemoOffer": {
+    "title": "Offer products",
+    "addProduct": "Add product",
+    "empty": "No products added yet",
+    "qty": "qty: {count}"
   }
 }
