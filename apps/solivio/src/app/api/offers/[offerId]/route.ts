@@ -77,10 +77,23 @@ export async function PATCH(request: Request, context: RouteContext) {
           name: input.data.name,
           customerName: input.data.customerName,
           clientRequest: input.data.clientRequest
-        })) ?? updateOfferDraft(offerId, input.data)
+        }, auth.session.user.id)) ?? updateOfferDraft(offerId, input.data)
       : updateOfferDraft(offerId, input.data);
 
   if (!offer) {
+    const existing = isUuid(offerId) ? await getOffer(offerId) : null;
+    if (existing?.status === "accepted") {
+      return NextResponse.json(
+        errorResponseSchema.parse({
+          error: {
+            code: "offer_locked",
+            message: "This offer has been accepted and cannot be modified."
+          }
+        }),
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
       errorResponseSchema.parse({
         error: {

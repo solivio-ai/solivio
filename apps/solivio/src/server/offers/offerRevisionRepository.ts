@@ -12,6 +12,8 @@ export type InsertRevisionData = {
   offerId: string;
   snapshot: OfferRevisionSnapshot;
   createdBy: string | null;
+  /** Set to a Date when this revision locks prices at acceptance time. */
+  acceptedAt?: Date | null;
 };
 
 export type RevisionRow = {
@@ -22,6 +24,7 @@ export type RevisionRow = {
   createdById: string | null;
   createdByName: string | null;
   createdAt: Date;
+  acceptedAt: Date | null;
 };
 
 export async function insertRevision(
@@ -42,6 +45,7 @@ export async function insertRevision(
       revisionNumber: nextNumber,
       snapshot: data.snapshot,
       createdBy: data.createdBy,
+      acceptedAt: data.acceptedAt ?? null,
     })
     .returning();
 
@@ -53,6 +57,7 @@ export async function insertRevision(
     createdById: revision.createdBy,
     createdByName: null,
     createdAt: revision.createdAt,
+    acceptedAt: revision.acceptedAt,
   };
 }
 
@@ -68,6 +73,7 @@ export async function findRevisionsByOfferId(
       createdById: offerRevisions.createdBy,
       createdByName: user.name,
       createdAt: offerRevisions.createdAt,
+      acceptedAt: offerRevisions.acceptedAt,
     })
     .from(offerRevisions)
     .leftJoin(user, eq(user.id, offerRevisions.createdBy))
@@ -81,6 +87,7 @@ export async function findRevisionsByOfferId(
     createdById: row.createdById,
     createdByName: row.createdByName,
     createdAt: row.createdAt,
+    acceptedAt: row.acceptedAt,
   }));
 }
 
@@ -98,6 +105,7 @@ export async function findRevisionById(
       createdById: offerRevisions.createdBy,
       createdByName: user.name,
       createdAt: offerRevisions.createdAt,
+      acceptedAt: offerRevisions.acceptedAt,
     })
     .from(offerRevisions)
     .leftJoin(user, eq(user.id, offerRevisions.createdBy))
@@ -118,5 +126,6 @@ export async function findRevisionById(
     createdById: row.createdById,
     createdByName: row.createdByName,
     createdAt: row.createdAt,
+    acceptedAt: row.acceptedAt,
   };
 }

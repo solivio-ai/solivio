@@ -21,6 +21,7 @@ import {
   type OfferRow,
   type UpdateOfferMetaInput
 } from "./offerRepository";
+import { saveRevision } from "./offerRevisionService";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -204,17 +205,35 @@ export async function updateOfferStatusAndFetch(
   status: Offer["status"],
   userId?: string | null
 ): Promise<Offer | null> {
-  return updateOfferMeta(offerId, { status });
+  return updateOfferMeta(offerId, { status }, userId);
 }
 
 export async function updateOfferMeta(
   offerId: string,
-  data: UpdateOfferMetaInput
+  data: UpdateOfferMetaInput,
+  userId?: string | null
 ): Promise<Offer | null> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+ 
+  // If the offer is accepted, only allow changing status back to draft (reopening)
+  if (existing.status === "accepted" && data.status !== "draft") {
+    return null;
+  }
+ 
+  // If reopening, save a revision of the accepted state first
+  if (existing.status === "accepted" && data.status === "draft") {
+    await saveRevision(offerId, userId ?? null);
+  }
+ 
   const updated = await persistOfferMeta(offerId, data);
   if (!updated) return null;
+ 
+  // If the offer was just accepted, lock the prices by saving a final revision
+  if (data.status === "accepted") {
+    await saveRevision(offerId, userId ?? null, new Date());
+  }
+ 
   return getOffer(offerId);
 }
 
@@ -231,9 +250,15 @@ export async function addProductToOffer(
   quantity: number,
   requestItem = "",
   userId?: string | null
-): Promise<CreatedOffer | null | "duplicate"> {
+): Promise<CreatedOffer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+ 
+  // Prevent adding products to an accepted offer
+  if (existing.status === "accepted") {
+    return "locked";
+  }
+ 
   const duplicate = existing.items.find((i) => i.productId === productId);
   if (duplicate) return "duplicate";
   const product = await db
@@ -263,9 +288,15 @@ export async function updateOfferLineItem(
   offerId: string,
   quantity: number,
   userId?: string | null
-): Promise<CreatedOffer | null> {
+): Promise<CreatedOffer | null | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+ 
+  // Prevent editing line items in an accepted offer
+  if (existing.status === "accepted") {
+    return "locked";
+  }
+ 
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return null;
   await updateOfferProduct(offerProductId, offerId, { quantity });
@@ -278,9 +309,15 @@ export async function removeOfferLineItem(
   offerProductId: string,
   offerId: string,
   userId?: string | null
-): Promise<boolean> {
+): Promise<boolean | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
+ 
+  // Prevent removing products from an accepted offer
+  if (existing.status === "accepted") {
+    return "locked";
+  }
+ 
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);

@@ -11,6 +11,7 @@ type CommercialTotalsProps = {
   setDiscountPercent: (discountPercent: number) => void;
   subtotal: number;
   total: number;
+  isLocked?: boolean;
 };
 
 export function CommercialTotals({
@@ -21,6 +22,7 @@ export function CommercialTotals({
   setDiscountPercent,
   subtotal,
   total,
+  isLocked,
 }: CommercialTotalsProps) {
   return (
     <section className="grid min-w-0 content-start gap-3 rounded-lg border bg-background/60 p-3">
@@ -43,6 +45,7 @@ export function CommercialTotals({
               type="number"
               value={discountPercent}
               onChange={(event) => setDiscountPercent(Math.max(0, Number(event.target.value) || 0))}
+              disabled={isLocked}
             />
             <span className="text-muted-foreground">%</span>
           </div>

@@ -65,6 +65,7 @@ type OfferBuilderHeaderProps = {
   offerId: string;
   offerTitle: string;
   onAccept: () => void;
+  onReopen: () => void;
   onAddProduct: () => void;
   onRetrySave: () => void;
   onSaveRevision: () => void;
@@ -86,6 +87,7 @@ export function OfferBuilderHeader({
   offerId,
   offerTitle,
   onAccept,
+  onReopen,
   onAddProduct,
   onRetrySave,
   onSaveRevision,
@@ -225,19 +227,41 @@ export function OfferBuilderHeader({
           size="sm"
           variant="outline"
           onClick={onSaveRevision}
-          disabled={status === "accepted" || saveRevisionState === "saving"}
+          disabled={saveRevisionState === "saving"}
         >
           <BookmarkPlus size={16} aria-hidden="true" />
           {revisionButtonLabel}
         </Button>
-        <Button className="w-full sm:w-auto" size="sm" variant="outline" onClick={onAddProduct}>
+        <Button
+          className="w-full sm:w-auto"
+          size="sm"
+          variant="outline"
+          onClick={onAddProduct}
+          disabled={status === "accepted"}
+        >
           <Plus size={16} aria-hidden="true" />
           {t("addProduct")}
         </Button>
-        <Button className="w-full sm:w-auto" size="sm" onClick={onAccept}>
-          <Send size={16} aria-hidden="true" />
-          {t("acceptDraft")}
-        </Button>
+        {status === "accepted" ? (
+          <Button
+            className="w-full sm:w-auto"
+            size="sm"
+            variant="secondary"
+            onClick={onReopen}
+          >
+            <RotateCcw size={16} aria-hidden="true" />
+            Back to draft
+          </Button>
+        ) : (
+          <Button
+            className="w-full sm:w-auto"
+            size="sm"
+            onClick={onAccept}
+          >
+            <Send size={16} aria-hidden="true" />
+            {t("acceptDraft")}
+          </Button>
+        )}
         {persisted ? (
           <>
             <DropdownMenu>

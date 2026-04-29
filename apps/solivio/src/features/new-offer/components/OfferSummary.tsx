@@ -95,6 +95,7 @@ export function OfferSummary({
           setDiscountPercent={setDiscountPercent}
           subtotal={subtotal}
           total={total}
+          isLocked={status === "accepted"}
         />
       </CardContent>
     </Card>

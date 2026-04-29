@@ -51,6 +51,18 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
+  if (offer === "locked") {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_locked",
+          message: "This offer has been accepted and cannot be modified."
+        }
+      }),
+      { status: 403 }
+    );
+  }
+
   if (offer === "duplicate") {
     return NextResponse.json(
       errorResponseSchema.parse({

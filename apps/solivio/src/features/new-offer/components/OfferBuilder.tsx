@@ -390,7 +390,8 @@ export function OfferBuilder({
         lineCount={lines.length}
         offerId={offer.id}
         offerTitle={offerHeaderTitle}
-        onAccept={() => updateStatus("accepted")}
+        onAccept={() => void saveReview("accepted")}
+        onReopen={() => void saveReview("draft")}
         onAddProduct={() => setSearchOpen(true)}
         onRetrySave={retrySave}
         onSaveRevision={() => void handleSaveRevision()}
@@ -410,6 +411,7 @@ export function OfferBuilder({
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
         updateQuantity={updateQuantity}
+        status={status}
       />
 
       <OfferDebugPanel

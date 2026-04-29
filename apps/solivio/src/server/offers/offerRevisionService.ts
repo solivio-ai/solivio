@@ -23,8 +23,9 @@ function rowToRevision(row: {
   createdById: string | null;
   createdByName: string | null;
   createdAt: Date;
+  acceptedAt?: Date | null;
   snapshot?: OfferRevisionSnapshot;
-}): OfferRevision {
+} & ({ snapshot: OfferRevisionSnapshot } | { snapshot?: never })): OfferRevision {
   return {
     id: row.id,
     offerId: row.offerId,
@@ -34,12 +35,14 @@ function rowToRevision(row: {
       ? { id: row.createdById, name: row.createdByName ?? "" }
       : null,
     createdAt: row.createdAt.toISOString(),
+    acceptedAt: row.acceptedAt?.toISOString() ?? null,
   };
 }
 
 export async function saveRevision(
   offerId: string,
-  userId: string | null
+  userId: string | null,
+  acceptedAt?: Date | null
 ): Promise<OfferRevision | null> {
   const row = await findOfferById(offerId);
   if (!row) return null;
@@ -63,7 +66,7 @@ export async function saveRevision(
     })),
   };
 
-  const revision = await insertRevision({ offerId, snapshot, createdBy: userId });
+  const revision = await insertRevision({ offerId, snapshot, createdBy: userId, acceptedAt });
   await setOfferUpdatedBy(offerId, userId);
 
   return rowToRevision(revision);
@@ -92,6 +95,12 @@ export async function restoreRevision(
   if (!revisionRow) return null;
 
   const { snapshot } = revisionRow;
+
+  // Check if current offer is locked
+  const currentOffer = await findOfferById(offerId);
+  if (currentOffer?.status === "accepted") {
+    return null;
+  }
 
   await db.transaction(async (tx) => {
     await tx.delete(offerProducts).where(eq(offerProducts.offerId, offerId));

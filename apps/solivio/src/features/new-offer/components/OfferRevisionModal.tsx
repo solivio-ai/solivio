@@ -71,7 +71,14 @@ export function OfferRevisionModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div>
-            <h2 className="font-semibold">Revision {revision?.revisionNumber}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold">Revision {revision?.revisionNumber}</h2>
+              {revision?.acceptedAt && (
+                <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
+                  Accepted
+                </span>
+              )}
+            </div>
             {revision?.createdBy && (
               <p className="text-xs text-muted-foreground">
                 Saved by {revision.createdBy.name} ·{" "}

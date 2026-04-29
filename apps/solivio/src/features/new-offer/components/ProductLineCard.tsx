@@ -9,6 +9,7 @@ import { formatCurrency } from "./offer-builder-types";
 type ProductLineCardProps = {
   commitQuantity: (productId: string) => void;
   isPending?: boolean;
+  isLocked?: boolean;
   line: DraftLine;
   removeProduct: (productId: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
@@ -17,6 +18,7 @@ type ProductLineCardProps = {
 export function ProductLineCard({
   commitQuantity,
   isPending,
+  isLocked,
   line,
   removeProduct,
   updateQuantity,
@@ -59,7 +61,7 @@ export function ProductLineCard({
                 event.currentTarget.blur();
               }
             }}
-            disabled={isPending}
+            disabled={isPending || isLocked}
           />
         </div>
         <div className="grid gap-1.5 text-right">
@@ -77,7 +79,7 @@ export function ProductLineCard({
             variant="ghost"
             className="size-8 text-muted-foreground hover:text-destructive"
             onClick={() => removeProduct(line.productId)}
-            disabled={isPending}
+            disabled={isPending || isLocked}
             aria-label={`Remove ${line.name}`}
           >
             {isPending ? (

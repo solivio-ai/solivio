@@ -42,6 +42,18 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const offer = await updateOfferLineItem(offerProductId, offerId, parsed.data.quantity, auth.session.user.id);
 
+  if (offer === "locked") {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_locked",
+          message: "This offer has been accepted and cannot be modified."
+        }
+      }),
+      { status: 403 }
+    );
+  }
+
   if (!offer) {
     return NextResponse.json(
       errorResponseSchema.parse({
@@ -63,6 +75,18 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
   const { offerId, offerProductId } = await context.params;
   const removed = await removeOfferLineItem(offerProductId, offerId, auth.session.user.id);
+
+  if (removed === "locked") {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_locked",
+          message: "This offer has been accepted and cannot be modified."
+        }
+      }),
+      { status: 403 }
+    );
+  }
 
   if (!removed) {
     return NextResponse.json(
