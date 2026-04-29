@@ -57,9 +57,12 @@ export type OfferItem = {
   };
 };
 
+export type OfferFragmentKind = "sku" | "description";
+
 export type OfferDebugFragment = {
   requestFragment: string;
   query: string;
+  kind: OfferFragmentKind;
   quantity: number;
   topMatches: { id: string; sku: string; name: string; similarity: number }[];
 };

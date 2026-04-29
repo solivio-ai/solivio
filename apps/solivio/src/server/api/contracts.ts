@@ -156,6 +156,7 @@ export const offerStatusSchema = z.enum(["draft", "accepted"]).meta({ id: "Offer
 export const debugFragmentSchema = z.object({
   requestFragment: z.string(),
   query: z.string(),
+  kind: z.enum(["sku", "description"]),
   quantity: z.number(),
   topMatches: z.array(z.object({ id: z.string(), sku: z.string(), name: z.string(), similarity: z.number() }))
 });

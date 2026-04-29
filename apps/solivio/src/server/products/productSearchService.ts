@@ -2,7 +2,7 @@ import "server-only";
 
 import { openai } from "@ai-sdk/openai";
 import { embed, embedMany } from "ai";
-import { type AnyColumn, desc, sql } from "drizzle-orm";
+import { type AnyColumn, desc, inArray, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { products } from "../database/schema";
@@ -18,8 +18,6 @@ export type ProductSearchMatch = {
   manufacturer: string;
   priceNet: number | null;
   currency: string | null;
-  nameSimilarity: number;
-  descriptionSimilarity: number;
   similarity: number;
 };
 
@@ -34,10 +32,6 @@ type SearchProductsOptions = {
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 10;
 const DEFAULT_MIN_SIMILARITY = 0.7;
-
-// Description carries more semantic signal than the name alone.
-const NAME_WEIGHT = 0.35;
-const DESCRIPTION_WEIGHT = 0.65;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -69,21 +63,15 @@ export async function searchProductsByPrompt(
 ): Promise<ProductSearchMatch[]> {
   if (prompt.trim().length === 0) return [];
 
-  // Step 1: Turn the prompt into a vector using the same model used at import time.
   const { embedding } = await embed({
     model: openai.embedding(options.model ?? "text-embedding-3-small"),
     value: prompt.trim()
   });
 
-  // Step 2: Build SQL expressions for similarity against each embedded column.
   const pgVector = toPostgresVector(embedding);
-  const nameSimilarity = cosineSimilarity(products.nameEmbedding, pgVector);
-  const descriptionSimilarity = cosineSimilarity(products.descriptionEmbedding, pgVector);
-  const weightedSimilarity = sql<number>`
-    (${nameSimilarity} * ${NAME_WEIGHT}) + (${descriptionSimilarity} * ${DESCRIPTION_WEIGHT})
-  `;
+  const similarity = cosineSimilarity(products.combinedEmbedding, pgVector);
+  const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
 
-  // Step 3: Fetch the top N most similar products, ordered by weighted score.
   const rows = await db
     .select({
       id: products.id,
@@ -93,25 +81,38 @@ export async function searchProductsByPrompt(
       manufacturer: products.manufacturer,
       priceNet: products.priceNet,
       currency: products.currency,
-      nameSimilarity,
-      descriptionSimilarity,
-      similarity: weightedSimilarity
+      similarity
     })
     .from(products)
-    .orderBy(desc(weightedSimilarity))
+    .orderBy(desc(similarity))
     .limit(clampLimit(options.limit));
 
-  // Step 4: Round scores and drop results that are below the similarity threshold.
-  const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
-
   return rows
-    .map((row) => ({
-      ...row,
-      nameSimilarity: roundScore(row.nameSimilarity),
-      descriptionSimilarity: roundScore(row.descriptionSimilarity),
-      similarity: roundScore(row.similarity)
-    }))
+    .map((row) => ({ ...row, similarity: roundScore(row.similarity) }))
     .filter((row) => row.similarity >= minSimilarity);
+}
+
+// Exact SKU lookup. Identifiers belong in B-tree, not in vector space.
+export async function lookupProductsBySkus(
+  skus: string[]
+): Promise<Map<string, ProductSearchMatch>> {
+  const trimmed = skus.map((s) => s.trim()).filter((s) => s.length > 0);
+  if (trimmed.length === 0) return new Map();
+
+  const rows = await db
+    .select({
+      id: products.id,
+      sku: products.sku,
+      name: products.name,
+      description: products.description,
+      manufacturer: products.manufacturer,
+      priceNet: products.priceNet,
+      currency: products.currency
+    })
+    .from(products)
+    .where(inArray(products.sku, trimmed));
+
+  return new Map(rows.map((row) => [row.sku, { ...row, similarity: 1 }]));
 }
 
 export async function searchProductsBatch(
@@ -121,7 +122,6 @@ export async function searchProductsBatch(
   const nonEmpty = prompts.filter((p) => p.trim().length > 0);
   if (nonEmpty.length === 0) return new Map();
 
-  // One API call for all embeddings
   const { embeddings } = await embedMany({
     model: openai.embedding(options.model ?? "text-embedding-3-small"),
     values: nonEmpty.map((p) => p.trim())
@@ -130,13 +130,10 @@ export async function searchProductsBatch(
   const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
   const limit = clampLimit(options.limit);
 
-  // Parallel SQL queries — one per fragment
   const entries = await Promise.all(
     embeddings.map(async (embedding, i) => {
       const pgVector = toPostgresVector(embedding);
-      const nameSim = cosineSimilarity(products.nameEmbedding, pgVector);
-      const descSim = cosineSimilarity(products.descriptionEmbedding, pgVector);
-      const weightedSim = sql<number>`(${nameSim} * ${NAME_WEIGHT}) + (${descSim} * ${DESCRIPTION_WEIGHT})`;
+      const similarity = cosineSimilarity(products.combinedEmbedding, pgVector);
 
       const rows = await db
         .select({
@@ -147,21 +144,14 @@ export async function searchProductsBatch(
           manufacturer: products.manufacturer,
           priceNet: products.priceNet,
           currency: products.currency,
-          nameSimilarity: nameSim,
-          descriptionSimilarity: descSim,
-          similarity: weightedSim
+          similarity
         })
         .from(products)
-        .orderBy(desc(weightedSim))
+        .orderBy(desc(similarity))
         .limit(limit);
 
       const matches = rows
-        .map((row) => ({
-          ...row,
-          nameSimilarity: roundScore(row.nameSimilarity),
-          descriptionSimilarity: roundScore(row.descriptionSimilarity),
-          similarity: roundScore(row.similarity)
-        }))
+        .map((row) => ({ ...row, similarity: roundScore(row.similarity) }))
         .filter((row) => row.similarity >= minSimilarity);
 
       return [nonEmpty[i]!, matches] as const;

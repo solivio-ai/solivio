@@ -80,16 +80,11 @@ export const products = pgTable(
     manufacturer: text("manufacturer").notNull(),
     priceNet: integer("price_net").default(0),
     currency: text("currency").default("PLN"),
-    nameEmbedding: vector("name_embedding", { dimensions: 1536 }).notNull(),
-    descriptionEmbedding: vector("description_embedding", { dimensions: 1536 }).notNull(),
+    combinedEmbedding: vector("combined_embedding", { dimensions: 1536 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
   },
   (table) => [
-    index("products_name_emb_idx").using("hnsw", table.nameEmbedding.op("vector_cosine_ops")),
-    index("products_desc_emb_idx").using(
-      "hnsw",
-      table.descriptionEmbedding.op("vector_cosine_ops")
-    )
+    index("products_combined_emb_idx").using("hnsw", table.combinedEmbedding.op("vector_cosine_ops"))
   ]
 );
 
