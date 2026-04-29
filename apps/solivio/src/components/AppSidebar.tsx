@@ -1,11 +1,11 @@
 "use client";
 
 import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
@@ -29,29 +30,34 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const t = useTranslations("AppSidebar");
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  function closeMobileSidebar() {
+    if (isMobile) setOpenMobile(false);
+  }
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border">
-        <Link href="/" className="flex items-center px-2 py-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+      <SidebarHeader className="border-b border-sidebar-border px-3 py-3">
+        <Link
+          href="/"
+          onClick={closeMobileSidebar}
+          className="flex min-w-0 items-center"
+          aria-label="Solivio home"
+        >
+          <Image
             src="/solivio-logo.png"
             alt="Solivio"
-            className="h-8 w-auto shrink-0"
+            width={180}
+            height={60}
+            sizes="180px"
+            className="h-8 w-auto max-w-[160px] object-contain"
+            priority
           />
         </Link>
-        <div className="px-2 pb-3">
-          <Button asChild className="w-full" size="sm">
-            <Link href="/offers/new">
-              <Plus size={16} aria-hidden="true" />
-              {t("actions.newOffer")}
-            </Link>
-          </Button>
-        </div>
       </SidebarHeader>
 
-      <SidebarContent className="pt-2">
+      <SidebarContent className="pt-1.5">
         <SidebarMenu>
           {navItems.map(({ labelKey, href, icon: Icon }) => {
             const active = pathname === href;
@@ -62,7 +68,7 @@ export function AppSidebar() {
                   isActive={active}
                   className={active ? "border-l-2 border-primary rounded-l-none text-primary font-semibold" : ""}
                 >
-                  <Link href={href}>
+                  <Link href={href} onClick={closeMobileSidebar}>
                     <Icon size={16} aria-hidden="true" />
                     <span>{t(`nav.${labelKey}`)}</span>
                   </Link>

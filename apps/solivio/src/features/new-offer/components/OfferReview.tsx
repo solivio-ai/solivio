@@ -17,6 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { OfferBuilder } from "./OfferBuilder";
+import { OfferAcceptedView } from "./OfferAcceptedView";
 import { OfferChat } from "@/features/offer-chat/components/OfferChat";
 import { cn } from "@/lib/utils";
 
@@ -145,6 +146,20 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     setState({ kind: "ready", offer });
   }
 
+  async function handleBackToDraft() {
+    const response = await fetch(`/api/offers/${offerId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "draft" })
+    });
+
+    if (!response.ok) return;
+    const payload = await response.json().catch(() => null);
+    if (payload?.offer) {
+      setState({ kind: "ready", offer: payload.offer as Offer });
+    }
+  }
+
   function renderAssistantToggle(compact = false) {
     const label = assistantOpen ? "Hide assistant" : "Show assistant";
     const Icon = assistantOpen ? PanelRightClose : PanelRightOpen;
@@ -171,9 +186,17 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     );
   }
 
+  if (state.offer.status === "accepted") {
+    return (
+      <section className="min-h-0">
+        <OfferAcceptedView offer={state.offer} onBackToDraft={() => void handleBackToDraft()} />
+      </section>
+    );
+  }
+
   return (
     <section className="min-h-0">
-      <div className="h-[calc(100svh-12.5rem)] min-h-[560px] xl:min-h-[640px]">
+      <div className="h-[calc(100svh-7rem)] min-h-[540px] xl:min-h-[600px]">
         {assistantOpen ? (
           <ResizablePanelGroup
             orientation={isWideLayout ? "horizontal" : "vertical"}

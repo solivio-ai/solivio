@@ -1,13 +1,13 @@
 import { boolean, index, integer, jsonb, pgTable, text, timestamp, uuid, vector } from "drizzle-orm/pg-core";
 
-import type { OfferDebugFragment } from "@solivio/domain";
+import type { Offer, OfferDebugFragment } from "@solivio/domain";
 
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull().default("Draft"),
   customerName: text("customer_name"),
   clientRequest: text("client_request"),
-  status: text("status").notNull().default("draft"),
+  status: text("status").$type<Offer["status"]>().notNull().default("draft"),
   notes: text("notes").array().notNull().default([]),
   unmatched: text("unmatched").array().notNull().default([]),
   debugFragments: jsonb("debug_fragments").$type<OfferDebugFragment[]>().notNull().default([]),

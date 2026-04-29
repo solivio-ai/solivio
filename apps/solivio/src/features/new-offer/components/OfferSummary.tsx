@@ -36,13 +36,13 @@ export function OfferSummary({
   unpricedLineCount,
 }: OfferSummaryProps) {
   return (
-    <Card className="min-w-0">
-      <CardHeader>
+    <Card className="min-w-0" size="sm">
+      <CardHeader className="pb-1">
         <CardTitle>Summary</CardTitle>
         <CardDescription>Totals and the checks needed before this draft is sent.</CardDescription>
       </CardHeader>
-      <CardContent className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="grid min-w-0 content-start gap-5">
+      <CardContent className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
             <h2 className="text-sm font-medium">Customer request</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">{requestText}</p>
@@ -68,7 +68,7 @@ export function OfferSummary({
                     : `${limitedLineCount} line needs availability confirmation`
                 }
               />
-              <ValidationRow ok={status !== "draft"} text="Sales review marked complete" />
+              <ValidationRow ok={status === "accepted"} text="Offer accepted" />
             </div>
           </section>
 

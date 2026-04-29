@@ -6,7 +6,7 @@ import {
   updateOfferRequestSchema
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { getOffer, updateOfferReviewStatus } from "@/server/offers/offerService";
+import { getOffer, updateOfferStatusAndFetch } from "@/server/offers/offerService";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 
 export const runtime = "nodejs";
@@ -66,7 +66,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const offer =
     isUuid(offerId) && input.data.status
-      ? (await updateOfferReviewStatus(offerId, input.data.status)) ?? updateOfferDraft(offerId, input.data)
+      ? (await updateOfferStatusAndFetch(offerId, input.data.status)) ?? updateOfferDraft(offerId, input.data)
       : updateOfferDraft(offerId, input.data);
 
   if (!offer) {

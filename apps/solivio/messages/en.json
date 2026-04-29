@@ -19,7 +19,7 @@
   },
   "NewOffer": {
     "page": {
-      "tagline": "Quotes shouldn’t take hours. They should start from your data.",
+      "title": "New offer",
       "badges": {
         "generatedDraft": "AI-generated draft",
         "review": "Review & adjust"
@@ -158,8 +158,7 @@
       "all": "All offers",
       "draft": "Draft",
       "label": "Filter offers",
-      "needsAttention": "Needs attention",
-      "reviewed": "Reviewed"
+      "needsAttention": "Needs attention"
     },
     "fallbacks": {
       "customStatus": "Custom status",
@@ -196,10 +195,6 @@
       "draft": {
         "description": "Needs sales review",
         "label": "Draft"
-      },
-      "reviewed": {
-        "description": "Ready for final approval",
-        "label": "Reviewed"
       }
     },
     "table": {

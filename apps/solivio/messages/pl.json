@@ -19,7 +19,7 @@
   },
   "NewOffer": {
     "page": {
-      "tagline": "Oferty nie powinny zajmować godzin. Powinny powstawać z Twoich danych.",
+      "title": "Nowa oferta",
       "badges": {
         "generatedDraft": "Draft generowany przez AI",
         "review": "Sprawdź i dopracuj"
@@ -158,8 +158,7 @@
       "all": "Wszystkie oferty",
       "draft": "Draft",
       "label": "Filtruj oferty",
-      "needsAttention": "Wymaga uwagi",
-      "reviewed": "Sprawdzona"
+      "needsAttention": "Wymaga uwagi"
     },
     "fallbacks": {
       "customStatus": "Status niestandardowy",
@@ -196,10 +195,6 @@
       "draft": {
         "description": "Wymaga przeglądu sprzedaży",
         "label": "Draft"
-      },
-      "reviewed": {
-        "description": "Gotowa do końcowej akceptacji",
-        "label": "Sprawdzona"
       }
     },
     "table": {

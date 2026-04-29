@@ -19,7 +19,14 @@ type OfferBuilderProps = {
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
   onDiscountPercentChange?: (discountPercent: number) => void;
+  onAccepted: (offer: Offer) => void;
 };
+
+type FailedSaveAction =
+  | { kind: "save-review" }
+  | { kind: "quantity"; productId: string }
+  | { kind: "remove"; productId: string }
+  | { kind: "add-product"; product: ProductSearchMatch; quantity: number };
 
 function toDraftLines(offer: Offer): DraftLine[] {
   return offer.items.map((item) => ({
@@ -74,9 +81,11 @@ export function OfferBuilder({
   discountPercent: controlledDiscountPercent,
   offer,
   onOfferChange,
-  onDiscountPercentChange
+  onDiscountPercentChange,
+  onAccepted
 }: OfferBuilderProps) {
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
+  const [failedAction, setFailedAction] = useState<FailedSaveAction | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const displayCustomerName = customerName ?? offer.customerName ?? "Demo customer";
   const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
@@ -133,6 +142,21 @@ export function OfferBuilder({
     });
   }
 
+  function markSaving() {
+    setFailedAction(null);
+    setSaveState("saving");
+  }
+
+  function markSaved() {
+    setFailedAction(null);
+    setSaveState("saved");
+  }
+
+  function markSaveError(action: FailedSaveAction) {
+    setFailedAction(action);
+    setSaveState("error");
+  }
+
   function syncOffer(nextOffer: Offer) {
     setStatus(nextOffer.status);
     setLines(toDraftLines(nextOffer));
@@ -155,7 +179,7 @@ export function OfferBuilder({
 
     setLines(nextLines);
     markPending(line.productId, true);
-    setSaveState("saving");
+    markSaving();
 
     try {
       if (!line.offerProductId) {
@@ -170,9 +194,9 @@ export function OfferBuilder({
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
-      setSaveState("saved");
+      markSaved();
     } catch {
-      setSaveState("error");
+      markSaveError({ kind: "quantity", productId: line.productId });
     } finally {
       markPending(line.productId, false);
     }
@@ -192,7 +216,7 @@ export function OfferBuilder({
     const nextLines = lines.filter((currentLine) => currentLine.productId !== productId);
     setLines(nextLines);
     markPending(productId, true);
-    setSaveState("saving");
+    markSaving();
 
     try {
       if (!line.offerProductId) {
@@ -210,10 +234,10 @@ export function OfferBuilder({
       }
 
       await refreshOffer();
-      setSaveState("saved");
+      markSaved();
     } catch {
       setLines(previousLines);
-      setSaveState("error");
+      markSaveError({ kind: "remove", productId });
     } finally {
       markPending(productId, false);
     }
@@ -250,7 +274,7 @@ export function OfferBuilder({
 
     setLines((current) => [...current, optimisticLine]);
     markPending(product.id, true);
-    setSaveState("saving");
+    markSaving();
 
     try {
       const response = await fetch(`/api/offers/${offer.id}/products`, {
@@ -264,17 +288,17 @@ export function OfferBuilder({
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
-      setSaveState("saved");
+      markSaved();
     } catch {
       setLines((current) => current.filter((line) => line.productId !== product.id));
-      setSaveState("error");
+      markSaveError({ kind: "add-product", product, quantity });
     } finally {
       markPending(product.id, false);
     }
   }
 
   async function saveReview(nextStatus = status, nextLines = lines) {
-    setSaveState("saving");
+    markSaving();
 
     try {
       const response = await fetch(`/api/offers/${offer.id}`, {
@@ -289,16 +313,48 @@ export function OfferBuilder({
 
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
+      if (nextStatus === "accepted") {
+        onAccepted?.(nextOffer);
+      }
 
-      setSaveState("saved");
+      markSaved();
     } catch {
-      setSaveState("error");
+      markSaveError({ kind: "save-review" });
     }
   }
 
   function updateStatus(nextStatus: Offer["status"]) {
     setStatus(nextStatus);
     void saveReview(nextStatus);
+  }
+
+  function retrySave() {
+    if (!failedAction) {
+      void saveReview();
+      return;
+    }
+
+    if (failedAction.kind === "save-review") {
+      void saveReview();
+      return;
+    }
+
+    if (failedAction.kind === "quantity") {
+      const line = lines.find((currentLine) => currentLine.productId === failedAction.productId);
+      if (!line) {
+        void saveReview();
+        return;
+      }
+      void persistQuantity(line, line.quantity);
+      return;
+    }
+
+    if (failedAction.kind === "remove") {
+      void removeProduct(failedAction.productId);
+      return;
+    }
+
+    void handleSearchQuantityChange(failedAction.product, failedAction.quantity);
   }
 
   return (
@@ -310,8 +366,7 @@ export function OfferBuilder({
         lineCount={lines.length}
         onAccept={() => updateStatus("accepted")}
         onAddProduct={() => setSearchOpen(true)}
-        onMarkReviewed={() => updateStatus("reviewed")}
-        onSave={() => void saveReview()}
+        onRetrySave={retrySave}
         saveState={saveState}
         status={status}
       />

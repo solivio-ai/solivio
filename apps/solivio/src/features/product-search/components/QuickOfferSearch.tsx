@@ -56,7 +56,7 @@ export function QuickOfferSearch() {
 
   return (
     <>
-      <Card>
+      <Card size="sm">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Find a product</CardTitle>
           <CardDescription>

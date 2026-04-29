@@ -69,7 +69,7 @@ export type Offer = {
   requestId: string;
   customerName?: string;
   clientRequest?: string;
-  status: "draft" | "reviewed" | "accepted";
+  status: "draft" | "accepted";
   generatedAt: string;
   items: OfferItem[];
   notes: string[];
