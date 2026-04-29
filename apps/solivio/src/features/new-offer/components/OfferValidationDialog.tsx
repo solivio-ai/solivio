@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, XCircle, Send } from "lucide-react";
+import { AlertTriangle, CheckCircle2, MessageSquare, XCircle, Send } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,27 @@ type OfferValidationDialogProps = {
   onOpenChange: (open: boolean) => void;
   result: ValidationResult;
   onAccept: () => void;
+  onSendToChat?: (message: string) => void;
 };
+
+function formatValidationMessage(result: ValidationResult): string {
+  const verdictLabel = { pass: "Kompletna", partial: "Częściowo spełniona", fail: "Wymagania niespełnione" }[result.verdict];
+  const lines: string[] = [`**Wyniki walidacji AI**\n\n**Status:** ${verdictLabel}\n\n${result.summary}`];
+
+  if (result.missingRequirements.length > 0) {
+    lines.push(`\n**Brakujące wymagania:**\n${result.missingRequirements.map((r) => `• ${r}`).join("\n")}`);
+  }
+
+  if (result.issues.length > 0) {
+    lines.push(`\n**Uwagi:**\n${result.issues.map((i) => `• ${i}`).join("\n")}`);
+  }
+
+  if (result.missingRequirements.length > 0) {
+    lines.push("\nCzy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?");
+  }
+
+  return lines.join("");
+}
 
 const verdictConfig = {
   pass: {
@@ -52,7 +72,8 @@ export function OfferValidationDialog({
   open,
   onOpenChange,
   result,
-  onAccept
+  onAccept,
+  onSendToChat
 }: OfferValidationDialogProps) {
   const config = verdictConfig[result.verdict];
   const { Icon } = config;
@@ -109,10 +130,22 @@ export function OfferValidationDialog({
           )}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="flex-wrap gap-2 sm:flex-nowrap sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Zamknij
           </Button>
+          {onSendToChat && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                onSendToChat(formatValidationMessage(result));
+                onOpenChange(false);
+              }}
+            >
+              <MessageSquare size={16} aria-hidden="true" />
+              Przekaż do czatu
+            </Button>
+          )}
           {result.verdict !== "fail" && (
             <Button
               onClick={() => {

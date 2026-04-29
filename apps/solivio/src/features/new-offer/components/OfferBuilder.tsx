@@ -22,6 +22,7 @@ type OfferBuilderProps = {
   onOfferChange?: (offer: Offer) => void;
   onDiscountPercentChange?: (discountPercent: number) => void;
   onAccepted?: (offer: Offer) => void;
+  onSendToChat?: (message: string) => void;
 };
 
 type FailedSaveAction =
@@ -82,6 +83,7 @@ export function OfferBuilder({
   onOfferChange,
   onDiscountPercentChange,
   onAccepted,
+  onSendToChat,
 }: OfferBuilderProps) {
   const tBuilder = useTranslations("NewOffer.builder");
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
@@ -449,6 +451,7 @@ export function OfferBuilder({
           onOpenChange={(open) => { if (!open) setValidationResult(null); }}
           result={validationResult}
           onAccept={() => updateStatus("accepted")}
+          onSendToChat={onSendToChat}
         />
       )}
     </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import type { KeyboardEvent, ReactNode } from "react";
-import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createElement, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import type { Offer } from "@solivio/domain";
 import { DefaultChatTransport, type UIMessage } from "ai";
@@ -12,6 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+
+export type OfferChatHandle = {
+  sendText: (text: string) => void;
+};
 
 type OfferChatProps = {
   className?: string;
@@ -126,13 +130,13 @@ async function readJsonResponse(response: Response) {
   }
 }
 
-export function OfferChat({
+export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function OfferChat({
   className,
   discountPercent,
   headerAction,
   offer,
   onOfferChanged
-}: OfferChatProps) {
+}, ref) {
   const t = useTranslations("OfferChat");
   const questionSuggestions = [
     t("suggestions.summarize"),
@@ -193,6 +197,20 @@ export function OfferChat({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isLoading = status === "streaming" || status === "submitted";
   const isInputDisabled = isLoading || isThreadLoading || Boolean(offer && !activeThreadId);
+  const [pendingExternal, setPendingExternal] = useState<string | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    sendText: (text: string) => {
+      setPendingExternal(text);
+    }
+  }));
+
+  useEffect(() => {
+    if (!pendingExternal || isInputDisabled) return;
+    void sendText(pendingExternal);
+    setPendingExternal(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingExternal, isInputDisabled]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = scrollContainerRef.current;
@@ -531,4 +549,4 @@ export function OfferChat({
       </CardFooter>
     </Card>
   );
-}
+});

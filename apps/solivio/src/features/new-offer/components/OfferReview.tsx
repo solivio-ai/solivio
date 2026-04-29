@@ -18,7 +18,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { OfferBuilder } from "./OfferBuilder";
 import { OfferAcceptedView } from "./OfferAcceptedView";
-import { OfferChat } from "@/features/offer-chat/components/OfferChat";
+import { OfferChat, type OfferChatHandle } from "@/features/offer-chat/components/OfferChat";
 import { OfferRevisionTimeline } from "./OfferRevisionTimeline";
 import { OfferRevisionModal } from "./OfferRevisionModal";
 import { cn } from "@/lib/utils";
@@ -60,6 +60,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   const [revisionsLoading, setRevisionsLoading] = useState(false);
   const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
+  const chatRef = useRef<OfferChatHandle>(null);
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => {
@@ -133,7 +134,11 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       .catch(() => {});
   }, [fetchOffer]);
 
-
+  function handleSendToChat(message: string) {
+    setAssistantOpen(true);
+    setRightPanel("chat");
+    chatRef.current?.sendText(message);
+  }
 
   if (state.kind === "loading") {
     return (
@@ -255,6 +260,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         </div>
         {rightPanel === "chat" ? (
           <OfferChat
+            ref={chatRef}
             discountPercent={discountPercent}
             offer={state.offer}
             className="min-h-0 flex-1 rounded-none border-0 py-0 shadow-none ring-0"
@@ -303,6 +309,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   onDiscountPercentChange={setDiscountPercent}
                   onOfferChange={handleOfferChange}
                   onAccepted={handleOfferChange}
+                  onSendToChat={handleSendToChat}
                 />
               </div>
             </ResizablePanel>
@@ -336,6 +343,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
               onAccepted={handleOfferChange}
+              onSendToChat={handleSendToChat}
               assistantToggle={renderAssistantToggle()}
             />
           </div>
