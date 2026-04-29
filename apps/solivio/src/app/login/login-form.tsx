@@ -42,7 +42,7 @@ export function LoginForm({
         const isEmail = identifier.includes("@");
 
         const { error: signInError } = isEmail
-          ? await signIn.email({ email: identifier, password, callbackURL: "/" })
+          ? await signIn.email({ email: identifier, password })
           : await signIn.username({ username: identifier, password });
 
         if (signInError) {
@@ -56,7 +56,6 @@ export function LoginForm({
           username,
           email: String(form.get("email") ?? ""),
           password: String(form.get("password") ?? ""),
-          callbackURL: "/",
         });
 
         if (signUpError) {
