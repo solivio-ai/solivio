@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
@@ -84,10 +85,17 @@ export function OfferBuilder({
   onDiscountPercentChange,
   onAccepted
 }: OfferBuilderProps) {
+  const tBuilder = useTranslations("NewOffer.builder");
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
   const [failedAction, setFailedAction] = useState<FailedSaveAction | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-  const displayCustomerName = customerName ?? offer.customerName ?? "Demo customer";
+  const offerHeaderTitle = useMemo(() => {
+    const name = offer.name?.trim();
+    if (name) return name;
+    const fromCustomer = (customerName ?? offer.customerName)?.trim();
+    if (fromCustomer) return fromCustomer;
+    return tBuilder("titleFallback");
+  }, [offer.name, customerName, offer.customerName, tBuilder]);
   const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
@@ -361,9 +369,12 @@ export function OfferBuilder({
     <section className="grid min-w-0 gap-4">
       <OfferBuilderHeader
         assistantToggle={assistantToggle}
-        customerName={displayCustomerName}
+        formCustomerName={offer.customerName?.trim() ?? ""}
+        formName={offer.name?.trim() ?? ""}
         generatedDate={generatedDate}
         lineCount={lines.length}
+        offerId={offer.id}
+        offerTitle={offerHeaderTitle}
         onAccept={() => updateStatus("accepted")}
         onAddProduct={() => setSearchOpen(true)}
         onRetrySave={retrySave}

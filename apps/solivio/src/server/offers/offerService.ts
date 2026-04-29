@@ -8,15 +8,17 @@ import { products } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import type { OfferDebugFragment } from "@solivio/domain";
 import {
+  deleteOffer as deleteOfferRow,
   findOfferById,
   insertOffer,
   insertOfferProducts,
   insertOfferProduct,
-  updateOfferStatus,
+  updateOfferMeta as persistOfferMeta,
   updateOfferProduct,
   deleteOfferProduct,
   getRecentOffers,
-  type OfferRow
+  type OfferRow,
+  type UpdateOfferMetaInput
 } from "./offerRepository";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -37,6 +39,7 @@ export type OfferLineItem = {
 
 export type CreatedOffer = {
   id: string;
+  name: string;
   customerName: string | null;
   clientRequest: string | null;
   status: Offer["status"];
@@ -71,6 +74,7 @@ function deduplicateItems(generated: GeneratedOffer): {
 function rowToCreatedOffer(row: OfferRow): CreatedOffer {
   return {
     id: row.id,
+    name: row.name,
     customerName: row.customerName,
     clientRequest: row.clientRequest,
     status: row.status,
@@ -86,6 +90,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
   return {
     id: offer.id,
     requestId: offer.id,
+    name: offer.name,
     customerName: offer.customerName ?? undefined,
     clientRequest: offer.clientRequest ?? undefined,
     status: offer.status as Offer["status"],
@@ -177,9 +182,25 @@ export async function updateOfferStatusAndFetch(
   offerId: string,
   status: Offer["status"]
 ): Promise<Offer | null> {
-  const updated = await updateOfferStatus(offerId, status);
+  return updateOfferMeta(offerId, { status });
+}
+
+export async function updateOfferMeta(
+  offerId: string,
+  data: UpdateOfferMetaInput
+): Promise<Offer | null> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return null;
+  const updated = await persistOfferMeta(offerId, data);
   if (!updated) return null;
   return getOffer(offerId);
+}
+
+export async function deleteOffer(offerId: string): Promise<boolean> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return false;
+  await deleteOfferRow(offerId);
+  return true;
 }
 
 export async function addProductToOffer(

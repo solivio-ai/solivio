@@ -6,7 +6,7 @@ import {
   updateOfferRequestSchema
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { getOffer, updateOfferStatusAndFetch } from "@/server/offers/offerService";
+import { getOffer, updateOfferMeta, deleteOffer } from "@/server/offers/offerService";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 
 export const runtime = "nodejs";
@@ -64,9 +64,20 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
+  const hasPersistedPatch =
+    input.data.status !== undefined ||
+    input.data.name !== undefined ||
+    input.data.customerName !== undefined ||
+    input.data.clientRequest !== undefined;
+
   const offer =
-    isUuid(offerId) && input.data.status
-      ? (await updateOfferStatusAndFetch(offerId, input.data.status)) ?? updateOfferDraft(offerId, input.data)
+    isUuid(offerId) && hasPersistedPatch
+      ? (await updateOfferMeta(offerId, {
+          status: input.data.status,
+          name: input.data.name,
+          customerName: input.data.customerName,
+          clientRequest: input.data.clientRequest
+        })) ?? updateOfferDraft(offerId, input.data)
       : updateOfferDraft(offerId, input.data);
 
   if (!offer) {
@@ -82,4 +93,38 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   return NextResponse.json(offerResponseSchema.parse({ offer }));
+}
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
+
+  const { offerId } = await context.params;
+
+  if (!isUuid(offerId)) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`
+        }
+      }),
+      { status: 404 }
+    );
+  }
+
+  const deleted = await deleteOffer(offerId);
+  if (!deleted) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`
+        }
+      }),
+      { status: 404 }
+    );
+  }
+
+  return new NextResponse(null, { status: 204 });
 }
