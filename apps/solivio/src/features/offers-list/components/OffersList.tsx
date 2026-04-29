@@ -60,8 +60,10 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Table,
@@ -563,7 +565,8 @@ export function OffersList({ offers, hideHeader }: Props) {
                       onValueChange={(value) => setStatusFilter(value as StatusFilter)}
                     >
                       <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
-                        <span className="truncate">{getFilterLabel(statusFilter, t)}</span>
+                        {/* <span className="truncate">{getFilterLabel(statusFilter, t)}</span> */}
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t("filters.all")}</SelectItem>
