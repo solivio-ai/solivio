@@ -6,6 +6,7 @@ import type { Offer } from "@solivio/domain";
 import { db } from "../database/db";
 import { products } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
+import type { OfferDebugFragment } from "@solivio/domain";
 import {
   findOfferById,
   insertOffer,
@@ -41,6 +42,7 @@ export type CreatedOffer = {
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
+  debugFragments: OfferDebugFragment[];
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -73,7 +75,8 @@ function rowToCreatedOffer(row: OfferRow): CreatedOffer {
     generatedAt: row.createdAt.toISOString(),
     items: row.items,
     unmatched: row.unmatched,
-    notes: row.notes
+    notes: row.notes,
+    debugFragments: row.debugFragments
   };
 }
 
@@ -87,6 +90,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     generatedAt: offer.generatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
+    debugFragments: offer.debugFragments,
     items: offer.items.map((item) => ({
       offerProductId: item.offerProductId,
       productId: item.productId,
@@ -121,7 +125,8 @@ export async function createOffer(
         clientRequest,
         status: "draft",
         notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched]
+        unmatched: [...generated.unmatched, ...extraUnmatched],
+        debugFragments: generated.debugFragments
       },
       tx
     );

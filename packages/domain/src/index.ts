@@ -57,6 +57,13 @@ export type OfferItem = {
   };
 };
 
+export type OfferDebugFragment = {
+  requestFragment: string;
+  query: string;
+  quantity: number;
+  topMatches: { id: string; sku: string; name: string; similarity: number }[];
+};
+
 export type Offer = {
   id: string;
   requestId: string;
@@ -67,6 +74,7 @@ export type Offer = {
   items: OfferItem[];
   notes: string[];
   unmatched?: string[];
+  debugFragments?: OfferDebugFragment[];
 };
 
 export const workflowSteps: WorkflowStep[] = [

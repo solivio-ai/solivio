@@ -153,6 +153,13 @@ export const customerRequestResponseSchema = z
 
 export const offerStatusSchema = z.enum(["draft", "reviewed", "accepted"]).meta({ id: "OfferStatus" });
 
+export const debugFragmentSchema = z.object({
+  requestFragment: z.string(),
+  query: z.string(),
+  quantity: z.number(),
+  topMatches: z.array(z.object({ id: z.string(), sku: z.string(), name: z.string(), similarity: z.number() }))
+});
+
 export const offerItemProductSchema = z
   .object({
     id: z.string(),
@@ -234,7 +241,8 @@ export const offerSchema = z
     generatedAt: z.string().datetime(),
     items: z.array(offerItemSchema),
     notes: z.array(z.string()),
-    unmatched: z.array(z.string()).optional()
+    unmatched: z.array(z.string()).optional(),
+    debugFragments: z.array(debugFragmentSchema).optional()
   })
   .meta({
     id: "Offer",

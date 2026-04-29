@@ -31,7 +31,8 @@
     "db:generate": "yarn workspace @solivio/app db:generate",
     "db:migrate": "yarn workspace @solivio/app db:migrate",
     "db:push": "yarn workspace @solivio/app db:push",
-    "db:studio": "yarn workspace @solivio/app db:studio"
+    "db:studio": "yarn workspace @solivio/app db:studio",
+    "volt": "volt"
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
@@ -40,6 +41,7 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@voltagent/cli": "^0.1.21",
     "lightningcss-darwin-arm64": "^1.32.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
