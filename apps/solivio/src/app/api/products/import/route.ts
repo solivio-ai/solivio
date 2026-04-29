@@ -9,21 +9,22 @@ import { importProductsWithEmbeddings } from "../../../../server/products/produc
 export const runtime = "nodejs";
 
 const VALID_MODEL_IDS = new Set<string>(EMBEDDING_MODELS.map((m) => m.id));
-const REQUIRED_FIELDS: (keyof ProductImportRow)[] = [
-  "sku",
-  "name",
-  "description",
-  "manufacturer"
-];
+const STRING_FIELDS = ["sku", "name", "description", "manufacturer", "currency"] as const;
+const NUMBER_FIELDS = ["priceNet", "priceGross", "vatRate"] as const;
 
 function normalize(raw: unknown): ProductImportRow | null {
   if (!raw || typeof raw !== "object") return null;
   const record = raw as Record<string, unknown>;
   const result: Partial<ProductImportRow> = {};
-  for (const field of REQUIRED_FIELDS) {
+  for (const field of STRING_FIELDS) {
     const value = record[field];
     if (typeof value !== "string" || value.trim().length === 0) return null;
-    result[field] = value.trim();
+    result[field] = field === "currency" ? value.trim().toUpperCase() : value.trim();
+  }
+  for (const field of NUMBER_FIELDS) {
+    const value = record[field];
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return null;
+    result[field] = value;
   }
   return result as ProductImportRow;
 }
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
       const row = normalize(item);
       if (!row) {
         return NextResponse.json(
-          { error: "Each product needs sku, name, description and manufacturer." },
+          {
+            error:
+              "Each product needs sku, name, description, manufacturer, priceNet, priceGross, vatRate and currency."
+          },
           { status: 400 }
         );
       }
