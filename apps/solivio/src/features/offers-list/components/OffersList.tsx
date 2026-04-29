@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -9,18 +10,35 @@ import {
   CircleDashed,
   FileText,
   ListFilter,
-  MoreHorizontal,
   PackageCheck,
+  Pencil,
   Plus,
   Search,
-  Sparkles,
+  Trash2,
   TriangleAlert,
   UserRound,
+  MoreHorizontal,
 } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +56,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -52,8 +71,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
@@ -80,9 +99,10 @@ type NormalizedOfferRow = {
   name: string;
   customerName: string | null;
   clientRequest: string | null;
+  formName: string;
+  formCustomerName: string;
   status: string;
   createdAt: string;
-  updatedAt: string;
   productCount: number;
   unmatchedCount: number;
   notesCount: number;
@@ -120,17 +140,26 @@ function toIsoString(value: string | Date | undefined) {
   return value instanceof Date ? value.toISOString() : value;
 }
 
+function isPersistedOfferId(id: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    id
+  );
+}
+
 function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
   const createdAt = toIsoString(offer.createdAt);
+  const formName = offer.name?.trim() ?? "";
+  const formCustomerName = offer.customerName?.trim() ?? "";
 
   return {
     id: offer.id,
-    name: offer.name?.trim() || offer.customerName?.trim() || t("fallbacks.unnamedOffer"),
+    name: formName || offer.customerName?.trim() || t("fallbacks.unnamedOffer"),
     customerName: offer.customerName,
     clientRequest: offer.clientRequest ?? null,
+    formName,
+    formCustomerName,
     status: offer.status,
     createdAt,
-    updatedAt: toIsoString(offer.updatedAt) || createdAt,
     productCount: offer.productCount ?? 0,
     unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
@@ -147,49 +176,18 @@ function getStatusConfig(status: string) {
       };
 }
 
-function getStatusLabel(status: string, t: T) {
-  return isKnownStatus(status) ? t(`status.${status}.label`) : status;
+function getStatusDescription(status: string, t: T) {
+  return isKnownStatus(status) ? t(`status.${status}.description`) : t("fallbacks.customStatus");
 }
 
-function getStatusDescription(status: string, t: T) {
-  return isKnownStatus(status)
-    ? t(`status.${status}.description`)
-    : t("fallbacks.customStatus");
+function getStatusLabel(status: string, t: T) {
+  return isKnownStatus(status) ? t(`status.${status}.label`) : status;
 }
 
 function getFilterLabel(filter: StatusFilter, t: T) {
   if (filter === "needs-attention") return t("filters.needsAttention");
   if (filter === "all") return t("filters.all");
   return t(`filters.${filter}`);
-}
-
-function formatDate(value: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function formatRelative(value: string, locale: string, justNow: string) {
-  const date = new Date(value).getTime();
-  const diffMs = Date.now() - date;
-  const diffMinutes = Math.floor(diffMs / 60000);
-  const formatter = new Intl.RelativeTimeFormat(locale, {
-    numeric: "auto",
-    style: "narrow",
-  });
-
-  if (diffMinutes < 1) return justNow;
-  if (diffMinutes < 60) return formatter.format(-diffMinutes, "minute");
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return formatter.format(-diffHours, "hour");
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return formatter.format(-diffDays, "day");
-
-  return formatDate(value, locale);
 }
 
 function formatNumber(value: number, locale: string) {
@@ -225,23 +223,65 @@ function OfferActions({
   offer: NormalizedOfferRow;
   fullWidth?: boolean;
 }) {
-  const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("OffersList");
+  const persisted = isPersistedOfferId(offer.id);
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editName, setEditName] = useState(offer.formName);
+  const [editCustomer, setEditCustomer] = useState(offer.formCustomerName);
+
+  const onEditOpenChange = (open: boolean) => {
+    setEditOpen(open);
+    if (open) {
+      setEditName(offer.formName);
+      setEditCustomer(offer.formCustomerName);
+    }
+  };
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/offers/${offer.id}`, { method: "DELETE" });
+      if (!response.ok) return;
+      setDeleteOpen(false);
+      router.refresh();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleSaveEdit() {
+    const name = editName.trim();
+    if (!name) return;
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/offers/${offer.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          customerName: editCustomer.trim() ? editCustomer.trim() : null,
+        }),
+      });
+      if (!response.ok) return;
+      onEditOpenChange(false);
+      router.refresh();
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div
       className={cn(
-        "flex items-center justify-end gap-1",
+        "flex items-center justify-end",
         fullWidth && "w-full sm:w-auto"
       )}
     >
-      <Button asChild size="sm" className={cn(fullWidth && "flex-1 sm:flex-none")}>
-        <Link href={`/offers/${offer.id}`}>
-          {t("actions.reviewOffer")}
-          <ArrowUpRight size={14} aria-hidden="true" />
-        </Link>
-      </Button>
-
       <DropdownMenu>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -258,30 +298,103 @@ function OfferActions({
           </TooltipTrigger>
           <TooltipContent>{t("actions.offerActions")}</TooltipContent>
         </Tooltip>
-        <DropdownMenuContent align="end" className="w-44">
-          <DropdownMenuLabel>{t("table.offer")}</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link href={`/offers/${offer.id}`}>
-              <FileText size={14} aria-hidden="true" />
-              {t("actions.openReview")}
+              <ArrowUpRight size={14} aria-hidden="true" />
+              {t("actions.reviewOffer")}
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/offers/new">
-              <Sparkles size={14} aria-hidden="true" />
-              {t("actions.newDraft")}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href={`/offers/${offer.id}`} className="text-muted-foreground">
-              {t("activity.updated", {
-                relativeTime: formatRelative(offer.updatedAt, locale, t("relative.justNow")),
-              })}
-            </Link>
-          </DropdownMenuItem>
+          {persisted ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={(event) => {
+                  event.preventDefault();
+                  onEditOpenChange(true);
+                }}
+              >
+                <Pencil size={14} aria-hidden="true" />
+                {t("actions.editDetails")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onSelect={(event) => {
+                  event.preventDefault();
+                  setDeleteOpen(true);
+                }}
+              >
+                <Trash2 size={14} aria-hidden="true" />
+                {t("actions.deleteOffer")}
+              </DropdownMenuItem>
+            </>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("actions.editDetailsTitle")}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor={`offer-edit-name-${offer.id}`}>{t("actions.fieldName")}</Label>
+              <Input
+                id={`offer-edit-name-${offer.id}`}
+                value={editName}
+                onChange={(event) => setEditName(event.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor={`offer-edit-customer-${offer.id}`}>
+                {t("actions.fieldCustomerName")}
+              </Label>
+              <Input
+                id={`offer-edit-customer-${offer.id}`}
+                value={editCustomer}
+                onChange={(event) => setEditCustomer(event.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
+              {t("actions.deleteCancel")}
+            </Button>
+            <Button
+              type="button"
+              disabled={saving || !editName.trim()}
+              onClick={() => void handleSaveEdit()}
+            >
+              {t("actions.saveChanges")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("actions.deleteOfferConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("actions.deleteOfferConfirmDescription", { name: offer.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("actions.deleteCancel")}</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleting}
+              onClick={() => void handleDelete()}
+            >
+              {t("actions.deleteOfferConfirm")}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -491,21 +604,20 @@ export function OffersList({ offers, hideHeader }: Props) {
             </Empty>
           ) : (
             <>
-              <div className="hidden overflow-hidden rounded-lg border bg-card lg:block">
-                <Table className="table-fixed">
+              <div className="hidden overflow-x-auto rounded-lg border bg-card lg:block">
+                <Table className="w-full min-w-[720px] table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[18%]">{t("table.offer")}</TableHead>
-                      <TableHead className="w-[26%]">
+                      <TableHead className="w-[20%] min-w-0">{t("table.offer")}</TableHead>
+                      <TableHead className="w-[28%] min-w-0">
                         {t("table.customerRequest")}
                       </TableHead>
-                      <TableHead className="w-[11%]">{t("table.status")}</TableHead>
-                      <TableHead className="w-[13%]">{t("table.coverage")}</TableHead>
-                      <TableHead className="w-[10%] text-right">
+                      <TableHead className="w-[12%] min-w-0">{t("table.status")}</TableHead>
+                      <TableHead className="w-[16%] min-w-0">{t("table.coverage")}</TableHead>
+                      <TableHead className="w-[10%] min-w-0 text-right">
                         {t("table.value")}
                       </TableHead>
-                      <TableHead className="w-[12%]">{t("table.activity")}</TableHead>
-                      <TableHead className="w-[150px] text-right">
+                      <TableHead className="w-14 min-w-14 text-right">
                         {t("table.actions")}
                       </TableHead>
                     </TableRow>
@@ -539,10 +651,16 @@ export function OffersList({ offers, hideHeader }: Props) {
                           </TableCell>
                           <TableCell className="whitespace-normal">
                             <div className="grid gap-1">
-                              <StatusBadge status={offer.status} label={statusLabel} />
-                              <span className="text-xs text-muted-foreground">
-                                {statusDescription}
-                              </span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex w-fit max-w-full cursor-default">
+                                    <StatusBadge status={offer.status} label={statusLabel} />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{statusDescription}</p>
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </TableCell>
                           <TableCell className="whitespace-normal">
@@ -566,24 +684,6 @@ export function OffersList({ offers, hideHeader }: Props) {
                               ? t("fallbacks.noValue")
                               : formatNumber(offer.totalPrice, locale)}
                           </TableCell>
-                          <TableCell className="whitespace-normal text-sm">
-                            <div className="grid gap-1">
-                              <span>
-                                {t("activity.updated", {
-                                  relativeTime: formatRelative(
-                                    offer.updatedAt,
-                                    locale,
-                                    t("relative.justNow")
-                                  ),
-                                })}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {t("activity.created", {
-                                  date: formatDate(offer.createdAt, locale),
-                                })}
-                              </span>
-                            </div>
-                          </TableCell>
                           <TableCell className="text-right">
                             <OfferActions offer={offer} />
                           </TableCell>
@@ -597,6 +697,7 @@ export function OffersList({ offers, hideHeader }: Props) {
               <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
                 {visibleOffers.map((offer) => {
                   const statusLabel = getStatusLabel(offer.status, t);
+                  const statusDescription = getStatusDescription(offer.status, t);
 
                   return (
                     <Card key={offer.id} size="sm">
@@ -611,7 +712,16 @@ export function OffersList({ offers, hideHeader }: Props) {
                               </span>
                             </div>
                           </div>
-                          <StatusBadge status={offer.status} label={statusLabel} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex w-fit shrink-0 cursor-default">
+                                <StatusBadge status={offer.status} label={statusLabel} />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{statusDescription}</p>
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                       </CardHeader>
                       <CardContent className="grid gap-3">
@@ -633,19 +743,6 @@ export function OffersList({ offers, hideHeader }: Props) {
                           {offer.totalPrice !== null ? (
                             <Badge variant="outline">{formatNumber(offer.totalPrice, locale)}</Badge>
                           ) : null}
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
-                          <span>
-                            {t("activity.updated", {
-                              relativeTime: formatRelative(
-                                offer.updatedAt,
-                                locale,
-                                t("relative.justNow")
-                              ),
-                            })}
-                          </span>
-                          <span>{formatDate(offer.createdAt, locale)}</span>
                         </div>
 
                         <OfferActions offer={offer} fullWidth />

@@ -147,9 +147,13 @@ export function ProductImport() {
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
             Pick a CSV file with columns: <strong className="text-foreground">sku</strong>,{" "}
             <strong className="text-foreground">name</strong>,{" "}
-            <strong className="text-foreground">description</strong>, and{" "}
-            <strong className="text-foreground">manufacturer</strong>. Comma, semicolon, and tab separators
-            are supported.
+            <strong className="text-foreground">description</strong>,{" "}
+            <strong className="text-foreground">manufacturer</strong>,{" "}
+            <strong className="text-foreground">price_net</strong>,{" "}
+            <strong className="text-foreground">price_gross</strong>,{" "}
+            <strong className="text-foreground">vat_rate</strong>, and{" "}
+            <strong className="text-foreground">currency</strong>. Comma, semicolon, and tab separators
+            are supported; prices may use either <code>.</code> or <code>,</code> as the decimal mark.
           </p>
           <div className="grid gap-2">
             <Label

@@ -93,6 +93,23 @@
           "detail": "Draft"
         }
       }
+    },
+    "builder": {
+      "titleFallback": "Szkic oferty",
+      "status": {
+        "draft": "Szkic",
+        "accepted": "Zaakceptowana"
+      },
+      "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}",
+      "generated": "Wygenerowano {date}",
+      "addProduct": "Dodaj produkt",
+      "acceptDraft": "Zaakceptuj ofertę",
+      "save": {
+        "saving": "Zapisywanie zmian...",
+        "saved": "Wszystkie zmiany zapisane.",
+        "error": "Nie udało się zapisać zmian.",
+        "retry": "Spróbuj ponownie"
+      }
     }
   },
   "OfferChat": {
@@ -112,7 +129,7 @@
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty do dosprzedaży"
+      "upsell": "Zaproponuj dodatkowe produkty"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",
@@ -126,37 +143,41 @@
   "OffersList": {
     "actions": {
       "clearFilters": "Wyczyść filtry",
-      "newDraft": "Nowy draft",
+      "deleteCancel": "Anuluj",
+      "deleteOffer": "Usuń ofertę",
+      "deleteOfferConfirm": "Usuń",
+      "deleteOfferConfirmDescription": "Usunąć „{name}”? Tej operacji nie można cofnąć.",
+      "deleteOfferConfirmTitle": "Usunąć tę ofertę?",
+      "editDetails": "Edytuj szczegóły",
+      "editDetailsTitle": "Edytuj szczegóły oferty",
+      "fieldCustomerName": "Nazwa klienta",
+      "fieldName": "Nazwa oferty",
       "newOffer": "Nowa oferta",
       "offerActions": "Akcje oferty",
       "openActions": "Otwórz akcje dla {name}",
-      "openReview": "Otwórz przegląd",
-      "reviewOffer": "Przejrzyj ofertę"
-    },
-    "activity": {
-      "created": "Utworzono {date}",
-      "updated": "Zaktualizowano {relativeTime}"
+      "reviewOffer": "Przejrzyj ofertę",
+      "saveChanges": "Zapisz zmiany"
     },
     "attention": {
       "allMatched": "Wszystko dopasowane",
-      "gapCount": "{count, plural, one {# luka} few {# luki} many {# luk} other {# luki}}"
+      "gapCount": "{count, plural, one {# brakujące produkty} few {# brakujące produkty} many {# brakujące produkty} other {# brakujące produkty}}"
     },
     "badges": {
       "accepted": "{count} zaakceptowano",
       "draftsToReview": "{count} do przeglądu",
       "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
-      "needsAttention": "{count} z lukami",
+      "needsAttention": "{count} z brakującymi produktami",
       "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
       "salesWorkspace": "Obszar sprzedaży"
     },
     "empty": {
-      "description": "Generuj uporządkowane drafty ofert na podstawie zapytań klientów.",
+      "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
       "title": "Nie ma jeszcze ofert"
     },
     "filters": {
       "accepted": "Zaakceptowana",
       "all": "Wszystkie oferty",
-      "draft": "Draft",
+      "draft": "Szkic",
       "label": "Filtruj oferty",
       "needsAttention": "Wymaga uwagi"
     },
@@ -165,23 +186,20 @@
       "request": "Nie zapisano jeszcze zapytania klienta.",
       "customer": "Nieprzypisany klient",
       "noValue": "—",
-      "unnamedOffer": "Draft oferty"
+      "unnamedOffer": "Szkic oferty"
     },
     "matchingEmpty": {
       "description": "Zmień wyszukiwanie lub filtr statusu, aby poszerzyć kolejkę.",
       "title": "Brak pasujących ofert"
     },
     "notes": {
-      "generation": "{count, plural, one {# notatka generowania} few {# notatki generowania} many {# notatek generowania} other {# notatki generowania}}",
+      "generation": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}",
       "short": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}"
     },
     "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktu}}",
     "queue": "Kolejka",
     "recent": {
       "title": "Ostatnie oferty"
-    },
-    "relative": {
-      "justNow": "Teraz"
     },
     "search": {
       "label": "Szukaj ofert",
@@ -193,13 +211,12 @@
         "label": "Zaakceptowana"
       },
       "draft": {
-        "description": "Wymaga przeglądu sprzedaży",
-        "label": "Draft"
+        "description": "Wymaga przeglądu przez handlowca",
+        "label": "Szkic"
       }
     },
     "table": {
       "actions": "Akcje",
-      "activity": "Aktywność",
       "coverage": "Pokrycie",
       "customerRequest": "Zapytanie klienta",
       "offer": "Oferta",

@@ -188,15 +188,15 @@ export function OfferReview({ offerId }: OfferReviewProps) {
 
   if (state.offer.status === "accepted") {
     return (
-      <section className="min-h-0">
+      <section className="h-full min-h-0">
         <OfferAcceptedView offer={state.offer} onBackToDraft={() => void handleBackToDraft()} />
       </section>
     );
   }
 
   return (
-    <section className="min-h-0">
-      <div className="h-[calc(100svh-7rem)] min-h-[540px] xl:min-h-[600px]">
+    <section className="h-full min-h-0">
+      <div className="h-full min-h-[540px] xl:min-h-[600px]">
         {assistantOpen ? (
           <ResizablePanelGroup
             orientation={isWideLayout ? "horizontal" : "vertical"}
@@ -215,6 +215,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   offer={state.offer}
                   onDiscountPercentChange={setDiscountPercent}
                   onOfferChange={handleOfferChange}
+                  onAccepted={handleOfferChange}
                 />
               </div>
             </ResizablePanel>
@@ -253,6 +254,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               offer={state.offer}
               onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
+              onAccepted={handleOfferChange}
               assistantToggle={renderAssistantToggle()}
             />
           </div>
