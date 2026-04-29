@@ -10,6 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -21,9 +22,10 @@ import {
 
 type OfferRow = {
   id: string;
-  name: string;
+  customerName: string | null;
+  status: string;
+  totalPrice: number;
   createdAt: Date;
-  updatedAt: Date;
 };
 
 type Props = {
@@ -37,6 +39,13 @@ function formatDate(date: Date) {
     month: "short",
     year: "numeric",
   });
+}
+
+function formatNumber(amount: number) {
+  return new Intl.NumberFormat("en-GB", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 export function OffersList({ offers, hideHeader }: Props) {
@@ -82,16 +91,25 @@ export function OffersList({ offers, hideHeader }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
+              <TableHead>Company</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Total Price</TableHead>
               <TableHead>Created</TableHead>
-              <TableHead>Updated</TableHead>
               <TableHead className="w-[80px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {offers.map((offer) => (
               <TableRow key={offer.id}>
-                <TableCell className="font-medium">{offer.name}</TableCell>
+                <TableCell className="font-medium">{offer.customerName || "—"}</TableCell>
+                <TableCell>
+                  <Badge variant={offer.status === "accepted" ? "default" : "secondary"} className="capitalize">
+                    {offer.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right font-medium">
+                  {formatNumber(offer.totalPrice)}
+                </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatDate(offer.createdAt)}
                 </TableCell>
