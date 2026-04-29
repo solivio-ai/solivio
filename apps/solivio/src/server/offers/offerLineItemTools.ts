@@ -55,6 +55,7 @@ export const offerLineItemTools = [
       );
       if (offer === null) return { error: "not_found" };
       if (offer === "duplicate") return { error: "duplicate_product" };
+      if (offer === "locked") return { error: "offer_locked" };
       return { offer: toOfferDomain(offer) };
     }
   }),
@@ -70,7 +71,8 @@ export const offerLineItemTools = [
     }),
     execute: async (input) => {
       const offer = await updateOfferLineItem(input.offerProductId, input.offerId, input.quantity);
-      if (!offer) return { error: "not_found" };
+      if (offer === null) return { error: "not_found" };
+      if (offer === "locked") return { error: "offer_locked" };
       return { offer: toOfferDomain(offer) };
     }
   }),
@@ -85,6 +87,7 @@ export const offerLineItemTools = [
     }),
     execute: async (input) => {
       const removed = await removeOfferLineItem(input.offerProductId, input.offerId);
+      if (removed === "locked") return { error: "offer_locked" };
       if (!removed) return { error: "not_found" };
       return { success: true };
     }
