@@ -36,7 +36,7 @@ export function OfferSummary({
   unpricedLineCount,
 }: OfferSummaryProps) {
   return (
-    <Card className="min-w-0" size="sm">
+    <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
         <CardTitle>Summary</CardTitle>
         <CardDescription>Totals and the checks needed before this draft is sent.</CardDescription>
@@ -77,7 +77,7 @@ export function OfferSummary({
               <h2 className="text-sm font-medium">Notes</h2>
               <div className="grid gap-2">
                 {notes.map((note) => (
-                  <div key={note} className="flex gap-2 rounded-lg border bg-background/60 p-3 text-sm leading-relaxed">
+                  <div key={note} className="flex gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed">
                     <AlertTriangle size={15} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
                     <span>{note}</span>
                   </div>

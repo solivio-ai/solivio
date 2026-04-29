@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ type ThemeToggleProps = {
 };
 
 export function ThemeToggle({ className }: ThemeToggleProps) {
+  const t = useTranslations("ThemeToggle");
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       variant="ghost"
       size="icon-sm"
       className={cn("text-muted-foreground hover:text-foreground", className)}
-      aria-label={`Switch to ${nextTheme} mode`}
+      aria-label={t("switchTo", { mode: t(`modes.${nextTheme}`) })}
       onClick={() => applyTheme(nextTheme)}
     >
       {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}

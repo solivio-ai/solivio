@@ -32,6 +32,9 @@ type LoadState =
   | { kind: "ready"; offer: Offer }
   | { kind: "error"; message: string };
 
+const paneScrollClass =
+  "h-full min-h-0 overflow-y-auto overscroll-contain [scrollbar-gutter:stable] [scrollbar-width:thin]";
+
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
 
@@ -218,43 +221,47 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   function renderRightPanel() {
     if (state.kind !== "ready") return null;
     return (
-      <div className="flex h-full flex-col min-h-0">
-        <div className="flex items-center gap-1 border-b px-2 py-1.5 shrink-0">
-          <button
+      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-foreground/15 bg-card shadow-sm">
+        <div className="flex shrink-0 items-center gap-1 border-b border-foreground/15 px-2 py-2">
+          <Button
             type="button"
+            variant="ghost"
+            size="xs"
             className={cn(
-              "flex-1 rounded py-1 text-xs font-medium transition-colors",
+              "h-7 flex-1 rounded-md",
               rightPanel === "chat"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
+                : "text-muted-foreground"
             )}
             onClick={() => setRightPanel("chat")}
           >
             Assistant
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
+            size="xs"
             className={cn(
-              "flex-1 rounded py-1 text-xs font-medium transition-colors",
+              "h-7 flex-1 rounded-md",
               rightPanel === "revisions"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
+                : "text-muted-foreground"
             )}
             onClick={() => setRightPanel("revisions")}
           >
             Revisions
-          </button>
+          </Button>
           {renderAssistantToggle(true)}
         </div>
         {rightPanel === "chat" ? (
           <OfferChat
             discountPercent={discountPercent}
             offer={state.offer}
-            className="flex-1 min-h-0 overflow-hidden"
+            className="min-h-0 flex-1 rounded-none border-0 py-0 shadow-none ring-0"
             onOfferChanged={refreshOffer}
           />
         ) : (
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable] [scrollbar-width:thin]">
             <OfferRevisionTimeline
               revisions={revisions}
               loading={revisionsLoading}
@@ -268,19 +275,19 @@ export function OfferReview({ offerId }: OfferReviewProps) {
 
   if (state.offer.status === "accepted") {
     return (
-      <section className="h-full min-h-0">
+      <section className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
         <OfferAcceptedView offer={state.offer} onBackToDraft={() => void handleBackToDraft()} />
       </section>
     );
   }
 
   return (
-    <section className="h-full min-h-0">
-      <div className="h-full min-h-[540px] xl:min-h-[600px]">
+    <section className="h-full min-h-0 overflow-hidden">
+      <div className="h-full min-h-0">
         {assistantOpen ? (
           <ResizablePanelGroup
             orientation={isWideLayout ? "horizontal" : "vertical"}
-            className="min-h-0 rounded-lg"
+            className="min-h-0 overflow-hidden rounded-xl"
           >
             <ResizablePanel
               id="offer-review"
@@ -289,7 +296,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               maxSize={isWideLayout ? "74%" : "70%"}
               className="min-h-0"
             >
-              <div className="h-full min-h-0 overflow-y-auto pr-1">
+              <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
                 <OfferBuilder
                   discountPercent={discountPercent}
                   offer={state.offer}
@@ -316,13 +323,13 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               onResize={handleAssistantResize}
               className="min-h-0"
             >
-              <div className="h-full min-h-0 overflow-hidden pl-0 pt-3 xl:pl-3 xl:pt-0">
+              <div className="h-full min-h-0 overflow-hidden pt-2 xl:pl-2 xl:pt-0">
                 {renderRightPanel()}
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className="h-full min-h-0 overflow-y-auto pr-1">
+          <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
             <OfferBuilder
               discountPercent={discountPercent}
               offer={state.offer}

@@ -371,8 +371,8 @@ export function OfferChat({
   }
 
   return (
-    <Card className={cn("flex min-h-0 w-full flex-1 gap-0 py-0 shadow-sm", className)}>
-      <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border px-4 py-3">
+    <Card className={cn("flex min-h-0 w-full flex-1 gap-0 rounded-xl border border-foreground/15 py-0 shadow-sm ring-0", className)}>
+      <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-foreground/15 px-4 py-3">
         <CardTitle className="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary">
           <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
             <Sparkles size={14} aria-hidden="true" />
@@ -422,7 +422,7 @@ export function OfferChat({
 
       <CardContent
         ref={scrollContainerRef}
-        className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 [scrollbar-gutter:stable] [scrollbar-width:thin]"
       >
         {threadError ? (
           <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
@@ -435,7 +435,7 @@ export function OfferChat({
             <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
               <Sparkles size={15} aria-hidden="true" className="text-primary" />
             </div>
-            <div className="max-w-[82%] rounded-lg border border-border bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
+            <div className="max-w-[82%] rounded-lg border border-foreground/15 bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
               {t("welcome")}
             </div>
           </div>
@@ -463,7 +463,7 @@ export function OfferChat({
                   "max-w-[82%] whitespace-pre-wrap rounded-lg px-3.5 py-2.5 text-sm leading-relaxed",
                   isUser
                     ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-muted/60 text-foreground"
+                    : "border border-foreground/15 bg-muted/60 text-foreground"
                 )}
               >
                 {isUser ? textContent : <MarkdownMessage>{textContent}</MarkdownMessage>}
@@ -482,7 +482,7 @@ export function OfferChat({
             <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
               <Sparkles size={15} aria-hidden="true" className="text-primary" />
             </div>
-            <div className="rounded-lg border border-border bg-muted/60 px-3.5 py-2.5">
+            <div className="rounded-lg border border-foreground/15 bg-muted/60 px-3.5 py-2.5">
               <span className="flex h-5 items-center gap-1">
                 <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0ms]" />
                 <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:150ms]" />
@@ -493,7 +493,7 @@ export function OfferChat({
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2 border-t border-border bg-background px-4 py-3">
+      <CardFooter className="flex flex-col gap-2 border-t border-foreground/15 bg-background px-4 py-3">
         <div className="flex w-full flex-wrap gap-1.5">
           {questionSuggestions.map((question) => (
             <Button
@@ -516,7 +516,7 @@ export function OfferChat({
             onKeyDown={handleKeyDown}
             disabled={isInputDisabled}
             placeholder={t("input.placeholder")}
-            className="max-h-40 min-h-9 resize-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
+            className="min-w-0 max-h-40 min-h-9 resize-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
             rows={1}
           />
           <Button

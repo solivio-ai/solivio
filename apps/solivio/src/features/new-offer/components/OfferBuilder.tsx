@@ -378,7 +378,7 @@ export function OfferBuilder({
   }
 
   return (
-    <section className="grid min-w-0 gap-4">
+    <section className="grid min-w-0 gap-4 pb-1">
       <OfferBuilderHeader
         assistantToggle={assistantToggle}
         formCustomerName={offer.customerName?.trim() ?? ""}

@@ -11,18 +11,17 @@ import { cn } from "@/lib/utils";
 import { ProductLineCard } from "./ProductLineCard";
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
-
 import type { Offer } from "@solivio/domain";
- 
- type OfferProductsReviewProps = {
-   commitQuantity: (productId: string) => void;
-   lines: DraftLine[];
-   unmatched: string[];
-   pendingProductIds: Set<string>;
-   removeProduct: (productId: string) => void;
-   updateQuantity: (productId: string, nextQuantity: number) => void;
-   status: Offer["status"];
- };
+
+type OfferProductsReviewProps = {
+  commitQuantity: (productId: string) => void;
+  lines: DraftLine[];
+  unmatched: string[];
+  pendingProductIds: Set<string>;
+  removeProduct: (productId: string) => void;
+  updateQuantity: (productId: string, nextQuantity: number) => void;
+  status: Offer["status"];
+};
 
 function lineFingerprint(line: DraftLine) {
   return [
@@ -98,9 +97,9 @@ export function OfferProductsReview({
   }, []);
 
   const isLocked = status === "accepted";
- 
+
   return (
-    <Card className="min-w-0" size="sm">
+    <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
         <div className="flex items-center gap-2">
           <PackageSearch size={18} aria-hidden="true" className="text-primary" />
@@ -110,7 +109,7 @@ export function OfferProductsReview({
       </CardHeader>
       <CardContent className="grid min-w-0 gap-3">
         {unmatched && unmatched.length > 0 && (
-          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
             <div className="flex items-center gap-2 text-destructive mb-1.5 font-medium">
               <AlertTriangle size={16} aria-hidden="true" />
               <span>Unmatched Request Items</span>
@@ -127,7 +126,7 @@ export function OfferProductsReview({
         )}
         <div className="grid gap-3 md:hidden">
           {lines.length === 0 ? (
-            <div className="rounded-lg border p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-foreground/15 p-8 text-center text-sm text-muted-foreground">
               No products in this offer yet.
             </div>
           ) : (
@@ -152,15 +151,15 @@ export function OfferProductsReview({
           )}
         </div>
 
-        <div className="hidden overflow-x-auto rounded-lg border md:block">
-          <Table className="min-w-full">
+        <div className="hidden rounded-lg border border-foreground/15 bg-background md:block">
+          <Table className="min-w-[720px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[56%] min-w-[420px]">Product Match</TableHead>
-                <TableHead className="w-28 text-right">Qty</TableHead>
-                <TableHead className="w-36 text-right">Unit price</TableHead>
-                <TableHead className="w-40 text-right">Line total</TableHead>
-                <TableHead className="w-12 text-right">
+                <TableHead className="w-[54%] min-w-[320px]">Product Match</TableHead>
+                <TableHead className="w-24 text-right">Qty</TableHead>
+                <TableHead className="w-28 text-right">Unit price</TableHead>
+                <TableHead className="w-32 text-right">Line total</TableHead>
+                <TableHead className="w-10 text-right">
                   <span className="sr-only">Actions</span>
                 </TableHead>
               </TableRow>
@@ -181,18 +180,22 @@ export function OfferProductsReview({
                       updatedLineIds.has(line.productId) ? "bg-primary/10" : ""
                     )}
                   >
-                    <TableCell className="whitespace-normal py-3">
+                    <TableCell className="whitespace-normal py-3 pr-4">
                       <div className="grid gap-1">
                         {/* Always visible: name, SKU, requested item */}
                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                           <span className="text-sm font-semibold">{line.name}</span>
-                          {line.sku ? <span className="text-xs text-muted-foreground">SKU: {line.sku}</span> : null}
+                          {line.sku ? (
+                            <span className="text-xs text-muted-foreground">SKU: {line.sku}</span>
+                          ) : null}
                         </div>
                         {line.requestItem ? (
-        <div className="mt-1 flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs">
-          <span className="font-medium text-green-600 shrink-0">Requested:</span>
-          <span className="italic text-foreground">{line.requestItem}</span>
-        </div>
+                          <div className="mt-1 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
+                            <span className="shrink-0 font-medium text-secondary">
+                              Requested:
+                            </span>
+                            <span className="italic text-foreground">{line.requestItem}</span>
+                          </div>
                         ) : null}
 
                         {/* Collapsible details */}
@@ -206,7 +209,15 @@ export function OfferProductsReview({
                                 {line.availability ? (
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs text-muted-foreground">Availability:</span>
-                                    <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
+                                    <Badge
+                                      variant={
+                                        line.availability === "limited"
+                                          ? "secondary"
+                                          : line.availability === "unavailable"
+                                            ? "destructive"
+                                            : "outline"
+                                      }
+                                    >
                                       {line.availability}
                                     </Badge>
                                   </div>
@@ -254,7 +265,7 @@ export function OfferProductsReview({
                     <TableCell className="text-right text-sm font-semibold align-top pt-4">
                       {formatCurrency(line.quantity * line.unitPrice, line.currency)}
                     </TableCell>
-                    <TableCell className="w-12 text-right align-top pt-4">
+                    <TableCell className="w-10 text-right align-top pt-4">
                       <Button
                         type="button"
                         size="icon"
