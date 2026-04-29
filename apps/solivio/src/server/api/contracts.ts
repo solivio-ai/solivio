@@ -227,8 +227,11 @@ export const updateOfferItemRequestSchema = z
   .object({
     productId: z.string(),
     quantity: z.number().int().positive().optional(),
+    rationale: z.string().optional(),
+    confidence: z.number().min(0).max(100).optional(),
     unitPriceNet: z.number().nonnegative().optional(),
-    currency: currencySchema.optional()
+    currency: currencySchema.optional(),
+    product: offerItemProductSchema.optional()
   })
   .strict()
   .meta({

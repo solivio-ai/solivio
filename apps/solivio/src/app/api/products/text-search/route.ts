@@ -8,9 +8,7 @@ import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
 
-const searchableFieldEnum = z.enum(
-  ALL_SEARCHABLE_FIELDS as [string, ...string[]]
-);
+const searchableFieldEnum = z.enum(ALL_SEARCHABLE_FIELDS);
 
 const requestSchema = z
   .object({
@@ -32,6 +30,7 @@ const responseSchema = z
         manufacturer: z.string(),
       })
     ),
+    totalCount: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -53,12 +52,12 @@ export async function POST(request: Request) {
     }
 
     const { query, limit, offset, searchFields } = parsed.data;
-    const products = await searchProductsByText(query, {
+    const result = await searchProductsByText(query, {
       limit,
       offset,
       searchFields: searchFields as SearchableField[] | undefined,
     });
-    return NextResponse.json(responseSchema.parse({ products }));
+    return NextResponse.json(responseSchema.parse(result));
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(

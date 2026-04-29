@@ -27,29 +27,50 @@ export function updateOfferDraft(
     items?: Array<{
       productId: string;
       quantity?: number;
+      rationale?: string;
+      confidence?: number;
       unitPriceNet?: number;
       currency?: Offer["items"][number]["currency"];
+      product?: Offer["items"][number]["product"];
     }>;
   }
 ) {
   const offer = getOfferDraft(id);
   if (!offer) return null;
 
-  const itemUpdates = new Map(update.items?.map((item) => [item.productId, item]) ?? []);
+  const existingItems = new Map(offer.items.map((item) => [item.productId, item]));
+  const nextItems: Offer["items"] = update.items
+    ? update.items.map((itemUpdate) => {
+        const existingItem = existingItems.get(itemUpdate.productId);
+
+        if (!existingItem) {
+          return {
+            productId: itemUpdate.productId,
+            quantity: itemUpdate.quantity ?? 1,
+            rationale: itemUpdate.rationale ?? "Manually added",
+            confidence: itemUpdate.confidence,
+            unitPriceNet: itemUpdate.unitPriceNet,
+            currency: itemUpdate.currency,
+            product: itemUpdate.product
+          };
+        }
+
+        return {
+          ...existingItem,
+          quantity: itemUpdate.quantity ?? existingItem.quantity,
+          rationale: itemUpdate.rationale ?? existingItem.rationale,
+          confidence: itemUpdate.confidence ?? existingItem.confidence,
+          unitPriceNet: itemUpdate.unitPriceNet ?? existingItem.unitPriceNet,
+          currency: itemUpdate.currency ?? existingItem.currency,
+          product: itemUpdate.product ?? existingItem.product
+        };
+      })
+    : offer.items;
+
   const nextOffer: Offer = {
     ...offer,
     status: update.status ?? offer.status,
-    items: offer.items.map((item) => {
-      const itemUpdate = itemUpdates.get(item.productId);
-      if (!itemUpdate) return item;
-
-      return {
-        ...item,
-        quantity: itemUpdate.quantity ?? item.quantity,
-        unitPriceNet: itemUpdate.unitPriceNet ?? item.unitPriceNet,
-        currency: itemUpdate.currency ?? item.currency
-      };
-    })
+    items: nextItems
   };
 
   offerDrafts.set(id, nextOffer);
