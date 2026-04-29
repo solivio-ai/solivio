@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, FileText, LayoutDashboard, Plus } from "lucide-react";
+import { Database, FileText, LayoutDashboard, MessageSquare, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -20,6 +20,7 @@ const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Offers", href: "/offers", icon: FileText },
   { label: "New Offer", href: "/offers/new", icon: Plus },
+  { label: "Chat", href: "/chat", icon: MessageSquare },
   { label: "Catalog Upload", href: "/products/upload", icon: Database },
 ];
 
