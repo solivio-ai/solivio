@@ -36,8 +36,8 @@ const responseSchema = z
   .strict();
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   try {
     const body = await request.json();
