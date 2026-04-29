@@ -35,6 +35,7 @@ export type CustomerRequest = {
 };
 
 export type OfferItem = {
+  offerProductId?: string;
   productId: string;
   quantity: number;
   requestItem?: string;
