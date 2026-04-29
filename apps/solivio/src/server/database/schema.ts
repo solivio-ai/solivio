@@ -116,6 +116,7 @@ export const offerProducts = pgTable("offer_products", {
   unitPriceNet: numeric("unit_price_net", { precision: 12, scale: 2, mode: "number" }).default(0),
   currency: text("currency").default("PLN"),
   rationale: text("rationale").notNull(),
+  position: integer("position").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
 });
 

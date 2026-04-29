@@ -32,6 +32,7 @@ export type InsertOfferProductData = {
   unitPriceNet: number;
   currency: string;
   rationale: string;
+  position: number;
 };
 
 export type OfferRow = {
@@ -64,6 +65,7 @@ export type OfferItemRow = {
   unitPriceNet: number;
   currency: string;
   rationale: string;
+  position: number;
 };
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
@@ -188,14 +190,16 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       quantity: offerProducts.quantity,
       unitPriceNet: offerProducts.unitPriceNet,
       currency: offerProducts.currency,
-      rationale: offerProducts.rationale
+      rationale: offerProducts.rationale,
+      position: offerProducts.position
     })
     .from(offers)
     .leftJoin(createdByUser, eq(createdByUser.id, offers.createdBy))
     .leftJoin(updatedByUser, eq(updatedByUser.id, offers.updatedBy))
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))
     .leftJoin(products, eq(products.id, offerProducts.productId))
-    .where(eq(offers.id, id));
+    .where(eq(offers.id, id))
+    .orderBy(offerProducts.position, offerProducts.createdAt, offerProducts.id);
 
   if (rows.length === 0) return null;
 
@@ -228,7 +232,8 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
         quantity: row.quantity!,
         unitPriceNet: row.unitPriceNet ?? 0,
         currency: row.currency ?? "PLN",
-        rationale: row.rationale!
+        rationale: row.rationale!,
+        position: row.position!
       }))
   };
 }

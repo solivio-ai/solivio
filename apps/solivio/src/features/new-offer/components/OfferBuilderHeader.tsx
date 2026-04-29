@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   AlertCircle,
-  BookmarkPlus,
   CheckCircle2,
   Loader2,
   MoreHorizontal,
@@ -68,8 +67,6 @@ type OfferBuilderHeaderProps = {
   onReopen: () => void;
   onAddProduct: () => void;
   onRetrySave: () => void;
-  onSaveRevision: () => void;
-  saveRevisionState: "idle" | "saving" | "saved";
   saveState: SaveState;
   status: Offer["status"];
   createdBy?: { id: string; name: string } | null;
@@ -90,8 +87,6 @@ export function OfferBuilderHeader({
   onReopen,
   onAddProduct,
   onRetrySave,
-  onSaveRevision,
-  saveRevisionState,
   saveState,
   status,
   createdBy,
@@ -180,12 +175,7 @@ export function OfferBuilderHeader({
 
   const statusLabel = status === "accepted" ? t("status.accepted") : t("status.draft");
 
-  const revisionButtonLabel =
-    saveRevisionState === "saving"
-      ? "Saving..."
-      : saveRevisionState === "saved"
-        ? "Revision saved"
-        : "Save revision";
+
 
   return (
     <header className="grid min-w-0 gap-2 rounded-lg border bg-card p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
@@ -222,16 +212,7 @@ export function OfferBuilderHeader({
 
       <div className="flex flex-wrap items-center justify-end gap-2">
         {assistantToggle}
-        <Button
-          className="w-full sm:w-auto"
-          size="sm"
-          variant="outline"
-          onClick={onSaveRevision}
-          disabled={saveRevisionState === "saving"}
-        >
-          <BookmarkPlus size={16} aria-hidden="true" />
-          {revisionButtonLabel}
-        </Button>
+
         <Button
           className="w-full sm:w-auto"
           size="sm"

@@ -97,6 +97,7 @@ export type OfferRevisionSnapshotLineItem = {
   unitPriceNet: number;
   currency: string;
   rationale: string;
+  position: number;
 };
 
 export type OfferRevisionSnapshot = {

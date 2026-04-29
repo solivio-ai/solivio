@@ -174,7 +174,7 @@ export async function createOffer(
     );
 
     await insertOfferProducts(
-      validItems.map((item) => {
+      validItems.map((item, index) => {
         const catalog = priceMap.get(item.productId)!;
         return {
           offerId: offer.id,
@@ -183,7 +183,8 @@ export async function createOffer(
           quantity: item.quantity,
           unitPriceNet: catalog.priceNet ?? 0,
           currency: catalog.currency ?? "PLN",
-          rationale: item.rationale
+          rationale: item.rationale,
+          position: index
         };
       }),
       tx
@@ -221,17 +222,15 @@ export async function updateOfferMeta(
     return null;
   }
  
-  // If reopening, save a revision of the accepted state first
-  if (existing.status === "accepted" && data.status === "draft") {
-    await saveRevision(offerId, userId ?? null);
-  }
- 
   const updated = await persistOfferMeta(offerId, data);
   if (!updated) return null;
  
   // If the offer was just accepted, lock the prices by saving a final revision
+  const hasContentChanges = Object.keys(data).some((key) => key !== "status");
   if (data.status === "accepted") {
     await saveRevision(offerId, userId ?? null, new Date());
+  } else if (hasContentChanges) {
+    await saveRevision(offerId, userId ?? null);
   }
  
   return getOffer(offerId);
@@ -276,9 +275,11 @@ export async function addProductToOffer(
     quantity,
     unitPriceNet: product.priceNet ?? 0,
     currency: product.currency ?? "PLN",
-    rationale: ""
+    rationale: "",
+    position: existing.items.length
   });
   await setOfferUpdatedBy(offerId, userId ?? null);
+  await saveRevision(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
@@ -301,6 +302,7 @@ export async function updateOfferLineItem(
   if (!item) return null;
   await updateOfferProduct(offerProductId, offerId, { quantity });
   await setOfferUpdatedBy(offerId, userId ?? null);
+  await saveRevision(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
@@ -322,6 +324,7 @@ export async function removeOfferLineItem(
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);
   await setOfferUpdatedBy(offerId, userId ?? null);
+  await saveRevision(offerId, userId ?? null);
   return true;
 }
 

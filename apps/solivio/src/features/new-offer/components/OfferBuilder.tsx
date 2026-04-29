@@ -21,7 +21,6 @@ type OfferBuilderProps = {
   onOfferChange?: (offer: Offer) => void;
   onDiscountPercentChange?: (discountPercent: number) => void;
   onAccepted?: (offer: Offer) => void;
-  onSaveRevision?: () => Promise<void>;
 };
 
 type FailedSaveAction =
@@ -82,13 +81,11 @@ export function OfferBuilder({
   onOfferChange,
   onDiscountPercentChange,
   onAccepted,
-  onSaveRevision,
 }: OfferBuilderProps) {
   const tBuilder = useTranslations("NewOffer.builder");
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
   const [failedAction, setFailedAction] = useState<FailedSaveAction | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-  const [saveRevisionState, setSaveRevisionState] = useState<"idle" | "saving" | "saved">("idle");
   const offerHeaderTitle = useMemo(() => {
     const name = offer.name?.trim();
     if (name) return name;
@@ -335,21 +332,6 @@ export function OfferBuilder({
     void saveReview(nextStatus);
   }
 
-  async function handleSaveRevision() {
-    setSaveRevisionState("saving");
-    try {
-      if (onSaveRevision) {
-        await onSaveRevision();
-      } else {
-        const response = await fetch(`/api/offers/${offer.id}/revisions`, { method: "POST" });
-        if (!response.ok) throw new Error();
-      }
-      setSaveRevisionState("saved");
-      setTimeout(() => setSaveRevisionState("idle"), 2000);
-    } catch {
-      setSaveRevisionState("idle");
-    }
-  }
 
   function retrySave() {
     if (!failedAction) {
@@ -394,8 +376,6 @@ export function OfferBuilder({
         onReopen={() => void saveReview("draft")}
         onAddProduct={() => setSearchOpen(true)}
         onRetrySave={retrySave}
-        onSaveRevision={() => void handleSaveRevision()}
-        saveRevisionState={saveRevisionState}
         saveState={saveState}
         status={status}
         createdBy={offer.createdBy}
