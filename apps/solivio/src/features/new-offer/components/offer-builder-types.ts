@@ -22,6 +22,7 @@ export type SaveState = "idle" | "saving" | "saved" | "error";
 export const formatCurrency = (amount: number, currency: DraftLine["currency"]) =>
   new Intl.NumberFormat("pl-PL", {
     currency,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
     style: "currency",
   }).format(amount);
