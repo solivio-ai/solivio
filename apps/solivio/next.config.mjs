@@ -10,7 +10,7 @@ const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: workspaceRoot,
   transpilePackages: ["@solivio/domain", "@solivio/theme"],
-  serverExternalPackages: ["@voltagent/core"],
+  serverExternalPackages: ["@voltagent/core", "@ai-sdk/openai"],
   turbopack: {
     root: workspaceRoot
   }
