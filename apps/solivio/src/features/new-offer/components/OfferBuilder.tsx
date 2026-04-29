@@ -19,7 +19,7 @@ type OfferBuilderProps = {
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
   onDiscountPercentChange?: (discountPercent: number) => void;
-  onAccepted: (offer: Offer) => void;
+  onAccepted?: (offer: Offer) => void;
 };
 
 type FailedSaveAction =

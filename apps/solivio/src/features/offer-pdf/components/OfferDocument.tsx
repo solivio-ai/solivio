@@ -11,11 +11,12 @@ import { calculateTotals } from "../lib/calculateTotals";
 import { formatDate, formatMoney, formatNumber, formatVatRate } from "../lib/formatters";
 import type { PdfOfferRequest } from "../lib/schema";
 
+// Use built-in PDF fonts so no system font files are required (cross-platform).
 Font.register({
-  family: "Arial",
+  family: "Helvetica",
   fonts: [
-    { src: "/System/Library/Fonts/Supplemental/Arial.ttf", fontWeight: 400 },
-    { src: "/System/Library/Fonts/Supplemental/Arial Bold.ttf", fontWeight: 700 },
+    { src: "Helvetica", fontWeight: 400 },
+    { src: "Helvetica-Bold", fontWeight: 700 },
   ],
 });
 Font.registerHyphenationCallback((word) => [word]);
@@ -29,7 +30,7 @@ const BLACK = "#111827";
 
 const s = StyleSheet.create({
   page: {
-    fontFamily: "Arial",
+    fontFamily: "Helvetica",
     fontSize: 9,
     color: BLACK,
     paddingTop: 36,

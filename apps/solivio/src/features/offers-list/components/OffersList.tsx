@@ -9,11 +9,9 @@ import {
   CircleDashed,
   FileText,
   ListFilter,
-  MoreHorizontal,
   PackageCheck,
   Plus,
   Search,
-  Sparkles,
   TriangleAlert,
   UserRound,
 } from "lucide-react";
@@ -21,14 +19,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyContent,
@@ -52,7 +42,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 type OfferStatus = "draft" | "accepted";
@@ -225,63 +214,21 @@ function OfferActions({
   offer: NormalizedOfferRow;
   fullWidth?: boolean;
 }) {
-  const locale = useLocale();
   const t = useTranslations("OffersList");
 
   return (
     <div
       className={cn(
-        "flex items-center justify-end gap-1",
+        "flex items-center justify-end",
         fullWidth && "w-full sm:w-auto"
       )}
     >
-      <Button asChild size="sm" className={cn(fullWidth && "flex-1 sm:flex-none")}>
+      <Button asChild size="sm" className={cn("w-full sm:w-auto", fullWidth && "flex-1 sm:flex-none")}>
         <Link href={`/offers/${offer.id}`}>
           {t("actions.reviewOffer")}
           <ArrowUpRight size={14} aria-hidden="true" />
         </Link>
       </Button>
-
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                aria-label={t("actions.openActions", { name: offer.name })}
-              >
-                <MoreHorizontal size={16} aria-hidden="true" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t("actions.offerActions")}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end" className="w-44">
-          <DropdownMenuLabel>{t("table.offer")}</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link href={`/offers/${offer.id}`}>
-              <FileText size={14} aria-hidden="true" />
-              {t("actions.openReview")}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/offers/new">
-              <Sparkles size={14} aria-hidden="true" />
-              {t("actions.newDraft")}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href={`/offers/${offer.id}`} className="text-muted-foreground">
-              {t("activity.updated", {
-                relativeTime: formatRelative(offer.updatedAt, locale, t("relative.justNow")),
-              })}
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }
@@ -504,8 +451,8 @@ export function OffersList({ offers, hideHeader }: Props) {
                       <TableHead className="w-[10%] text-right">
                         {t("table.value")}
                       </TableHead>
-                      <TableHead className="w-[12%]">{t("table.activity")}</TableHead>
-                      <TableHead className="w-[150px] text-right">
+                      <TableHead className="w-[14%]">{t("table.activity")}</TableHead>
+                      <TableHead className="w-[160px] text-right">
                         {t("table.actions")}
                       </TableHead>
                     </TableRow>
