@@ -1,40 +1,45 @@
-import { demoOffer } from "@solivio/domain";
 import { NextResponse } from "next/server";
 
-import { createOfferRequestSchema, offerResponseSchema } from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
+import {
+  createOfferRequestSchema,
+  errorResponseSchema,
+  offerResponseSchema,
+  offersListResponseSchema
+} from "@/server/api/contracts";
+import { requireAuthWithUser } from "@/server/auth/session";
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
-import { createOffer, toOfferDomain } from "@/server/offers/offerService";
-import { saveOfferDraft } from "@/server/offers/offerDraftStore";
+import { createOffer, listOffers, toOfferDomain } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const authResult = await requireAuthWithUser();
+  if (authResult instanceof NextResponse) return authResult;
 
-  return NextResponse.json(offerResponseSchema.parse({ offer: demoOffer }));
+  const offers = await listOffers();
+  return NextResponse.json(offersListResponseSchema.parse({ offers }));
 }
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const authResult = await requireAuthWithUser();
+  if (authResult instanceof NextResponse) return authResult;
 
+  const { userId } = authResult;
   const body = await request.json().catch(() => ({}));
   const parsed = createOfferRequestSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "clientRequest is required" } },
+      errorResponseSchema.parse({
+        error: { code: "VALIDATION_ERROR", message: "clientRequest is required" }
+      }),
       { status: 400 }
     );
   }
 
   const { customerName, clientRequest } = parsed.data;
   const generated = await generateOfferWithAgent(clientRequest, customerName);
-  const offer = await createOffer(customerName, clientRequest, generated);
+  const offer = await createOffer(customerName, clientRequest, generated, userId);
 
-  saveOfferDraft(toOfferDomain(offer));
-
-  return NextResponse.json({ offer }, { status: 201 });
+  return NextResponse.json({ offer: toOfferDomain(offer) }, { status: 201 });
 }
