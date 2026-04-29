@@ -92,8 +92,8 @@ export const products = pgTable(
     description: text("description").notNull(),
     manufacturer: text("manufacturer").notNull(),
     priceNet: numeric("price_net", { precision: 12, scale: 2, mode: "number" }).notNull(),
-    priceGross: numeric("price_gross", { precision: 12, scale: 2, mode: "number" }).notNull(),
-    vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull(),
+    priceGross: numeric("price_gross", { precision: 12, scale: 2, mode: "number" }).notNull().default(0),
+    vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(0),
     currency: text("currency").notNull(),
     combinedEmbedding: vector("combined_embedding", { dimensions: 1536 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
@@ -164,6 +164,8 @@ export const offerRevisions = pgTable(
     snapshot: jsonb("snapshot").$type<OfferRevisionSnapshot>().notNull(),
     createdBy: text("created_by").references(() => user.id),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    /** Non-null when this revision was created by accepting the offer. Prices are locked. */
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
   },
   (table) => [
     index("offer_revisions_offer_id_idx").on(table.offerId),

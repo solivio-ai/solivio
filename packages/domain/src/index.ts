@@ -116,6 +116,7 @@ export type OfferRevision = {
   snapshot?: OfferRevisionSnapshot;
   createdBy: { id: string; name: string } | null;
   createdAt: string;
+  acceptedAt?: string | null;
 };
 
 export const workflowSteps: WorkflowStep[] = [

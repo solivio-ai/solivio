@@ -63,6 +63,11 @@ export function OfferRevisionTimeline({
                     Latest
                   </span>
                 ) : null}
+                {revision.acceptedAt ? (
+                  <span className="ml-2 rounded bg-green-500/10 px-1.5 py-0.5 text-xs text-green-600 dark:text-green-400">
+                    Accepted
+                  </span>
+                ) : null}
               </span>
               <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
                 <Clock size={11} aria-hidden="true" />

@@ -12,14 +12,17 @@ import { ProductLineCard } from "./ProductLineCard";
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 
-type OfferProductsReviewProps = {
-  commitQuantity: (productId: string) => void;
-  lines: DraftLine[];
-  unmatched: string[];
-  pendingProductIds: Set<string>;
-  removeProduct: (productId: string) => void;
-  updateQuantity: (productId: string, nextQuantity: number) => void;
-};
+import type { Offer } from "@solivio/domain";
+ 
+ type OfferProductsReviewProps = {
+   commitQuantity: (productId: string) => void;
+   lines: DraftLine[];
+   unmatched: string[];
+   pendingProductIds: Set<string>;
+   removeProduct: (productId: string) => void;
+   updateQuantity: (productId: string, nextQuantity: number) => void;
+   status: Offer["status"];
+ };
 
 function lineFingerprint(line: DraftLine) {
   return [
@@ -39,6 +42,7 @@ export function OfferProductsReview({
   pendingProductIds,
   removeProduct,
   updateQuantity,
+  status,
 }: OfferProductsReviewProps) {
   const previousSignaturesRef = useRef<Map<string, string>>(new Map());
   const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -94,6 +98,8 @@ export function OfferProductsReview({
     };
   }, []);
 
+  const isLocked = status === "accepted";
+ 
   return (
     <Card className="min-w-0" size="sm">
       <CardHeader className="pb-1">
@@ -137,6 +143,7 @@ export function OfferProductsReview({
                 <ProductLineCard
                   commitQuantity={commitQuantity}
                   isPending={pendingProductIds.has(line.productId)}
+                  isLocked={isLocked}
                   line={line}
                   removeProduct={removeProduct}
                   updateQuantity={updateQuantity}
@@ -235,7 +242,7 @@ export function OfferProductsReview({
                             event.currentTarget.blur();
                           }
                         }}
-                        disabled={pendingProductIds.has(line.productId)}
+                        disabled={pendingProductIds.has(line.productId) || isLocked}
                       />
                     </TableCell>
                     <TableCell className="text-right align-top pt-4">
@@ -251,7 +258,7 @@ export function OfferProductsReview({
                         variant="ghost"
                         className="size-8 text-muted-foreground hover:text-destructive"
                         onClick={() => removeProduct(line.productId)}
-                        disabled={pendingProductIds.has(line.productId)}
+                        disabled={pendingProductIds.has(line.productId) || isLocked}
                         aria-label={`Remove ${line.name}`}
                       >
                         {pendingProductIds.has(line.productId) ? (
