@@ -10,15 +10,15 @@ import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   return NextResponse.json(offerResponseSchema.parse({ offer: demoOffer }));
 }
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const body = await request.json().catch(() => ({}));
   const parsed = createOfferRequestSchema.safeParse(body);

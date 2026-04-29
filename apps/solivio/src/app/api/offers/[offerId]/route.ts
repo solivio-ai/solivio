@@ -18,8 +18,8 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
 
@@ -41,8 +41,8 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
   const input = updateOfferRequestSchema.safeParse(await request.json().catch(() => ({})));

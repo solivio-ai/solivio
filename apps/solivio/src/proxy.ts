@@ -1,14 +1,17 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_FILE = /\.(?:avif|gif|ico|jpg|jpeg|png|svg|txt|webmanifest|webp|xml)$/i;
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/login") || PUBLIC_FILE.test(pathname)) return NextResponse.next();
 
-  if (getSessionCookie(request)) return NextResponse.next();
+  const headers = new Headers(request.headers);
+  headers.set("x-pathname", pathname);
+  const passthrough = NextResponse.next({ request: { headers } });
+
+  if (pathname.startsWith("/login") || PUBLIC_FILE.test(pathname)) return passthrough;
+  if (getSessionCookie(request)) return passthrough;
 
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
