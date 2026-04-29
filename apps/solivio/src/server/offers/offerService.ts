@@ -8,6 +8,9 @@ import {
   findOfferById,
   insertOffer,
   insertOfferProducts,
+  insertOfferProduct,
+  updateOfferProduct,
+  deleteOfferProduct,
   type OfferRow
 } from "./offerRepository";
 
@@ -137,4 +140,43 @@ export async function getOffer(id: string): Promise<Offer | null> {
   const row = await findOfferById(id);
   if (!row) return null;
   return toOfferDomain(rowToCreatedOffer(row));
+}
+
+export async function addProductToOffer(
+  offerId: string,
+  productId: string,
+  quantity: number,
+  requestItem = ""
+): Promise<CreatedOffer | null> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return null;
+  await insertOfferProduct({ offerId, productId, requestItem, quantity, rationale: "" });
+  const row = await findOfferById(offerId);
+  return rowToCreatedOffer(row!);
+}
+
+export async function updateOfferLineItem(
+  offerProductId: string,
+  offerId: string,
+  quantity: number
+): Promise<CreatedOffer | null> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return null;
+  const item = existing.items.find((i) => i.offerProductId === offerProductId);
+  if (!item) return null;
+  await updateOfferProduct(offerProductId, offerId, { quantity });
+  const row = await findOfferById(offerId);
+  return rowToCreatedOffer(row!);
+}
+
+export async function removeOfferLineItem(
+  offerProductId: string,
+  offerId: string
+): Promise<boolean> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return false;
+  const item = existing.items.find((i) => i.offerProductId === offerProductId);
+  if (!item) return false;
+  await deleteOfferProduct(offerProductId, offerId);
+  return true;
 }

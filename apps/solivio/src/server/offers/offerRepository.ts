@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { offerProducts, offers, products } from "../database/schema";
@@ -58,6 +58,36 @@ export async function insertOffer(data: InsertOfferData, tx: Tx = db) {
 export async function insertOfferProducts(items: InsertOfferProductData[], tx: Tx = db) {
   if (items.length === 0) return;
   await tx.insert(offerProducts).values(items);
+}
+
+export async function insertOfferProduct(data: InsertOfferProductData, tx: Tx = db) {
+  const [item] = await tx
+    .insert(offerProducts)
+    .values(data)
+    .returning({ id: offerProducts.id });
+  return item;
+}
+
+export async function updateOfferProduct(
+  offerProductId: string,
+  offerId: string,
+  data: { quantity: number },
+  tx: Tx = db
+) {
+  await tx
+    .update(offerProducts)
+    .set({ quantity: data.quantity })
+    .where(and(eq(offerProducts.id, offerProductId), eq(offerProducts.offerId, offerId)));
+}
+
+export async function deleteOfferProduct(
+  offerProductId: string,
+  offerId: string,
+  tx: Tx = db
+) {
+  await tx
+    .delete(offerProducts)
+    .where(and(eq(offerProducts.id, offerProductId), eq(offerProducts.offerId, offerId)));
 }
 
 export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow | null> {
