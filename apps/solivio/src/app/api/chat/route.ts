@@ -1,14 +1,31 @@
 import { after } from "next/server";
 import { NextResponse } from "next/server";
 import type { Offer } from "@solivio/domain";
+import type { UIMessage } from "ai";
 
 import { setWaitUntil } from "@voltagent/core";
 
-import { errorResponseSchema, offerSchema } from "@/server/api/contracts";
+import { errorResponseSchema } from "@/server/api/contracts";
 import { chatAgent } from "@/server/agents/chatAgent";
 import { requireAuth } from "@/server/auth/session";
+import {
+  appendOfferChatMessage,
+  getOfferChatThread
+} from "@/server/offer-chat/offerChatService";
+import { getOfferDraft } from "@/server/offers/offerDraftStore";
+import { getOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
+
+function getLatestUserMessage(messages: UIMessage[]) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "user") {
+      return messages[index];
+    }
+  }
+
+  return null;
+}
 
 function formatOfferContext(offer: Offer) {
   const lines = [
@@ -67,28 +84,51 @@ function formatOfferContext(offer: Offer) {
 }
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const body = await request.json();
-  const { messages } = body;
-  const parsedOffer = body.offer === undefined ? null : offerSchema.safeParse(body.offer);
+  const messages = body.messages as UIMessage[];
+  const offerId = typeof body.offerId === "string" ? body.offerId : null;
+  const threadId = typeof body.threadId === "string" ? body.threadId : null;
+  const shouldPersist = Boolean(offerId && threadId);
 
-  if (parsedOffer && !parsedOffer.success) {
+  if ((offerId && !threadId) || (!offerId && threadId)) {
     return NextResponse.json(
       errorResponseSchema.parse({
         error: {
-          code: "invalid_offer_context",
-          message: "Offer context must match the offer contract.",
-          issues: parsedOffer.error.issues.map((issue) => issue.message)
+          code: "invalid_chat_thread",
+          message: "Both offerId and threadId are required for persistent offer chat."
         }
       }),
       { status: 400 }
     );
   }
 
-  const offer = parsedOffer?.success ? parsedOffer.data : null;
-  const offerContext = offer ? formatOfferContext(offer as Offer) : null;
+  if (shouldPersist) {
+    const thread = await getOfferChatThread(offerId!, threadId!);
+    if (!thread) {
+      return NextResponse.json(
+        errorResponseSchema.parse({
+          error: {
+            code: "chat_thread_not_found",
+            message: `Chat thread '${threadId}' was not found for offer '${offerId}'.`
+          }
+        }),
+        { status: 404 }
+      );
+    }
+
+    const latestUserMessage = getLatestUserMessage(messages);
+    if (latestUserMessage) {
+      await appendOfferChatMessage(threadId!, latestUserMessage);
+    }
+  }
+
+  const serverOffer: Offer | null = offerId
+    ? (getOfferDraft(offerId) ?? (await getOffer(offerId)))
+    : null;
+  const offerContext = serverOffer ? formatOfferContext(serverOffer) : null;
   const messagesWithContext = offerContext
     ? [
         {
@@ -113,7 +153,16 @@ export async function POST(request: Request) {
   setWaitUntil(after);
 
   const result = await chatAgent.streamText(messagesWithContext, {
-    context: offerContext ? { currentOffer: offerContext } : undefined
+    context: offerContext ? { currentOffer: offerContext } : undefined,
+    onFinish: async ({ text }) => {
+      if (!shouldPersist || !text.trim()) return;
+
+      await appendOfferChatMessage(threadId!, {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        parts: [{ type: "text", text }]
+      });
+    }
   });
 
   return result.toUIMessageStreamResponse();
