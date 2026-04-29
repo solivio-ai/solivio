@@ -36,18 +36,24 @@ apps/docs/public/openapi/solivio.json
 The Starlight OpenAPI plugin consumes that generated file and builds the API
 reference pages under `/api/`.
 
-## Current endpoints
+## Documented endpoints
 
 - `GET /api/health`
 - `GET /api/products`
+- `POST /api/products/search`
 - `GET /api/requests`
 - `POST /api/requests`
 - `GET /api/offers`
 - `POST /api/offers`
 
+The app also has internal routes for offer review edits, quick offers, product
+import, offer chat, and PDF rendering. Add those to
+`apps/solivio/src/server/api/contracts.ts` before treating them as public API
+surface.
+
 ## Validation policy
 
-The current API is mock-backed. `POST /api/requests` validates the request body
-against its Zod contract and returns a standard `400` error payload for contract
+Route handlers validate request bodies with the Zod schemas exported from the
+contract module and return standard `400` error payloads for contract
 violations. Add new error responses to the contract at the same time as stricter
 runtime handling lands.

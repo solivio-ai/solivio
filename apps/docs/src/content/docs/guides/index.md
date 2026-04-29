@@ -3,15 +3,16 @@ title: Guides
 description: Guides for Solivio, an open-source AI system that transforms how B2B companies create offers.
 ---
 
-Solivio is an open-source AI system that transforms how B2B companies create
-offers.
+Solivio is an open-source AI system that helps B2B sales teams turn customer
+requests and product catalog data into reviewed offer drafts.
 
-Instead of building every quote manually, Solivio generates structured offer
-drafts based on your data — in seconds.
+Instead of building every quote manually, Solivio provides a runnable app for
+catalog import, product matching, AI-assisted draft generation, sales review,
+offer chat, and PDF output.
 
-The guides are Markdown files in this workspace. API reference pages are kept in
-the separate API tab and generated from route contracts exported by the Next.js
-API implementation.
+Start with **Getting started** if you want to run the app locally. Use
+**Deployment** when you are ready to move the same GHCR images to a live host.
+Then continue to **Feature walkthrough** for the first steps inside the app.
 
 ## The shift
 
@@ -21,13 +22,5 @@ Manual work → Searching → Copy-paste → Guessing
 To:
 Data → AI → Structured draft → Review → Send
 
-## Documentation sources
-
-- Human-authored guides: `apps/docs/src/content/docs/guides`
-- Brand guide: `apps/docs/src/content/docs/guides/brand.md`
-- API route contracts: `apps/solivio/src/server/api/contracts.ts`
-- Generated OpenAPI output: `apps/docs/public/openapi/solivio.json`
-- Generated API reference pages: `/api/`
-
-The generated OpenAPI file is not the source of truth. Regenerate it from the
-route contracts before building or publishing the docs.
+For implementation notes, use the separate **Development** section. API
+reference pages are generated from route contracts and live under `/api/`.
