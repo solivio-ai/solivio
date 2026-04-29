@@ -110,7 +110,7 @@ export function ProductSearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100svh-2rem)] overflow-hidden sm:max-w-[min(920px,calc(100vw-2rem))]">
+      <DialogContent className="max-h-[calc(100svh-1rem)] overflow-hidden max-sm:inset-x-2 max-sm:translate-x-0 max-sm:rounded-xl sm:max-w-[min(920px,calc(100vw-2rem))]">
         <DialogHeader>
           <DialogTitle>Search products</DialogTitle>
           <DialogDescription>
@@ -164,7 +164,7 @@ export function ProductSearchDialog({
         </div>
 
         {/* Scrollable results */}
-        <div className="max-h-[55vh] overflow-y-auto overflow-x-hidden">
+        <div className="max-h-[55vh] overflow-y-auto w-full">
           {results.length > 0 && (
             <div className="grid gap-2 pb-2">
               {results.map((product) => {
@@ -172,14 +172,14 @@ export function ProductSearchDialog({
                 return (
                   <div
                     key={product.id}
-                    className="flex items-center gap-3 rounded-lg border bg-muted/30 px-4 py-3"
+                    className="w-full flex flex-col gap-2 rounded-lg border bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 max-w-[90vw]"
                   >
                     <div className="min-w-0 flex-1">{renderProductInfo(product)}</div>
-                    <div className="flex shrink-0 items-center gap-1">
+                    <div className="flex items-center gap-1 xl:self-end">
                       <Button
                         size="icon"
                         variant="outline"
-                        className="size-7"
+                        className="size-8 sm:size-7"
                         onClick={() => decrement(product)}
                         disabled={qty === 0}
                         aria-label={`Decrease quantity for ${product.name}`}
@@ -190,7 +190,7 @@ export function ProductSearchDialog({
                       <Button
                         size="icon"
                         variant="outline"
-                        className="size-7"
+                        className="size-8 sm:size-7"
                         onClick={() => increment(product)}
                         aria-label={`Increase quantity for ${product.name}`}
                       >

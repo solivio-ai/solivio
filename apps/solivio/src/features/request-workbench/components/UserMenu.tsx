@@ -41,17 +41,6 @@ export function UserMenu() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={handleSignOut}
-        aria-label="Log out"
-        title="Log out"
-      >
-        <LogOut size={14} aria-hidden="true" />
-      </Button>
     </div>
   );
 }
