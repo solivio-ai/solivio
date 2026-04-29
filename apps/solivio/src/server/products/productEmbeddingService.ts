@@ -12,14 +12,11 @@ export async function importProductsWithEmbeddings(
 ): Promise<{ count: number }> {
   if (rows.length === 0) return { count: 0 };
 
-  // Single batch: first N values = names, last N values = descriptions
+  // Embed SKU + name + description together so SKU lookups hit the same vector space.
   const { embeddings } = await embedMany({
     model: openai.embedding(model),
-    values: [...rows.map((r) => r.name), ...rows.map((r) => r.description)]
+    values: rows.map((r) => `${r.sku} ${r.name} ${r.description}`)
   });
-
-  const nameEmbeddings = embeddings.slice(0, rows.length);
-  const descriptionEmbeddings = embeddings.slice(rows.length);
 
   await db
     .insert(products)
@@ -29,8 +26,7 @@ export async function importProductsWithEmbeddings(
         name: row.name,
         description: row.description,
         manufacturer: row.manufacturer,
-        nameEmbedding: nameEmbeddings[i],
-        descriptionEmbedding: descriptionEmbeddings[i]
+        combinedEmbedding: embeddings[i]
       }))
     )
     .onConflictDoUpdate({
@@ -39,8 +35,7 @@ export async function importProductsWithEmbeddings(
         name: sql`excluded.name`,
         description: sql`excluded.description`,
         manufacturer: sql`excluded.manufacturer`,
-        nameEmbedding: sql`excluded.name_embedding`,
-        descriptionEmbedding: sql`excluded.description_embedding`
+        combinedEmbedding: sql`excluded.combined_embedding`
       }
     });
 

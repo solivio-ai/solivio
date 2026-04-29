@@ -29,8 +29,6 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
           name: z.string(),
           description: z.string(),
           manufacturer: z.string(),
-          nameSimilarity: z.number(),
-          descriptionSimilarity: z.number(),
           similarity: z.number()
         })
       )

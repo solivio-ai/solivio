@@ -76,9 +76,12 @@ export function OfferDebugPanel({ clientRequest, fragments }: OfferDebugPanelPro
                           {f.requestFragment}
                         </div>
                       </div>
-                      <Badge variant="outline" className="shrink-0">
-                        qty {f.quantity}
-                      </Badge>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <Badge variant={f.kind === "sku" ? "default" : "secondary"}>
+                          {f.kind}
+                        </Badge>
+                        <Badge variant="outline">qty {f.quantity}</Badge>
+                      </div>
                     </div>
 
                     <div className="mb-3 grid gap-1">
