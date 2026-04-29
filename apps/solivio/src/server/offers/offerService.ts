@@ -5,19 +5,18 @@ import type { Offer } from "@solivio/domain";
 import { db } from "../database/db";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import {
-  findOfferById,
+  findLatestRevision,
+  findRevisionById,
   insertOffer,
-  insertOfferProducts,
-  insertOfferProduct,
-  updateOfferProduct,
-  deleteOfferProduct,
-  type OfferRow
+  insertRevision,
+  listOffers as listOffersFromRepo,
+  listRevisions,
+  type FullRevisionRow
 } from "./offerRepository";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type OfferLineItem = {
-  offerProductId: string;
   productId: string;
   productName: string;
   productSku: string;
@@ -30,13 +29,34 @@ export type OfferLineItem = {
 
 export type CreatedOffer = {
   id: string;
+  name: string;
   customerName: string | null;
   clientRequest: string | null;
+  revisionId: string;
+  revisionNumber: number;
   status: string;
   generatedAt: string;
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
+};
+
+export type OfferSummary = {
+  id: string;
+  name: string;
+  customerName: string | null;
+  status: string;
+  revisionNumber: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RevisionSummary = {
+  revisionId: string;
+  revisionNumber: number;
+  status: string;
+  userId: string;
+  createdAt: string;
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -60,16 +80,19 @@ function deduplicateItems(generated: GeneratedOffer): {
   return { items, extraUnmatched };
 }
 
-function rowToCreatedOffer(row: OfferRow): CreatedOffer {
+function rowToCreatedOffer(row: FullRevisionRow): CreatedOffer {
   return {
-    id: row.id,
-    customerName: row.customerName,
-    clientRequest: row.clientRequest,
-    status: row.status,
-    generatedAt: row.createdAt.toISOString(),
-    items: row.items,
-    unmatched: row.unmatched,
-    notes: row.notes
+    id: row.offer.id,
+    name: row.offer.name,
+    customerName: row.offer.customerName,
+    clientRequest: row.offer.clientRequest,
+    revisionId: row.revision.id,
+    revisionNumber: row.revision.revisionNumber,
+    status: row.revision.status,
+    generatedAt: row.revision.createdAt.toISOString(),
+    items: row.products,
+    unmatched: row.revision.unmatched,
+    notes: row.revision.notes
   };
 }
 
@@ -81,9 +104,10 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     clientRequest: offer.clientRequest ?? undefined,
     status: offer.status as Offer["status"],
     generatedAt: offer.generatedAt,
+    revisionId: offer.revisionId,
+    revisionNumber: offer.revisionNumber,
     notes: offer.notes,
     items: offer.items.map((item) => ({
-      offerProductId: item.offerProductId,
       productId: item.productId,
       quantity: item.quantity,
       rationale: item.rationale,
@@ -93,7 +117,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
         name: item.productName,
         description: item.productDescription,
         manufacturer: item.productManufacturer,
-        source: "semantic-search" as const
+        source: "database" as const
       }
     }))
   };
@@ -104,25 +128,23 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
 export async function createOffer(
   customerName: string | undefined,
   clientRequest: string,
-  generated: GeneratedOffer
+  generated: GeneratedOffer,
+  userId: string
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
 
   return db.transaction(async (tx) => {
-    const offer = await insertOffer(
+    const offer = await insertOffer({ customerName: customerName ?? null, clientRequest, userId }, tx);
+
+    await insertRevision(
       {
-        customerName: customerName ?? null,
-        clientRequest,
+        offerId: offer.id,
         status: "draft",
         notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched]
+        unmatched: [...generated.unmatched, ...extraUnmatched],
+        userId
       },
-      tx
-    );
-
-    await insertOfferProducts(
       items.map((item) => ({
-        offerId: offer.id,
         productId: item.productId,
         requestItem: item.requestItem,
         quantity: item.quantity,
@@ -131,54 +153,211 @@ export async function createOffer(
       tx
     );
 
-    const row = await findOfferById(offer.id, tx);
+    const row = await findLatestRevision(offer.id, tx);
     return rowToCreatedOffer(row!);
   });
 }
 
 export async function getOffer(id: string): Promise<Offer | null> {
-  const row = await findOfferById(id);
+  const row = await findLatestRevision(id);
   if (!row) return null;
   return toOfferDomain(rowToCreatedOffer(row));
+}
+
+export async function listOffers(): Promise<OfferSummary[]> {
+  const rows = await listOffersFromRepo();
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    customerName: row.customerName,
+    status: row.status,
+    revisionNumber: row.revisionNumber,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString()
+  }));
+}
+
+export async function getOfferRevision(offerId: string, revisionId: string): Promise<Offer | null> {
+  const row = await findRevisionById(revisionId, offerId);
+  if (!row) return null;
+  return toOfferDomain(rowToCreatedOffer(row));
+}
+
+export async function listOfferRevisions(offerId: string): Promise<RevisionSummary[]> {
+  const rows = await listRevisions(offerId);
+  return rows.map((row) => ({
+    revisionId: row.id,
+    revisionNumber: row.revisionNumber,
+    status: row.status,
+    userId: row.userId,
+    createdAt: row.createdAt.toISOString()
+  }));
+}
+
+export async function updateOfferStatus(
+  offerId: string,
+  status: string,
+  userId: string
+): Promise<CreatedOffer | null> {
+  return db.transaction(async (tx) => {
+    const current = await findLatestRevision(offerId, tx);
+    if (!current) return null;
+
+    await insertRevision(
+      {
+        offerId,
+        status,
+        notes: current.revision.notes,
+        unmatched: current.revision.unmatched,
+        userId
+      },
+      current.products.map((p) => ({
+        productId: p.productId,
+        requestItem: p.requestItem,
+        quantity: p.quantity,
+        rationale: p.rationale
+      })),
+      tx
+    );
+
+    const row = await findLatestRevision(offerId, tx);
+    return rowToCreatedOffer(row!);
+  });
 }
 
 export async function addProductToOffer(
   offerId: string,
   productId: string,
   quantity: number,
-  requestItem = ""
+  requestItem = "",
+  userId: string
 ): Promise<CreatedOffer | null | "duplicate"> {
-  const existing = await findOfferById(offerId);
-  if (!existing) return null;
-  const duplicate = existing.items.find((i) => i.productId === productId);
-  if (duplicate) return "duplicate";
-  await insertOfferProduct({ offerId, productId, requestItem, quantity, rationale: "" });
-  const row = await findOfferById(offerId);
-  return rowToCreatedOffer(row!);
+  return db.transaction(async (tx) => {
+    const current = await findLatestRevision(offerId, tx);
+    if (!current) return null;
+
+    if (current.products.find((p) => p.productId === productId)) return "duplicate";
+
+    await insertRevision(
+      {
+        offerId,
+        status: current.revision.status,
+        notes: current.revision.notes,
+        unmatched: current.revision.unmatched,
+        userId
+      },
+      [
+        ...current.products.map((p) => ({
+          productId: p.productId,
+          requestItem: p.requestItem,
+          quantity: p.quantity,
+          rationale: p.rationale
+        })),
+        { productId, requestItem, quantity, rationale: "" }
+      ],
+      tx
+    );
+
+    const row = await findLatestRevision(offerId, tx);
+    return rowToCreatedOffer(row!);
+  });
 }
 
 export async function updateOfferLineItem(
-  offerProductId: string,
+  productId: string,
   offerId: string,
-  quantity: number
+  quantity: number,
+  userId: string
 ): Promise<CreatedOffer | null> {
-  const existing = await findOfferById(offerId);
-  if (!existing) return null;
-  const item = existing.items.find((i) => i.offerProductId === offerProductId);
-  if (!item) return null;
-  await updateOfferProduct(offerProductId, offerId, { quantity });
-  const row = await findOfferById(offerId);
-  return rowToCreatedOffer(row!);
+  return db.transaction(async (tx) => {
+    const current = await findLatestRevision(offerId, tx);
+    if (!current) return null;
+
+    if (!current.products.find((p) => p.productId === productId)) return null;
+
+    await insertRevision(
+      {
+        offerId,
+        status: current.revision.status,
+        notes: current.revision.notes,
+        unmatched: current.revision.unmatched,
+        userId
+      },
+      current.products.map((p) => ({
+        productId: p.productId,
+        requestItem: p.requestItem,
+        quantity: p.productId === productId ? quantity : p.quantity,
+        rationale: p.rationale
+      })),
+      tx
+    );
+
+    const row = await findLatestRevision(offerId, tx);
+    return rowToCreatedOffer(row!);
+  });
 }
 
 export async function removeOfferLineItem(
-  offerProductId: string,
-  offerId: string
+  productId: string,
+  offerId: string,
+  userId: string
 ): Promise<boolean> {
-  const existing = await findOfferById(offerId);
-  if (!existing) return false;
-  const item = existing.items.find((i) => i.offerProductId === offerProductId);
-  if (!item) return false;
-  await deleteOfferProduct(offerProductId, offerId);
-  return true;
+  return db.transaction(async (tx) => {
+    const current = await findLatestRevision(offerId, tx);
+    if (!current) return false;
+
+    if (!current.products.find((p) => p.productId === productId)) return false;
+
+    await insertRevision(
+      {
+        offerId,
+        status: current.revision.status,
+        notes: current.revision.notes,
+        unmatched: current.revision.unmatched,
+        userId
+      },
+      current.products
+        .filter((p) => p.productId !== productId)
+        .map((p) => ({
+          productId: p.productId,
+          requestItem: p.requestItem,
+          quantity: p.quantity,
+          rationale: p.rationale
+        })),
+      tx
+    );
+
+    return true;
+  });
+}
+
+export async function restoreRevision(
+  offerId: string,
+  revisionId: string,
+  userId: string
+): Promise<CreatedOffer | null> {
+  return db.transaction(async (tx) => {
+    const target = await findRevisionById(revisionId, offerId, tx);
+    if (!target) return null;
+
+    await insertRevision(
+      {
+        offerId,
+        status: target.revision.status,
+        notes: target.revision.notes,
+        unmatched: target.revision.unmatched,
+        userId
+      },
+      target.products.map((p) => ({
+        productId: p.productId,
+        requestItem: p.requestItem,
+        quantity: p.quantity,
+        rationale: p.rationale
+      })),
+      tx
+    );
+
+    const row = await findLatestRevision(offerId, tx);
+    return rowToCreatedOffer(row!);
+  });
 }
