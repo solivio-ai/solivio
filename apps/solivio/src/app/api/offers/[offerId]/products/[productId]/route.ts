@@ -5,7 +5,7 @@ import {
   offerResponseSchema,
   updateOfferLineItemRequestSchema
 } from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
+import { requireAuthWithUser } from "@/server/auth/session";
 import {
   removeOfferLineItem,
   toOfferDomain,
@@ -15,14 +15,15 @@ import {
 export const runtime = "nodejs";
 
 type RouteContext = {
-  params: Promise<{ offerId: string; offerProductId: string }>;
+  params: Promise<{ offerId: string; productId: string }>;
 };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const authResult = await requireAuthWithUser();
+  if (authResult instanceof NextResponse) return authResult;
 
-  const { offerId, offerProductId } = await context.params;
+  const { userId } = authResult;
+  const { offerId, productId } = await context.params;
   const parsed = updateOfferLineItemRequestSchema.safeParse(
     await request.json().catch(() => ({}))
   );
@@ -40,15 +41,12 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
-  const offer = await updateOfferLineItem(offerProductId, offerId, parsed.data.quantity);
+  const offer = await updateOfferLineItem(productId, offerId, parsed.data.quantity, userId);
 
   if (!offer) {
     return NextResponse.json(
       errorResponseSchema.parse({
-        error: {
-          code: "not_found",
-          message: "Offer or line item was not found."
-        }
+        error: { code: "not_found", message: "Offer or product was not found." }
       }),
       { status: 404 }
     );
@@ -58,19 +56,17 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const authResult = await requireAuthWithUser();
+  if (authResult instanceof NextResponse) return authResult;
 
-  const { offerId, offerProductId } = await context.params;
-  const removed = await removeOfferLineItem(offerProductId, offerId);
+  const { userId } = authResult;
+  const { offerId, productId } = await context.params;
+  const removed = await removeOfferLineItem(productId, offerId, userId);
 
   if (!removed) {
     return NextResponse.json(
       errorResponseSchema.parse({
-        error: {
-          code: "not_found",
-          message: "Offer or line item was not found."
-        }
+        error: { code: "not_found", message: "Offer or product was not found." }
       }),
       { status: 404 }
     );

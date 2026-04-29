@@ -5,7 +5,7 @@ import {
   errorResponseSchema,
   offerResponseSchema
 } from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
+import { requireAuthWithUser } from "@/server/auth/session";
 import { addProductToOffer, toOfferDomain } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
@@ -15,9 +15,10 @@ type RouteContext = {
 };
 
 export async function POST(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const authResult = await requireAuthWithUser();
+  if (authResult instanceof NextResponse) return authResult;
 
+  const { userId } = authResult;
   const { offerId } = await context.params;
   const parsed = addOfferProductRequestSchema.safeParse(
     await request.json().catch(() => ({}))
@@ -37,15 +38,12 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const { productId, quantity, requestItem } = parsed.data;
-  const offer = await addProductToOffer(offerId, productId, quantity, requestItem);
+  const offer = await addProductToOffer(offerId, productId, quantity, requestItem, userId);
 
   if (offer === null) {
     return NextResponse.json(
       errorResponseSchema.parse({
-        error: {
-          code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+        error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` }
       }),
       { status: 404 }
     );
