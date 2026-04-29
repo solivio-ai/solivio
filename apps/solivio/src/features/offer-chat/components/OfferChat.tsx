@@ -176,8 +176,31 @@ export function OfferChat({ offer }: OfferChatProps) {
   const [input, setInput] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isLoading = status === "streaming" || status === "submitted";
   const isInputDisabled = isLoading || isThreadLoading || Boolean(offer && !activeThreadId);
+
+  /**
+   * Scrolls the message container to the bottom.
+   * `instant` is used when loading history (thread switch / init) so there's no visible jump.
+   * `smooth` is used when a new message or streaming chunk arrives.
+   * Auto-scroll is skipped when the user has scrolled up more than 120 px from the bottom.
+   */
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+
+    if (behavior === "instant" || distanceFromBottom < 120) {
+      container.scrollTo({ top: container.scrollHeight, behavior });
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom("smooth");
+  }, [messages, scrollToBottom]);
 
   const refreshThreads = useCallback(async () => {
     if (!offer) return [] as OfferChatThread[];
@@ -206,8 +229,10 @@ export function OfferChat({ offer }: OfferChatProps) {
       }
 
       setMessages(payload.messages as UIMessage[]);
+      // Use rAF so the DOM has painted the loaded messages before we jump to the bottom.
+      requestAnimationFrame(() => scrollToBottom("instant"));
     },
-    [offer, setMessages]
+    [offer, scrollToBottom, setMessages]
   );
 
   const createThread = useCallback(async () => {
@@ -222,11 +247,6 @@ export function OfferChat({ offer }: OfferChatProps) {
 
     return payload.thread as OfferChatThread;
   }, [offer]);
-
-  // Buggy keep commented for now
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
 
   async function sendText(text: string) {
     if (!text || isInputDisabled) return;
@@ -385,7 +405,7 @@ export function OfferChat({ offer }: OfferChatProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="min-h-0 flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <CardContent ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4 space-y-4">
           {threadError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {threadError}
