@@ -66,7 +66,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const offer =
     isUuid(offerId) && input.data.status
-      ? (await updateOfferStatusAndFetch(offerId, input.data.status)) ?? updateOfferDraft(offerId, input.data)
+      ? (await updateOfferStatusAndFetch(offerId, input.data.status, auth.session.user.id)) ?? updateOfferDraft(offerId, input.data)
       : updateOfferDraft(offerId, input.data);
 
   if (!offer) {

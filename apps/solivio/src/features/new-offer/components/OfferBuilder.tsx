@@ -19,7 +19,8 @@ type OfferBuilderProps = {
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
   onDiscountPercentChange?: (discountPercent: number) => void;
-  onAccepted: (offer: Offer) => void;
+  onAccepted?: (offer: Offer) => void;
+  onSaveRevision?: () => Promise<void>;
 };
 
 type FailedSaveAction =
@@ -82,11 +83,13 @@ export function OfferBuilder({
   offer,
   onOfferChange,
   onDiscountPercentChange,
-  onAccepted
+  onAccepted,
+  onSaveRevision,
 }: OfferBuilderProps) {
   const [status, setStatus] = useState<Offer["status"]>(offer.status);
   const [failedAction, setFailedAction] = useState<FailedSaveAction | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveRevisionState, setSaveRevisionState] = useState<"idle" | "saving" | "saved">("idle");
   const displayCustomerName = customerName ?? offer.customerName ?? "Demo customer";
   const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -328,6 +331,22 @@ export function OfferBuilder({
     void saveReview(nextStatus);
   }
 
+  async function handleSaveRevision() {
+    setSaveRevisionState("saving");
+    try {
+      if (onSaveRevision) {
+        await onSaveRevision();
+      } else {
+        const response = await fetch(`/api/offers/${offer.id}/revisions`, { method: "POST" });
+        if (!response.ok) throw new Error();
+      }
+      setSaveRevisionState("saved");
+      setTimeout(() => setSaveRevisionState("idle"), 2000);
+    } catch {
+      setSaveRevisionState("idle");
+    }
+  }
+
   function retrySave() {
     if (!failedAction) {
       void saveReview();
@@ -367,8 +386,14 @@ export function OfferBuilder({
         onAccept={() => updateStatus("accepted")}
         onAddProduct={() => setSearchOpen(true)}
         onRetrySave={retrySave}
+        onSaveRevision={() => void handleSaveRevision()}
+        saveRevisionState={saveRevisionState}
         saveState={saveState}
         status={status}
+        createdBy={offer.createdBy}
+        createdAt={offer.generatedAt}
+        updatedBy={offer.updatedBy}
+        updatedAt={offer.updatedAt}
       />
 
       <OfferProductsReview

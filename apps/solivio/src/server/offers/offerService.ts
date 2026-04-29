@@ -16,6 +16,7 @@ import {
   updateOfferProduct,
   deleteOfferProduct,
   getRecentOffers,
+  setOfferUpdatedBy,
   type OfferRow
 } from "./offerRepository";
 
@@ -37,14 +38,20 @@ export type OfferLineItem = {
 
 export type CreatedOffer = {
   id: string;
+  name: string;
   customerName: string | null;
   clientRequest: string | null;
   status: Offer["status"];
   generatedAt: string;
+  updatedAt: string;
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
   debugFragments: OfferDebugFragment[];
+  createdBy: string | null;
+  createdByName: string | null;
+  updatedBy: string | null;
+  updatedByName: string | null;
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -71,14 +78,20 @@ function deduplicateItems(generated: GeneratedOffer): {
 function rowToCreatedOffer(row: OfferRow): CreatedOffer {
   return {
     id: row.id,
+    name: row.name,
     customerName: row.customerName,
     clientRequest: row.clientRequest,
     status: row.status,
     generatedAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
     items: row.items,
     unmatched: row.unmatched,
     notes: row.notes,
-    debugFragments: row.debugFragments
+    debugFragments: row.debugFragments,
+    createdBy: row.createdBy,
+    createdByName: row.createdByName,
+    updatedBy: row.updatedBy,
+    updatedByName: row.updatedByName,
   };
 }
 
@@ -90,9 +103,12 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     clientRequest: offer.clientRequest ?? undefined,
     status: offer.status as Offer["status"],
     generatedAt: offer.generatedAt,
+    updatedAt: offer.updatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
     debugFragments: offer.debugFragments,
+    createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
+    updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
     items: offer.items.map((item) => ({
       offerProductId: item.offerProductId,
       productId: item.productId,
@@ -120,7 +136,8 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
 export async function createOffer(
   customerName: string | undefined,
   clientRequest: string,
-  generated: GeneratedOffer
+  generated: GeneratedOffer,
+  userId?: string | null
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
 
@@ -132,7 +149,9 @@ export async function createOffer(
         status: "draft",
         notes: generated.notes,
         unmatched: [...generated.unmatched, ...extraUnmatched],
-        debugFragments: generated.debugFragments
+        debugFragments: generated.debugFragments,
+        createdBy: userId ?? null,
+        updatedBy: userId ?? null,
       },
       tx
     );
@@ -175,9 +194,10 @@ export async function getOffer(id: string): Promise<Offer | null> {
 
 export async function updateOfferStatusAndFetch(
   offerId: string,
-  status: Offer["status"]
+  status: Offer["status"],
+  userId?: string | null
 ): Promise<Offer | null> {
-  const updated = await updateOfferStatus(offerId, status);
+  const updated = await updateOfferStatus(offerId, status, userId ?? null);
   if (!updated) return null;
   return getOffer(offerId);
 }
@@ -186,7 +206,8 @@ export async function addProductToOffer(
   offerId: string,
   productId: string,
   quantity: number,
-  requestItem = ""
+  requestItem = "",
+  userId?: string | null
 ): Promise<CreatedOffer | null | "duplicate"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
@@ -200,15 +221,16 @@ export async function addProductToOffer(
 
   if (!product) return null;
 
-  await insertOfferProduct({ 
-    offerId, 
-    productId, 
-    requestItem, 
-    quantity, 
-    unitPriceNet: product.priceNet ?? 0, 
-    currency: product.currency ?? "PLN", 
-    rationale: "" 
+  await insertOfferProduct({
+    offerId,
+    productId,
+    requestItem,
+    quantity,
+    unitPriceNet: product.priceNet ?? 0,
+    currency: product.currency ?? "PLN",
+    rationale: ""
   });
+  await setOfferUpdatedBy(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
@@ -216,26 +238,30 @@ export async function addProductToOffer(
 export async function updateOfferLineItem(
   offerProductId: string,
   offerId: string,
-  quantity: number
+  quantity: number,
+  userId?: string | null
 ): Promise<CreatedOffer | null> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return null;
   await updateOfferProduct(offerProductId, offerId, { quantity });
+  await setOfferUpdatedBy(offerId, userId ?? null);
   const row = await findOfferById(offerId);
   return rowToCreatedOffer(row!);
 }
 
 export async function removeOfferLineItem(
   offerProductId: string,
-  offerId: string
+  offerId: string,
+  userId?: string | null
 ): Promise<boolean> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);
+  await setOfferUpdatedBy(offerId, userId ?? null);
   return true;
 }
 

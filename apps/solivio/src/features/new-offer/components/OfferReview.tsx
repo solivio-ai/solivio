@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { Offer } from "@solivio/domain";
+import type { Offer, OfferRevision } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -19,6 +19,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { OfferBuilder } from "./OfferBuilder";
 import { OfferAcceptedView } from "./OfferAcceptedView";
 import { OfferChat } from "@/features/offer-chat/components/OfferChat";
+import { OfferRevisionTimeline } from "./OfferRevisionTimeline";
+import { OfferRevisionModal } from "./OfferRevisionModal";
 import { cn } from "@/lib/utils";
 
 type OfferReviewProps = {
@@ -50,6 +52,10 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [discountPercent, setDiscountPercent] = useState(3);
+  const [rightPanel, setRightPanel] = useState<"chat" | "revisions">("chat");
+  const [revisions, setRevisions] = useState<OfferRevision[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
@@ -95,6 +101,25 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     };
   }, [fetchOffer]);
 
+  const loadRevisions = useCallback(async () => {
+    setRevisionsLoading(true);
+    try {
+      const response = await fetch(`/api/offers/${offerId}/revisions`);
+      const data = await response.json() as { revisions: OfferRevision[] };
+      setRevisions(data.revisions);
+    } catch {
+      // ignore
+    } finally {
+      setRevisionsLoading(false);
+    }
+  }, [offerId]);
+
+  useEffect(() => {
+    if (rightPanel === "revisions") {
+      void loadRevisions();
+    }
+  }, [rightPanel, loadRevisions]);
+
   const refreshOffer = useCallback(() => {
     fetchOffer()
       .then((offer: Offer) => {
@@ -102,6 +127,14 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       })
       .catch(() => {});
   }, [fetchOffer]);
+
+  async function handleSaveRevision() {
+    const response = await fetch(`/api/offers/${offerId}/revisions`, { method: "POST" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (rightPanel === "revisions") {
+      void loadRevisions();
+    }
+  }
 
   if (state.kind === "loading") {
     return (
@@ -186,6 +219,57 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     );
   }
 
+  function renderRightPanel() {
+    if (state.kind !== "ready") return null;
+    return (
+      <div className="flex h-full flex-col min-h-0">
+        <div className="flex items-center gap-1 border-b px-2 py-1.5 shrink-0">
+          <button
+            type="button"
+            className={cn(
+              "flex-1 rounded py-1 text-xs font-medium transition-colors",
+              rightPanel === "chat"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setRightPanel("chat")}
+          >
+            Assistant
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "flex-1 rounded py-1 text-xs font-medium transition-colors",
+              rightPanel === "revisions"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setRightPanel("revisions")}
+          >
+            Revisions
+          </button>
+          {renderAssistantToggle(true)}
+        </div>
+        {rightPanel === "chat" ? (
+          <OfferChat
+            discountPercent={discountPercent}
+            offer={state.offer}
+            className="flex-1 min-h-0 overflow-hidden"
+            onOfferChanged={refreshOffer}
+          />
+        ) : (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <OfferRevisionTimeline
+              revisions={revisions}
+              loading={revisionsLoading}
+              onSelect={setSelectedRevision}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (state.offer.status === "accepted") {
     return (
       <section className="min-h-0">
@@ -215,6 +299,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   offer={state.offer}
                   onDiscountPercentChange={setDiscountPercent}
                   onOfferChange={handleOfferChange}
+                  onSaveRevision={handleSaveRevision}
                 />
               </div>
             </ResizablePanel>
@@ -236,13 +321,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               className="min-h-0"
             >
               <div className="h-full min-h-0 overflow-hidden pl-0 pt-3 xl:pl-3 xl:pt-0">
-                <OfferChat
-                  discountPercent={discountPercent}
-                  offer={state.offer}
-                  className="h-full"
-                  headerAction={renderAssistantToggle(true)}
-                  onOfferChanged={refreshOffer}
-                />
+                {renderRightPanel()}
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -253,11 +332,23 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               offer={state.offer}
               onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
+              onSaveRevision={handleSaveRevision}
               assistantToggle={renderAssistantToggle()}
             />
           </div>
         )}
       </div>
+
+      <OfferRevisionModal
+        revision={selectedRevision}
+        offerId={offerId}
+        open={selectedRevision !== null}
+        onClose={() => setSelectedRevision(null)}
+        onRestored={() => {
+          refreshOffer();
+          void loadRevisions();
+        }}
+      />
     </section>
   );
 }

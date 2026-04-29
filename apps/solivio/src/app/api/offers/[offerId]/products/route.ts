@@ -37,7 +37,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const { productId, quantity, requestItem } = parsed.data;
-  const offer = await addProductToOffer(offerId, productId, quantity, requestItem);
+  const offer = await addProductToOffer(offerId, productId, quantity, requestItem, auth.session.user.id);
 
   if (offer === null) {
     return NextResponse.json(

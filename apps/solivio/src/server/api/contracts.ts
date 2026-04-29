@@ -240,10 +240,13 @@ export const offerSchema = z
     clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema,
     generatedAt: z.string().datetime(),
+    updatedAt: z.string().datetime().optional(),
     items: z.array(offerItemSchema),
     notes: z.array(z.string()),
     unmatched: z.array(z.string()).optional(),
-    debugFragments: z.array(debugFragmentSchema).optional()
+    debugFragments: z.array(debugFragmentSchema).optional(),
+    createdBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
+    updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional()
   })
   .meta({
     id: "Offer",

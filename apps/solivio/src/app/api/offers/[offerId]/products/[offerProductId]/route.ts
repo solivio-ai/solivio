@@ -40,7 +40,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
-  const offer = await updateOfferLineItem(offerProductId, offerId, parsed.data.quantity);
+  const offer = await updateOfferLineItem(offerProductId, offerId, parsed.data.quantity, auth.session.user.id);
 
   if (!offer) {
     return NextResponse.json(
@@ -62,7 +62,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
   if (auth.response) return auth.response;
 
   const { offerId, offerProductId } = await context.params;
-  const removed = await removeOfferLineItem(offerProductId, offerId);
+  const removed = await removeOfferLineItem(offerProductId, offerId, auth.session.user.id);
 
   if (!removed) {
     return NextResponse.json(
