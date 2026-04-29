@@ -7,10 +7,9 @@ import { formatCurrency } from "./offer-builder-types";
 type ProductLineCardProps = {
   line: DraftLine;
   updateQuantity: (productId: string, nextQuantity: number) => void;
-  updateUnitPrice: (productId: string, nextPrice: number) => void;
 };
 
-export function ProductLineCard({ line, updateQuantity, updateUnitPrice }: ProductLineCardProps) {
+export function ProductLineCard({ line, updateQuantity }: ProductLineCardProps) {
   return (
     <div className={`grid gap-4 rounded-lg border p-3 ${line.confidence < 80 ? "bg-muted/30" : "bg-background/60"}`}>
       <div className="grid gap-2">
@@ -62,19 +61,8 @@ export function ProductLineCard({ line, updateQuantity, updateUnitPrice }: Produ
           />
         </div>
         <div className="grid gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground" htmlFor={`${line.productId}-unit-price`}>
-            Unit price
-          </label>
-          <Input
-            id={`${line.productId}-unit-price`}
-            aria-label={`Unit price for ${line.name}`}
-            className="text-right"
-            min={0}
-            step="0.01"
-            type="number"
-            value={line.unitPrice}
-            onChange={(event) => updateUnitPrice(line.productId, Number(event.target.value))}
-          />
+          <span className="text-xs font-medium text-muted-foreground">Unit price</span>
+          <span className="flex h-9 items-center justify-end text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
         </div>
       </div>
 

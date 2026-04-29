@@ -30,8 +30,6 @@ export function updateOfferDraft(
       rationale?: string;
       requestItem?: string;
       confidence?: number;
-      unitPriceNet?: number;
-      currency?: Offer["items"][number]["currency"];
       product?: Offer["items"][number]["product"];
     }>;
     unmatched?: string[];
@@ -52,8 +50,6 @@ export function updateOfferDraft(
             rationale: itemUpdate.rationale ?? "Manually added",
             requestItem: itemUpdate.requestItem,
             confidence: itemUpdate.confidence,
-            unitPriceNet: itemUpdate.unitPriceNet,
-            currency: itemUpdate.currency,
             product: itemUpdate.product
           };
         }
@@ -64,8 +60,6 @@ export function updateOfferDraft(
           rationale: itemUpdate.rationale ?? existingItem.rationale,
           requestItem: itemUpdate.requestItem ?? existingItem.requestItem,
           confidence: itemUpdate.confidence ?? existingItem.confidence,
-          unitPriceNet: itemUpdate.unitPriceNet ?? existingItem.unitPriceNet,
-          currency: itemUpdate.currency ?? existingItem.currency,
           product: itemUpdate.product ?? existingItem.product
         };
       })

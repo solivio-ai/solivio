@@ -13,14 +13,12 @@ type OfferProductsReviewProps = {
   lines: DraftLine[];
   unmatched: string[];
   updateQuantity: (productId: string, nextQuantity: number) => void;
-  updateUnitPrice: (productId: string, nextPrice: number) => void;
 };
 
 export function OfferProductsReview({
   lines,
   unmatched,
   updateQuantity,
-  updateUnitPrice,
 }: OfferProductsReviewProps) {
   return (
     <Card className="min-w-0">
@@ -59,7 +57,6 @@ export function OfferProductsReview({
                 key={line.productId}
                 line={line}
                 updateQuantity={updateQuantity}
-                updateUnitPrice={updateUnitPrice}
               />
             ))
           )}
@@ -141,15 +138,7 @@ export function OfferProductsReview({
                       />
                     </TableCell>
                     <TableCell className="text-right align-top pt-5">
-                      <Input
-                        aria-label={`Unit price for ${line.name}`}
-                        className="ml-auto w-28 text-right"
-                        min={0}
-                        step="0.01"
-                        type="number"
-                        value={line.unitPrice}
-                        onChange={(event) => updateUnitPrice(line.productId, Number(event.target.value))}
-                      />
+                      <span className="text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
                     </TableCell>
                     <TableCell className="text-right text-base font-semibold align-top pt-5">
                       {formatCurrency(line.quantity * line.unitPrice, line.currency)}

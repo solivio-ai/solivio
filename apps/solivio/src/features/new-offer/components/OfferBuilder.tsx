@@ -71,19 +71,6 @@ export function OfferBuilder({ assistantToggle, customerName, offer }: OfferBuil
     );
   }
 
-  function updateUnitPrice(productId: string, nextPrice: number) {
-    setLines((current) =>
-      current.map((line) =>
-        line.productId === productId
-          ? {
-              ...line,
-              unitPrice: Math.max(0, nextPrice || 0),
-            }
-          : line
-      )
-    );
-  }
-
   function handleSearchQuantityChange(product: ProductSearchMatch, quantity: number) {
     setLines((current) => {
       const existing = current.find((line) => line.productId === product.id);
@@ -130,8 +117,6 @@ export function OfferBuilder({ assistantToggle, customerName, offer }: OfferBuil
             rationale: line.rationale,
             requestItem: line.requestItem,
             confidence: line.confidence,
-            unitPriceNet: line.unitPrice,
-            currency: line.currency,
             product: {
               id: line.productId,
               sku: line.sku,
@@ -139,8 +124,6 @@ export function OfferBuilder({ assistantToggle, customerName, offer }: OfferBuil
               description: line.description,
               manufacturer: line.manufacturer,
               availability: line.availability,
-              priceNet: line.unitPrice,
-              currency: line.currency,
               source: line.source ?? "database"
             }
           }))
@@ -181,7 +164,6 @@ export function OfferBuilder({ assistantToggle, customerName, offer }: OfferBuil
         lines={lines}
         unmatched={offer.unmatched ?? []}
         updateQuantity={updateQuantity}
-        updateUnitPrice={updateUnitPrice}
       />
 
       <OfferSummary
