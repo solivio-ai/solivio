@@ -3,6 +3,10 @@ export type ProductImportRow = {
   name: string;
   description: string;
   manufacturer: string;
+  priceNet: number;
+  priceGross: number;
+  vatRate: number;
+  currency: string;
 };
 
 export type WorkflowStatus = "planned" | "mocked" | "ready";

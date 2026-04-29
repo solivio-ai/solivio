@@ -215,6 +215,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
                   offer={state.offer}
                   onDiscountPercentChange={setDiscountPercent}
                   onOfferChange={handleOfferChange}
+                  onAccepted={handleOfferChange}
                 />
               </div>
             </ResizablePanel>
@@ -253,6 +254,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               offer={state.offer}
               onDiscountPercentChange={setDiscountPercent}
               onOfferChange={handleOfferChange}
+              onAccepted={handleOfferChange}
               assistantToggle={renderAssistantToggle()}
             />
           </div>

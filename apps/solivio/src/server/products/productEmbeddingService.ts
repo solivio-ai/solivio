@@ -26,6 +26,10 @@ export async function importProductsWithEmbeddings(
         name: row.name,
         description: row.description,
         manufacturer: row.manufacturer,
+        priceNet: row.priceNet,
+        priceGross: row.priceGross,
+        vatRate: row.vatRate,
+        currency: row.currency,
         combinedEmbedding: embeddings[i]
       }))
     )
@@ -35,6 +39,10 @@ export async function importProductsWithEmbeddings(
         name: sql`excluded.name`,
         description: sql`excluded.description`,
         manufacturer: sql`excluded.manufacturer`,
+        priceNet: sql`excluded.price_net`,
+        priceGross: sql`excluded.price_gross`,
+        vatRate: sql`excluded.vat_rate`,
+        currency: sql`excluded.currency`,
         combinedEmbedding: sql`excluded.combined_embedding`
       }
     });

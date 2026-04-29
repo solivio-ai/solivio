@@ -10,7 +10,6 @@ import {
   CircleDashed,
   FileText,
   ListFilter,
-  MoreHorizontal,
   PackageCheck,
   Pencil,
   Plus,
@@ -18,6 +17,7 @@ import {
   Trash2,
   TriangleAlert,
   UserRound,
+  MoreHorizontal,
 } from "lucide-react";
 
 import {
@@ -71,8 +71,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";

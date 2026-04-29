@@ -64,6 +64,20 @@
       "when": 1777460000000,
       "tag": "0008_combined_embedding",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1777463750459,
+      "tag": "0009_price_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1777463860000,
+      "tag": "0010_offer_products_unit_price_numeric",
+      "breakpoints": true
     }
   ]
 }
