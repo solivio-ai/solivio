@@ -35,6 +35,7 @@ export type OfferRow = {
 };
 
 export type OfferItemRow = {
+  offerProductId: string;
   productId: string;
   productName: string;
   productSku: string;
@@ -69,6 +70,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       createdAt: offers.createdAt,
       notes: offers.notes,
       unmatched: offers.unmatched,
+      offerProductId: offerProducts.id,
       productId: offerProducts.productId,
       productName: products.name,
       productSku: products.sku,
@@ -97,6 +99,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     items: rows
       .filter((row) => row.productId !== null)
       .map((row) => ({
+        offerProductId: row.offerProductId!,
         productId: row.productId!,
         productName: row.productName!,
         productSku: row.productSku!,

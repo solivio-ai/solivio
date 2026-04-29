@@ -174,6 +174,7 @@ export const offerItemProductSchema = z
 
 export const offerItemSchema = z
   .object({
+    offerProductId: z.string().optional(),
     productId: z.string(),
     productName: z.string().optional(),
     productSku: z.string().optional(),

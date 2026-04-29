@@ -14,6 +14,7 @@ import {
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type OfferLineItem = {
+  offerProductId: string;
   productId: string;
   productName: string;
   productSku: string;
@@ -79,6 +80,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     generatedAt: offer.generatedAt,
     notes: offer.notes,
     items: offer.items.map((item) => ({
+      offerProductId: item.offerProductId,
       productId: item.productId,
       quantity: item.quantity,
       rationale: item.rationale,
