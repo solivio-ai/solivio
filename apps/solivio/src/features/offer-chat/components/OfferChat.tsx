@@ -5,8 +5,7 @@ import { createElement, useCallback, useEffect, useMemo, useRef, useState } from
 import { useChat } from "@ai-sdk/react";
 import type { Offer } from "@solivio/domain";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { ArrowUp, Plus, User } from "lucide-react";
-import Image from "next/image";
+import { ArrowUp, Plus, Sparkles, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -365,7 +364,7 @@ export function OfferChat({ className, headerAction, offer, onOfferChanged }: Of
       <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border px-4 py-3">
         <CardTitle className="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary">
           <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
-            <Image src="/favicon.png" alt="" width={16} height={16} className="size-4" />
+            <Sparkles size={14} aria-hidden="true" />
           </span>
           <span className="truncate">Solivio Assistant</span>
         </CardTitle>
@@ -423,7 +422,7 @@ export function OfferChat({ className, headerAction, offer, onOfferChanged }: Of
         {messages.length === 0 && (
           <div className="flex gap-3">
             <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
+              <Sparkles size={15} aria-hidden="true" className="text-primary" />
             </div>
             <div className="max-w-[82%] rounded-lg border border-border bg-muted/60 px-3.5 py-2.5 text-sm leading-relaxed">
               I can explain this offer, summarize the client request, review product matches, and suggest improvements.
@@ -445,13 +444,7 @@ export function OfferChat({ className, headerAction, offer, onOfferChanged }: Of
             >
               {!isUser && (
                 <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                  <Image
-                    src="/favicon.png"
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="size-[18px]"
-                  />
+                  <Sparkles size={15} aria-hidden="true" className="text-primary" />
                 </div>
               )}
               <div
@@ -476,7 +469,7 @@ export function OfferChat({ className, headerAction, offer, onOfferChanged }: Of
         {isLoading && messages[messages.length - 1]?.role === "user" && (
           <div className="flex justify-start gap-3">
             <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <Image src="/favicon.png" alt="" width={18} height={18} className="size-[18px]" />
+              <Sparkles size={15} aria-hidden="true" className="text-primary" />
             </div>
             <div className="rounded-lg border border-border bg-muted/60 px-3.5 py-2.5">
               <span className="flex h-5 items-center gap-1">

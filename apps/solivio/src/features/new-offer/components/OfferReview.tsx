@@ -172,7 +172,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
 
   return (
     <section className="min-h-0">
-      <div className="h-[calc(100svh-12.5rem)] min-h-[560px] xl:min-h-[640px]">
+      <div className="h-[calc(100svh-7rem)] min-h-[540px] xl:min-h-[600px]">
         {assistantOpen ? (
           <ResizablePanelGroup
             orientation={isWideLayout ? "horizontal" : "vertical"}

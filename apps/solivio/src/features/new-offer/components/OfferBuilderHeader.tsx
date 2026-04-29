@@ -30,10 +30,10 @@ export function OfferBuilderHeader({
   status,
 }: OfferBuilderHeaderProps) {
   return (
-    <header className="grid min-w-0 gap-3 rounded-lg border bg-card p-3 sm:p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+    <header className="grid min-w-0 gap-2 rounded-lg border bg-card p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
       <div className="grid min-w-0 gap-2">
-        <h1 className="text-xl leading-tight font-semibold">Offer for {customerName}</h1>
-        <div className="flex flex-wrap items-center gap-2">
+        <h1 className="text-lg leading-tight font-semibold">Offer for {customerName}</h1>
+        <div className="flex flex-wrap items-center gap-1.5">
           <Badge variant={status === "accepted" ? "default" : "outline"}>
             {status}
           </Badge>
@@ -44,15 +44,15 @@ export function OfferBuilderHeader({
 
       <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:justify-end">
         {assistantToggle}
-        <Button className="w-full sm:w-auto" onClick={onAddProduct}>
+        <Button className="w-full sm:w-auto" size="sm" onClick={onAddProduct}>
           <Plus size={16} aria-hidden="true" />
           Add product
         </Button>
-        <Button className="w-full sm:w-auto" variant="outline" onClick={onSave}>
+        <Button className="w-full sm:w-auto" size="sm" variant="outline" onClick={onSave}>
           <Save size={16} aria-hidden="true" />
           Save review
         </Button>
-        <Button className="w-full sm:w-auto" onClick={onAccept}>
+        <Button className="w-full sm:w-auto" size="sm" onClick={onAccept}>
           <Send size={16} aria-hidden="true" />
           Accept draft
         </Button>

@@ -95,8 +95,8 @@ export function OfferProductsReview({
   }, []);
 
   return (
-    <Card className="min-w-0">
-      <CardHeader>
+    <Card className="min-w-0" size="sm">
+      <CardHeader className="pb-1">
         <div className="flex items-center gap-2">
           <PackageSearch size={18} aria-hidden="true" className="text-primary" />
           <CardTitle>Products</CardTitle>
@@ -105,12 +105,12 @@ export function OfferProductsReview({
       </CardHeader>
       <CardContent className="grid min-w-0 gap-3">
         {unmatched && unmatched.length > 0 && (
-          <div className="mb-4 rounded-md bg-destructive/10 border border-destructive/20 p-4">
-            <div className="flex items-center gap-2 text-destructive mb-2 font-medium">
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
+            <div className="flex items-center gap-2 text-destructive mb-1.5 font-medium">
               <AlertTriangle size={16} aria-hidden="true" />
               <span>Unmatched Request Items</span>
             </div>
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="text-sm text-muted-foreground mb-2">
               The following items from the customer's request could not be mapped to any products in our catalog:
             </p>
             <ul className="list-disc pl-5 text-sm space-y-1">
@@ -176,16 +176,16 @@ export function OfferProductsReview({
                       updatedLineIds.has(line.productId) ? "bg-primary/10" : ""
                     )}
                   >
-                    <TableCell className="whitespace-normal py-4">
+                    <TableCell className="whitespace-normal py-3">
                       <div className="grid gap-2">
                         {line.requestItem && (
-                           <div className="flex items-start gap-2 mb-2 bg-muted/50 p-2 rounded-md">
+                           <div className="flex items-start gap-2 bg-muted/50 p-2 rounded-md">
                              <div className="text-xs font-medium text-muted-foreground whitespace-nowrap mt-0.5">Requested:</div>
                              <div className="text-sm italic">{line.requestItem}</div>
                            </div>
                         )}
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-base font-semibold">{line.name}</span>
+                          <span className="text-sm font-semibold">{line.name}</span>
                           {line.availability ? (
                             <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
                               {line.availability}
@@ -209,19 +209,19 @@ export function OfferProductsReview({
                           {line.manufacturer ? <span>Brand: {line.manufacturer}</span> : null}
                         </div>
                         
-                        <div className="mt-1 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                        <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
                           <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
-                          <p>{line.rationale}</p>
+                          <p className="line-clamp-2">{line.rationale}</p>
                         </div>
                         
                         {line.description ? (
-                          <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2 mt-1 border-t pt-2">
+                          <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2 border-t pt-2">
                             {line.description}
                           </p>
                         ) : null}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right align-top pt-5">
+                    <TableCell className="text-right align-top pt-4">
                       <Input
                         aria-label={`Quantity for ${line.name}`}
                         className="ml-auto w-20 text-right"
@@ -233,10 +233,10 @@ export function OfferProductsReview({
                         disabled={pendingProductIds.has(line.productId)}
                       />
                     </TableCell>
-                    <TableCell className="text-right align-top pt-5">
+                    <TableCell className="text-right align-top pt-4">
                       <span className="text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
                     </TableCell>
-                    <TableCell className="text-right text-base font-semibold align-top pt-5">
+                    <TableCell className="text-right text-sm font-semibold align-top pt-4">
                       {formatCurrency(line.quantity * line.unitPrice, line.currency)}
                     </TableCell>
                     <TableCell className="w-12 text-right align-top pt-4">

@@ -4,7 +4,7 @@ export const metadata = { title: "Demo offer" };
 
 export default function DemoOfferPage() {
   return (
-    <main className="mx-auto max-w-[960px] p-6 max-sm:p-4">
+    <main className="mx-auto max-w-[960px] p-4">
       <DemoOfferClient />
     </main>
   );

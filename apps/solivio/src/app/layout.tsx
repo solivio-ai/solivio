@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Solivio",
-    description: "Quotes shouldn't take hours. They should start from your data."
+    description: "AI-assisted offer drafts from customer requests and catalog data."
   }
 };
 
@@ -63,7 +63,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
-                  <header className="flex h-10 shrink-0 items-center border-b border-border px-3">
+                  <header className="flex h-9 shrink-0 items-center border-b border-border px-2">
                     <SidebarTrigger />
                   </header>
                   {children}

@@ -11,9 +11,9 @@ export default async function Home() {
   const recentOffers = await getRecentOffers(10);
 
   return (
-    <main className="mx-auto max-w-[1440px] p-6 max-sm:p-4 w-full">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border-dashed">
+    <main className="mx-auto w-full max-w-[1440px] p-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="border-dashed" size="sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Start a new offer</CardTitle>
             <CardDescription>
@@ -33,7 +33,7 @@ export default async function Home() {
         <QuickOfferSearch />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-5">
         <OffersList offers={recentOffers} hideHeader />
       </div>
     </main>

@@ -354,24 +354,24 @@ export function OffersList({ offers, hideHeader }: Props) {
   const visibleOffers = hideHeader ? normalizedOffers : filteredOffers;
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       {hideHeader ? (
-        <h2 className="text-xl font-semibold tracking-tight">{t("recent.title")}</h2>
+        <h2 className="text-lg font-semibold tracking-tight">{t("recent.title")}</h2>
       ) : (
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge variant="secondary">{t("badges.salesWorkspace")}</Badge>
+            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
               <Badge variant="outline">
                 {t("badges.offerCount", { count: metrics.total })}
               </Badge>
+              <Badge variant="secondary">{t("badges.salesWorkspace")}</Badge>
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               {t("subtitle")}
             </p>
           </div>
-          <Button asChild className="w-full sm:w-auto sm:self-start lg:self-auto">
+          <Button asChild size="sm" className="w-full sm:w-auto sm:self-start lg:self-auto">
             <Link href="/offers/new">
               <Plus size={16} aria-hidden="true" />
               {t("actions.newOffer")}
@@ -402,68 +402,66 @@ export function OffersList({ offers, hideHeader }: Props) {
         <>
           {!hideHeader ? (
             <>
-              <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm">
-                <span className="mr-1 font-medium">{t("queue")}</span>
-                <Badge variant="outline">
-                  <FileText size={12} aria-hidden="true" />
-                  {t("badges.offerCount", { count: metrics.total })}
-                </Badge>
-                <Badge variant="outline">
-                  <CircleDashed size={12} aria-hidden="true" />
-                  {t("badges.draftsToReview", { count: metrics.drafts })}
-                </Badge>
-                <Badge variant={metrics.needsAttention > 0 ? "destructive" : "secondary"}>
-                  <TriangleAlert size={12} aria-hidden="true" />
-                  {t("badges.needsAttention", { count: metrics.needsAttention })}
-                </Badge>
-                <Badge variant="outline">
-                  <PackageCheck size={12} aria-hidden="true" />
-                  {t("badges.matchedProducts", { count: metrics.matchedProducts })}
-                </Badge>
-                <Badge variant="outline">
-                  <CheckCircle2 size={12} aria-hidden="true" />
-                  {t("badges.accepted", { count: metrics.accepted })}
-                </Badge>
-              </div>
-
-              <div className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="relative w-full sm:max-w-md">
-                  <Search
-                    size={16}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder={t("search.placeholder")}
-                    className="pl-8"
-                    aria-label={t("search.label")}
-                  />
+              <div className="grid gap-3 rounded-lg border bg-card p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="mr-1 font-medium">{t("queue")}</span>
+                  <Badge variant="outline">
+                    <CircleDashed size={12} aria-hidden="true" />
+                    {t("badges.draftsToReview", { count: metrics.drafts })}
+                  </Badge>
+                  <Badge variant={metrics.needsAttention > 0 ? "destructive" : "secondary"}>
+                    <TriangleAlert size={12} aria-hidden="true" />
+                    {t("badges.needsAttention", { count: metrics.needsAttention })}
+                  </Badge>
+                  <Badge variant="outline">
+                    <PackageCheck size={12} aria-hidden="true" />
+                    {t("badges.matchedProducts", { count: metrics.matchedProducts })}
+                  </Badge>
+                  <Badge variant="outline">
+                    <CheckCircle2 size={12} aria-hidden="true" />
+                    {t("badges.accepted", { count: metrics.accepted })}
+                  </Badge>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <ListFilter
-                    size={16}
-                    aria-hidden="true"
-                    className="text-muted-foreground"
-                  />
-                  <Select
-                    value={statusFilter}
-                    onValueChange={(value) => setStatusFilter(value as StatusFilter)}
-                  >
-                    <SelectTrigger className="w-48" aria-label={t("filters.label")}>
-                      <span className="truncate">{getFilterLabel(statusFilter, t)}</span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t("filters.all")}</SelectItem>
-                      <SelectItem value="draft">{t("filters.draft")}</SelectItem>
-                      <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
-                      <SelectItem value="needs-attention">
-                        {t("filters.needsAttention")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <div className="relative w-full sm:w-80">
+                    <Search
+                      size={16}
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                      value={query}
+                      onChange={(event) => setQuery(event.target.value)}
+                      placeholder={t("search.placeholder")}
+                      className="pl-8"
+                      aria-label={t("search.label")}
+                    />
+                  </div>
+
+                  <div className="flex w-full items-center gap-2 sm:w-auto">
+                    <ListFilter
+                      size={16}
+                      aria-hidden="true"
+                      className="text-muted-foreground"
+                    />
+                    <Select
+                      value={statusFilter}
+                      onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+                    >
+                      <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
+                        <span className="truncate">{getFilterLabel(statusFilter, t)}</span>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t("filters.all")}</SelectItem>
+                        <SelectItem value="draft">{t("filters.draft")}</SelectItem>
+                        <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
+                        <SelectItem value="needs-attention">
+                          {t("filters.needsAttention")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </>
@@ -616,7 +614,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                           <StatusBadge status={offer.status} label={statusLabel} />
                         </div>
                       </CardHeader>
-                      <CardContent className="grid gap-4">
+                      <CardContent className="grid gap-3">
                         <p className="line-clamp-3 min-w-0 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
                           {getRequestPreview(offer, t)}
                         </p>

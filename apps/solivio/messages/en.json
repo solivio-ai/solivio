@@ -19,7 +19,7 @@
   },
   "NewOffer": {
     "page": {
-      "tagline": "Quotes shouldn’t take hours. They should start from your data.",
+      "title": "New offer",
       "badges": {
         "generatedDraft": "AI-generated draft",
         "review": "Review & adjust"

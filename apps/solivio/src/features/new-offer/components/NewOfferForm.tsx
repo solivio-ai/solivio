@@ -83,8 +83,8 @@ export function NewOfferForm() {
 
   return (
     <div className="grid gap-4">
-      <Card className="border-primary/30">
-        <CardHeader>
+      <Card className="border-primary/30" size="sm">
+        <CardHeader className="pb-1">
           <div className="flex items-center gap-2">
             <FileText size={18} aria-hidden="true" className="text-primary" />
             <CardTitle>{t("title")}</CardTitle>
@@ -92,7 +92,7 @@ export function NewOfferForm() {
           <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4" onSubmit={handleSubmit}>
+          <form className="grid gap-3.5" onSubmit={handleSubmit}>
             <div className="grid gap-2">
               <Label htmlFor="customer-name">{t("customerName.label")}</Label>
               <Input
@@ -111,15 +111,15 @@ export function NewOfferForm() {
                 id="client-request"
                 value={clientRequest}
                 onChange={(e) => setClientRequest(e.target.value)}
-                rows={8}
-                className="min-h-[180px] bg-background/60"
+                rows={6}
+                className="min-h-36 bg-background/60"
                 placeholder={t("clientRequest.placeholder")}
                 disabled={isSubmitting}
               />
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="submit" disabled={isSubmitting || !clientRequest.trim()}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <Button type="submit" size="sm" disabled={isSubmitting || !clientRequest.trim()}>
                 <Sparkles size={16} aria-hidden="true" />
                 {isSubmitting ? t("actions.preparing") : t("actions.generate")}
               </Button>
