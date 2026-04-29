@@ -9,7 +9,7 @@ on:
 
 concurrency:
   group: deploy-prod
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -74,7 +74,7 @@ jobs:
           printf '%s' "\$GHCR_TOKEN" | docker login ghcr.io -u "\$GHCR_USER" --password-stdin
           export IMAGE_TAG
           docker compose -f docker-compose.prod.yml pull --quiet
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans --quiet-pull
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
           docker image prune -f
           docker logout ghcr.io
           EOF
