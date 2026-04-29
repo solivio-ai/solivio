@@ -11,7 +11,7 @@ import {
   vector
 } from "drizzle-orm/pg-core";
 
-import type { Offer, OfferDebugFragment } from "@solivio/domain";
+import type { Offer, OfferDebugFragment, OfferRevisionSnapshot } from "@solivio/domain";
 
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -22,6 +22,8 @@ export const offers = pgTable("offers", {
   notes: text("notes").array().notNull().default([]),
   unmatched: text("unmatched").array().notNull().default([]),
   debugFragments: jsonb("debug_fragments").$type<OfferDebugFragment[]>().notNull().default([]),
+  createdBy: text("created_by").references(() => user.id),
+  updatedBy: text("updated_by").references(() => user.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -148,5 +150,22 @@ export const offerChatMessages = pgTable(
   (table) => [
     index("offer_chat_messages_thread_id_idx").on(table.threadId),
     index("offer_chat_messages_created_at_idx").on(table.createdAt)
+  ]
+);
+
+export const offerRevisions = pgTable(
+  "offer_revisions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    offerId: uuid("offer_id")
+      .notNull()
+      .references(() => offers.id, { onDelete: "cascade" }),
+    revisionNumber: integer("revision_number").notNull(),
+    snapshot: jsonb("snapshot").$type<OfferRevisionSnapshot>().notNull(),
+    createdBy: text("created_by").references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("offer_revisions_offer_id_idx").on(table.offerId),
   ]
 );

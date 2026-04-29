@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PackageSearch, Info, AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -177,47 +178,66 @@ export function OfferProductsReview({
                     )}
                   >
                     <TableCell className="whitespace-normal py-3">
-                      <div className="grid gap-2">
-                        {line.requestItem && (
-                           <div className="flex items-start gap-2 bg-muted/50 p-2 rounded-md">
-                             <div className="text-xs font-medium text-muted-foreground whitespace-nowrap mt-0.5">Requested:</div>
-                             <div className="text-sm italic">{line.requestItem}</div>
-                           </div>
-                        )}
-                        <div className="flex flex-wrap items-center gap-2">
+                      <div className="grid gap-1">
+                        {/* Always visible: name, SKU, requested item */}
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                           <span className="text-sm font-semibold">{line.name}</span>
-                          {line.availability ? (
-                            <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
-                              {line.availability}
-                            </Badge>
-                          ) : null}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"} className="ml-2">
-                                  {line.confidence}% Match
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {line.confidence >= 90 ? "High confidence match based on request" : line.confidence >= 70 ? "Good potential match" : "Low confidence match, please review carefully"}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          {line.sku ? <span className="text-xs text-muted-foreground">SKU: {line.sku}</span> : null}
                         </div>
-                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          {line.sku ? <span>SKU: {line.sku}</span> : null}
-                          {line.manufacturer ? <span>Brand: {line.manufacturer}</span> : null}
-                        </div>
-                        
-                        <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
-                          <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
-                          <p className="line-clamp-2">{line.rationale}</p>
-                        </div>
-                        
-                        {line.description ? (
-                          <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2 border-t pt-2">
-                            {line.description}
-                          </p>
+                        {line.requestItem ? (
+        <div className="mt-1 flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs">
+          <span className="font-medium text-green-600 shrink-0">Requested:</span>
+          <span className="italic text-foreground">{line.requestItem}</span>
+        </div>
+                        ) : null}
+
+                        {/* Collapsible details */}
+                        {(line.confidence || line.availability || line.manufacturer || line.rationale || line.description) ? (
+                          <Accordion type="single" collapsible>
+                            <AccordionItem value="details" className="border-none">
+                              <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
+                                Details
+                              </AccordionTrigger>
+                              <AccordionContent className="grid gap-2 pb-0">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="w-fit">
+                                        <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"}>
+                                          {line.confidence}% Match
+                                        </Badge>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {line.confidence >= 90 ? "High confidence match based on request" : line.confidence >= 70 ? "Good potential match" : "Low confidence match, please review carefully"}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                {line.availability ? (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-muted-foreground">Availability:</span>
+                                    <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
+                                      {line.availability}
+                                    </Badge>
+                                  </div>
+                                ) : null}
+                                {line.manufacturer ? (
+                                  <span className="text-xs text-muted-foreground">Brand: {line.manufacturer}</span>
+                                ) : null}
+                                {line.rationale ? (
+                                  <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                                    <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
+                                    <p>{line.rationale}</p>
+                                  </div>
+                                ) : null}
+                                {line.description ? (
+                                  <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">
+                                    {line.description}
+                                  </p>
+                                ) : null}
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
                         ) : null}
                       </div>
                     </TableCell>

@@ -1,36 +1,51 @@
 @import "@solivio/theme";
 
-@layer starlight.base {
-  :root,
-  :root[data-theme="dark"],
-  :root[data-theme="light"],
-  ::backdrop {
-    color-scheme: dark;
-    --sl-color-white: var(--solivio-color-foreground);
-    --sl-color-gray-1: var(--solivio-color-foreground);
-    --sl-color-gray-2: var(--solivio-color-subtle-foreground);
-    --sl-color-gray-3: var(--solivio-color-muted-foreground);
-    --sl-color-gray-4: var(--solivio-color-soft-border);
-    --sl-color-gray-5: var(--solivio-color-muted);
-    --sl-color-gray-6: var(--solivio-color-card);
-    --sl-color-gray-7: var(--solivio-color-card);
-    --sl-color-black: var(--solivio-color-background);
-    --sl-color-accent-low: var(--solivio-color-secondary);
-    --sl-color-accent: var(--solivio-color-primary);
-    --sl-color-accent-high: var(--solivio-color-primary);
-    --sl-color-text: var(--solivio-color-foreground);
-    --sl-color-text-accent: var(--solivio-color-primary);
-    --sl-color-text-invert: var(--solivio-color-primary-foreground);
-    --sl-color-bg: var(--solivio-color-background);
-    --sl-color-bg-nav: var(--solivio-color-card);
-    --sl-color-bg-sidebar: var(--solivio-color-card);
-    --sl-color-bg-inline-code: var(--solivio-color-muted);
-    --sl-color-bg-accent: var(--solivio-color-primary);
-    --sl-color-hairline-light: var(--solivio-color-muted);
-    --sl-color-hairline: var(--solivio-color-muted);
-    --sl-color-hairline-shade: var(--solivio-color-background);
-    --sl-color-backdrop-overlay: rgb(var(--solivio-color-background-rgb) / 72%);
-  }
+:root,
+:root[data-theme="dark"],
+:root[data-theme="light"],
+::backdrop {
+  --sl-color-white: var(--solivio-color-foreground);
+  --sl-color-gray-1: var(--solivio-color-foreground);
+  --sl-color-gray-2: var(--solivio-color-subtle-foreground);
+  --sl-color-gray-3: var(--solivio-color-muted-foreground);
+  --sl-color-gray-4: var(--solivio-color-soft-border);
+  --sl-color-gray-5: var(--solivio-color-border);
+  --sl-color-gray-6: var(--solivio-color-muted);
+  --sl-color-gray-7: var(--solivio-color-card);
+  --sl-color-black: var(--solivio-color-background);
+  --sl-color-accent-low: var(--solivio-color-accent);
+  --sl-color-accent: var(--solivio-color-primary);
+  --sl-color-accent-high: var(--solivio-color-secondary);
+  --sl-color-text: var(--solivio-color-foreground);
+  --sl-color-text-accent: var(--solivio-color-secondary);
+  --sl-color-text-invert: var(--solivio-color-primary-foreground);
+  --sl-color-bg: var(--solivio-color-background);
+  --sl-color-bg-nav: var(--solivio-color-sidebar);
+  --sl-color-bg-sidebar: var(--solivio-color-sidebar);
+  --sl-color-bg-inline-code: var(--solivio-color-muted);
+  --sl-color-bg-accent: var(--solivio-color-primary);
+  --sl-color-hairline-light: var(--solivio-color-border);
+  --sl-color-hairline: var(--solivio-color-border);
+  --sl-color-hairline-shade: var(--solivio-color-muted);
+  --sl-color-backdrop-overlay: rgb(var(--solivio-color-background-rgb) / 72%);
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --sl-color-text-accent: var(--solivio-color-primary);
+  --sl-color-hairline-shade: var(--solivio-color-background);
+}
+
+.sidebar [aria-current="page"],
+.sidebar [aria-current="page"]:hover,
+.sidebar [aria-current="page"]:focus {
+  background-color: var(--solivio-color-secondary);
+  color: var(--solivio-color-secondary-foreground);
 }
 
 @layer starlight.core {

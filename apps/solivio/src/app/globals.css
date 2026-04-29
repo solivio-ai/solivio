@@ -40,43 +40,7 @@
 }
 
 @layer base {
-  :root {
-    --background: var(--solivio-color-background-hsl);
-    --foreground: var(--solivio-color-foreground-hsl);
-    --card: var(--solivio-color-card-hsl);
-    --card-foreground: var(--solivio-color-foreground-hsl);
-    --popover: var(--solivio-color-card-hsl);
-    --popover-foreground: var(--solivio-color-foreground-hsl);
-    --primary: var(--solivio-color-primary-hsl);
-    --primary-foreground: var(--solivio-color-primary-foreground-hsl);
-    --secondary: var(--solivio-color-secondary-hsl);
-    --secondary-foreground: var(--solivio-color-secondary-foreground-hsl);
-    --muted: var(--solivio-color-muted-hsl);
-    --muted-foreground: var(--solivio-color-muted-foreground-hsl);
-    --accent: var(--solivio-color-secondary-hsl);
-    --accent-foreground: var(--solivio-color-secondary-foreground-hsl);
-    --destructive: var(--solivio-color-destructive-hsl);
-    --destructive-foreground: var(--solivio-color-destructive-foreground-hsl);
-    --border: var(--solivio-color-muted-hsl);
-    --input: var(--solivio-color-muted-hsl);
-    --ring: var(--solivio-color-primary-hsl);
-    --radius: var(--solivio-radius);
-    --chart-1: var(--solivio-color-primary-hsl);
-    --chart-2: var(--solivio-color-secondary-hsl);
-    --chart-3: var(--solivio-color-primary-hover-hsl);
-    --chart-4: var(--solivio-color-secondary-hover-hsl);
-    --chart-5: var(--solivio-color-muted-foreground-hsl);
-    --sidebar-background: var(--solivio-color-card-hsl);
-    --sidebar-foreground: var(--solivio-color-foreground-hsl);
-    --sidebar-primary: var(--solivio-color-primary-hsl);
-    --sidebar-primary-foreground: var(--solivio-color-primary-foreground-hsl);
-    --sidebar-accent: var(--solivio-color-muted-hsl);
-    --sidebar-accent-foreground: var(--solivio-color-foreground-hsl);
-    --sidebar-border: var(--solivio-color-muted-hsl);
-    --sidebar-ring: var(--solivio-color-primary-hsl);
-  }
-
-  /* Solivio is dark-first. .dark mirrors :root. */
+  :root,
   .dark {
     --background: var(--solivio-color-background-hsl);
     --foreground: var(--solivio-color-foreground-hsl);
@@ -90,25 +54,26 @@
     --secondary-foreground: var(--solivio-color-secondary-foreground-hsl);
     --muted: var(--solivio-color-muted-hsl);
     --muted-foreground: var(--solivio-color-muted-foreground-hsl);
-    --accent: var(--solivio-color-secondary-hsl);
-    --accent-foreground: var(--solivio-color-secondary-foreground-hsl);
+    --accent: var(--solivio-color-accent-hsl);
+    --accent-foreground: var(--solivio-color-accent-foreground-hsl);
     --destructive: var(--solivio-color-destructive-hsl);
     --destructive-foreground: var(--solivio-color-destructive-foreground-hsl);
-    --border: var(--solivio-color-muted-hsl);
-    --input: var(--solivio-color-muted-hsl);
+    --border: var(--solivio-color-border-hsl);
+    --input: var(--solivio-color-input-hsl);
     --ring: var(--solivio-color-primary-hsl);
+    --radius: var(--solivio-radius);
     --chart-1: var(--solivio-color-primary-hsl);
     --chart-2: var(--solivio-color-secondary-hsl);
     --chart-3: var(--solivio-color-primary-hover-hsl);
     --chart-4: var(--solivio-color-secondary-hover-hsl);
     --chart-5: var(--solivio-color-muted-foreground-hsl);
-    --sidebar-background: var(--solivio-color-card-hsl);
+    --sidebar-background: var(--solivio-color-sidebar-hsl);
     --sidebar-foreground: var(--solivio-color-foreground-hsl);
     --sidebar-primary: var(--solivio-color-primary-hsl);
     --sidebar-primary-foreground: var(--solivio-color-primary-foreground-hsl);
-    --sidebar-accent: var(--solivio-color-muted-hsl);
-    --sidebar-accent-foreground: var(--solivio-color-foreground-hsl);
-    --sidebar-border: var(--solivio-color-muted-hsl);
+    --sidebar-accent: var(--solivio-color-sidebar-accent-hsl);
+    --sidebar-accent-foreground: var(--solivio-color-sidebar-accent-foreground-hsl);
+    --sidebar-border: var(--solivio-color-border-hsl);
     --sidebar-ring: var(--solivio-color-primary-hsl);
   }
 

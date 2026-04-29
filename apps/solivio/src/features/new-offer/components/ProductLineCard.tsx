@@ -1,3 +1,4 @@
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,42 +21,26 @@ export function ProductLineCard({
   removeProduct,
   updateQuantity,
 }: ProductLineCardProps) {
+  const hasDetails = line.confidence || line.availability || line.manufacturer || line.rationale || line.description;
+
   return (
-    <div className={`grid gap-3 rounded-lg border p-3 ${line.confidence < 80 ? "bg-muted/30" : "bg-background/60"}`}>
-      <div className="grid gap-2">
-        {line.requestItem && (
-          <div className="flex flex-col gap-1 bg-muted/50 p-2 rounded-md">
-            <span className="text-xs font-medium text-muted-foreground">Requested:</span>
-            <span className="text-sm italic">{line.requestItem}</span>
-          </div>
-        )}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold">{line.name}</span>
-          {line.availability ? (
-            <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
-              {line.availability}
-            </Badge>
-          ) : null}
-          <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"}>
-            {line.confidence}% Match
-          </Badge>
-        </div>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          {line.sku ? <span>SKU: {line.sku}</span> : null}
-          {line.manufacturer ? <span>Brand: {line.manufacturer}</span> : null}
-        </div>
-        
-        <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
-          <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
-          <p className="line-clamp-2">{line.rationale}</p>
-        </div>
-        
-        {line.description ? (
-          <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2 border-t pt-2">{line.description}</p>
-        ) : null}
+    <div className={`rounded-lg border p-3 ${line.confidence < 80 ? "bg-muted/30" : "bg-background/60"}`}>
+      {/* Always visible: name + SKU */}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="font-semibold">{line.name}</span>
+        {line.sku ? <span className="text-xs text-muted-foreground">SKU: {line.sku}</span> : null}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* Highlighted requested item */}
+      {line.requestItem ? (
+        <div className="mt-1.5 flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs">
+          <span className="font-medium text-green-600 shrink-0">Requested:</span>
+          <span className="italic text-foreground">{line.requestItem}</span>
+        </div>
+      ) : null}
+
+      {/* Quantity / unit price / line total / remove */}
+      <div className="mt-3 grid grid-cols-[1fr_auto_auto_auto] items-end gap-3">
         <div className="grid gap-1.5">
           <label className="text-xs font-medium text-muted-foreground" htmlFor={`${line.productId}-quantity`}>
             Quantity
@@ -77,16 +62,15 @@ export function ProductLineCard({
             disabled={isPending}
           />
         </div>
-        <div className="grid gap-1.5">
+        <div className="grid gap-1.5 text-right">
           <span className="text-xs font-medium text-muted-foreground">Unit price</span>
           <span className="flex h-9 items-center justify-end text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-4 border-t pt-2">
-        <span className="text-sm text-muted-foreground">Line total</span>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
+        <div className="grid gap-1.5 text-right">
+          <span className="text-xs font-medium text-muted-foreground">Line total</span>
+          <span className="flex h-9 items-center justify-end font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
+        </div>
+        <div className="flex h-9 items-center">
           <Button
             type="button"
             size="icon"
@@ -104,6 +88,42 @@ export function ProductLineCard({
           </Button>
         </div>
       </div>
+
+      {/* Collapsible details */}
+      {hasDetails ? (
+        <Accordion type="single" collapsible className="mt-1">
+          <AccordionItem value="details" className="border-none">
+            <AccordionTrigger className="py-1.5 text-xs text-muted-foreground hover:no-underline">
+              Details
+            </AccordionTrigger>
+            <AccordionContent className="grid gap-2 pb-0">
+              <Badge variant={line.confidence >= 90 ? "default" : line.confidence >= 70 ? "secondary" : "outline"} className="w-fit">
+                {line.confidence}% Match
+              </Badge>
+              {line.availability ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Availability:</span>
+                  <Badge variant={line.availability === "limited" ? "secondary" : line.availability === "unavailable" ? "destructive" : "outline"}>
+                    {line.availability}
+                  </Badge>
+                </div>
+              ) : null}
+              {line.manufacturer ? (
+                <span className="text-xs text-muted-foreground">Brand: {line.manufacturer}</span>
+              ) : null}
+              {line.rationale ? (
+                <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                  <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
+                  <p>{line.rationale}</p>
+                </div>
+              ) : null}
+              {line.description ? (
+                <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">{line.description}</p>
+              ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      ) : null}
     </div>
   );
 }
