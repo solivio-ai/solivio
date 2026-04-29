@@ -19,8 +19,8 @@ type RouteContext = {
 };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId, offerProductId } = await context.params;
   const parsed = updateOfferLineItemRequestSchema.safeParse(
@@ -58,8 +58,8 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId, offerProductId } = await context.params;
   const removed = await removeOfferLineItem(offerProductId, offerId);

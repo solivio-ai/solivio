@@ -136,6 +136,10 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     }
   }
 
+  function handleOfferChange(offer: Offer) {
+    setState({ kind: "ready", offer });
+  }
+
   function renderAssistantToggle(compact = false) {
     const label = assistantOpen ? "Hide assistant" : "Show assistant";
     const Icon = assistantOpen ? PanelRightClose : PanelRightOpen;
@@ -178,7 +182,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               className="min-h-0"
             >
               <div className="h-full min-h-0 overflow-y-auto pr-1">
-                <OfferBuilder offer={state.offer} />
+                <OfferBuilder offer={state.offer} onOfferChange={handleOfferChange} />
               </div>
             </ResizablePanel>
 
@@ -211,6 +215,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           <div className="h-full min-h-0 overflow-y-auto pr-1">
             <OfferBuilder
               offer={state.offer}
+              onOfferChange={handleOfferChange}
               assistantToggle={renderAssistantToggle()}
             />
           </div>

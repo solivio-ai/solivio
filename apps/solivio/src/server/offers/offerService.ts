@@ -9,6 +9,7 @@ import {
   insertOffer,
   insertOfferProducts,
   insertOfferProduct,
+  updateOfferStatus,
   updateOfferProduct,
   deleteOfferProduct,
   type OfferRow
@@ -142,6 +143,15 @@ export async function getOffer(id: string): Promise<Offer | null> {
   const row = await findOfferById(id);
   if (!row) return null;
   return toOfferDomain(rowToCreatedOffer(row));
+}
+
+export async function updateOfferReviewStatus(
+  offerId: string,
+  status: Offer["status"]
+): Promise<Offer | null> {
+  const updated = await updateOfferStatus(offerId, status);
+  if (!updated) return null;
+  return getOffer(offerId);
 }
 
 export async function addProductToOffer(

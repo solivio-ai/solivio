@@ -1,6 +1,7 @@
 import type { Offer } from "@solivio/domain";
 
 export type DraftLine = {
+  offerProductId?: string;
   productId: string;
   sku?: string;
   name: string;

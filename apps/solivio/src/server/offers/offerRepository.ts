@@ -68,6 +68,19 @@ export async function insertOfferProduct(data: InsertOfferProductData, tx: Tx = 
   return item;
 }
 
+export async function updateOfferStatus(
+  offerId: string,
+  status: string,
+  tx: Tx = db
+) {
+  const [offer] = await tx
+    .update(offers)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(offers.id, offerId))
+    .returning({ id: offers.id });
+  return offer ?? null;
+}
+
 export async function updateOfferProduct(
   offerProductId: string,
   offerId: string,

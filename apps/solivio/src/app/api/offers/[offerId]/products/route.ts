@@ -15,8 +15,8 @@ type RouteContext = {
 };
 
 export async function POST(request: Request, context: RouteContext) {
-  const unauthorized = await requireAuth();
-  if (unauthorized) return unauthorized;
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
   const parsed = addOfferProductRequestSchema.safeParse(
