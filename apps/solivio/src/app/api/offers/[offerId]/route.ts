@@ -1,4 +1,3 @@
-import { demoOffer } from "@solivio/domain";
 import { NextResponse } from "next/server";
 
 import {
@@ -8,7 +7,7 @@ import {
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
-import { updateOfferDraft } from "@/server/offers/offerDraftStore";
+import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 
 export const runtime = "nodejs";
 
@@ -24,10 +23,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const { offerId } = await context.params;
 
-  const offer =
-    offerId === demoOffer.id
-      ? demoOffer
-      : await getOffer(offerId);
+  const offer = getOfferDraft(offerId) ?? await getOffer(offerId);
 
   if (!offer) {
     return NextResponse.json(
