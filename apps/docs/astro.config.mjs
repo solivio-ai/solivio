@@ -23,7 +23,8 @@ export default defineConfig({
       title: "Solivio",
       description: "Docs for the open-source AI system that transforms how B2B companies create offers.",
       logo: {
-        src: "./src/assets/solivio-logo.png",
+        light: "./src/assets/solivio-logo.png",
+        dark: "./src/assets/solivio-logo-dark.png",
         alt: "Solivio",
         replacesTitle: true
       },
@@ -31,10 +32,12 @@ export default defineConfig({
       customCss: ["./src/styles/solivio.css"],
       head: [
         { tag: "link", attrs: { rel: "apple-touch-icon", href: "/favicon.png" } },
-        { tag: "meta", attrs: { name: "theme-color", content: "#facc15" } }
+        { tag: "meta", attrs: { name: "theme-color", content: "#ffffff" } }
       ],
       components: {
-        Header: "./src/components/Header.astro"
+        Header: "./src/components/Header.astro",
+        ThemeProvider: "./src/components/ThemeProvider.astro",
+        ThemeSelect: "./src/components/ThemeSelect.astro"
       },
       plugins: [
         starlightOpenAPI([
@@ -62,10 +65,14 @@ export default defineConfig({
           items: [
             { label: "Overview", link: "/guides/" },
             { label: "Getting started", link: "/guides/getting-started/" },
-            { label: "Brand", link: "/guides/brand/" },
-            { label: "API contract", link: "/guides/api-contract/" },
             { label: "Deployment", link: "/guides/deployment/" },
-            { label: "Publishing", link: "/guides/publishing/" }
+            { label: "Feature walkthrough", link: "/guides/features/" }
+          ]
+        },
+        {
+          label: "Development",
+          items: [
+            { label: "API contract", link: "/dev/api-contract/" }
           ]
         },
         ...openAPISidebarGroups

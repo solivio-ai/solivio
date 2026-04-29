@@ -7,11 +7,11 @@ This repository is intended to stay easy to launch for contributors evaluating t
 ```bash
 yarn install
 cp apps/solivio/.env.example apps/solivio/.env.local   # set BETTER_AUTH_SECRET via `openssl rand -base64 32`
-yarn setup                                              # docker compose up db, wait for it, push schema
+yarn setup                                              # docker compose up db, wait for it, run migrations
 yarn dev                                                # Next.js on :3000
 ```
 
-`yarn setup` must run on a fresh checkout before `yarn dev`, and again whenever `apps/solivio/src/server/database/schema.ts` changes. `yarn db:push` re-syncs the schema without restarting the database.
+`yarn setup` must run on a fresh checkout before `yarn dev`, and again whenever new Drizzle migrations are added. `yarn db:migrate` applies pending migrations without restarting the database.
 
 ## Build
 
@@ -24,7 +24,7 @@ docker compose -f docker-compose.build.yml push          # pushes to GHCR (requi
 
 This produces two images:
 - `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime.
-- `ghcr.io/solivio-ai/solivio-db-push` — runs `drizzle-kit push --force` once per deploy to sync the schema.
+- `ghcr.io/solivio-ai/solivio-db-push` — runs `drizzle-kit migrate` once per deploy. The image name is retained for deployment compatibility.
 
 CI (`.github/workflows/build-image.yml`) runs the same commands on every push to `main` and tags both images with `:latest` and `:<commit-sha>`.
 
@@ -64,12 +64,14 @@ Solivio should help a sales team convert raw customer input into a reviewed offe
 
 Schema is defined in `apps/solivio/src/server/database/schema.ts` using Drizzle ORM. The Drizzle client singleton is exported from `apps/solivio/src/server/database/db.ts` and must only be imported inside server-only code (`apps/solivio/src/server/` or `apps/solivio/src/app/api/`).
 
-There is no committed migration history; schema is synced via `drizzle-kit push`:
+Schema is changed through committed Drizzle migrations:
 
 1. Edit `apps/solivio/src/server/database/schema.ts`.
-2. Run `yarn db:push` to apply.
+2. Run `yarn db:generate` to create a migration.
+3. Review the generated SQL under `apps/solivio/drizzle/`.
+4. Run `yarn db:migrate` to apply it locally.
 
-The same command runs in production via the `db-push` container on every deploy.
+The same migrations run in production via the `db-push` container on every deploy.
 
 As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
 
@@ -77,13 +79,13 @@ As the schema grows, split tables into `apps/solivio/src/server/database/schema/
 
 The app uses **shadcn/ui** components with **Tailwind CSS v4**.
 
-- Public copy should come from the README. Brand implementation notes live in `apps/docs/src/content/docs/guides/brand.md`.
+- Public copy should come from the README and user-facing guides.
 - Install new UI components with `yarn dlx shadcn@latest add <component>` from `apps/solivio`.
 - Import components from `@/components/ui/<component>`.
 - Use shadcn primitives (`Button`, `Card`, `Badge`, `Textarea`, etc.) for all UI — do not write custom CSS classes.
 - Before building any UI element, check if a matching shadcn component exists at https://ui.shadcn.com/docs/components and add it with `yarn dlx shadcn@latest add <component>` if so.
 - Style layout and spacing with Tailwind utility classes only; avoid adding rules to `globals.css`.
-- Theme tokens live in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is dark-first (Solivio brand: yellow primary `#FACC15`, teal secondary `#134E4A`). Do not add a light-mode variant unless explicitly requested.
+- Theme tokens live in `packages/theme/src/tokens.css` and are mapped in `apps/solivio/src/app/globals.css` inside `@layer base`. The theme is light-first (Solivio brand: yellow primary `#F6C215`, teal secondary `#134E4A`) with dark mode kept as an optional `.dark` / `data-theme="dark"` variant.
 - `globals.css` must stay clean: Tailwind imports, `@theme inline` token mapping, and the `@layer base` theme block only.
 
 ## Implementation Rules

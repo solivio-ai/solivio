@@ -108,32 +108,38 @@ Requirements:
 
 - Node.js `>=24.15.0`
 - Yarn `>=4.14.1`
-- Docker, only if you want the local database
+- Docker
 
-Start the app:
+Start from source:
 
 ```bash
 yarn install
+cp apps/solivio/.env.example apps/solivio/.env.local   # set BETTER_AUTH_SECRET
+yarn setup
 yarn dev
 ```
 
-The app uses mocked data by default.
+Open the app at `http://localhost:3000` and create the first user from the
+login screen.
 
-Start Postgres only when working on persistence, imports, search, or embeddings:
-
-```bash
-cp .env.example .env
-yarn db:up
-yarn db:migrate
-```
+People who only want to run the ready app image can use the Docker quick start
+in the docs. It uses the public GHCR images `ghcr.io/solivio-ai/solivio-app`
+and `ghcr.io/solivio-ai/solivio-db-push`.
 
 Useful commands:
 
 ```bash
 yarn typecheck
 yarn docs:dev
+yarn db:migrate
 yarn db:down
 ```
+
+Docs:
+
+- Getting started: `apps/docs/src/content/docs/guides/getting-started.md`
+- Deployment: `apps/docs/src/content/docs/guides/deployment.md`
+- Feature walkthrough: `apps/docs/src/content/docs/guides/features.md`
 
 ## 🤝 Contributing
 

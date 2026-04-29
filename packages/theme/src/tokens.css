@@ -1,7 +1,82 @@
-:root {
-  color-scheme: dark;
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
 
   --solivio-font-sans: Inter, Arial, Helvetica, sans-serif;
+
+  --solivio-color-background: #ffffff;
+  --solivio-color-background-hsl: 0 0% 100%;
+  --solivio-color-background-rgb: 255 255 255;
+
+  --solivio-color-foreground: #10201d;
+  --solivio-color-foreground-hsl: 168.8 33.3% 9.4%;
+
+  --solivio-color-card: #ffffff;
+  --solivio-color-card-hsl: 0 0% 100%;
+
+  --solivio-color-muted: #f3f7f6;
+  --solivio-color-muted-hsl: 165 20% 96.1%;
+
+  --solivio-color-muted-foreground: #566661;
+  --solivio-color-muted-foreground-hsl: 161.2 8.5% 36.9%;
+
+  --solivio-color-subtle-foreground: #324540;
+  --solivio-color-subtle-foreground-hsl: 164.2 16% 23.3%;
+
+  --solivio-color-soft-border: #c9d8d4;
+  --solivio-color-soft-border-hsl: 164 16.1% 81.8%;
+
+  --solivio-color-border: #d8e2df;
+  --solivio-color-border-hsl: 162 14.7% 86.7%;
+
+  --solivio-color-input: #d8e2df;
+  --solivio-color-input-hsl: 162 14.7% 86.7%;
+
+  --solivio-color-primary: #f6c215;
+  --solivio-color-primary-hsl: 46.1 92.6% 52.4%;
+
+  --solivio-color-primary-hover: #d8a80d;
+  --solivio-color-primary-hover-hsl: 45.8 88.6% 44.9%;
+
+  --solivio-color-primary-foreground: #10201d;
+  --solivio-color-primary-foreground-hsl: 168.8 33.3% 9.4%;
+
+  --solivio-color-secondary: #134e4a;
+  --solivio-color-secondary-hsl: 175.9 60.8% 19%;
+
+  --solivio-color-secondary-hover: #0f766e;
+  --solivio-color-secondary-hover-hsl: 175.3 77.4% 26.1%;
+
+  --solivio-color-secondary-foreground: #ffffff;
+  --solivio-color-secondary-foreground-hsl: 0 0% 100%;
+
+  --solivio-color-accent: #e6f4f2;
+  --solivio-color-accent-hsl: 171.4 38.9% 92.9%;
+
+  --solivio-color-accent-foreground: #123f3b;
+  --solivio-color-accent-foreground-hsl: 174.7 55.6% 15.9%;
+
+  --solivio-color-destructive: #dc2626;
+  --solivio-color-destructive-hsl: 0 72.2% 50.6%;
+
+  --solivio-color-destructive-foreground: #ffffff;
+  --solivio-color-destructive-foreground-hsl: 0 0% 100%;
+
+  --solivio-color-sidebar: #f7faf9;
+  --solivio-color-sidebar-hsl: 160 23.1% 97.5%;
+
+  --solivio-color-sidebar-accent: #e6f4f2;
+  --solivio-color-sidebar-accent-hsl: 171.4 38.9% 92.9%;
+
+  --solivio-color-sidebar-accent-foreground: #123f3b;
+  --solivio-color-sidebar-accent-foreground-hsl: 174.7 55.6% 15.9%;
+
+  --solivio-radius: 0.5rem;
+}
+
+.dark,
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
   --solivio-color-background: #020617;
   --solivio-color-background-hsl: 228.6 84% 4.9%;
@@ -20,13 +95,19 @@
   --solivio-color-muted-foreground-hsl: 240 5% 64.9%;
 
   --solivio-color-subtle-foreground: #d4d4d8;
-  --solivio-color-subtle-foreground-hsl: 240 5.2% 83.9%;
+  --solivio-color-subtle-foreground-hsl: 240 4.9% 83.9%;
 
   --solivio-color-soft-border: #64748b;
   --solivio-color-soft-border-hsl: 215.4 16.3% 46.9%;
 
-  --solivio-color-primary: #facc15;
-  --solivio-color-primary-hsl: 47.9 95.8% 53.1%;
+  --solivio-color-border: #1e293b;
+  --solivio-color-border-hsl: 217.2 32.6% 17.5%;
+
+  --solivio-color-input: #1e293b;
+  --solivio-color-input-hsl: 217.2 32.6% 17.5%;
+
+  --solivio-color-primary: #f6c215;
+  --solivio-color-primary-hsl: 46.1 92.6% 52.4%;
 
   --solivio-color-primary-hover: #eab308;
   --solivio-color-primary-hover-hsl: 45.4 93.4% 47.5%;
@@ -43,11 +124,24 @@
   --solivio-color-secondary-foreground: #fafafa;
   --solivio-color-secondary-foreground-hsl: 0 0% 98%;
 
+  --solivio-color-accent: #134e4a;
+  --solivio-color-accent-hsl: 175.9 60.8% 19%;
+
+  --solivio-color-accent-foreground: #fafafa;
+  --solivio-color-accent-foreground-hsl: 0 0% 98%;
+
   --solivio-color-destructive: #ef4444;
   --solivio-color-destructive-hsl: 0 84.2% 60.2%;
 
   --solivio-color-destructive-foreground: #fafafa;
   --solivio-color-destructive-foreground-hsl: 0 0% 98%;
 
-  --solivio-radius: 0.5rem;
+  --solivio-color-sidebar: #0f172a;
+  --solivio-color-sidebar-hsl: 222.2 47.4% 11.2%;
+
+  --solivio-color-sidebar-accent: #1e293b;
+  --solivio-color-sidebar-accent-hsl: 217.2 32.6% 17.5%;
+
+  --solivio-color-sidebar-accent-foreground: #fafafa;
+  --solivio-color-sidebar-accent-foreground-hsl: 0 0% 98%;
 }

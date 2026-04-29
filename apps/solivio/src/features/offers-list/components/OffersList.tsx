@@ -194,7 +194,8 @@ function getFilterLabel(filter: StatusFilter, t: T) {
 
 function formatNumber(value: number, locale: string) {
   return new Intl.NumberFormat(locale, {
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value);
 }
 

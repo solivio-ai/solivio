@@ -411,7 +411,7 @@ export function OfferChat({
             <span
               className={cn(
                 "size-2 rounded-full",
-                isLoading ? "bg-yellow-500" : "bg-green-600"
+                isLoading ? "bg-primary" : "bg-secondary"
               )}
             />
             {isLoading ? t("status.thinking") : t("status.ready")}

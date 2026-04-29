@@ -1,8 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LoginForm } from "./login-form";
+import { SolivioLogo } from "@/components/SolivioLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { authFlags } from "@/server/auth/auth";
 import { getCurrentSession } from "@/server/auth/session";
 
@@ -11,12 +12,11 @@ export default async function LoginPage() {
   if (session) redirect("/");
 
   return (
-    <main className="grid min-h-screen place-items-center bg-background px-4 py-6 text-foreground">
+    <main className="relative grid min-h-screen place-items-center bg-background px-4 py-6 text-foreground">
+      <ThemeToggle className="absolute right-4 top-4" />
       <section className="grid w-full max-w-sm gap-5" aria-label="Solivio sign in">
         <Link href="/" className="grid gap-2 no-underline" aria-label="Solivio home">
-          <Image
-            src="/solivio-logo.png"
-            alt="Solivio"
+          <SolivioLogo
             width={180}
             height={60}
             sizes="180px"

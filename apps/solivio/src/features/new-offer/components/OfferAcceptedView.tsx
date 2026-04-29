@@ -35,6 +35,13 @@ function downloadPdf(offerId: string) {
   window.open(`/api/offers/${offerId}/pdf?download=1`, "_blank", "noopener,noreferrer");
 }
 
+function formatMoney(value: number, currency: string) {
+  return new Intl.NumberFormat("pl-PL", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value) + ` ${currency}`;
+}
+
 export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewProps) {
   const lines = toDraftLines(offer);
   const currency = lines[0]?.currency ?? "PLN";
@@ -61,7 +68,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Subtotal</span>
               <span className="font-medium">
-                {Math.round(subtotal).toLocaleString("pl-PL")} {currency}
+                {formatMoney(subtotal, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -71,14 +78,14 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Discount value</span>
               <span className="font-medium">
-                {Math.round(subtotal * (discount / 100)).toLocaleString("pl-PL")} {currency}
+                {formatMoney(subtotal * (discount / 100), currency)}
               </span>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-center justify-between text-base font-semibold">
               <span>Total net</span>
               <span>
-                {Math.round(total).toLocaleString("pl-PL")} {currency}
+                {formatMoney(total, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -128,7 +135,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
           <Button
             asChild
             variant="outline"
-            className="justify-center border-zinc-300 bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+            className="justify-center"
           >
             <Link href="/offers">Go to offers list</Link>
           </Button>
