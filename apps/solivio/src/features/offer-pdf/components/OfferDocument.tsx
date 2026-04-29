@@ -11,12 +11,12 @@ import { calculateTotals } from "../lib/calculateTotals";
 import { formatDate, formatMoney, formatNumber, formatVatRate } from "../lib/formatters";
 import type { PdfOfferRequest } from "../lib/schema";
 
-// Use built-in PDF fonts so no system font files are required (cross-platform).
+// Load fonts from remote URLs for consistent PDF rendering.
 Font.register({
-  family: "Helvetica",
+  family: "Lato",
   fonts: [
-    { src: "Helvetica", fontWeight: 400 },
-    { src: "Helvetica-Bold", fontWeight: 700 },
+    { src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf", fontWeight: 400 },
+    { src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Bold.ttf", fontWeight: 700 },
   ],
 });
 Font.registerHyphenationCallback((word) => [word]);
@@ -30,7 +30,7 @@ const BLACK = "#111827";
 
 const s = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
+    fontFamily: "Lato",
     fontSize: 9,
     color: BLACK,
     paddingTop: 36,

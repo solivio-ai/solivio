@@ -129,6 +129,19 @@ export async function createOffer(
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
 
+  // Pre-validate product IDs outside transaction to build unmatched list.
+  const productIds = items.map((i) => i.productId);
+  const existingProducts = productIds.length > 0
+    ? await db.select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
+        .from(products)
+        .where(inArray(products.id, productIds))
+    : [];
+  const priceMap = new Map(existingProducts.map((p) => [p.id, p]));
+  const validItems = items.filter((item) => priceMap.has(item.productId));
+  const hallucinated = items
+    .filter((item) => !priceMap.has(item.productId))
+    .map((item) => item.requestItem);
+
   return db.transaction(async (tx) => {
     const offer = await insertOffer(
       {
@@ -136,31 +149,22 @@ export async function createOffer(
         clientRequest,
         status: "draft",
         notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched],
+        unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
         debugFragments: generated.debugFragments
       },
       tx
     );
 
-    // Step 2: Fetch current catalog prices for all items.
-    const productIds = items.map((i) => i.productId);
-    const catalogProducts = await tx
-      .select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
-      .from(products)
-      .where(inArray(products.id, productIds));
-
-    const priceMap = new Map(catalogProducts.map((p) => [p.id, p]));
-
     await insertOfferProducts(
-      items.map((item) => {
-        const catalog = priceMap.get(item.productId);
+      validItems.map((item) => {
+        const catalog = priceMap.get(item.productId)!;
         return {
           offerId: offer.id,
           productId: item.productId,
           requestItem: item.requestItem,
           quantity: item.quantity,
-          unitPriceNet: catalog?.priceNet ?? 0,
-          currency: catalog?.currency ?? "PLN",
+          unitPriceNet: catalog.priceNet ?? 0,
+          currency: catalog.currency ?? "PLN",
           rationale: item.rationale
         };
       }),
