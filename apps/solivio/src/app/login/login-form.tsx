@@ -65,7 +65,6 @@ export function LoginForm({
       }
 
       router.push("/");
-      router.refresh();
     });
   }
 
