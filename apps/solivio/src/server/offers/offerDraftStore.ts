@@ -24,6 +24,9 @@ export function updateOfferDraft(
   id: string,
   update: {
     status?: Offer["status"];
+    name?: string;
+    customerName?: string | null;
+    clientRequest?: string | null;
     items?: Array<{
       productId: string;
       quantity?: number;
@@ -68,6 +71,15 @@ export function updateOfferDraft(
   const nextOffer: Offer = {
     ...offer,
     status: update.status ?? offer.status,
+    name: update.name ?? offer.name,
+    customerName:
+      update.customerName !== undefined
+        ? (update.customerName ?? undefined)
+        : offer.customerName,
+    clientRequest:
+      update.clientRequest !== undefined
+        ? (update.clientRequest ?? undefined)
+        : offer.clientRequest,
     unmatched: update.unmatched ?? offer.unmatched,
     items: nextItems
   };

@@ -1,0 +1,84 @@
+name: Deploy to VPS
+
+on:
+  workflow_run:
+    workflows: ["Build & push image"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+      REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+      REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+      REMOTE_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName $REMOTE_HOST
+            User $REMOTE_USER
+            IdentityFile ~/.ssh/id_deploy
+            IdentitiesOnly yes
+            UserKnownHostsFile ~/.ssh/known_hosts
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Upload compose file
+        run: |
+          ssh deploy-target "mkdir -p $(printf '%q' "$REMOTE_PATH")"
+          scp docker-compose.prod.yml "deploy-target:$REMOTE_PATH/docker-compose.prod.yml"
+
+      - name: Pull images and restart stack
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ssh deploy-target bash -s <<EOF
+          set -euo pipefail
+          REMOTE_PATH=$(printf '%q' "$REMOTE_PATH")
+          IMAGE_TAG=$(printf '%q' "$IMAGE_TAG")
+          GHCR_USER=$(printf '%q' "$GHCR_USER")
+          GHCR_TOKEN=$(printf '%q' "$GHCR_TOKEN")
+          cd "\$REMOTE_PATH"
+          if [ ! -f .env ]; then
+            echo "Missing \$REMOTE_PATH/.env on host — refusing to deploy." >&2
+            exit 1
+          fi
+          printf '%s' "\$GHCR_TOKEN" | docker login ghcr.io -u "\$GHCR_USER" --password-stdin
+          export IMAGE_TAG
+          docker compose -f docker-compose.prod.yml pull --quiet
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans --quiet-pull
+          docker image prune -f
+          docker logout ghcr.io
+          EOF
+
+      - name: Wipe SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_deploy

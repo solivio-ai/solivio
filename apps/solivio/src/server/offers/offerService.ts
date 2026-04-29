@@ -8,16 +8,18 @@ import { products } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import type { OfferDebugFragment } from "@solivio/domain";
 import {
+  deleteOffer as deleteOfferRow,
   findOfferById,
   insertOffer,
   insertOfferProducts,
   insertOfferProduct,
-  updateOfferStatus,
+  updateOfferMeta as persistOfferMeta,
   updateOfferProduct,
   deleteOfferProduct,
   getRecentOffers,
   setOfferUpdatedBy,
-  type OfferRow
+  type OfferRow,
+  type UpdateOfferMetaInput
 } from "./offerRepository";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -99,6 +101,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
   return {
     id: offer.id,
     requestId: offer.id,
+    name: offer.name,
     customerName: offer.customerName ?? undefined,
     clientRequest: offer.clientRequest ?? undefined,
     status: offer.status as Offer["status"],
@@ -197,9 +200,25 @@ export async function updateOfferStatusAndFetch(
   status: Offer["status"],
   userId?: string | null
 ): Promise<Offer | null> {
-  const updated = await updateOfferStatus(offerId, status, userId ?? null);
+  return updateOfferMeta(offerId, { status });
+}
+
+export async function updateOfferMeta(
+  offerId: string,
+  data: UpdateOfferMetaInput
+): Promise<Offer | null> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return null;
+  const updated = await persistOfferMeta(offerId, data);
   if (!updated) return null;
   return getOffer(offerId);
+}
+
+export async function deleteOffer(offerId: string): Promise<boolean> {
+  const existing = await findOfferById(offerId);
+  if (!existing) return false;
+  await deleteOfferRow(offerId);
+  return true;
 }
 
 export async function addProductToOffer(

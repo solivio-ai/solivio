@@ -93,6 +93,23 @@
           "detail": "Draft"
         }
       }
+    },
+    "builder": {
+      "titleFallback": "Draft offer",
+      "status": {
+        "draft": "Draft",
+        "accepted": "Accepted"
+      },
+      "productCount": "{count, plural, one {# product} other {# products}}",
+      "generated": "Generated {date}",
+      "addProduct": "Add product",
+      "acceptDraft": "Accept draft",
+      "save": {
+        "saving": "Saving changes...",
+        "saved": "All changes saved.",
+        "error": "Could not save changes.",
+        "retry": "Retry"
+      }
     }
   },
   "OfferChat": {
@@ -126,16 +143,20 @@
   "OffersList": {
     "actions": {
       "clearFilters": "Clear filters",
-      "newDraft": "New draft",
+      "deleteCancel": "Cancel",
+      "deleteOffer": "Delete offer",
+      "deleteOfferConfirm": "Delete",
+      "deleteOfferConfirmDescription": "Delete \"{name}\"? This cannot be undone.",
+      "deleteOfferConfirmTitle": "Delete this offer?",
+      "editDetails": "Edit details",
+      "editDetailsTitle": "Edit offer details",
+      "fieldCustomerName": "Customer name",
+      "fieldName": "Offer name",
       "newOffer": "New offer",
       "offerActions": "Offer actions",
       "openActions": "Open actions for {name}",
-      "openReview": "Open review",
-      "reviewOffer": "Review offer"
-    },
-    "activity": {
-      "created": "Created {date}",
-      "updated": "Updated {relativeTime}"
+      "reviewOffer": "Review offer",
+      "saveChanges": "Save changes"
     },
     "attention": {
       "allMatched": "All matched",
@@ -180,9 +201,6 @@
     "recent": {
       "title": "Recent Offers"
     },
-    "relative": {
-      "justNow": "Just now"
-    },
     "search": {
       "label": "Search offers",
       "placeholder": "Search customer, request, or offer"
@@ -199,7 +217,6 @@
     },
     "table": {
       "actions": "Actions",
-      "activity": "Activity",
       "coverage": "Coverage",
       "customerRequest": "Customer request",
       "offer": "Offer",

@@ -236,6 +236,7 @@ export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
     requestId: z.string(),
+    name: z.string().optional(),
     customerName: z.string().nullable().optional(),
     clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema,
@@ -283,6 +284,9 @@ export const updateOfferItemRequestSchema = z
 
 export const updateOfferRequestSchema = z
   .object({
+    name: z.string().min(1).optional(),
+    customerName: z.string().nullable().optional(),
+    clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema.optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
     unmatched: z.array(z.string()).optional()

@@ -88,15 +88,33 @@ export async function insertOfferProduct(data: InsertOfferProductData, tx: Tx = 
   return item;
 }
 
-export async function updateOfferStatus(
+export type UpdateOfferMetaInput = {
+  status?: Offer["status"];
+  name?: string;
+  customerName?: string | null;
+  clientRequest?: string | null;
+};
+
+export async function updateOfferMeta(
   offerId: string,
-  status: Offer["status"],
-  updatedBy?: string | null,
+  data: UpdateOfferMetaInput,
   tx: Tx = db
 ) {
+  const patch: {
+    updatedAt: Date;
+    status?: Offer["status"];
+    name?: string;
+    customerName?: string | null;
+    clientRequest?: string | null;
+  } = { updatedAt: new Date() };
+  if (data.status !== undefined) patch.status = data.status;
+  if (data.name !== undefined) patch.name = data.name;
+  if (data.customerName !== undefined) patch.customerName = data.customerName;
+  if (data.clientRequest !== undefined) patch.clientRequest = data.clientRequest;
+
   const [offer] = await tx
     .update(offers)
-    .set({ status, updatedAt: new Date(), ...(updatedBy !== undefined ? { updatedBy } : {}) })
+    .set(patch)
     .where(eq(offers.id, offerId))
     .returning({ id: offers.id });
   return offer ?? null;
@@ -111,6 +129,14 @@ export async function setOfferUpdatedBy(
     .update(offers)
     .set({ updatedBy, updatedAt: new Date() })
     .where(eq(offers.id, offerId));
+}
+
+export async function deleteOffer(offerId: string, tx: Tx = db) {
+  const [row] = await tx
+    .delete(offers)
+    .where(eq(offers.id, offerId))
+    .returning({ id: offers.id });
+  return row ?? null;
 }
 
 export async function updateOfferProduct(
@@ -139,7 +165,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
   const rows = await tx
     .select({
       offerId: offers.id,
-      offerName: offers.name,
+      name: offers.name,
       customerName: offers.customerName,
       clientRequest: offers.clientRequest,
       status: offers.status,
@@ -176,7 +202,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
   const first = rows[0];
   return {
     id: first.offerId,
-    name: first.offerName,
+    name: first.name,
     customerName: first.customerName,
     clientRequest: first.clientRequest,
     status: first.status,

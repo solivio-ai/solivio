@@ -74,6 +74,7 @@ export type OfferDebugFragment = {
 export type Offer = {
   id: string;
   requestId: string;
+  name?: string;
   customerName?: string;
   clientRequest?: string;
   status: "draft" | "accepted";
@@ -214,6 +215,7 @@ export const demoRequest: CustomerRequest = {
 export const demoOffer: Offer = {
   id: "offer-demo-001",
   requestId: demoRequest.id,
+  name: "Demo photovoltaic offer",
   customerName: demoRequest.customerName,
   clientRequest: demoRequest.text,
   status: "draft",
