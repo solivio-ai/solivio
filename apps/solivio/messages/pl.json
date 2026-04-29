@@ -441,5 +441,12 @@
     "addProduct": "Dodaj produkt",
     "empty": "Brak dodanych produktów",
     "qty": "szt: {count}"
+  },
+  "Dashboard": {
+    "newOffer": {
+      "title": "Zacznij nową ofertę",
+      "description": "Generuj ustrukturyzowane szkice ofert na podstawie swoich danych.",
+      "button": "Nowa oferta"
+    }
   }
 }
