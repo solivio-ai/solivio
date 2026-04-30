@@ -52,7 +52,8 @@
       "username": "Username",
       "identifier": "Email or username",
       "email": "Email",
-      "password": "Password"
+      "password": "Password",
+      "rememberMe": "Remember me"
     },
     "actions": {
       "signIn": "Sign in",

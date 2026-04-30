@@ -29,6 +29,7 @@ export function LoginForm({
   const t = useTranslations("LoginForm");
   const [mode, setMode] = useState<Mode>(initialMode);
   const [error, setError] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   const hasSocial = googleEnabled || microsoftEnabled;
@@ -52,8 +53,8 @@ export function LoginForm({
         const isEmail = identifier.includes("@");
 
         const { error: signInError } = isEmail
-          ? await signIn.email({ email: identifier, password })
-          : await signIn.username({ username: identifier, password });
+          ? await signIn.email({ email: identifier, password, rememberMe })
+          : await signIn.username({ username: identifier, password, rememberMe });
 
         if (signInError) {
           setError(t("errors.invalidCredentials"));
@@ -128,6 +129,20 @@ export function LoginForm({
               disabled={isPending}
             />
           </Field>
+
+          {isSignIn && (
+            <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={rememberMe}
+                onChange={(event) => setRememberMe(event.target.checked)}
+                disabled={isPending}
+                className="size-4 rounded border-input accent-primary"
+              />
+              {t("fields.rememberMe")}
+            </label>
+          )}
 
           <Button type="submit" disabled={isPending}>{submitLabel}</Button>
         </form>
