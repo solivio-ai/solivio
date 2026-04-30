@@ -287,6 +287,12 @@
         "qty": "Qty",
         "unitPrice": "Unit price",
         "total": "Total",
+        "accepted": "Accepted",
+        "clientRequest": "Client request",
+        "unmatched": "Unmatched items",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "totalNet": "Total net",
         "close": "Close",
         "restoring": "Restoring...",
         "restoreAction": "Restore this revision"

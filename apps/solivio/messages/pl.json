@@ -287,6 +287,12 @@
         "qty": "Ilość",
         "unitPrice": "Cena jedn.",
         "total": "Suma",
+        "accepted": "Zaakceptowana",
+        "clientRequest": "Zapytanie klienta",
+        "unmatched": "Nieznalezione pozycje",
+        "subtotal": "Wartość netto",
+        "discount": "Rabat",
+        "totalNet": "Razem netto",
         "close": "Zamknij",
         "restoring": "Przywracanie...",
         "restoreAction": "Przywróć tę wersję"
