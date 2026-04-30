@@ -223,8 +223,6 @@ export function OfferBuilderHeader({
       </div>
 
       <div className="flex flex-wrap items-center justify-end gap-2">
-        {assistantToggle}
-
         <Button
           className="w-full sm:w-auto"
           size="sm"
@@ -382,6 +380,7 @@ export function OfferBuilderHeader({
             </AlertDialog>
           </>
         ) : null}
+        {assistantToggle}
       </div>
 
       {saveStatus && SaveStatusIcon ? (

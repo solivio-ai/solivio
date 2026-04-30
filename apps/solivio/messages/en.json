@@ -183,9 +183,7 @@
       "notFound": "Offer not available",
       "createAnother": "Create another draft",
       "assistant": {
-        "title": "Assistant",
-        "hide": "Hide assistant",
-        "show": "Show assistant"
+        "title": "Assistant"
       },
       "revisions": "Revisions",
       "resizeLabel": "Resize offer review and assistant panes",

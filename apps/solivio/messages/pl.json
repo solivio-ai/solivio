@@ -183,9 +183,7 @@
       "notFound": "Oferta niedostępna",
       "createAnother": "Utwórz kolejny szkic",
       "assistant": {
-        "title": "Asystent",
-        "hide": "Ukryj asystenta",
-        "show": "Pokaż asystenta"
+        "title": "Asystent"
       },
       "revisions": "Wersje",
       "resizeLabel": "Zmień rozmiar paneli przeglądu i asystenta",

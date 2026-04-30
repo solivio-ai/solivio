@@ -236,8 +236,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     }
   }
 
-  function renderAssistantToggle(compact = false) {
-    const label = assistantOpen ? tReview("assistant.hide") : tReview("assistant.show");
+  function renderAssistantToggle() {
+    const label = tReview("assistant.title");
     const Icon = assistantOpen ? PanelRightClose : PanelRightOpen;
 
     return (
@@ -246,15 +246,14 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           <Button
             type="button"
             variant={assistantOpen ? "ghost" : "outline"}
-            size={compact ? "icon-sm" : "default"}
+            size="icon-sm"
             onClick={() => setAssistantOpen((current) => !current)}
             aria-controls="offer-assistant-panel"
             aria-pressed={assistantOpen}
             aria-label={label}
-            className={cn("shrink-0", !compact && "w-full sm:w-auto")}
+            className="shrink-0"
           >
             <Icon size={16} aria-hidden="true" />
-            {!compact ? <span>{assistantOpen ? tReview("assistant.hide") : tReview("assistant.title")}</span> : null}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">{label}</TooltipContent>
@@ -295,7 +294,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           >
             {tReview("revisions")}
           </Button>
-          {renderAssistantToggle(true)}
+          {renderAssistantToggle()}
         </div>
         {rightPanel === "chat" ? (
           <OfferChat
