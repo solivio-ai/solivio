@@ -105,8 +105,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
-        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-1">
+          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:flex-none">
             <LanguageSwitcher className="px-0" />
           </div>
           <ThemeToggle className="ml-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8" />

@@ -5,6 +5,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
@@ -30,20 +31,26 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   }
 
   const nextTheme = theme === "dark" ? "light" : "dark";
+  const label = t("switchTo", { mode: t(`modes.${nextTheme}`) });
 
   return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon-sm"
-      className={cn(
-        "text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
-        className
-      )}
-      aria-label={t("switchTo", { mode: t(`modes.${nextTheme}`) })}
-      onClick={() => applyTheme(nextTheme)}
-    >
-      {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className={cn(
+            "text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
+            className
+          )}
+          aria-label={label}
+          onClick={() => applyTheme(nextTheme)}
+        >
+          {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
   );
 }
