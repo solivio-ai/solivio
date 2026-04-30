@@ -97,6 +97,7 @@ export function OfferBuilder({
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
+  const [unmatched, setUnmatched] = useState<string[]>(() => offer.unmatched ?? []);
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
   const [actionBarCompact, setActionBarCompact] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -105,6 +106,7 @@ export function OfferBuilder({
   useEffect(() => {
     setLines(toDraftLines(offer));
     setStatus(offer.status);
+    setUnmatched(offer.unmatched ?? []);
   }, [offer]);
 
   const currency = lines[0]?.currency ?? "PLN";
@@ -197,6 +199,7 @@ export function OfferBuilder({
   function syncOffer(nextOffer: Offer) {
     setStatus(nextOffer.status);
     setLines(toDraftLines(nextOffer));
+    setUnmatched(nextOffer.unmatched ?? []);
     onOfferChange?.(nextOffer);
   }
 
@@ -333,6 +336,25 @@ export function OfferBuilder({
     }
   }
 
+  async function removeUnmatched(item: string) {
+    const nextUnmatched = unmatched.filter((u) => u !== item);
+    setUnmatched(nextUnmatched);
+    markSaving();
+    try {
+      const response = await fetch(`/api/offers/${offer.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unmatched: nextUnmatched })
+      });
+      const nextOffer = await parseOfferResponse(response);
+      syncOffer(nextOffer);
+      markSaved();
+    } catch {
+      setUnmatched(unmatched);
+      markSaveError({ kind: "save-review" });
+    }
+  }
+
   async function saveReview(nextStatus = status, nextLines = lines) {
     markSaving();
 
@@ -342,7 +364,7 @@ export function OfferBuilder({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: nextStatus,
-          unmatched: offer.unmatched,
+          unmatched,
           items: toUpdateItems(nextLines)
         })
       });
@@ -421,10 +443,11 @@ export function OfferBuilder({
 
       <OfferProductsReview
         lines={lines}
-        unmatched={offer.unmatched ?? []}
+        unmatched={unmatched}
         commitQuantity={commitQuantity}
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
+        removeUnmatched={(item) => void removeUnmatched(item)}
         updateQuantity={updateQuantity}
         status={status}
       />

@@ -234,6 +234,8 @@
         "description": "Przejrzyj dopasowane produkty, ilości i ceny.",
         "unmatchedTitle": "Niedopasowane pozycje zapytania",
         "unmatchedDescription": "Następujące pozycje z zapytania klienta nie mogły zostać przypisane do żadnego produktu w katalogu:",
+        "removeUnmatched": "Oznacz jako rozwiązane",
+        "removeUnmatchedAria": "Usuń niedopasowaną pozycję: {item}",
         "empty": "Brak produktów w tej ofercie.",
         "match": "Dopasowanie produktu",
         "qty": "Ilość",
@@ -524,7 +526,7 @@
       },
       "action": {
         "configure": "Importuj katalog →",
-        "integrate": "Połącz źródło →"
+        "integrate": "Skontaktuj się →"
       },
       "items": {
         "productCatalog": {
