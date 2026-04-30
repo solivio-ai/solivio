@@ -485,6 +485,7 @@
     }
   },
   "DemoOffer": {
+    "pageTitle": "Demo offer",
     "title": "Offer products",
     "addProduct": "Add product",
     "empty": "No products added yet",

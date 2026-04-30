@@ -478,6 +478,7 @@
     }
   },
   "DemoOffer": {
+    "pageTitle": "Oferta demo",
     "title": "Produkty w ofercie",
     "addProduct": "Dodaj produkt",
     "empty": "Brak dodanych produktów",
