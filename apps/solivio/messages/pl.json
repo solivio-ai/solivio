@@ -508,7 +508,7 @@
       "button": "Nowa oferta"
     },
     "integrations": {
-      "title": "Integracje",
+      "title": "Źródła danych",
       "subtitle": "Połącz swoje systemy biznesowe, aby wzmocnić generowanie ofert.",
       "badge": {
         "active": "Aktywna",
@@ -516,7 +516,7 @@
       },
       "action": {
         "configure": "Importuj katalog →",
-        "integrate": "Integruj →"
+        "integrate": "Połącz źródło →"
       },
       "items": {
         "productCatalog": {
@@ -542,6 +542,26 @@
         "emailDelivery": {
           "name": "Wysyłka e-mail",
           "description": "Wysyłaj zaakceptowane oferty bezpośrednio do klientów jako markowe e-maile PDF."
+        },
+        "industryKnowledge": {
+          "name": "Wiedza branżowa",
+          "description": "Dodaj kontekst o branży, segmentach klientów i specyfice sprzedaży, aby lepiej interpretować zapytania."
+        },
+        "documentation": {
+          "name": "Dokumentacja",
+          "description": "Podłącz instrukcje, karty techniczne i materiały sprzedażowe jako źródło odpowiedzi oraz uzasadnień."
+        },
+        "historicalOrders": {
+          "name": "Historyczne zamówienia",
+          "description": "Wykorzystuj wcześniejsze zamówienia do rozpoznawania powtarzalnych potrzeb i preferowanych produktów."
+        },
+        "rfqBenchmarks": {
+          "name": "Benchmarki zapytań ofertowych",
+          "description": "Porównuj nowe zapytania z podobnymi przypadkami, aby szybciej dobrać zakres oferty i poziom cen."
+        },
+        "productReviews": {
+          "name": "Opinie produktowe",
+          "description": "Uwzględniaj opinie klientów i sygnały jakościowe przy rekomendacjach oraz zamiennikach produktów."
         }
       }
     }

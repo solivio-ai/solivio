@@ -488,7 +488,7 @@
       "button": "New offer"
     },
     "integrations": {
-      "title": "Integrations",
+      "title": "Data sources",
       "subtitle": "Connect your business systems to power offer generation.",
       "badge": {
         "active": "Active",
@@ -496,7 +496,7 @@
       },
       "action": {
         "configure": "Import catalog →",
-        "integrate": "Integrate →"
+        "integrate": "Connect source →"
       },
       "items": {
         "productCatalog": {
@@ -522,6 +522,26 @@
         "emailDelivery": {
           "name": "Email Delivery",
           "description": "Send accepted offers directly to customers as branded PDF emails."
+        },
+        "industryKnowledge": {
+          "name": "Industry Knowledge",
+          "description": "Add context about your industry, customer segments, and sales specifics to interpret requests more accurately."
+        },
+        "documentation": {
+          "name": "Documentation",
+          "description": "Connect manuals, technical sheets, and sales materials as sources for answers and rationale."
+        },
+        "historicalOrders": {
+          "name": "Historical Orders",
+          "description": "Use previous orders to recognize recurring needs and preferred products."
+        },
+        "rfqBenchmarks": {
+          "name": "RFQ Benchmarks",
+          "description": "Compare new requests with similar cases to choose offer scope and pricing levels faster."
+        },
+        "productReviews": {
+          "name": "Product Reviews",
+          "description": "Consider customer reviews and quality signals when recommending products and substitutes."
         }
       }
     }

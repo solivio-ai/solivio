@@ -94,6 +94,7 @@ type OfferRow = {
   unmatched?: string[];
   notes?: string[];
   totalPrice?: number;
+  currency?: string | null;
 };
 
 type NormalizedOfferRow = {
@@ -109,6 +110,7 @@ type NormalizedOfferRow = {
   unmatchedCount: number;
   notesCount: number;
   totalPrice: number | null;
+  currency: string;
 };
 
 type Props = {
@@ -166,6 +168,7 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
     unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
     totalPrice: typeof offer.totalPrice === "number" ? offer.totalPrice : null,
+    currency: offer.currency || "PLN",
   };
 }
 
@@ -192,8 +195,10 @@ function getFilterLabel(filter: StatusFilter, t: T) {
   return t(`filters.${filter}`);
 }
 
-function formatNumber(value: number, locale: string) {
+function formatCurrency(value: number, currency: string, locale: string) {
   return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
@@ -685,7 +690,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                           <TableCell className="text-right font-medium">
                             {offer.totalPrice === null
                               ? t("fallbacks.noValue")
-                              : formatNumber(offer.totalPrice, locale)}
+                              : formatCurrency(offer.totalPrice, offer.currency, locale)}
                           </TableCell>
                           <TableCell className="text-right">
                             <OfferActions offer={offer} />
@@ -744,7 +749,9 @@ export function OffersList({ offers, hideHeader }: Props) {
                             </Badge>
                           ) : null}
                           {offer.totalPrice !== null ? (
-                            <Badge variant="outline">{formatNumber(offer.totalPrice, locale)}</Badge>
+                            <Badge variant="outline">
+                              {formatCurrency(offer.totalPrice, offer.currency, locale)}
+                            </Badge>
                           ) : null}
                         </div>
 
