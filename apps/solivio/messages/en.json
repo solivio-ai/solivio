@@ -8,7 +8,8 @@
     },
     "aria": {
       "closeNavigation": "Close navigation menu",
-      "home": "Solivio home"
+      "home": "Solivio home",
+      "toggleNavigation": "Collapse or expand navigation"
     },
     "actions": {
       "newOffer": "New offer"

@@ -26,7 +26,7 @@ export function UserMenu() {
     <div className="flex items-center gap-1">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <SidebarMenuButton className="flex-1 gap-2">
+          <SidebarMenuButton className="h-9 flex-1 gap-2 rounded-lg !bg-transparent px-3 text-sidebar-foreground/70 hover:!bg-background/70 hover:text-sidebar-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
             <User size={16} aria-hidden="true" />
             <span>{session?.user.name || session?.user.email}</span>
           </SidebarMenuButton>

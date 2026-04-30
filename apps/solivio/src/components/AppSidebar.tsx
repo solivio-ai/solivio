@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, FileText, LayoutDashboard, Plus, X } from "lucide-react";
+import { FileText, LayoutDashboard, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -39,48 +40,61 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border px-3 py-3">
-        <div className="mb-2 flex items-center justify-end md:hidden">
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-4 group-data-[collapsible=icon]:px-2">
+        <div className="flex h-9 items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <Link
+            href="/"
+            onClick={closeMobileSidebar}
+            className="flex min-w-0 flex-1 items-center group-data-[collapsible=icon]:hidden"
+            aria-label={t("aria.home")}
+          >
+            <SolivioLogo
+              width={180}
+              height={60}
+              sizes="180px"
+              className="h-8 w-auto max-w-[158px] object-contain"
+              priority
+            />
+          </Link>
+          <SidebarTrigger
+            className="ml-auto hidden size-8 rounded-lg border border-sidebar-border bg-background/60 text-sidebar-foreground/60 shadow-sm hover:bg-background hover:text-sidebar-foreground md:flex group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:ml-0"
+            aria-label={t("aria.toggleNavigation")}
+          />
           <Button
             type="button"
             variant="ghost"
             size="icon-sm"
+            className="ml-auto md:hidden"
             onClick={closeMobileSidebar}
             aria-label={t("aria.closeNavigation")}
           >
             <X size={16} aria-hidden="true" />
           </Button>
         </div>
-        <Link
-          href="/"
-          onClick={closeMobileSidebar}
-          className="flex min-w-0 items-center"
-          aria-label={t("aria.home")}
-        >
-          <SolivioLogo
-            width={180}
-            height={60}
-            sizes="180px"
-            className="h-8 w-auto max-w-[160px] object-contain"
-            priority
-          />
-        </Link>
       </SidebarHeader>
 
-      <SidebarContent className="pt-1.5">
-        <SidebarMenu>
+      <SidebarContent className="px-3 py-3 group-data-[collapsible=icon]:px-2">
+        <SidebarMenu className="gap-1">
           {navItems.map(({ labelKey, href, icon: Icon }) => {
             const active = pathname === href;
+            const label = t(`nav.${labelKey}`);
+
             return (
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton
                   asChild
                   isActive={active}
+                  tooltip={label}
+                  className={cn(
+                    "h-10 rounded-lg !bg-transparent px-3 text-[15px] font-medium text-sidebar-foreground/65 hover:!bg-background/70 hover:text-sidebar-foreground",
+                    "data-[active=true]:!bg-background data-[active=true]:text-secondary data-[active=true]:shadow-[inset_3px_0_0_hsl(var(--primary)),0_1px_2px_hsl(var(--border)/0.7)] dark:data-[active=true]:!bg-primary/12 dark:data-[active=true]:text-sidebar-foreground",
+                    "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2"
+                  )}
                 >
-                  <Link href={href} onClick={closeMobileSidebar} className={cn("transition-colors hover:!bg-primary/80", active ? "!bg-primary/80" : "text-sidebar-foreground/70")}>
-                    <Icon size={16} aria-hidden="true"/>
-                    <span>{t(`nav.${labelKey}`)}</span>
+                  <Link href={href} onClick={closeMobileSidebar}>
+                    <Icon size={16} aria-hidden="true" />
+                    <span>{label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -89,12 +103,12 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="gap-2 border-t border-sidebar-border pb-3 pt-2">
-        <div className="flex items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <LanguageSwitcher />
+      <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+            <LanguageSwitcher className="px-0" />
           </div>
-          <ThemeToggle className="ml-auto" />
+          <ThemeToggle className="ml-auto group-data-[collapsible=icon]:ml-0" />
         </div>
         <UserMenu />
       </SidebarFooter>

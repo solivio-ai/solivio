@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -89,7 +89,6 @@ export function NewOfferForm() {
             <FileText size={18} aria-hidden="true" className="text-primary" />
             <CardTitle>{t("title")}</CardTitle>
           </div>
-          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-3.5" onSubmit={handleSubmit}>
@@ -131,7 +130,7 @@ export function NewOfferForm() {
 
       <Dialog open={generationState !== "idle"}>
         <DialogContent
-          className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto sm:max-w-3xl"
+          className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-primary/20 bg-background/95 shadow-2xl sm:max-w-3xl"
           showCloseButton={false}
         >
           <DialogHeader className="sr-only">
