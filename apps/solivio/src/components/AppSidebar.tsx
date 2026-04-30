@@ -58,7 +58,7 @@ export function AppSidebar() {
             />
           </Link>
           <SidebarTrigger
-            className="ml-auto hidden size-8 rounded-lg border border-sidebar-border bg-background/60 text-sidebar-foreground/60 shadow-sm hover:bg-background hover:text-sidebar-foreground md:flex group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:ml-0"
+            className="ml-auto hidden size-8 rounded-lg border border-sidebar-border bg-background/60 text-sidebar-foreground/60 shadow-sm hover:bg-background hover:text-sidebar-foreground focus-visible:border-sidebar-border focus-visible:ring-1 focus-visible:ring-sidebar-border/80 md:flex group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:ml-0"
             aria-label={t("aria.toggleNavigation")}
           />
           <Button
@@ -89,12 +89,13 @@ export function AppSidebar() {
                   className={cn(
                     "h-10 rounded-lg !bg-transparent px-3 text-[15px] font-medium text-sidebar-foreground/65 hover:!bg-background/70 hover:text-sidebar-foreground",
                     "data-[active=true]:!bg-background data-[active=true]:text-secondary data-[active=true]:shadow-[inset_3px_0_0_hsl(var(--primary)),0_1px_2px_hsl(var(--border)/0.7)] dark:data-[active=true]:!bg-primary/12 dark:data-[active=true]:text-sidebar-foreground",
-                    "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2"
+                    "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&>span]:hidden",
+                    "group-data-[collapsible=icon]:data-[active=true]:!bg-primary/15 group-data-[collapsible=icon]:data-[active=true]:text-sidebar-foreground group-data-[collapsible=icon]:data-[active=true]:shadow-none group-data-[collapsible=icon]:data-[active=true]:ring-1 group-data-[collapsible=icon]:data-[active=true]:ring-primary/45 dark:group-data-[collapsible=icon]:data-[active=true]:!bg-primary/20"
                   )}
                 >
                   <Link href={href} onClick={closeMobileSidebar}>
                     <Icon size={16} aria-hidden="true" />
-                    <span>{label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -104,11 +105,11 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
-        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-1">
+          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:flex-none">
             <LanguageSwitcher className="px-0" />
           </div>
-          <ThemeToggle className="ml-auto group-data-[collapsible=icon]:ml-0" />
+          <ThemeToggle className="ml-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8" />
         </div>
         <UserMenu />
       </SidebarFooter>

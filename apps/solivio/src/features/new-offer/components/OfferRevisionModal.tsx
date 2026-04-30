@@ -132,7 +132,7 @@ export function OfferRevisionModal({
                 {snapshot.clientRequest && (
                   <div className="grid gap-1 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("clientRequest")}</span>
-                    <p className="leading-relaxed text-muted-foreground">{snapshot.clientRequest}</p>
+                    <div className="leading-relaxed text-muted-foreground line-clamp-10 whitespace-pre-wrap overflow-auto">{snapshot.clientRequest}</div>
                   </div>
                 )}
                 {snapshot.notes.length > 0 && (

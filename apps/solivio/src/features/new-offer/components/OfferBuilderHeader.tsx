@@ -12,7 +12,6 @@ import {
   Pencil,
   Plus,
   RotateCcw,
-  Send,
   ShieldCheck,
   Trash2,
   User,
@@ -57,11 +56,21 @@ function isPersistedOfferId(id: string) {
 }
 
 type OfferBuilderHeaderProps = {
-  assistantToggle?: ReactNode;
-  formCustomerName: string;
-  formName: string;
   generatedDate: string;
   lineCount: number;
+  offerTitle: string;
+  status: Offer["status"];
+  createdBy?: { id: string; name: string } | null;
+  createdAt?: string;
+  updatedBy?: { id: string; name: string } | null;
+  updatedAt?: string;
+};
+
+type OfferBuilderActionBarProps = {
+  assistantToggle?: ReactNode;
+  compact: boolean;
+  formCustomerName: string;
+  formName: string;
   offerId: string;
   offerTitle: string;
   onAccept: () => void;
@@ -72,19 +81,64 @@ type OfferBuilderHeaderProps = {
   onRetrySave: () => void;
   saveState: SaveState;
   status: Offer["status"];
-  createdBy?: { id: string; name: string } | null;
-  createdAt?: string;
-  updatedBy?: { id: string; name: string } | null;
-  updatedAt?: string;
   onUpdate?: (offer: Offer) => void;
 };
 
 export function OfferBuilderHeader({
-  assistantToggle,
-  formCustomerName,
-  formName,
   generatedDate,
   lineCount,
+  offerTitle,
+  status,
+  createdBy,
+  createdAt,
+  updatedBy,
+  updatedAt,
+}: OfferBuilderHeaderProps) {
+  const t = useTranslations("NewOffer.builder");
+
+  const statusLabel = status === "accepted" ? t("status.accepted") : t("status.draft");
+
+  return (
+    <header className="grid min-w-0 gap-2 rounded-xl border border-foreground/15 bg-card p-3 shadow-sm">
+      <div className="grid min-w-0 gap-2">
+        <h1 className="truncate text-lg leading-tight font-semibold">{offerTitle}</h1>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge variant={status === "accepted" ? "default" : "outline"}>{statusLabel}</Badge>
+          <Badge variant="secondary">{t("productCount", { count: lineCount })}</Badge>
+          <Badge variant="outline">{t("generated", { date: generatedDate })}</Badge>
+        </div>
+        {(createdBy?.name || updatedBy?.name) && (
+          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+            {createdBy?.name && (
+              <span
+                className="flex items-center gap-1"
+                title={createdAt ? new Date(createdAt).toLocaleString("pl-PL") : undefined}
+              >
+                <User size={11} aria-hidden="true" />
+                {t("createdBy", { name: createdBy.name })}
+              </span>
+            )}
+            {updatedBy?.name && (
+              <span
+                className="flex items-center gap-1"
+                title={updatedAt ? new Date(updatedAt).toLocaleString("pl-PL") : undefined}
+              >
+                <User size={11} aria-hidden="true" />
+                {t("lastModifiedBy", { name: updatedBy.name })}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+export function OfferBuilderActionBar({
+  assistantToggle,
+  compact,
+  formCustomerName,
+  formName,
   offerId,
   offerTitle,
   onAccept,
@@ -95,12 +149,8 @@ export function OfferBuilderHeader({
   onRetrySave,
   saveState,
   status,
-  createdBy,
-  createdAt,
-  updatedBy,
-  updatedAt,
   onUpdate,
-}: OfferBuilderHeaderProps) {
+}: OfferBuilderActionBarProps) {
   const router = useRouter();
   const t = useTranslations("NewOffer.builder");
   const tSave = useTranslations("NewOffer.builder.save");
@@ -187,132 +237,134 @@ export function OfferBuilderHeader({
 
   const statusLabel = status === "accepted" ? t("status.accepted") : t("status.draft");
 
-
-
   return (
-    <header className="grid min-w-0 gap-2 rounded-xl border border-foreground/15 bg-card p-3 shadow-sm lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-      <div className="grid min-w-0 gap-2">
-        <h1 className="truncate text-lg leading-tight font-semibold">{offerTitle}</h1>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant={status === "accepted" ? "default" : "outline"}>{statusLabel}</Badge>
-          <Badge variant="secondary">{t("productCount", { count: lineCount })}</Badge>
-          <Badge variant="outline">{t("generated", { date: generatedDate })}</Badge>
+    <div className="sticky bottom-2 z-30 -mx-1 px-1 pt-1">
+      <div className="mx-auto flex w-full flex-col gap-2 rounded-xl border border-foreground/15 bg-card/95 p-2 m-0! ring-1 ring-background/80 backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <Badge variant={status === "accepted" ? "default" : "outline"} className="shrink-0">
+            {statusLabel}
+          </Badge>
+          {saveStatus && SaveStatusIcon ? (
+            <div className={`flex min-w-0 items-center gap-2 text-xs ${saveStatus.className}`}>
+              <SaveStatusIcon size={14} aria-hidden="true" className={saveStatus.iconClassName} />
+              <span className={compact ? "sr-only lg:not-sr-only" : "truncate"}>
+                {saveStatus.label}
+              </span>
+              {saveState === "error" ? (
+                <Button type="button" size="sm" variant="outline" onClick={onRetrySave}>
+                  <RotateCcw size={14} aria-hidden="true" />
+                  <span className={compact ? "sr-only sm:not-sr-only" : ""}>
+                    {tSave("retry")}
+                  </span>
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
-        {(createdBy?.name || updatedBy?.name) && (
-          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            {createdBy?.name && (
-              <span
-                className="flex items-center gap-1"
-                title={createdAt ? new Date(createdAt).toLocaleString("pl-PL") : undefined}
-              >
-                <User size={11} aria-hidden="true" />
-                {t("createdBy", { name: createdBy.name })}
-              </span>
-            )}
-            {updatedBy?.name && (
-              <span
-                className="flex items-center gap-1"
-                title={updatedAt ? new Date(updatedAt).toLocaleString("pl-PL") : undefined}
-              >
-                <User size={11} aria-hidden="true" />
-                {t("lastModifiedBy", { name: updatedBy.name })}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <Button
-          className="w-full sm:w-auto"
-          size="sm"
-          variant="outline"
-          onClick={onAddProduct}
-          disabled={status === "accepted"}
-        >
-          <Plus size={16} aria-hidden="true" />
-          {t("addProduct")}
-        </Button>
-        {status === "accepted" ? (
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
           <Button
-            className="w-full sm:w-auto"
+            className={compact ? "sm:w-auto" : "w-full sm:w-auto"}
             size="sm"
-            variant="secondary"
-            onClick={onReopen}
+            variant="outline"
+            onClick={onAddProduct}
+            disabled={status === "accepted"}
           >
-            <RotateCcw size={16} aria-hidden="true" />
-            {t("backToDraft")}
+            <Plus size={16} aria-hidden="true" />
+            <span className={compact ? "sr-only md:not-sr-only" : ""}>{t("addProduct")}</span>
           </Button>
-        ) : (
-          <>
+          {status === "accepted" ? (
             <Button
-              className="w-full sm:w-auto"
+              className={compact ? "sm:w-auto" : "w-full sm:w-auto"}
               size="sm"
-              variant="outline"
-              onClick={onAccept}
-              disabled={saveState === "saving"}
+              variant="secondary"
+              onClick={onReopen}
             >
-              <CheckCircle2 size={16} aria-hidden="true" />
-              {tReview("validation.acceptWithoutAi")}
+              <RotateCcw size={16} aria-hidden="true" />
+              <span className={compact ? "sr-only md:not-sr-only" : ""}>
+                {t("backToDraft")}
+              </span>
             </Button>
-            <Button
-              className="w-full sm:w-auto"
-              size="sm"
-              onClick={onValidate}
-              disabled={validateState === "loading"}
-            >
-              {validateState === "loading" ? (
-                <Loader2 size={16} aria-hidden="true" className="animate-spin" />
-              ) : (
-                <ShieldCheck size={16} aria-hidden="true" />
-              )}
-              {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
-            </Button>
-          </>
-        )}
-        {persisted ? (
-          <>
-            <DropdownMenu>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      className="shrink-0"
-                      aria-label={tList("actions.openActions", { name: offerTitle })}
-                    >
-                      <MoreHorizontal size={16} aria-hidden="true" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>{tList("actions.offerActions")}</TooltipContent>
-              </Tooltip>
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel>{tList("table.actions")}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={(event) => {
-                    event.preventDefault();
-                    onEditOpenChange(true);
-                  }}
-                >
-                  <Pencil size={14} aria-hidden="true" />
-                  {tList("actions.editDetails")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={(event) => {
-                    event.preventDefault();
-                    setDeleteOpen(true);
-                  }}
-                >
-                  <Trash2 size={14} aria-hidden="true" />
-                  {tList("actions.deleteOffer")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          ) : (
+            <>
+              <Button
+                className={compact ? "sm:w-auto" : "w-full sm:w-auto"}
+                size="sm"
+                variant="outline"
+                onClick={onAccept}
+                disabled={saveState === "saving"}
+              >
+                <CheckCircle2 size={16} aria-hidden="true" />
+                <span className={compact ? "hidden xl:inline" : ""}>
+                  {tReview("validation.acceptWithoutAi")}
+                </span>
+                <span className={compact ? "hidden sm:inline xl:hidden" : "hidden"}>
+                  {t("acceptDraft")}
+                </span>
+                <span className={compact ? "sr-only sm:hidden" : "hidden"}>
+                  {tReview("validation.acceptWithoutAi")}
+                </span>
+              </Button>
+              <Button
+                className={compact ? "sm:w-auto" : "w-full sm:w-auto"}
+                size="sm"
+                onClick={onValidate}
+                disabled={validateState === "loading"}
+              >
+                {validateState === "loading" ? (
+                  <Loader2 size={16} aria-hidden="true" className="animate-spin" />
+                ) : (
+                  <ShieldCheck size={16} aria-hidden="true" />
+                )}
+                <span className={compact ? "sr-only sm:not-sr-only" : ""}>
+                  {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
+                </span>
+              </Button>
+            </>
+          )}
+          {persisted ? (
+            <>
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        className="shrink-0"
+                        aria-label={tList("actions.openActions", { name: offerTitle })}
+                      >
+                        <MoreHorizontal size={16} aria-hidden="true" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>{tList("actions.offerActions")}</TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuLabel>{tList("table.actions")}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      onEditOpenChange(true);
+                    }}
+                  >
+                    <Pencil size={14} aria-hidden="true" />
+                    {tList("actions.editDetails")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      setDeleteOpen(true);
+                    }}
+                  >
+                    <Trash2 size={14} aria-hidden="true" />
+                    {tList("actions.deleteOffer")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
             <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
               <DialogContent className="sm:max-w-md">
@@ -382,19 +434,7 @@ export function OfferBuilderHeader({
         ) : null}
         {assistantToggle}
       </div>
-
-      {saveStatus && SaveStatusIcon ? (
-        <div className={`flex flex-wrap items-center gap-2 text-xs ${saveStatus.className} lg:col-span-2`}>
-          <SaveStatusIcon size={14} aria-hidden="true" className={saveStatus.iconClassName} />
-          <span>{saveStatus.label}</span>
-          {saveState === "error" ? (
-            <Button type="button" size="sm" variant="outline" onClick={onRetrySave}>
-              <RotateCcw size={14} aria-hidden="true" />
-              {tSave("retry")}
-            </Button>
-          ) : null}
-        </div>
-      ) : null}
-    </header>
+      </div>
+    </div>
   );
 }

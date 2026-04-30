@@ -12,8 +12,8 @@ export function AppPage({ children, className, fullHeight = false }: AppPageProp
   return (
     <section
       className={cn(
-        "w-full min-w-0 px-3 pb-3 pt-14 sm:px-4 sm:pt-4 lg:px-5",
-        fullHeight ? "grid h-[calc(100svh-2.25rem)] min-h-0" : "grid gap-4",
+        "w-full min-w-0 px-3 pt-14 sm:px-4 sm:pt-4 lg:px-5",
+        fullHeight ? "grid h-svh min-h-0 pb-0" : "grid gap-4 pb-3",
         className
       )}
     >

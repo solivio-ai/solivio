@@ -304,7 +304,7 @@
   "QuickSearch": {
     "card": {
       "title": "Znajdź produkt",
-      "description": "Przeszukaj katalog i utwórz szkic oferty z wybranych pozycji."
+      "description": "Draft oferty z wybranych produktów."
     },
     "searchPlaceholder": "Szukaj produktów...",
     "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
@@ -514,7 +514,7 @@
   "Dashboard": {
     "newOffer": {
       "title": "Dodaj nową ofertę",
-      "description": "Generuj ustrukturyzowane szkice ofert na podstawie swoich danych.",
+      "description": "Draft oferty z zapytania klienta.",
       "button": "Nowa oferta"
     },
     "integrations": {
