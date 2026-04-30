@@ -7,7 +7,10 @@ import { AppPage } from "@/components/AppPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "New offer" };
+export async function generateMetadata() {
+  const t = await getTranslations("NewOffer.page");
+  return { title: t("title") };
+}
 
 export default async function NewOfferPage() {
   const t = await getTranslations("NewOffer.page");

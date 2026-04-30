@@ -311,6 +311,24 @@
       "createDraft": "Create Draft Offer"
     }
   },
+  "ProductSearchDialog": {
+    "title": "Search products",
+    "description": "Search the catalog and adjust quantities before adding products to the offer.",
+    "placeholder": "Search products…",
+    "searchAria": "Search",
+    "searchIn": "Search in:",
+    "productsFound": "{count, plural, one {# product found} other {# products found}}",
+    "searching": "Searching...",
+    "noResults": "No results found.",
+    "decreaseQuantity": "Decrease quantity for {name}",
+    "increaseQuantity": "Increase quantity for {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Name",
+      "description": "Description",
+      "manufacturer": "Manufacturer"
+    }
+  },
   "OfferChat": {
     "title": "Solivio Assistant",
     "status": {

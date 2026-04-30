@@ -311,6 +311,24 @@
       "createDraft": "Utwórz szkic oferty"
     }
   },
+  "ProductSearchDialog": {
+    "title": "Szukaj produktów",
+    "description": "Przeszukaj katalog i dostosuj ilości przed dodaniem produktów do oferty.",
+    "placeholder": "Szukaj produktów…",
+    "searchAria": "Szukaj",
+    "searchIn": "Szukaj w:",
+    "productsFound": "{count, plural, one {# znaleziony produkt} few {# znalezione produkty} many {# znalezionych produktów} other {# znalezionych produktów}}",
+    "searching": "Szukam...",
+    "noResults": "Brak wyników.",
+    "decreaseQuantity": "Zmniejsz ilość dla {name}",
+    "increaseQuantity": "Zwiększ ilość dla {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Nazwa",
+      "description": "Opis",
+      "manufacturer": "Producent"
+    }
+  },
   "OfferChat": {
     "title": "Asystent Solivio",
     "status": {
