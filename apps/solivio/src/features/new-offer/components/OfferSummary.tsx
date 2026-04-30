@@ -47,7 +47,7 @@ export function OfferSummary({
         <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
             <h2 className="text-sm font-medium">{tSummary("customerRequest")}</h2>
-            <p className="text-sm leading-relaxed text-muted-foreground">{requestText}</p>
+            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{requestText}</div>
           </section>
 
           <section className="grid gap-3">

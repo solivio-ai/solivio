@@ -433,9 +433,18 @@
         "label": "Draft"
       }
     },
+    "sort": {
+      "label": "Sort",
+      "createdAtDesc": "Newest first",
+      "createdAtAsc": "Oldest first",
+      "valueDesc": "Value: high to low",
+      "valueAsc": "Value: low to high",
+      "customerAsc": "Customer (A–Z)"
+    },
     "table": {
       "actions": "Actions",
       "coverage": "Coverage",
+      "createdAt": "Order date",
       "customerRequest": "Customer request",
       "offer": "Offer",
       "status": "Status",

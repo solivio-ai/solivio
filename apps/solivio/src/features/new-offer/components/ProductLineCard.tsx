@@ -54,9 +54,10 @@ export function ProductLineCard({
             aria-label={tProducts("quantityAria", { name: line.name })}
             className="text-right"
             min={1}
+            max={10000}
             type="number"
             value={line.quantity}
-            onChange={(event) => updateQuantity(line.productId, Number(event.target.value))}
+            onChange={(event) => updateQuantity(line.productId, Math.min(10000, Math.max(1, Number(event.target.value) || 1)))}
             onBlur={() => commitQuantity(line.productId)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
