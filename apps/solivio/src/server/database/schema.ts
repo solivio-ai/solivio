@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   index,
   integer,
   jsonb,
@@ -13,22 +15,28 @@ import {
 
 import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
 
-export const offers = pgTable("offers", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull().default("Draft"),
-  customerName: text("customer_name"),
-  clientRequest: text("client_request"),
-  status: text("status").$type<Offer["status"]>().notNull().default("draft"),
-  notes: text("notes").array().notNull().default([]),
-  unmatched: text("unmatched").array().notNull().default([]),
-  discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
-    .notNull()
-    .default(0),
-  createdBy: text("created_by").references(() => user.id),
-  updatedBy: text("updated_by").references(() => user.id),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const offers = pgTable(
+  "offers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull().default("Draft"),
+    customerName: text("customer_name"),
+    clientRequest: text("client_request"),
+    status: text("status").$type<Offer["status"]>().notNull().default("draft"),
+    notes: text("notes").array().notNull().default([]),
+    unmatched: text("unmatched").array().notNull().default([]),
+    discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
+      .notNull()
+      .default(0),
+    createdBy: text("created_by").references(() => user.id),
+    updatedBy: text("updated_by").references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check("offers_discount_percent_range", sql`${table.discountPercent} BETWEEN 0 AND 100`)
+  ]
+);
 
 // ── Better Auth tables ─────────────────────────────────────────────────────────
 // Table names must match what Better Auth expects: "user", "session", "account", "verification"
