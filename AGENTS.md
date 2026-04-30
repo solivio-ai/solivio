@@ -18,19 +18,17 @@ yarn dev                                                # Next.js on :3000
 Production images are produced via `docker-compose.build.yml`:
 
 ```bash
-docker compose -f docker-compose.build.yml build         # builds both images
+docker compose -f docker-compose.build.yml build         # builds the app image
 docker compose -f docker-compose.build.yml push          # pushes to GHCR (requires `docker login ghcr.io`)
 ```
 
-This produces two images:
-- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime.
-- `ghcr.io/solivio-ai/solivio-db-push` — runs `drizzle-kit migrate` once per deploy. The image name is retained for deployment compatibility.
+This produces `ghcr.io/solivio-ai/solivio-app`, a Next.js standalone runtime that applies committed Drizzle migrations before starting the app.
 
-CI (`.github/workflows/build-image.yml`) runs the same commands on every push to `main` and tags both images with `:latest` and `:<commit-sha>`.
+CI (`.github/workflows/build-image.yml`) runs the same commands on every push to `main` and tags the image with `:latest` and `:<commit-sha>`.
 
 ## Deploy
 
-The demo runs on a single OVH VPS at `demo.solivio.ai` as four containers via `docker-compose.prod.yml`: Traefik (TLS), Postgres+pgvector, the one-shot `db-push`, and the app. Manual deploy:
+The demo runs on a single OVH VPS at `demo.solivio.ai` as three containers via `docker-compose.prod.yml`: Traefik (TLS), Postgres+pgvector, and the app. Manual deploy:
 
 ```bash
 ssh ovh
@@ -71,7 +69,7 @@ Schema is changed through committed Drizzle migrations:
 3. Review the generated SQL under `apps/solivio/drizzle/`.
 4. Run `yarn db:migrate` to apply it locally.
 
-The same migrations run in production via the `db-push` container on every deploy.
+The same migrations run in production when the app container starts.
 
 As the schema grows, split tables into `apps/solivio/src/server/database/schema/` (one file per domain entity) and re-export them from `schema.ts`. The `drizzle.config.ts` path stays unchanged.
 

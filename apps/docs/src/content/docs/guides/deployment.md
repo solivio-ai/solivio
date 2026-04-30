@@ -8,28 +8,23 @@ production compose stack starts:
 
 - **traefik** — reverse proxy, terminates TLS via Let's Encrypt.
 - **db** — Postgres 18 with pgvector.
-- **db-push** — one-shot migration job.
 - **app** — the Next.js app, pulled from GHCR.
 
-`db-push` runs before the app starts on every deploy. The service keeps its
-original name for compatibility with existing deployments, but the image now
-runs committed Drizzle migrations. The first migration creates the `vector`
-extension, so no separate database init image or bind mount is required.
+The app container applies committed database migrations before starting Next.js.
 
 ## Prerequisites
 
 - A Linux host with Docker Engine and Docker Compose v2 installed.
 - A DNS A record for your app host, for example `offers.example.com`, pointing to the host's public IP.
 - Inbound TCP 80 and 443 open in the host firewall.
-- Access to the public GHCR images `ghcr.io/solivio-ai/solivio-app` and `ghcr.io/solivio-ai/solivio-db-push`.
+- Access to the public GHCR image `ghcr.io/solivio-ai/solivio-app`.
 - An OpenAI API key for AI-backed catalog import, offer generation, semantic search, and offer chat.
 
 ## Image build
 
-Two images are built from the same `apps/solivio/Dockerfile`:
+The production image is built from `apps/solivio/Dockerfile`:
 
-- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime (`runner` stage).
-- `ghcr.io/solivio-ai/solivio-db-push` — `db-push` stage; ships with `drizzle-kit` and the committed migrations so it can migrate the database before the app starts.
+- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime that ships with the committed migrations and applies them on container startup.
 
 Both are declared in `docker-compose.build.yml`. CI (`.github/workflows/build-image.yml`) runs on every push to `main`:
 
@@ -38,7 +33,7 @@ IMAGE_TAG=$GITHUB_SHA docker compose -f docker-compose.build.yml build --pull
 docker compose -f docker-compose.build.yml push
 ```
 
-Each push tags `:latest` and `:<commit-sha>` for both images. Pin `IMAGE_TAG=<sha>` in `/opt/solivio/.env` for reproducible deploys; leave on `latest` to always run the newest build.
+Each push tags the image with `:latest` and `:<commit-sha>`. Pin `IMAGE_TAG=<sha>` in `/opt/solivio/.env` for reproducible deploys; leave on `latest` to always run the newest build.
 
 To build locally:
 
@@ -53,17 +48,17 @@ The production stack reads secrets and host-specific values from `.env` next to
 
 Important values:
 
-| Variable | Purpose |
-| --- | --- |
-| `APP_HOST` | Public hostname routed by Traefik. |
-| `LETSENCRYPT_EMAIL` | Email used for Let's Encrypt certificate registration. |
-| `IMAGE_TAG` | `latest` for fast iteration, or a commit SHA for reproducible deploys. |
-| `POSTGRES_PASSWORD` | Database password used by the `db` service. |
-| `DATABASE_URL` | Internal app database URL, usually `postgresql://solivio:<password>@db:5432/solivio`. |
-| `OPENAI_API_KEY` | Enables AI-backed product import, matching, offer generation, and chat. |
-| `OPENAI_MODEL` | Chat and offer-generation model. Defaults to `openai/gpt-5.4-mini`. |
-| `BETTER_AUTH_URL` | Public app URL, for example `https://offers.example.com`. |
-| `BETTER_AUTH_SECRET` | Auth signing secret. Generate with `openssl rand -base64 32`. |
+| Variable              | Purpose                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `APP_HOST`            | Public hostname routed by Traefik.                                                            |
+| `LETSENCRYPT_EMAIL`   | Email used for Let's Encrypt certificate registration.                                        |
+| `IMAGE_TAG`           | `latest` for fast iteration, or a commit SHA for reproducible deploys.                        |
+| `POSTGRES_PASSWORD`   | Database password used by the `db` service.                                                   |
+| `DATABASE_URL`        | Internal app database URL, usually `postgresql://solivio:<password>@db:5432/solivio`.         |
+| `OPENAI_API_KEY`      | Enables AI-backed product import, matching, offer generation, and chat.                       |
+| `OPENAI_MODEL`        | Chat and offer-generation model. Defaults to `openai/gpt-5.4-mini`.                           |
+| `BETTER_AUTH_URL`     | Public app URL, for example `https://offers.example.com`.                                     |
+| `BETTER_AUTH_SECRET`  | Auth signing secret. Generate with `openssl rand -base64 32`.                                 |
 | `AUTH_SIGNUP_ENABLED` | Keep `true` for first setup; set `false` after creating initial users in shared environments. |
 
 ## First-time host setup
@@ -97,9 +92,10 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-`up -d` starts the database, waits for it to become healthy, runs migrations via
-`db-push`, then starts Traefik and the app. Traefik requests the TLS certificate from
-Let's Encrypt the first time your configured host is reached.
+`up -d` starts the database, waits for it to become healthy, then starts the app.
+The app container runs pending migrations before Next.js starts. Traefik requests
+the TLS certificate from Let's Encrypt the first time your configured host is
+reached.
 
 Open `https://<APP_HOST>`, create the first account, then consider setting
 `AUTH_SIGNUP_ENABLED=false` and running `docker compose -f docker-compose.prod.yml up -d`
@@ -112,7 +108,7 @@ docker compose -f docker-compose.prod.yml ps
 curl -fsS https://<APP_HOST>/api/health
 ```
 
-`db-push` should be `Exited (0)`. All other services `running`.
+All services should be `running`.
 
 ## Rolling back
 
@@ -129,7 +125,7 @@ docker compose -f docker-compose.prod.yml up -d
 docker compose -f docker-compose.prod.yml logs -f app
 docker compose -f docker-compose.prod.yml logs -f traefik
 docker compose -f docker-compose.prod.yml exec db psql -U solivio -d solivio
-docker compose -f docker-compose.prod.yml run --rm db-push
+docker compose -f docker-compose.prod.yml restart app
 ```
 
 ## From local to live
@@ -152,8 +148,8 @@ yarn db:generate
 yarn db:migrate
 ```
 
-Review generated SQL before merging to `main`; the deployment job applies the
-same migrations before starting the app.
+Review generated SQL before merging to `main`; the app container applies the same
+migrations on startup after the updated image is pulled.
 
 ## Secrets
 

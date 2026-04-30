@@ -256,7 +256,8 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
       productCount: sql<number>`COUNT(${offerProducts.id})`.mapWith(Number),
-      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number)
+      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number),
+      currency: sql<string>`COALESCE(MIN(CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.currency}, ${offerProducts.currency}) ELSE ${offerProducts.currency} END), 'PLN')`
     })
     .from(offers)
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))

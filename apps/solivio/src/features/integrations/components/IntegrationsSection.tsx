@@ -2,9 +2,14 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import {
   BarChart3,
+  BookOpen,
   Factory,
+  FileText,
+  Gauge,
+  History,
   Mail,
   Package,
+  Star,
   type LucideIcon,
   Users,
   DollarSign,
@@ -29,10 +34,15 @@ type IntegrationConfig = {
 
 const INTEGRATIONS: IntegrationConfig[] = [
   { key: "productCatalog", icon: Package, active: true },
-  { key: "erp", icon: Factory, active: false },
-  { key: "crm", icon: Users, active: false },
+  { key: "historicalOrders", icon: History, active: false },
+  { key: "documentation", icon: FileText, active: false },
+  { key: "industryKnowledge", icon: BookOpen, active: false },
+  { key: "rfqBenchmarks", icon: Gauge, active: false },
   { key: "priceRules", icon: DollarSign, active: false },
+  { key: "crm", icon: Users, active: false },
+  { key: "erp", icon: Factory, active: false },
   { key: "inventory", icon: BarChart3, active: false },
+  { key: "productReviews", icon: Star, active: false },
   { key: "emailDelivery", icon: Mail, active: false },
 ];
 
@@ -52,8 +62,9 @@ export async function IntegrationsSection() {
             key={key}
             size="sm"
             className={cn(
-              active &&
-                "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20"
+              active
+                ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20"
+                : "border-dashed bg-muted/30 opacity-70 transition-opacity hover:opacity-100"
             )}
           >
             <CardHeader>
@@ -72,27 +83,28 @@ export async function IntegrationsSection() {
                     className={
                       active
                         ? "text-green-700 dark:text-green-400"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground/70"
                     }
                   />
                 </div>
                 <CardTitle>{t(`integrations.items.${key}.name`)}</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className={cn(!active && "text-muted-foreground/75")}>
                 {t(`integrations.items.${key}.description`)}
               </CardDescription>
             </CardHeader>
 
             <CardFooter className="justify-between">
-              <Badge
+              {active && <Badge
                 variant={active ? "outline" : "secondary"}
                 className={cn(
                   active &&
                     "border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900/40 dark:text-green-400"
                 )}
               >
-                {t(active ? "integrations.badge.active" : "integrations.badge.available")}
-              </Badge>
+                {t("integrations.badge.active")}
+              </Badge>}
+              {!active && (<div></div>)}
 
               {active && href ? (
                 <Link

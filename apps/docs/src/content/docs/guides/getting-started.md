@@ -8,10 +8,9 @@ Solivio can be started in two ways:
 - **Docker quick start** for people who want to run the ready app image locally.
 - **Source checkout** for contributors who want to change the app or docs.
 
-The published images are:
+The published image is:
 
-- `ghcr.io/solivio-ai/solivio-app:latest` — the Next.js runtime.
-- `ghcr.io/solivio-ai/solivio-db-push:latest` — a one-shot migration job.
+- `ghcr.io/solivio-ai/solivio-app:latest` — the Next.js runtime that applies committed migrations on startup.
 
 ## Requirements
 
@@ -22,9 +21,9 @@ The published images are:
 ## Docker quick start
 
 Use this path when you do not need the source code. It starts Postgres with
-pgvector, runs a one-shot migration job, and runs the app on port 3000. The
-first Drizzle migration creates the `vector` extension before applying the app
-schema.
+pgvector and runs the app on port 3000. The app container applies committed
+Drizzle migrations before Next.js starts. The first migration creates the
+`vector` extension before applying the app schema.
 
 Create a new directory and add this `compose.yml`:
 
@@ -45,23 +44,12 @@ services:
       timeout: 5s
       retries: 5
 
-  db-push:
-    image: ghcr.io/solivio-ai/solivio-db-push:latest
-    restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://solivio:solivio@db:5432/solivio
-
   app:
     image: ghcr.io/solivio-ai/solivio-app:latest
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
-      db-push:
-        condition: service_completed_successfully
     ports:
       - "${APP_PORT:-3000}:3000"
     environment:
@@ -110,7 +98,7 @@ Useful Docker commands:
 
 ```bash
 docker compose logs -f app
-docker compose run --rm db-push
+docker compose restart app
 docker compose down
 docker compose down -v   # removes local database data
 ```

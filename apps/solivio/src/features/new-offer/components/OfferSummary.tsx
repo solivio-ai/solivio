@@ -52,7 +52,7 @@ export function OfferSummary({
 
           <section className="grid gap-3">
             <h2 className="text-sm font-medium">{tSummary("reviewChecks")}</h2>
-            <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
               <ValidationRow
                 ok={unpricedLineCount === 0}
                 text={
@@ -69,7 +69,6 @@ export function OfferSummary({
                     : tSummary("checks.missingAvailability", { count: limitedLineCount })
                 }
               />
-              <ValidationRow ok={status === "accepted"} text={tSummary("checks.offerAccepted")} />
             </div>
           </section>
 
