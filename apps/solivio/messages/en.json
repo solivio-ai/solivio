@@ -302,7 +302,7 @@
   "QuickSearch": {
     "card": {
       "title": "Find a product",
-      "description": "Search the catalog and create a draft offer from selected items."
+      "description": "Draft an offer from selected products."
     },
     "searchPlaceholder": "Search products...",
     "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
@@ -492,7 +492,7 @@
   "Dashboard": {
     "newOffer": {
       "title": "Start a new offer",
-      "description": "Generate structured offer drafts based on your data.",
+      "description": "Draft an offer from a customer request.",
       "button": "New offer"
     },
     "integrations": {

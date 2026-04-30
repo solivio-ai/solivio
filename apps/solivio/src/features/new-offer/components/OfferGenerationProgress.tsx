@@ -14,8 +14,6 @@ import { useTranslations } from "next-intl";
 import { Progress } from "@/components/ui/progress";
 
 type OfferGenerationProgressProps = {
-  clientRequest: string;
-  customerName: string;
   elapsedMs: number;
   state: "running" | "complete";
 };
@@ -80,28 +78,13 @@ function getEstimatedProgress(elapsedMs: number, state: OfferGenerationProgressP
   return Math.min(94, Math.round(startProgress + (endProgress - startProgress) * ratio));
 }
 
-function getRequestPreview(clientRequest: string) {
-  const normalized = clientRequest.trim().replace(/\s+/g, " ");
-  if (normalized.length <= 180) {
-    return normalized;
-  }
-
-  return `${normalized.slice(0, 177)}...`;
-}
-
-export function OfferGenerationProgress({
-  clientRequest,
-  customerName,
-  elapsedMs,
-  state,
-}: OfferGenerationProgressProps) {
+export function OfferGenerationProgress({ elapsedMs, state }: OfferGenerationProgressProps) {
   const t = useTranslations("NewOffer.generation");
   const activeStepIndex = getActiveStepIndex(elapsedMs, state);
   const progress = getEstimatedProgress(elapsedMs, state);
   const activeStep = generationSteps[activeStepIndex];
   const activeStepTitle = t(`steps.${activeStep.key}.title`);
   const activeStepDescription = t(`steps.${activeStep.key}.description`);
-  const requestPreview = getRequestPreview(clientRequest);
 
   return (
     <section
@@ -151,7 +134,7 @@ export function OfferGenerationProgress({
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-[1fr_0.78fr]">
+      <div>
         <ol className="grid gap-2 rounded-lg border bg-background/50 p-3">
           {generationSteps.map((step, index) => {
             const isStepComplete = state === "complete" || index < activeStepIndex;
@@ -192,17 +175,6 @@ export function OfferGenerationProgress({
           })}
         </ol>
 
-        <div className="grid content-start gap-3">
-          <div className="grid gap-3 rounded-lg border bg-background/50 p-3">
-            <div className="grid gap-1">
-              <p className="text-sm font-medium">{t("requestSnapshot")}</p>
-              <p className="text-xs text-muted-foreground">
-                {customerName.trim() || t("unnamedCustomer")}
-              </p>
-            </div>
-            <p className="line-clamp-2 text-sm text-muted-foreground">{requestPreview}</p>
-          </div>
-        </div>
       </div>
     </section>
   );

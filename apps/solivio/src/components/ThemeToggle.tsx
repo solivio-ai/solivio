@@ -36,7 +36,10 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       type="button"
       variant="ghost"
       size="icon-sm"
-      className={cn("text-muted-foreground hover:text-foreground", className)}
+      className={cn(
+        "text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
+        className
+      )}
       aria-label={t("switchTo", { mode: t(`modes.${nextTheme}`) })}
       onClick={() => applyTheme(nextTheme)}
     >
