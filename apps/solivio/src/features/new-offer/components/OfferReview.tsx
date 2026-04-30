@@ -54,7 +54,7 @@ function useMediaQuery(query: string) {
 
 export function OfferReview({ offerId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
-  const [assistantOpen, setAssistantOpen] = useState(true);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [rightPanel, setRightPanel] = useState<"chat" | "revisions">("chat");
   const [revisions, setRevisions] = useState<OfferRevision[]>([]);
   const [revisionsLoading, setRevisionsLoading] = useState(false);
