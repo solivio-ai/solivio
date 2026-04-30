@@ -3,9 +3,13 @@ import "server-only";
 import { createTool } from "@voltagent/core";
 import { z } from "zod";
 
-import { searchProductsByPrompt } from "../products/productSearchService";
+import {
+  searchProductsByPrompt,
+  searchProductsBatch,
+} from "../products/productSearchService";
 import {
   addProductToOffer,
+  bulkAddProductsToOffer,
   removeOfferLineItem,
   toOfferDomain,
   updateOfferLineItem,
@@ -31,10 +35,10 @@ export const offerLineItemTools = [
     }),
     execute: async (input) => {
       const matches = await searchProductsByPrompt(input.query, {
-        limit: input.limit ?? 5,
-        minSimilarity: 0.6,
+        limit: input.limit ?? 10,
+        minSimilarity: 0.2,
       });
-      return { products: matches };
+      return { products: matches ?? [] };
     },
   }),
 
@@ -53,6 +57,10 @@ export const offerLineItemTools = [
         .string()
         .optional()
         .describe("The customer request item this product fulfills"),
+      rationale: z
+        .string()
+        .optional()
+        .describe("Brief explanation of why this product matches the requirement"),
     }),
     execute: async (input) => {
       const offer = await addProductToOffer(
@@ -60,6 +68,8 @@ export const offerLineItemTools = [
         input.productId,
         input.quantity,
         input.requestItem,
+        undefined,
+        input.rationale,
       );
       if (offer === null) return { error: "not_found" };
       if (offer === "duplicate") return { error: "duplicate_product" };
@@ -117,6 +127,75 @@ export const offerLineItemTools = [
       if (removed === "locked") return { error: "offer_locked" };
       if (!removed) return { error: "not_found" };
       return { success: true };
+    },
+  }),
+
+  createTool({
+    name: "propose_products_for_requirements",
+    description:
+      "Given a list of natural-language product requirements, search the catalog for the best match for each one and return a structured proposal. Use this when the user describes multiple product needs at once, or when the user asks you to suggest or propose products without immediately adding them. Present the results to the user before adding anything.",
+    parameters: z.object({
+      requirements: z
+        .array(z.string().min(1))
+        .min(1)
+        .describe("List of distinct product requirements to search for"),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(5)
+        .optional()
+        .describe("Maximum number of catalog matches to return per requirement (default 3, max 5)"),
+    }),
+    execute: async (input) => {
+      const resultsMap = await searchProductsBatch(input.requirements, {
+        limit: input.limit ?? 3,
+        minSimilarity: 0.6,
+      });
+
+      const proposals = input.requirements.map((requirement) => {
+        const matches = resultsMap.get(requirement) ?? [];
+        return { requirement, matches, hasMatch: matches.length > 0 };
+      });
+
+      const unmatchedRequirements = proposals
+        .filter((p) => !p.hasMatch)
+        .map((p) => p.requirement);
+
+      return { proposals, unmatchedRequirements };
+    },
+  }),
+
+  createTool({
+    name: "bulk_add_products",
+    description:
+      "Add multiple products to an offer in a single call. Use this after propose_products_for_requirements when the user confirms which products to add, or when adding several products at once from resolved product UUIDs.",
+    parameters: z.object({
+      offerId: z
+        .string()
+        .uuid()
+        .describe("ID of the offer to add the products to"),
+      items: z
+        .array(
+          z.object({
+            productId: z.string().uuid().describe("ID of the product to add"),
+            quantity: z.number().int().positive().describe("Number of units to add"),
+            requestItem: z
+              .string()
+              .optional()
+              .describe("The customer request item this product fulfills"),
+            rationale: z
+              .string()
+              .optional()
+              .describe("Brief explanation of why this product matches the requirement"),
+          }),
+        )
+        .min(1)
+        .describe("List of products to add"),
+    }),
+    execute: async (input) => {
+      const result = await bulkAddProductsToOffer(input.offerId, input.items);
+      return result;
     },
   }),
 ];

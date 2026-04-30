@@ -342,7 +342,7 @@
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty"
+      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",

@@ -480,7 +480,17 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
                     : "border border-foreground/15 bg-muted/60 text-foreground"
                 )}
               >
-                {isUser ? textContent : <MarkdownMessage>{textContent}</MarkdownMessage>}
+                {isUser ? (
+                  textContent
+                ) : textContent ? (
+                  <MarkdownMessage>{textContent}</MarkdownMessage>
+                ) : (
+                  <span className="flex h-5 items-center gap-1">
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0ms]" />
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:150ms]" />
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:300ms]" />
+                  </span>
+                )}
               </div>
               {isUser && (
                 <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
