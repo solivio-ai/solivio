@@ -239,7 +239,7 @@ export function OfferBuilderActionBar({
 
   return (
     <div className="sticky bottom-2 z-30 -mx-1 px-1 pt-1">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-2 rounded-xl border border-foreground/15 bg-card/95 p-2 shadow-xl ring-1 ring-background/80 backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex w-full flex-col gap-2 rounded-xl border border-foreground/15 bg-card/95 p-2 m-0! ring-1 ring-background/80 backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <Badge variant={status === "accepted" ? "default" : "outline"} className="shrink-0">
             {statusLabel}
