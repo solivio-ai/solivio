@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -33,7 +32,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <ThemeToggle />
       </div>
       <section className="grid w-full max-w-sm gap-5" aria-label={t("sectionLabel")}>
-        <Link href="/" className="grid gap-2 no-underline" aria-label={t("homeLabel")}>
+        <div className="grid gap-2">
           <SolivioLogo
             width={180}
             height={60}
@@ -44,7 +43,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <span className="text-sm leading-tight text-muted-foreground">
             {t("tagline")}
           </span>
-        </Link>
+        </div>
         <LoginForm
           initialMode={initialMode}
           credentialsEnabled={authFlags.credentialsEnabled}

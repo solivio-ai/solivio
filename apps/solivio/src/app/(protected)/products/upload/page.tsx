@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { ProductImport } from "../../../features/product-import";
+import { ProductImport } from "@/features/product-import";
 import { AppPage } from "@/components/AppPage";
 
 export async function generateMetadata() {

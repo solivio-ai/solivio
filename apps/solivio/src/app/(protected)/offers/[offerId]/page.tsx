@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
-import { OfferReview } from "../../../features/new-offer";
+import { OfferReview } from "@/features/new-offer";
 import { AppPage } from "@/components/AppPage";
 
 export async function generateMetadata() {

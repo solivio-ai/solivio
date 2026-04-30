@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-import { NewOfferForm } from "../../../features/new-offer";
+import { NewOfferForm } from "@/features/new-offer";
 import { AppPage } from "@/components/AppPage";
 import { Button } from "@/components/ui/button";
 
