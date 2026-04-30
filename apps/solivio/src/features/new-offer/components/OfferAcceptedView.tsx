@@ -8,6 +8,7 @@ import type { Offer } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DraftLine } from "./offer-builder-types";
+import { PdfViewer } from "./PdfViewer";
 
 type OfferAcceptedViewProps = {
   offer: Offer;
@@ -59,11 +60,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   return (
     <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
       <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
-        <iframe
-          title={tAccepted("pdfPreviewAria")}
-          src={`/api/offers/${offer.id}/pdf`}
-          className="h-[72vh] w-full"
-        />
+        <PdfViewer url={`/api/offers/${offer.id}/pdf`} title={tAccepted("pdfPreviewAria")} />
       </article>
 
       <aside className="grid min-h-0 content-start gap-3">

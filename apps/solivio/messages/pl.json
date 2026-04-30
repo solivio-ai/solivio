@@ -158,7 +158,7 @@
         "error": "Nie udało się zapisać zmian.",
         "retry": "Spróbuj ponownie"
       },
-      "createdBy": "Utworzone przez {name}",
+      "createdBy": "Utworzone przez: {name}",
       "lastModifiedBy": "Ostatnia zmiana: {name}",
       "backToDraft": "Przywróć do szkicu",
       "manuallyAdded": "Dodano ręcznie",
@@ -240,7 +240,7 @@
       },
       "acceptedView": {
         "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
-        "attribution": "Autorstwo",
+        "attribution": "Odpowiedzialne osoby",
         "downloadPdf": "Wygeneruj i pobierz PDF",
         "goToOffers": "Wróć do listy ofert"
       }
