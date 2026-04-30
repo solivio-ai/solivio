@@ -4,7 +4,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "../database/db";
-import type { Offer, OfferDebugFragment } from "@solivio/domain";
+import type { Offer } from "@solivio/domain";
 
 import { offerProducts, offers, products, user } from "../database/schema";
 
@@ -20,7 +20,6 @@ export type InsertOfferData = {
   status: Offer["status"];
   notes: string[];
   unmatched: string[];
-  debugFragments: OfferDebugFragment[];
   createdBy?: string | null;
   updatedBy?: string | null;
 };
@@ -46,7 +45,6 @@ export type OfferRow = {
   updatedAt: Date;
   notes: string[];
   unmatched: string[];
-  debugFragments: OfferDebugFragment[];
   createdBy: string | null;
   createdByName: string | null;
   updatedBy: string | null;
@@ -176,7 +174,6 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       updatedAt: offers.updatedAt,
       notes: offers.notes,
       unmatched: offers.unmatched,
-      debugFragments: offers.debugFragments,
       createdBy: offers.createdBy,
       createdByName: createdByUser.name,
       updatedBy: offers.updatedBy,
@@ -215,7 +212,6 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     updatedAt: first.updatedAt,
     notes: first.notes,
     unmatched: first.unmatched,
-    debugFragments: first.debugFragments,
     createdBy: first.createdBy,
     createdByName: first.createdByName,
     updatedBy: first.updatedBy,

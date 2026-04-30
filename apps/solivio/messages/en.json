@@ -189,9 +189,9 @@
         "checking": "Checking...",
         "acceptWithoutAi": "Accept without AI check",
         "checkWithAI": "Check with AI",
-        "messageHeader": "**AI Validation Results**",
+        "messageHeader": "AI Validation Results",
         "statusLabel": "Status",
-        "chatPrompt": "Can you suggest solutions for missing items or comment on these results?"
+        "chatPrompt": "Please help me resolve the problems listed above."
       },
       "summary": {
         "title": "Summary",

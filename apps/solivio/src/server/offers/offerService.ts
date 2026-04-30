@@ -6,7 +6,6 @@ import type { Offer } from "@solivio/domain";
 import { db } from "../database/db";
 import { products, offerProducts } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
-import type { OfferDebugFragment } from "@solivio/domain";
 import {
   deleteOffer as deleteOfferRow,
   findOfferById,
@@ -50,7 +49,6 @@ export type CreatedOffer = {
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
-  debugFragments: OfferDebugFragment[];
   createdBy: string | null;
   createdByName: string | null;
   updatedBy: string | null;
@@ -90,7 +88,6 @@ function rowToCreatedOffer(row: OfferRow): CreatedOffer {
     items: row.items,
     unmatched: row.unmatched,
     notes: row.notes,
-    debugFragments: row.debugFragments,
     createdBy: row.createdBy,
     createdByName: row.createdByName,
     updatedBy: row.updatedBy,
@@ -110,7 +107,6 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     updatedAt: offer.updatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
-    debugFragments: offer.debugFragments,
     createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
     updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
     items: offer.items.map((item) => ({
@@ -168,7 +164,6 @@ export async function createOffer(
         status: "draft",
         notes: generated.notes,
         unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
-        debugFragments: generated.debugFragments,
         createdBy: userId ?? null,
         updatedBy: userId ?? null,
       },

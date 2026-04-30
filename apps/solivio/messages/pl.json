@@ -154,7 +154,7 @@
         "error": "Nie udało się zapisać zmian.",
         "retry": "Spróbuj ponownie"
       },
-      "createdBy": "Utworzone przez {name}",
+      "createdBy": "Utworzone przez: {name}",
       "lastModifiedBy": "Ostatnia zmiana: {name}",
       "backToDraft": "Przywróć do szkicu",
       "manuallyAdded": "Dodano ręcznie",
@@ -189,9 +189,9 @@
         "checking": "Sprawdzam...",
         "acceptWithoutAi": "Zaakceptuj bez sprawdzenia AI",
         "checkWithAI": "Sprawdź z AI",
-        "messageHeader": "**Wyniki walidacji AI**",
+        "messageHeader": "Wyniki walidacji AI",
         "statusLabel": "Status",
-        "chatPrompt": "Czy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?"
+        "chatPrompt": "Pomóż mi rozwiązać problemy wymienione powyżej."
       },
       "summary": {
         "title": "Podsumowanie",
@@ -237,7 +237,7 @@
       },
       "acceptedView": {
         "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
-        "attribution": "Autorstwo",
+        "attribution": "Odpowiedzialne osoby",
         "downloadPdf": "Wygeneruj i pobierz PDF",
         "goToOffers": "Wróć do listy ofert"
       }

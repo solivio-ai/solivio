@@ -57,7 +57,6 @@ Rules:
 - Each product id may appear in "items" AT MOST ONCE across all fragments. If best match for fragment B is already used by fragment A, add fragment B's requestFragment to "unmatched".
 - Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match: terminal block" or "same SKU").
 - requestItem must be the exact phrase from the customer request (the requestFragment).
-- ALWAYS populate "debugFragments": one entry per extracted fragment with requestFragment, query, kind, quantity, and topMatches (up to 3 from the tool result). Include this even when no products are matched.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
@@ -77,31 +76,10 @@ const fragmentKindSchema = z
     "How the fragment was looked up: 'sku' for exact SKU match, 'description' for semantic search"
   );
 
-const debugFragmentSchema = z.object({
-  requestFragment: z.string().describe("Exact phrase from the customer request"),
-  query: z.string().describe("Search query (bilingual for description, raw SKU for sku)"),
-  kind: fragmentKindSchema,
-  quantity: z.number().int().positive(),
-  topMatches: z
-    .array(
-      z.object({
-        id: z.string(),
-        sku: z.string(),
-        name: z.string(),
-        similarity: z.number()
-      })
-    )
-    .max(3)
-    .describe("Top matches from search_products tool")
-});
-
 const agentOutputSchema = z.object({
   items: z.array(offerItemSchema),
   unmatched: z.array(z.string()).describe("requestFragment values with no catalog match"),
-  notes: z.array(z.string()).describe("Additional notes or substitutions"),
-  debugFragments: z
-    .array(debugFragmentSchema)
-    .describe("Debug info: every extracted fragment with its top 3 search matches")
+  notes: z.array(z.string()).describe("Additional notes or substitutions")
 });
 
 export type GeneratedOffer = z.infer<typeof agentOutputSchema>;
@@ -112,13 +90,6 @@ export async function generateOfferWithAgent(
   clientRequest: string,
   customerName?: string
 ): Promise<GeneratedOffer> {
-  // Deterministic capture of tool output — LLMs hallucinate numbers, so we
-  // override agent-reported topMatches with actual search results keyed by query.
-  const capturedMatches = new Map<
-    string,
-    { id: string; sku: string; name: string; similarity: number }[]
-  >();
-
   const searchProductsTool = createTool({
     name: "search_products",
     description:
@@ -178,9 +149,6 @@ export async function generateOfferWithAgent(
         return { query, kind, matches };
       });
 
-      for (const { query, matches } of results) {
-        capturedMatches.set(query, matches);
-      }
       return { results };
     }
   });
@@ -204,15 +172,5 @@ export async function generateOfferWithAgent(
     output: Output.object({ schema: agentOutputSchema })
   });
 
-  const parsed = agentOutputSchema.parse(result.output);
-
-  // Override agent-reported topMatches with deterministic tool-captured matches
-  // keyed by query. LLM otherwise hallucinates similarity scores.
-  // Tool returns top-10 for rerank, but debug panel shows only top-3.
-  const debugFragments = parsed.debugFragments.map((f) => ({
-    ...f,
-    topMatches: (capturedMatches.get(f.query) ?? []).slice(0, 3)
-  }));
-
-  return { ...parsed, debugFragments };
+  return agentOutputSchema.parse(result.output);
 }

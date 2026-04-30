@@ -23,7 +23,7 @@ export function OfferRevisionModal({
   onClose,
   onRestored,
 }: OfferRevisionModalProps) {
-   const tModal = useTranslations("NewOffer.revision.modal");
+  const tModal = useTranslations("NewOffer.revision.modal");
   const [fullRevision, setFullRevision] = useState<OfferRevision | null>(null);
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState(false);
@@ -75,7 +75,7 @@ export function OfferRevisionModal({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-semibold">
-                {tModal("title", { number: revision?.revisionNumber })}
+                {tModal("title", { number: revision?.revisionNumber ?? "" })}
                 {revision?.name && (
                   <span className="ml-2 font-normal text-muted-foreground italic">
                     — {revision.name}

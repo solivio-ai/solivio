@@ -49,7 +49,7 @@ agent:
 - extracts distinct requested product lines and quantities,
 - decides whether each fragment looks like an exact SKU or a product description,
 - searches the catalog with exact SKU lookup or semantic vector search,
-- creates a draft offer with matched items, unmatched request fragments, notes, and debug matches.
+- creates a draft offer with matched items, unmatched request fragments, and notes.
 
 Offer generation requires both a populated product catalog and `OPENAI_API_KEY`.
 
@@ -64,7 +64,6 @@ Use it to:
 - add products from catalog search,
 - remove incorrect products,
 - review unmatched request items,
-- inspect match debug information,
 - adjust the working discount,
 - check margin, pricing, availability, and acceptance status.
 

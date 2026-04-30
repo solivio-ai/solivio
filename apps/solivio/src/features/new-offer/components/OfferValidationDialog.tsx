@@ -31,21 +31,21 @@ type OfferValidationDialogProps = {
 
 function formatValidationMessage(result: ValidationResult, t: (key: string) => string): string {
   const verdictLabel = t(`verdict.${result.verdict}`);
-  const lines: string[] = [`${t("messageHeader")}\n\n**${t("statusLabel")}:** ${verdictLabel}\n\n${result.summary}`];
+  const lines: string[] = [t("messageHeader"), "", `${t("statusLabel")}: ${verdictLabel}`, "", result.summary];
 
   if (result.missingRequirements.length > 0) {
-    lines.push(`\n**${t("missingRequirements")}:**\n${result.missingRequirements.map((r) => `• ${r}`).join("\n")}`);
+    lines.push("", `${t("missingRequirements")}:`, ...result.missingRequirements);
   }
 
   if (result.issues.length > 0) {
-    lines.push(`\n**${t("notes")}:**\n${result.issues.map((i) => `• ${i}`).join("\n")}`);
+    lines.push("", `${t("notes")}:`, ...result.issues);
   }
 
-  if (result.missingRequirements.length > 0) {
-    lines.push(`\n${t("chatPrompt")}`);
+  if (result.missingRequirements.length > 0 || result.issues.length > 0) {
+    lines.push("", t("chatPrompt"));
   }
 
-  return lines.join("");
+  return lines.join("\n");
 }
 
 const getVerdictConfig = (t: (key: string) => string) => ({
@@ -134,30 +134,34 @@ export function OfferValidationDialog({
         </div>
 
         <DialogFooter className="flex-wrap gap-2 sm:flex-nowrap sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t("close")}
-          </Button>
-          {onSendToChat && (
+          <div className="flex gap-2 w-full">
+            <div className="grow">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              {t("close")}
+            </Button>
+            </div>
+            {onSendToChat && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onSendToChat(formatValidationMessage(result, t));
+                  onOpenChange(false);
+                }}
+              >
+                <MessageSquare size={16} aria-hidden="true" />
+                {t("transferToChat")}
+              </Button>
+            )}
             <Button
-              variant="outline"
               onClick={() => {
-                onSendToChat(formatValidationMessage(result, t));
                 onOpenChange(false);
+                onAccept();
               }}
             >
-              <MessageSquare size={16} aria-hidden="true" />
-              {t("transferToChat")}
+              <Send size={16} aria-hidden="true" />
+              {t("acceptOffer")}
             </Button>
-          )}
-          <Button
-            onClick={() => {
-              onOpenChange(false);
-              onAccept();
-            }}
-          >
-            <Send size={16} aria-hidden="true" />
-            {t("acceptOffer")}
-          </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
