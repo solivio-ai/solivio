@@ -69,7 +69,6 @@ export function OfferSummary({
                     : tSummary("checks.missingAvailability", { count: limitedLineCount })
                 }
               />
-              <ValidationRow ok={status === "accepted"} text={tSummary("checks.offerAccepted")} />
             </div>
           </section>
 

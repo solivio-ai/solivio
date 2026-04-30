@@ -95,15 +95,16 @@ export async function IntegrationsSection() {
             </CardHeader>
 
             <CardFooter className="justify-between">
-              <Badge
+              {active && <Badge
                 variant={active ? "outline" : "secondary"}
                 className={cn(
                   active &&
                     "border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900/40 dark:text-green-400"
                 )}
               >
-                {t(active ? "integrations.badge.active" : "integrations.badge.available")}
-              </Badge>
+                {t("integrations.badge.active")}
+              </Badge>}
+              {!active && (<div></div>)}
 
               {active && href ? (
                 <Link
