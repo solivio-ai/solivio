@@ -97,6 +97,7 @@ export type UpdateOfferMetaInput = {
   customerName?: string | null;
   clientRequest?: string | null;
   discountPercent?: number;
+  unmatched?: string[];
 };
 
 export async function updateOfferMeta(
@@ -111,12 +112,14 @@ export async function updateOfferMeta(
     customerName?: string | null;
     clientRequest?: string | null;
     discountPercent?: number;
+    unmatched?: string[];
   } = { updatedAt: new Date() };
   if (data.status !== undefined) patch.status = data.status;
   if (data.name !== undefined) patch.name = data.name;
   if (data.customerName !== undefined) patch.customerName = data.customerName;
   if (data.clientRequest !== undefined) patch.clientRequest = data.clientRequest;
   if (data.discountPercent !== undefined) patch.discountPercent = data.discountPercent;
+  if (data.unmatched !== undefined) patch.unmatched = data.unmatched;
 
   const [offer] = await tx
     .update(offers)
