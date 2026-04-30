@@ -11,7 +11,7 @@ import {
   vector
 } from "drizzle-orm/pg-core";
 
-import type { Offer, OfferDebugFragment, OfferRevisionSnapshot } from "@solivio/domain";
+import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
 
 export const offers = pgTable("offers", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -21,7 +21,6 @@ export const offers = pgTable("offers", {
   status: text("status").$type<Offer["status"]>().notNull().default("draft"),
   notes: text("notes").array().notNull().default([]),
   unmatched: text("unmatched").array().notNull().default([]),
-  debugFragments: jsonb("debug_fragments").$type<OfferDebugFragment[]>().notNull().default([]),
   createdBy: text("created_by").references(() => user.id),
   updatedBy: text("updated_by").references(() => user.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

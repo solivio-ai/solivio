@@ -1,11 +1,12 @@
 import { DemoOfferClient } from "./DemoOfferClient";
+import { AppPage } from "@/components/AppPage";
 
 export const metadata = { title: "Demo offer" };
 
 export default function DemoOfferPage() {
   return (
-    <main className="mx-auto max-w-[960px] p-4">
+    <AppPage>
       <DemoOfferClient />
-    </main>
+    </AppPage>
   );
 }

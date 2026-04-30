@@ -61,16 +61,6 @@ export type OfferItem = {
   };
 };
 
-export type OfferFragmentKind = "sku" | "description";
-
-export type OfferDebugFragment = {
-  requestFragment: string;
-  query: string;
-  kind: OfferFragmentKind;
-  quantity: number;
-  topMatches: { id: string; sku: string; name: string; similarity: number }[];
-};
-
 export type Offer = {
   id: string;
   requestId: string;
@@ -83,7 +73,6 @@ export type Offer = {
   items: OfferItem[];
   notes: string[];
   unmatched?: string[];
-  debugFragments?: OfferDebugFragment[];
   createdBy?: { id: string; name: string } | null;
   updatedBy?: { id: string; name: string } | null;
 };

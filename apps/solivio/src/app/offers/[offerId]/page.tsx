@@ -1,4 +1,5 @@
 import { OfferReview } from "../../../features/new-offer";
+import { AppPage } from "@/components/AppPage";
 
 export const metadata = { title: "Offer review" };
 
@@ -12,8 +13,8 @@ export default async function OfferReviewPage({ params }: OfferReviewPageProps) 
   const { offerId } = await params;
 
   return (
-    <main className="grid h-[calc(100svh-2.25rem)] min-h-0 w-full p-3 lg:p-4">
+    <AppPage fullHeight>
       <OfferReview offerId={offerId} />
-    </main>
+    </AppPage>
   );
 }
