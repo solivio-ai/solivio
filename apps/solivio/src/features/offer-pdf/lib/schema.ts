@@ -5,6 +5,7 @@ export const offerMetaSchema = z.object({
   issueDate: z.string().date(),
   validUntil: z.string().date(),
   currency: z.enum(["PLN", "EUR"]).default("PLN"),
+  discountPercent: z.number().min(0).max(100).default(0),
 });
 
 export const partySchema = z.object({

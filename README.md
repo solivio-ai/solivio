@@ -99,6 +99,7 @@ This repository contains the open-source groundwork for Solivio and is intention
 - 🔒 `apps/solivio/src/server` contains server-only integrations and services
 - 📦 `packages/domain` contains shared types, workflow constants, and mock fixtures
 - 🐘 `infra/postgres` contains local database bootstrap files
+- 🗃️ `apps/solivio/drizzle` contains the database migrations applied by `yarn db:migrate`
 
 Mocks are preferred until data models and integration boundaries are clear.
 

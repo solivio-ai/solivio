@@ -59,6 +59,7 @@ export async function saveRevision(
     status: row.status,
     notes: row.notes,
     unmatched: row.unmatched,
+    discountPercent: row.discountPercent,
     lineItems: row.items.map((item, index) => ({
       productId: item.productId,
       sku: item.productSku,
@@ -135,6 +136,7 @@ export async function restoreRevision(
         clientRequest: snapshot.clientRequest,
         notes: snapshot.notes,
         unmatched: snapshot.unmatched,
+        discountPercent: snapshot.discountPercent ?? 0,
         status: "draft",
         updatedBy: userId,
         updatedAt: new Date(),

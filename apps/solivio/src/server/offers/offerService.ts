@@ -49,6 +49,7 @@ export type CreatedOffer = {
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
+  discountPercent: number;
   createdBy: string | null;
   createdByName: string | null;
   updatedBy: string | null;
@@ -88,6 +89,7 @@ function rowToCreatedOffer(row: OfferRow): CreatedOffer {
     items: row.items,
     unmatched: row.unmatched,
     notes: row.notes,
+    discountPercent: row.discountPercent,
     createdBy: row.createdBy,
     createdByName: row.createdByName,
     updatedBy: row.updatedBy,
@@ -107,6 +109,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     updatedAt: offer.updatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
+    discountPercent: offer.discountPercent,
     createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
     updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
     items: offer.items.map((item) => ({

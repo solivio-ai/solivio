@@ -57,8 +57,9 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const lines = toDraftLines(offer);
   const currency = lines[0]?.currency ?? "PLN";
   const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
-  const discount = 0;
-  const total = subtotal;
+  const discountPercent = offer.discountPercent;
+  const discountAmount = subtotal * (discountPercent / 100);
+  const total = subtotal - discountAmount;
   const estimatedCost = subtotal * 0.7;
   const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
 
@@ -80,12 +81,12 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discount")}</span>
-              <span className="font-medium">{discount}%</span>
+              <span className="font-medium">{discountPercent}%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discountValue")}</span>
               <span className="font-medium">
-                {formatMoney(subtotal * (discount / 100), currency)}
+                {formatMoney(discountAmount, currency)}
               </span>
             </div>
             <div className="h-px bg-border" />

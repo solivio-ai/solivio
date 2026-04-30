@@ -17,16 +17,8 @@ import { getOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
-const DEFAULT_DISCOUNT_PERCENT = 3;
-
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
-}
-
-function parseDiscountPercent(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value)
-    ? Math.max(0, value)
-    : DEFAULT_DISCOUNT_PERCENT;
 }
 
 function getLatestUserMessage(messages: UIMessage[]) {
@@ -39,7 +31,8 @@ function getLatestUserMessage(messages: UIMessage[]) {
   return null;
 }
 
-function formatOfferContext(offer: Offer, discountPercent: number) {
+function formatOfferContext(offer: Offer) {
+  const discountPercent = offer.discountPercent;
   const currency = offer.items[0]?.currency ?? offer.items[0]?.product?.currency ?? "PLN";
   const subtotal = offer.items.reduce((sum, item) => {
     const unitPrice = item.unitPriceNet ?? item.product?.priceNet ?? 0;
@@ -127,7 +120,6 @@ export async function POST(request: Request) {
   const messages = body.messages as UIMessage[];
   const offerId = typeof body.offerId === "string" ? body.offerId : null;
   const threadId = typeof body.threadId === "string" ? body.threadId : null;
-  const discountPercent = parseDiscountPercent(body.discountPercent);
   const shouldPersist = Boolean(offerId && threadId);
 
   if ((offerId && !threadId) || (!offerId && threadId)) {
@@ -167,7 +159,7 @@ export async function POST(request: Request) {
       ? (await getOffer(offerId)) ?? getOfferDraft(offerId)
       : getOfferDraft(offerId)
     : null;
-  const offerContext = serverOffer ? formatOfferContext(serverOffer, discountPercent) : null;
+  const offerContext = serverOffer ? formatOfferContext(serverOffer) : null;
   const messagesWithContext = offerContext
     ? [
         {

@@ -55,13 +55,13 @@ function useMediaQuery(query: string) {
 export function OfferReview({ offerId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [assistantOpen, setAssistantOpen] = useState(true);
-  const [discountPercent, setDiscountPercent] = useState(3);
   const [rightPanel, setRightPanel] = useState<"chat" | "revisions">("chat");
   const [revisions, setRevisions] = useState<OfferRevision[]>([]);
   const [revisionsLoading, setRevisionsLoading] = useState(false);
   const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const chatRef = useRef<OfferChatHandle>(null);
+  const discountPersistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tReview = useTranslations("NewOffer.review");
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
@@ -135,6 +135,43 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       })
       .catch(() => {});
   }, [fetchOffer]);
+
+  useEffect(() => () => {
+    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+  }, []);
+
+  const handleDiscountPercentChange = useCallback((nextDiscountPercent: number) => {
+    setState((current) => {
+      if (current.kind !== "ready") return current;
+      return {
+        kind: "ready",
+        offer: { ...current.offer, discountPercent: nextDiscountPercent }
+      };
+    });
+
+    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+    discountPersistTimer.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/offers/${offerId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ discountPercent: nextDiscountPercent })
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        // Merge server-side fields (updatedAt, updatedBy, ...) but keep the latest user input.
+        setState((current) => {
+          if (current.kind !== "ready") return current;
+          return {
+            kind: "ready",
+            offer: { ...payload.offer, discountPercent: current.offer.discountPercent }
+          };
+        });
+      } catch {
+        // ignore — input remains optimistic; a later edit will retry the PATCH.
+      }
+    }, 500);
+  }, [offerId]);
 
   function handleSendToChat(message: string) {
     setAssistantOpen(true);
@@ -263,7 +300,6 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         {rightPanel === "chat" ? (
           <OfferChat
             ref={chatRef}
-            discountPercent={discountPercent}
             offer={state.offer}
             className="min-h-0 flex-1 rounded-none border-0 py-0 shadow-none ring-0"
             onOfferChanged={refreshOffer}
@@ -306,9 +342,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             >
               <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
                 <OfferBuilder
-                  discountPercent={discountPercent}
                   offer={state.offer}
-                  onDiscountPercentChange={setDiscountPercent}
+                  onDiscountPercentChange={handleDiscountPercentChange}
                   onOfferChange={handleOfferChange}
                   onAccepted={handleOfferChange}
                   onSendToChat={handleSendToChat}
@@ -340,9 +375,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         ) : (
           <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
             <OfferBuilder
-              discountPercent={discountPercent}
               offer={state.offer}
-              onDiscountPercentChange={setDiscountPercent}
+              onDiscountPercentChange={handleDiscountPercentChange}
               onOfferChange={handleOfferChange}
               onAccepted={handleOfferChange}
               onSendToChat={handleSendToChat}

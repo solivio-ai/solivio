@@ -16,10 +16,9 @@ import type { DraftLine, SaveState } from "./offer-builder-types";
 type OfferBuilderProps = {
   assistantToggle?: ReactNode;
   customerName?: string;
-  discountPercent?: number;
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
-  onDiscountPercentChange?: (discountPercent: number) => void;
+  onDiscountPercentChange: (discountPercent: number) => void;
   onAccepted?: (offer: Offer) => void;
   onSendToChat?: (message: string) => void;
 };
@@ -77,7 +76,6 @@ async function parseOfferResponse(response: Response): Promise<Offer> {
 export function OfferBuilder({
   assistantToggle,
   customerName,
-  discountPercent: controlledDiscountPercent,
   offer,
   onOfferChange,
   onDiscountPercentChange,
@@ -97,12 +95,10 @@ export function OfferBuilder({
   }, [offer.name, customerName, offer.customerName, tBuilder]);
   const [validateState, setValidateState] = useState<"idle" | "loading">("idle");
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
-  const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
-  const discountPercent = controlledDiscountPercent ?? localDiscountPercent;
-  const setDiscountPercent = onDiscountPercentChange ?? setLocalDiscountPercent;
+  const discountPercent = offer.discountPercent;
 
   useEffect(() => {
     setLines(toDraftLines(offer));
@@ -421,7 +417,7 @@ export function OfferBuilder({
         margin={margin}
         notes={offer.notes}
         requestText={requestText}
-        setDiscountPercent={setDiscountPercent}
+        setDiscountPercent={onDiscountPercentChange}
         status={status}
         subtotal={subtotal}
         total={total}

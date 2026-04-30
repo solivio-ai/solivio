@@ -21,6 +21,9 @@ export const offers = pgTable("offers", {
   status: text("status").$type<Offer["status"]>().notNull().default("draft"),
   notes: text("notes").array().notNull().default([]),
   unmatched: text("unmatched").array().notNull().default([]),
+  discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
+    .notNull()
+    .default(0),
   createdBy: text("created_by").references(() => user.id),
   updatedBy: text("updated_by").references(() => user.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

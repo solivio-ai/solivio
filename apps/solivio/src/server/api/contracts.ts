@@ -257,6 +257,7 @@ export const offerSchema = z
     items: z.array(offerItemSchema),
     notes: z.array(z.string()),
     unmatched: z.array(z.string()).optional(),
+    discountPercent: z.number().min(0).max(100),
     createdBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
     updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional()
   })
@@ -297,6 +298,7 @@ export const offerRevisionSnapshotSchema = z
     status: offerStatusSchema,
     notes: z.array(z.string()),
     unmatched: z.array(z.string()),
+    discountPercent: z.number().min(0).max(100).default(0),
     lineItems: z.array(offerRevisionSnapshotLineItemSchema)
   })
   .strict()
@@ -378,7 +380,8 @@ export const updateOfferRequestSchema = z
     clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema.optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
-    unmatched: z.array(z.string()).optional()
+    unmatched: z.array(z.string()).optional(),
+    discountPercent: z.number().min(0).max(100).optional()
   })
   .strict()
   .meta({
@@ -733,8 +736,7 @@ export const chatRequestSchema = z
   .object({
     messages: z.array(uiMessageSchema),
     offerId: z.string().optional(),
-    threadId: z.string().optional(),
-    discountPercent: z.number().optional()
+    threadId: z.string().optional()
   })
   .strict()
   .meta({

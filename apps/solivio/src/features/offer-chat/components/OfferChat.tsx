@@ -19,7 +19,6 @@ export type OfferChatHandle = {
 
 type OfferChatProps = {
   className?: string;
-  discountPercent?: number;
   headerAction?: ReactNode;
   offer?: Offer;
   onOfferChanged?: () => void;
@@ -132,7 +131,6 @@ async function readJsonResponse(response: Response) {
 
 export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function OfferChat({
   className,
-  discountPercent,
   headerAction,
   offer,
   onOfferChanged
@@ -149,12 +147,10 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   const [isThreadLoading, setIsThreadLoading] = useState(false);
   const [threadError, setThreadError] = useState<string | null>(null);
   const offerChatRequestContextRef = useRef<{
-    discountPercent?: number;
     offerId: string | null;
     threadId: string | null;
   }>({ offerId: null, threadId: null });
   offerChatRequestContextRef.current = {
-    discountPercent,
     offerId: offer?.id ?? null,
     threadId: activeThreadId
   };
@@ -166,7 +162,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
           const ctx = offerChatRequestContextRef.current;
           const threadBody =
             ctx.offerId && ctx.threadId
-              ? { discountPercent: ctx.discountPercent, offerId: ctx.offerId, threadId: ctx.threadId }
+              ? { offerId: ctx.offerId, threadId: ctx.threadId }
               : {};
 
           return {
