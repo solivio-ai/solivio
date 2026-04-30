@@ -1,12 +1,13 @@
 import { OffersList } from "@/features/offers-list/components/OffersList";
 import { getOffers } from "@/server/offers/offerService";
+import { AppPage } from "@/components/AppPage";
 
 export default async function OffersPage() {
   const rows = await getOffers();
 
   return (
-    <main className="max-w-[1440px] p-4">
+    <AppPage>
       <OffersList offers={rows} />
-    </main>
+    </AppPage>
   );
 }

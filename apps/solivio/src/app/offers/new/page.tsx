@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { NewOfferForm } from "../../../features/new-offer";
+import { AppPage } from "@/components/AppPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -12,7 +13,7 @@ export default async function NewOfferPage() {
   const t = await getTranslations("NewOffer.page");
 
   return (
-    <main className="mx-auto grid gap-4 p-4 xl:w-[1180px]">
+    <AppPage>
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
@@ -29,6 +30,6 @@ export default async function NewOfferPage() {
         </Button>
       </header>
       <NewOfferForm />
-    </main>
+    </AppPage>
   );
 }

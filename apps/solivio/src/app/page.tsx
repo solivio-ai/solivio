@@ -7,13 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { OffersList } from "@/features/offers-list/components/OffersList";
 import { getRecentOffers } from "@/server/offers/offerService";
 import { QuickOfferSearch } from "@/features/product-search";
+import { AppPage } from "@/components/AppPage";
 
 export default async function Home() {
   const t = await getTranslations("Dashboard");
   const recentOffers = await getRecentOffers(10);
 
   return (
-    <main className="mx-auto w-full max-w-[1440px] p-4">
+    <AppPage>
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-dashed" size="sm">
           <CardHeader className="pb-3">
@@ -35,9 +36,9 @@ export default async function Home() {
         <QuickOfferSearch />
       </div>
 
-      <div className="mt-5">
+      <div>
         <OffersList offers={recentOffers} hideHeader />
       </div>
-    </main>
+    </AppPage>
   );
 }
