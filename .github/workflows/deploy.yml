@@ -74,10 +74,13 @@ jobs:
           printf '%s' "\$GHCR_TOKEN" | docker login ghcr.io -u "\$GHCR_USER" --password-stdin
           export IMAGE_TAG
           docker compose -f docker-compose.prod.yml pull --quiet
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans --quiet-pull
           docker image prune -f
-          docker logout ghcr.io
           EOF
+
+      - name: Log out of GHCR on host
+        if: always()
+        run: ssh deploy-target 'docker logout ghcr.io || true'
 
       - name: Wipe SSH key
         if: always()
