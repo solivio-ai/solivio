@@ -6,9 +6,23 @@
       "newOffer": "Nowa oferta",
       "catalogUpload": "Import katalogu"
     },
+    "aria": {
+      "closeNavigation": "Zamknij menu nawigacji",
+      "home": "Strona główna Solivio"
+    },
     "actions": {
       "newOffer": "Nowa oferta"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio to otwarty system AI, który zmienia sposób tworzenia ofert w firmach B2B.",
+    "openGraphDescription": "Zamiast ręcznie budować każdą wycenę, Solivio generuje uporządkowane szkice ofert na podstawie Twoich danych — w kilka sekund.",
+    "twitterDescription": "Szkice ofert wspierane przez AI, tworzone z zapytań klientów i danych katalogowych."
+  },
+  "UserMenu": {
+    "signedInAs": "Zalogowano jako",
+    "logOut": "Wyloguj"
   },
   "LanguageSwitcher": {
     "label": "Język",
@@ -162,6 +176,7 @@
       "done": "Gotowe"
     },
     "review": {
+      "pageTitle": "Przegląd oferty",
       "loading": "Wczytywanie wygenerowanej oferty...",
       "error": "Nie udało się wczytać tej oferty.",
       "notFound": "Oferta niedostępna",
@@ -239,7 +254,15 @@
         "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
         "attribution": "Odpowiedzialne osoby",
         "downloadPdf": "Wygeneruj i pobierz PDF",
-        "goToOffers": "Wróć do listy ofert"
+        "goToOffers": "Wróć do listy ofert",
+        "pdfViewer": {
+          "loading": "Ładowanie PDF…",
+          "error": "Nie udało się załadować PDF.",
+          "zoomOut": "Pomniejsz",
+          "zoomIn": "Powiększ",
+          "previousPage": "Poprzednia strona",
+          "nextPage": "Następna strona"
+        }
       }
     },
     "revision": {
@@ -284,6 +307,24 @@
       "cancel": "Anuluj",
       "creating": "Tworzenie...",
       "createDraft": "Utwórz szkic oferty"
+    }
+  },
+  "ProductSearchDialog": {
+    "title": "Szukaj produktów",
+    "description": "Przeszukaj katalog i dostosuj ilości przed dodaniem produktów do oferty.",
+    "placeholder": "Szukaj produktów…",
+    "searchAria": "Szukaj",
+    "searchIn": "Szukaj w:",
+    "productsFound": "{count, plural, one {# znaleziony produkt} few {# znalezione produkty} many {# znalezionych produktów} other {# znalezionych produktów}}",
+    "searching": "Szukam...",
+    "noResults": "Brak wyników.",
+    "decreaseQuantity": "Zmniejsz ilość dla {name}",
+    "increaseQuantity": "Zwiększ ilość dla {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Nazwa",
+      "description": "Opis",
+      "manufacturer": "Producent"
     }
   },
   "OfferChat": {
@@ -432,6 +473,7 @@
     }
   },
   "DemoOffer": {
+    "pageTitle": "Oferta demo",
     "title": "Produkty w ofercie",
     "addProduct": "Dodaj produkt",
     "empty": "Brak dodanych produktów",

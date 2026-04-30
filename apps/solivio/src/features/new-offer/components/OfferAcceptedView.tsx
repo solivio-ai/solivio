@@ -8,7 +8,12 @@ import type { Offer } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DraftLine } from "./offer-builder-types";
-import { PdfViewer } from "./PdfViewer";
+import dynamic from "next/dynamic";
+
+const PdfViewer = dynamic(
+  () => import("./PdfViewer").then((m) => ({ default: m.PdfViewer })),
+  { ssr: false }
+);
 
 type OfferAcceptedViewProps = {
   offer: Offer;

@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,7 @@ type PdfViewerProps = {
 };
 
 export function PdfViewer({ url, title }: PdfViewerProps) {
+  const t = useTranslations("NewOffer.review.acceptedView.pdfViewer");
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);
@@ -34,7 +36,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
             size="icon-sm"
             disabled={scale <= 0.6}
             onClick={() => setScale((s) => Math.max(0.6, s - 0.2))}
-            aria-label="Zoom out"
+            aria-label={t("zoomOut")}
           >
             <ZoomOut size={14} />
           </Button>
@@ -46,7 +48,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
             size="icon-sm"
             disabled={scale >= 2.5}
             onClick={() => setScale((s) => Math.min(2.5, s + 0.2))}
-            aria-label="Zoom in"
+            aria-label={t("zoomIn")}
           >
             <ZoomIn size={14} />
           </Button>
@@ -59,7 +61,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
               size="icon-sm"
               disabled={pageNumber <= 1}
               onClick={() => setPageNumber((p) => p - 1)}
-              aria-label="Previous page"
+              aria-label={t("previousPage")}
             >
               <ChevronLeft size={14} />
             </Button>
@@ -71,7 +73,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
               size="icon-sm"
               disabled={pageNumber >= numPages}
               onClick={() => setPageNumber((p) => p + 1)}
-              aria-label="Next page"
+              aria-label={t("nextPage")}
             >
               <ChevronRight size={14} />
             </Button>
@@ -85,12 +87,12 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
             <div className="flex h-96 w-64 items-center justify-center text-sm text-muted-foreground">
-              Loading PDF…
+              {t("loading")}
             </div>
           }
           error={
             <div className="flex h-96 w-64 items-center justify-center text-sm text-destructive">
-              Failed to load PDF.
+              {t("error")}
             </div>
           }
         >

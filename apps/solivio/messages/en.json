@@ -6,9 +6,23 @@
       "newOffer": "New Offer",
       "catalogUpload": "Catalog Upload"
     },
+    "aria": {
+      "closeNavigation": "Close navigation menu",
+      "home": "Solivio home"
+    },
     "actions": {
       "newOffer": "New offer"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio is an open-source AI system that transforms how B2B companies create offers.",
+    "openGraphDescription": "Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds.",
+    "twitterDescription": "AI-assisted offer drafts from customer requests and catalog data."
+  },
+  "UserMenu": {
+    "signedInAs": "Signed in as",
+    "logOut": "Log out"
   },
   "LanguageSwitcher": {
     "label": "Language",
@@ -162,6 +176,7 @@
       "done": "Done"
     },
     "review": {
+      "pageTitle": "Offer review",
       "loading": "Loading generated offer...",
       "error": "Could not load this offer.",
       "notFound": "Offer not available",
@@ -239,7 +254,15 @@
         "pdfPreviewAria": "Accepted offer PDF preview",
         "attribution": "Attribution",
         "downloadPdf": "Generate and download PDF",
-        "goToOffers": "Go to offers list"
+        "goToOffers": "Go to offers list",
+        "pdfViewer": {
+          "loading": "Loading PDF…",
+          "error": "Failed to load PDF.",
+          "zoomOut": "Zoom out",
+          "zoomIn": "Zoom in",
+          "previousPage": "Previous page",
+          "nextPage": "Next page"
+        }
       }
     },
     "revision": {
@@ -284,6 +307,24 @@
       "cancel": "Cancel",
       "creating": "Creating...",
       "createDraft": "Create Draft Offer"
+    }
+  },
+  "ProductSearchDialog": {
+    "title": "Search products",
+    "description": "Search the catalog and adjust quantities before adding products to the offer.",
+    "placeholder": "Search products…",
+    "searchAria": "Search",
+    "searchIn": "Search in:",
+    "productsFound": "{count, plural, one {# product found} other {# products found}}",
+    "searching": "Searching...",
+    "noResults": "No results found.",
+    "decreaseQuantity": "Decrease quantity for {name}",
+    "increaseQuantity": "Increase quantity for {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Name",
+      "description": "Description",
+      "manufacturer": "Manufacturer"
     }
   },
   "OfferChat": {
@@ -431,7 +472,15 @@
       "showingFirst": "Showing the first 50 of {count} rows."
     }
   },
+  "Dashboard": {
+    "newOffer": {
+      "title": "Start a new offer",
+      "description": "Generate structured offer drafts based on your data.",
+      "button": "New offer"
+    }
+  },
   "DemoOffer": {
+    "pageTitle": "Demo offer",
     "title": "Offer products",
     "addProduct": "Add product",
     "empty": "No products added yet",

@@ -6,7 +6,10 @@ import { NewOfferForm } from "../../../features/new-offer";
 import { AppPage } from "@/components/AppPage";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "New offer" };
+export async function generateMetadata() {
+  const t = await getTranslations("NewOffer.page");
+  return { title: t("title") };
+}
 
 export default async function NewOfferPage() {
   const t = await getTranslations("NewOffer.page");
