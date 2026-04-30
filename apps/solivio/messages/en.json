@@ -242,7 +242,15 @@
         "pdfPreviewAria": "Accepted offer PDF preview",
         "attribution": "Attribution",
         "downloadPdf": "Generate and download PDF",
-        "goToOffers": "Go to offers list"
+        "goToOffers": "Go to offers list",
+        "pdfViewer": {
+          "loading": "Loading PDF…",
+          "error": "Failed to load PDF.",
+          "zoomOut": "Zoom out",
+          "zoomIn": "Zoom in",
+          "previousPage": "Previous page",
+          "nextPage": "Next page"
+        }
       }
     },
     "revision": {
