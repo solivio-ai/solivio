@@ -1,8 +1,8 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommercialTotals } from "./CommercialTotals";
 import { ValidationRow } from "./ValidationRow";
 import type { DraftLine } from "./offer-builder-types";
@@ -12,7 +12,6 @@ type OfferSummaryProps = {
   discount: number;
   discountPercent: number;
   limitedLineCount: number;
-  margin: number;
   notes: Offer["notes"];
   requestText: string;
   setDiscountPercent: (discountPercent: number) => void;
@@ -27,7 +26,6 @@ export function OfferSummary({
   discount,
   discountPercent,
   limitedLineCount,
-  margin,
   notes,
   requestText,
   setDiscountPercent,
@@ -40,20 +38,21 @@ export function OfferSummary({
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
-        <CardTitle>{tSummary("title")}</CardTitle>
-        <CardDescription>{tSummary("description")}</CardDescription>
+        <CardTitle className="flex items-center gap-2">
+          <FileText size={16} aria-hidden="true" className="text-primary" />
+          {tSummary("title")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
             <h2 className="text-sm font-medium">{tSummary("customerRequest")}</h2>
-            <p className="text-sm leading-relaxed text-muted-foreground">{requestText}</p>
+            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{requestText}</div>
           </section>
 
           <section className="grid gap-3">
             <h2 className="text-sm font-medium">{tSummary("reviewChecks")}</h2>
-            <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-              <ValidationRow ok={margin >= 28} text={tSummary("checks.targetMargin", { margin: margin.toFixed(1) })} />
+            <div className="grid gap-2 sm:grid-cols-2">
               <ValidationRow
                 ok={unpricedLineCount === 0}
                 text={
@@ -70,7 +69,6 @@ export function OfferSummary({
                     : tSummary("checks.missingAvailability", { count: limitedLineCount })
                 }
               />
-              <ValidationRow ok={status === "accepted"} text={tSummary("checks.offerAccepted")} />
             </div>
           </section>
 
@@ -93,7 +91,6 @@ export function OfferSummary({
           currency={currency}
           discount={discount}
           discountPercent={discountPercent}
-          margin={margin}
           setDiscountPercent={setDiscountPercent}
           subtotal={subtotal}
           total={total}

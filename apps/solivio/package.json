@@ -10,7 +10,6 @@
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -36,6 +35,7 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-pdf": "^10.4.1",
     "react-resizable-panels": "^4.10.0",
     "shadcn": "^4.5.0",
     "tailwind-merge": "^3.5.0",

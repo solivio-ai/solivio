@@ -54,14 +54,15 @@ function useMediaQuery(query: string) {
 
 export function OfferReview({ offerId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
-  const [assistantOpen, setAssistantOpen] = useState(true);
-  const [discountPercent, setDiscountPercent] = useState(3);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [rightPanel, setRightPanel] = useState<"chat" | "revisions">("chat");
   const [revisions, setRevisions] = useState<OfferRevision[]>([]);
   const [revisionsLoading, setRevisionsLoading] = useState(false);
   const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const chatRef = useRef<OfferChatHandle>(null);
+  const pendingChatMessage = useRef<string | null>(null);
+  const discountPersistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tReview = useTranslations("NewOffer.review");
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
@@ -136,10 +137,57 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       .catch(() => {});
   }, [fetchOffer]);
 
+  useEffect(() => () => {
+    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+  }, []);
+
+  const handleDiscountPercentChange = useCallback((nextDiscountPercent: number) => {
+    setState((current) => {
+      if (current.kind !== "ready") return current;
+      return {
+        kind: "ready",
+        offer: { ...current.offer, discountPercent: nextDiscountPercent }
+      };
+    });
+
+    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+    discountPersistTimer.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/offers/${offerId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ discountPercent: nextDiscountPercent })
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        // Merge server-side fields (updatedAt, updatedBy, ...) but keep the latest user input.
+        setState((current) => {
+          if (current.kind !== "ready") return current;
+          return {
+            kind: "ready",
+            offer: { ...payload.offer, discountPercent: current.offer.discountPercent }
+          };
+        });
+      } catch {
+        // ignore — input remains optimistic; a later edit will retry the PATCH.
+      }
+    }, 500);
+  }, [offerId]);
+
+  useEffect(() => {
+    if (!assistantOpen || rightPanel !== "chat" || !pendingChatMessage.current) return;
+    chatRef.current?.sendText(pendingChatMessage.current);
+    pendingChatMessage.current = null;
+  }, [assistantOpen, rightPanel]);
+
   function handleSendToChat(message: string) {
+    if (assistantOpen && rightPanel === "chat" && chatRef.current) {
+      chatRef.current.sendText(message);
+      return;
+    }
+    pendingChatMessage.current = message;
     setAssistantOpen(true);
     setRightPanel("chat");
-    chatRef.current?.sendText(message);
   }
 
   if (state.kind === "loading") {
@@ -199,8 +247,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     }
   }
 
-  function renderAssistantToggle(compact = false) {
-    const label = assistantOpen ? tReview("assistant.hide") : tReview("assistant.show");
+  function renderAssistantToggle() {
+    const label = tReview("assistant.title");
     const Icon = assistantOpen ? PanelRightClose : PanelRightOpen;
 
     return (
@@ -209,15 +257,14 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           <Button
             type="button"
             variant={assistantOpen ? "ghost" : "outline"}
-            size={compact ? "icon-sm" : "default"}
+            size="icon-sm"
             onClick={() => setAssistantOpen((current) => !current)}
             aria-controls="offer-assistant-panel"
             aria-pressed={assistantOpen}
             aria-label={label}
-            className={cn("shrink-0", !compact && "w-full sm:w-auto")}
+            className="shrink-0"
           >
             <Icon size={16} aria-hidden="true" />
-            {!compact ? <span>{assistantOpen ? tReview("assistant.hide") : tReview("assistant.title")}</span> : null}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">{label}</TooltipContent>
@@ -258,12 +305,11 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           >
             {tReview("revisions")}
           </Button>
-          {renderAssistantToggle(true)}
+          {renderAssistantToggle()}
         </div>
         {rightPanel === "chat" ? (
           <OfferChat
             ref={chatRef}
-            discountPercent={discountPercent}
             offer={state.offer}
             className="min-h-0 flex-1 rounded-none border-0 py-0 shadow-none ring-0"
             onOfferChanged={refreshOffer}
@@ -306,9 +352,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             >
               <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
                 <OfferBuilder
-                  discountPercent={discountPercent}
                   offer={state.offer}
-                  onDiscountPercentChange={setDiscountPercent}
+                  onDiscountPercentChange={handleDiscountPercentChange}
                   onOfferChange={handleOfferChange}
                   onAccepted={handleOfferChange}
                   onSendToChat={handleSendToChat}
@@ -340,9 +385,8 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         ) : (
           <div className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
             <OfferBuilder
-              discountPercent={discountPercent}
               offer={state.offer}
-              onDiscountPercentChange={setDiscountPercent}
+              onDiscountPercentChange={handleDiscountPercentChange}
               onOfferChange={handleOfferChange}
               onAccepted={handleOfferChange}
               onSendToChat={handleSendToChat}

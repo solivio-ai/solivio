@@ -61,16 +61,6 @@ export type OfferItem = {
   };
 };
 
-export type OfferFragmentKind = "sku" | "description";
-
-export type OfferDebugFragment = {
-  requestFragment: string;
-  query: string;
-  kind: OfferFragmentKind;
-  quantity: number;
-  topMatches: { id: string; sku: string; name: string; similarity: number }[];
-};
-
 export type Offer = {
   id: string;
   requestId: string;
@@ -83,7 +73,8 @@ export type Offer = {
   items: OfferItem[];
   notes: string[];
   unmatched?: string[];
-  debugFragments?: OfferDebugFragment[];
+  /** Discount applied to the offer subtotal as a percentage in [0, 100]. */
+  discountPercent: number;
   createdBy?: { id: string; name: string } | null;
   updatedBy?: { id: string; name: string } | null;
 };
@@ -107,6 +98,7 @@ export type OfferRevisionSnapshot = {
   status: "draft" | "accepted";
   notes: string[];
   unmatched: string[];
+  discountPercent: number;
   lineItems: OfferRevisionSnapshotLineItem[];
 };
 
@@ -223,6 +215,7 @@ export const demoOffer: Offer = {
   clientRequest: demoRequest.text,
   status: "draft",
   generatedAt: "2026-04-28T00:00:00.000Z",
+  discountPercent: 0,
   items: [
     {
       productId: "solar-panel-430",

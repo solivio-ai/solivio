@@ -30,7 +30,6 @@
     "db:down": "docker compose down",
     "db:generate": "yarn workspace @solivio/app db:generate",
     "db:migrate": "yarn workspace @solivio/app db:migrate",
-    "db:push": "yarn workspace @solivio/app db:push",
     "db:studio": "yarn workspace @solivio/app db:studio",
     "volt": "volt"
   },

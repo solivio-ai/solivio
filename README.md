@@ -100,6 +100,7 @@ This repository contains the open-source groundwork for Solivio and is intention
 - 🔒 `apps/solivio/src/server` contains server-only integrations and services
 - 📦 `packages/domain` contains shared types, workflow constants, and mock fixtures
 - 🐘 `infra/postgres` contains local database bootstrap files
+- 🗃️ `apps/solivio/drizzle` contains the database migrations applied by `yarn db:migrate`
 
 Mocks are preferred until data models and integration boundaries are clear.
 
@@ -124,8 +125,8 @@ Open the app at `http://localhost:3000` and create the first user from the
 login screen.
 
 People who only want to run the ready app image can use the Docker quick start
-in the docs. It uses the public GHCR images `ghcr.io/solivio-ai/solivio-app`
-and `ghcr.io/solivio-ai/solivio-db-push`.
+in the docs. It uses the public GHCR image `ghcr.io/solivio-ai/solivio-app`,
+which applies committed migrations on startup.
 
 Useful commands:
 

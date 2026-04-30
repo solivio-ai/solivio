@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { PackageSearch, Info, AlertTriangle, Loader2, Trash2 } from "lucide-react";
+import { PackageSearch, Info, AlertTriangle, Loader2, Trash2, Check } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ProductLineCard } from "./ProductLineCard";
 import type { DraftLine } from "./offer-builder-types";
@@ -20,6 +21,7 @@ type OfferProductsReviewProps = {
   unmatched: string[];
   pendingProductIds: Set<string>;
   removeProduct: (productId: string) => void;
+  removeUnmatched?: (item: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
   status: Offer["status"];
 };
@@ -40,6 +42,7 @@ export function OfferProductsReview({
   unmatched,
   pendingProductIds,
   removeProduct,
+  removeUnmatched,
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
@@ -119,9 +122,28 @@ export function OfferProductsReview({
             <p className="text-sm text-muted-foreground mb-2">
               {tProducts("unmatchedDescription")}
             </p>
-            <ul className="list-disc pl-5 text-sm space-y-1">
+            <ul className="text-sm space-y-1">
               {unmatched.map((item, idx) => (
-                <li key={idx} className="text-foreground">{item}</li>
+                <li key={idx} className="flex items-center justify-between gap-2">
+                  <span className="text-foreground">{item}</span>
+                  {removeUnmatched && !isLocked && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="size-6 shrink-0 text-muted-foreground hover:text-green-600"
+                          onClick={() => removeUnmatched(item)}
+                          aria-label={tProducts("removeUnmatched")}
+                        >
+                          <Check size={12} aria-hidden="true" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{tProducts("removeUnmatched")}</TooltipContent>
+                    </Tooltip>
+                  )}
+                </li>
               ))}
             </ul>
           </div>
@@ -244,9 +266,10 @@ export function OfferProductsReview({
                         aria-label={tProducts("quantityAria", { name: line.name })}
                         className="ml-auto w-20 text-right"
                         min={1}
+                        max={10000}
                         type="number"
                         value={line.quantity}
-                        onChange={(event) => updateQuantity(line.productId, Number(event.target.value))}
+                        onChange={(event) => updateQuantity(line.productId, Math.min(10000, Math.max(1, Number(event.target.value) || 1)))}
                         onBlur={() => commitQuantity(line.productId)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {

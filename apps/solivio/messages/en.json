@@ -6,9 +6,24 @@
       "newOffer": "New Offer",
       "catalogUpload": "Catalog Upload"
     },
+    "aria": {
+      "closeNavigation": "Close navigation menu",
+      "home": "Solivio home",
+      "toggleNavigation": "Collapse or expand navigation"
+    },
     "actions": {
       "newOffer": "New offer"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio is an open-source AI system that transforms how B2B companies create offers.",
+    "openGraphDescription": "Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds.",
+    "twitterDescription": "AI-assisted offer drafts from customer requests and catalog data."
+  },
+  "UserMenu": {
+    "signedInAs": "Signed in as",
+    "logOut": "Log out"
   },
   "LanguageSwitcher": {
     "label": "Language",
@@ -38,7 +53,8 @@
       "username": "Username",
       "identifier": "Email or username",
       "email": "Email",
-      "password": "Password"
+      "password": "Password",
+      "rememberMe": "Remember me"
     },
     "actions": {
       "signIn": "Sign in",
@@ -65,10 +81,6 @@
   "NewOffer": {
     "page": {
       "title": "New offer",
-      "badges": {
-        "generatedDraft": "AI-generated draft",
-        "review": "Review & adjust"
-      },
       "back": "Back"
     },
     "form": {
@@ -166,14 +178,13 @@
       "done": "Done"
     },
     "review": {
+      "pageTitle": "Offer review",
       "loading": "Loading generated offer...",
       "error": "Could not load this offer.",
       "notFound": "Offer not available",
       "createAnother": "Create another draft",
       "assistant": {
-        "title": "Assistant",
-        "hide": "Hide assistant",
-        "show": "Show assistant"
+        "title": "Assistant"
       },
       "revisions": "Revisions",
       "resizeLabel": "Resize offer review and assistant panes",
@@ -191,10 +202,11 @@
         "transferToChat": "Transfer to chat",
         "acceptOffer": "Accept offer",
         "checking": "Checking...",
+        "acceptWithoutAi": "Accept without AI check",
         "checkWithAI": "Check with AI",
-        "messageHeader": "**AI Validation Results**",
+        "messageHeader": "AI Validation Results",
         "statusLabel": "Status",
-        "chatPrompt": "Can you suggest solutions for missing items or comment on these results?"
+        "chatPrompt": "Please help me resolve the problems listed above."
       },
       "summary": {
         "title": "Summary",
@@ -203,7 +215,6 @@
         "reviewChecks": "Review checks",
         "notes": "Notes",
         "checks": {
-          "targetMargin": "Target margin: {margin}%",
           "allPriced": "All lines have prices",
           "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
           "availabilityConfirmed": "Availability confirmed",
@@ -216,8 +227,7 @@
         "subtotal": "Subtotal",
         "discount": "Discount",
         "discountValue": "Discount value",
-        "totalNet": "Total net",
-        "estimatedMargin": "Estimated margin"
+        "totalNet": "Total net"
       },
       "products": {
         "title": "Products",
@@ -235,14 +245,22 @@
         "details": "Details",
         "availability": "Availability",
         "brand": "Brand",
-      "quantityAria": "Quantity for {name}",
+        "quantityAria": "Quantity for {name}",
         "removeAria": "Remove {name}"
       },
       "acceptedView": {
         "pdfPreviewAria": "Accepted offer PDF preview",
         "attribution": "Attribution",
         "downloadPdf": "Generate and download PDF",
-        "goToOffers": "Go to offers list"
+        "goToOffers": "Go to offers list",
+        "pdfViewer": {
+          "loading": "Loading PDF…",
+          "error": "Failed to load PDF.",
+          "zoomOut": "Zoom out",
+          "zoomIn": "Zoom in",
+          "previousPage": "Previous page",
+          "nextPage": "Next page"
+        }
       }
     },
     "revision": {
@@ -269,6 +287,12 @@
         "qty": "Qty",
         "unitPrice": "Unit price",
         "total": "Total",
+        "accepted": "Accepted",
+        "clientRequest": "Client request",
+        "unmatched": "Unmatched items",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "totalNet": "Total net",
         "close": "Close",
         "restoring": "Restoring...",
         "restoreAction": "Restore this revision"
@@ -278,7 +302,7 @@
   "QuickSearch": {
     "card": {
       "title": "Find a product",
-      "description": "Search the catalog and create a draft offer from selected items."
+      "description": "Draft an offer from selected products."
     },
     "searchPlaceholder": "Search products...",
     "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
@@ -287,6 +311,24 @@
       "cancel": "Cancel",
       "creating": "Creating...",
       "createDraft": "Create Draft Offer"
+    }
+  },
+  "ProductSearchDialog": {
+    "title": "Search products",
+    "description": "Search the catalog and adjust quantities before adding products to the offer.",
+    "placeholder": "Search products…",
+    "searchAria": "Search",
+    "searchIn": "Search in:",
+    "productsFound": "{count, plural, one {# product found} other {# products found}}",
+    "searching": "Searching...",
+    "noResults": "No results found.",
+    "decreaseQuantity": "Decrease quantity for {name}",
+    "increaseQuantity": "Increase quantity for {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Name",
+      "description": "Description",
+      "manufacturer": "Manufacturer"
     }
   },
   "OfferChat": {
@@ -344,8 +386,7 @@
       "draftsToReview": "{count} to review",
       "matchedProducts": "{count, plural, one {# matched product} other {# matched products}}",
       "needsAttention": "{count} with gaps",
-      "offerCount": "{count, plural, one {# offer} other {# offers}}",
-      "salesWorkspace": "Sales workspace"
+      "offerCount": "{count, plural, one {# offer} other {# offers}}"
     },
     "empty": {
       "description": "Generate structured offer drafts based on your customer requests.",
@@ -392,9 +433,18 @@
         "label": "Draft"
       }
     },
+    "sort": {
+      "label": "Sort",
+      "createdAtDesc": "Newest first",
+      "createdAtAsc": "Oldest first",
+      "valueDesc": "Value: high to low",
+      "valueAsc": "Value: low to high",
+      "customerAsc": "Customer (A–Z)"
+    },
     "table": {
       "actions": "Actions",
       "coverage": "Coverage",
+      "createdAt": "Order date",
       "customerRequest": "Customer request",
       "offer": "Offer",
       "status": "Status",
@@ -406,7 +456,6 @@
   "ProductImport": {
     "page": {
       "title": "Import products",
-      "badge": "Products",
       "description": "Upload a CSV catalog, preview parsed rows, then save embeddings behind the server API."
     },
     "uploadCard": {
@@ -429,14 +478,97 @@
       "modelsUnavailable": "Embedding models unavailable",
       "importAction": {
         "embedding": "Embedding...",
+        "embeddingProgress": "Embedding {processed} / {total}...",
         "saveCount": "Embed and save {count, plural, one {# product} other {# products}}"
       },
       "importDone": "Saved {count, plural, one {# product} other {# products}}.",
       "importError": "Import failed.",
+      "importPartialError": "Import stopped after saving {processed} of {total} rows: {message}. Re-running is safe — already-imported rows will be updated.",
+      "progressLabel": "Import progress",
+      "progressText": "Imported {processed} of {total} rows.",
       "showingFirst": "Showing the first 50 of {count} rows."
     }
   },
+  "Dashboard": {
+    "newOffer": {
+      "title": "Start a new offer",
+      "description": "Draft an offer from a customer request.",
+      "button": "New offer"
+    },
+    "integrations": {
+      "title": "Data sources",
+      "subtitle": "Connect your business systems to power offer generation.",
+      "badge": {
+        "active": "Active",
+        "available": "Available"
+      },
+      "action": {
+        "configure": "Import catalog →",
+        "integrate": "Get in touch →"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Product Catalog",
+          "description": "Upload and embed your product database. Powers catalog search and AI matching."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Sync products, stock levels, and accepted orders with your ERP system."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pull customer profiles and deal history to personalize offer drafts."
+        },
+        "priceRules": {
+          "name": "Price Rules",
+          "description": "Apply margin targets, volume discounts, and customer-tier pricing automatically."
+        },
+        "inventory": {
+          "name": "Inventory",
+          "description": "Show real-time stock availability on offer line items before sending."
+        },
+        "emailDelivery": {
+          "name": "Email Delivery",
+          "description": "Send accepted offers directly to customers as branded PDF emails."
+        },
+        "industryKnowledge": {
+          "name": "Industry Knowledge",
+          "description": "Add context about your industry, customer segments, and sales specifics to interpret requests more accurately."
+        },
+        "documentation": {
+          "name": "Documentation",
+          "description": "Connect manuals, technical sheets, and sales materials as sources for answers and rationale."
+        },
+        "historicalOrders": {
+          "name": "Historical Orders",
+          "description": "Use previous orders to recognize recurring needs and preferred products."
+        },
+        "rfqBenchmarks": {
+          "name": "RFQ Benchmarks",
+          "description": "Compare new requests with similar cases to choose offer scope and pricing levels faster."
+        },
+        "productReviews": {
+          "name": "Product Reviews",
+          "description": "Consider customer reviews and quality signals when recommending products and substitutes."
+        }
+      }
+    }
+  },
+  "QuickOffer": {
+    "errors": {
+      "itemsRequired": "items are required"
+    },
+    "offer": {
+      "title": "Quick Offer",
+      "description": "Manual selection from catalog",
+      "note": "Offer created manually from product search",
+      "productNameFallback": "Manual selection",
+      "requestItem": "Manual Selection",
+      "rationale": "Selected by user"
+    }
+  },
   "DemoOffer": {
+    "pageTitle": "Demo offer",
     "title": "Offer products",
     "addProduct": "Add product",
     "empty": "No products added yet",

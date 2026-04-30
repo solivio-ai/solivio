@@ -68,7 +68,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     input.data.status !== undefined ||
     input.data.name !== undefined ||
     input.data.customerName !== undefined ||
-    input.data.clientRequest !== undefined;
+    input.data.clientRequest !== undefined ||
+    input.data.discountPercent !== undefined ||
+    input.data.unmatched !== undefined;
 
   const offer =
     isUuid(offerId) && hasPersistedPatch
@@ -76,7 +78,9 @@ export async function PATCH(request: Request, context: RouteContext) {
           status: input.data.status,
           name: input.data.name,
           customerName: input.data.customerName,
-          clientRequest: input.data.clientRequest
+          clientRequest: input.data.clientRequest,
+          discountPercent: input.data.discountPercent,
+          unmatched: input.data.unmatched
         }, auth.session.user.id)) ?? updateOfferDraft(offerId, input.data)
       : updateOfferDraft(offerId, input.data);
 

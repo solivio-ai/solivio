@@ -4,7 +4,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "../database/db";
-import type { Offer, OfferDebugFragment } from "@solivio/domain";
+import type { Offer } from "@solivio/domain";
 
 import { offerProducts, offers, products, user } from "../database/schema";
 
@@ -20,7 +20,7 @@ export type InsertOfferData = {
   status: Offer["status"];
   notes: string[];
   unmatched: string[];
-  debugFragments: OfferDebugFragment[];
+  discountPercent?: number;
   createdBy?: string | null;
   updatedBy?: string | null;
 };
@@ -46,7 +46,7 @@ export type OfferRow = {
   updatedAt: Date;
   notes: string[];
   unmatched: string[];
-  debugFragments: OfferDebugFragment[];
+  discountPercent: number;
   createdBy: string | null;
   createdByName: string | null;
   updatedBy: string | null;
@@ -96,6 +96,8 @@ export type UpdateOfferMetaInput = {
   name?: string;
   customerName?: string | null;
   clientRequest?: string | null;
+  discountPercent?: number;
+  unmatched?: string[];
 };
 
 export async function updateOfferMeta(
@@ -109,11 +111,15 @@ export async function updateOfferMeta(
     name?: string;
     customerName?: string | null;
     clientRequest?: string | null;
+    discountPercent?: number;
+    unmatched?: string[];
   } = { updatedAt: new Date() };
   if (data.status !== undefined) patch.status = data.status;
   if (data.name !== undefined) patch.name = data.name;
   if (data.customerName !== undefined) patch.customerName = data.customerName;
   if (data.clientRequest !== undefined) patch.clientRequest = data.clientRequest;
+  if (data.discountPercent !== undefined) patch.discountPercent = data.discountPercent;
+  if (data.unmatched !== undefined) patch.unmatched = data.unmatched;
 
   const [offer] = await tx
     .update(offers)
@@ -176,7 +182,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       updatedAt: offers.updatedAt,
       notes: offers.notes,
       unmatched: offers.unmatched,
-      debugFragments: offers.debugFragments,
+      discountPercent: offers.discountPercent,
       createdBy: offers.createdBy,
       createdByName: createdByUser.name,
       updatedBy: offers.updatedBy,
@@ -215,7 +221,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     updatedAt: first.updatedAt,
     notes: first.notes,
     unmatched: first.unmatched,
-    debugFragments: first.debugFragments,
+    discountPercent: first.discountPercent ?? 0,
     createdBy: first.createdBy,
     createdByName: first.createdByName,
     updatedBy: first.updatedBy,
@@ -249,10 +255,12 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
       clientRequest: offers.clientRequest,
       notes: offers.notes,
       unmatched: offers.unmatched,
+      discountPercent: offers.discountPercent,
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
       productCount: sql<number>`COUNT(${offerProducts.id})`.mapWith(Number),
-      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number)
+      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number),
+      currency: sql<string>`COALESCE(MIN(CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.currency}, ${offerProducts.currency}) ELSE ${offerProducts.currency} END), 'PLN')`
     })
     .from(offers)
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))

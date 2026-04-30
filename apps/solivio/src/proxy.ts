@@ -1,18 +1,26 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PUBLIC_FILE = /\.[^/]+$/;
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hasSessionCookie = Boolean(getSessionCookie(request));
+  const isAuthApiRoute = pathname.startsWith("/api/auth");
+  const isHealthRoute = pathname === "/api/health";
+  const isApiRoute = pathname.startsWith("/api/");
+  const isLoginRoute = pathname === "/login" || pathname.startsWith("/login/");
+  const isPublicFile = PUBLIC_FILE.test(pathname);
 
-  const headers = new Headers(request.headers);
-  headers.set("x-pathname", pathname);
-  const passthrough = NextResponse.next({ request: { headers } });
-
-  if (pathname.startsWith("/api/") && pathname !== "/api/health" && !getSessionCookie(request)) {
+  if (isApiRoute && !isAuthApiRoute && !isHealthRoute && !hasSessionCookie) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return passthrough;
+  if (!isApiRoute && !isLoginRoute && !isPublicFile && !hasSessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

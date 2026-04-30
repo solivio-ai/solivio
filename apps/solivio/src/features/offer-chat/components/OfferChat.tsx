@@ -19,7 +19,6 @@ export type OfferChatHandle = {
 
 type OfferChatProps = {
   className?: string;
-  discountPercent?: number;
   headerAction?: ReactNode;
   offer?: Offer;
   onOfferChanged?: () => void;
@@ -132,7 +131,6 @@ async function readJsonResponse(response: Response) {
 
 export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function OfferChat({
   className,
-  discountPercent,
   headerAction,
   offer,
   onOfferChanged
@@ -149,12 +147,10 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   const [isThreadLoading, setIsThreadLoading] = useState(false);
   const [threadError, setThreadError] = useState<string | null>(null);
   const offerChatRequestContextRef = useRef<{
-    discountPercent?: number;
     offerId: string | null;
     threadId: string | null;
   }>({ offerId: null, threadId: null });
   offerChatRequestContextRef.current = {
-    discountPercent,
     offerId: offer?.id ?? null,
     threadId: activeThreadId
   };
@@ -166,7 +162,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
           const ctx = offerChatRequestContextRef.current;
           const threadBody =
             ctx.offerId && ctx.threadId
-              ? { discountPercent: ctx.discountPercent, offerId: ctx.offerId, threadId: ctx.threadId }
+              ? { offerId: ctx.offerId, threadId: ctx.threadId }
               : {};
 
           return {
@@ -209,6 +205,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
     if (!pendingExternal || isInputDisabled) return;
     void sendText(pendingExternal);
     setPendingExternal(null);
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom("smooth")));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingExternal, isInputDisabled]);
 
@@ -276,7 +273,9 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   async function sendText(text: string) {
     if (!text || isInputDisabled) return;
 
-    await sendMessage({ text });
+    const messagePromise = sendMessage({ text });
+    requestAnimationFrame(() => scrollToBottom("smooth"));
+    await messagePromise;
     if (offer) {
       await refreshThreads().catch(() => undefined);
     }
@@ -484,7 +483,17 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
                     : "border border-foreground/15 bg-muted/60 text-foreground"
                 )}
               >
-                {isUser ? textContent : <MarkdownMessage>{textContent}</MarkdownMessage>}
+                {isUser ? (
+                  textContent
+                ) : textContent ? (
+                  <MarkdownMessage>{textContent}</MarkdownMessage>
+                ) : (
+                  <span className="flex h-5 items-center gap-1">
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0ms]" />
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:150ms]" />
+                    <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:300ms]" />
+                  </span>
+                )}
               </div>
               {isUser && (
                 <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">

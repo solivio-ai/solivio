@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
+  ArrowUpDown,
   ArrowUpRight,
   CheckCircle2,
   CircleDashed,
@@ -78,6 +79,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
+type SortKey =
+  | "createdAtDesc"
+  | "createdAtAsc"
+  | "valueDesc"
+  | "valueAsc"
+  | "customerAsc";
 type T = ReturnType<typeof useTranslations<"OffersList">>;
 
 type OfferRow = {
@@ -94,6 +101,7 @@ type OfferRow = {
   unmatched?: string[];
   notes?: string[];
   totalPrice?: number;
+  currency?: string | null;
 };
 
 type NormalizedOfferRow = {
@@ -109,6 +117,7 @@ type NormalizedOfferRow = {
   unmatchedCount: number;
   notesCount: number;
   totalPrice: number | null;
+  currency: string;
 };
 
 type Props = {
@@ -166,6 +175,7 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
     unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
     totalPrice: typeof offer.totalPrice === "number" ? offer.totalPrice : null,
+    currency: offer.currency || "PLN",
   };
 }
 
@@ -192,11 +202,23 @@ function getFilterLabel(filter: StatusFilter, t: T) {
   return t(`filters.${filter}`);
 }
 
-function formatNumber(value: number, locale: string) {
+function formatCurrency(value: number, currency: string, locale: string) {
   return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatCreatedAt(value: string, locale: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
 
 function getCustomerLabel(offer: NormalizedOfferRow, t: T) {
@@ -219,13 +241,7 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
   );
 }
 
-function OfferActions({
-  offer,
-  fullWidth = false,
-}: {
-  offer: NormalizedOfferRow;
-  fullWidth?: boolean;
-}) {
+function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
   const router = useRouter();
   const t = useTranslations("OffersList");
   const persisted = isPersistedOfferId(offer.id);
@@ -279,12 +295,7 @@ function OfferActions({
   }
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-end",
-        fullWidth && "w-full sm:w-auto"
-      )}
-    >
+    <div className="flex items-center justify-end">
       <DropdownMenu>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -363,7 +374,7 @@ function OfferActions({
               />
             </div>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
               {t("actions.deleteCancel")}
             </Button>
@@ -427,26 +438,17 @@ export function OffersList({ offers, hideHeader }: Props) {
   const t = useTranslations("OffersList");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [sortKey, setSortKey] = useState<SortKey>("createdAtDesc");
 
   const normalizedOffers = useMemo(
     () => offers.map((offer) => normalizeOffer(offer, t)),
     [offers, t]
   );
 
-  const metrics = useMemo(() => {
-    const total = normalizedOffers.length;
-    const drafts = normalizedOffers.filter((offer) => offer.status === "draft").length;
-    const accepted = normalizedOffers.filter((offer) => offer.status === "accepted").length;
-    const needsAttention = normalizedOffers.filter((offer) => offer.unmatchedCount > 0).length;
-    const matchedProducts = normalizedOffers.reduce((sum, offer) => sum + offer.productCount, 0);
-
-    return { total, drafts, accepted, needsAttention, matchedProducts };
-  }, [normalizedOffers]);
-
   const filteredOffers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return normalizedOffers.filter((offer) => {
+    const filtered = normalizedOffers.filter((offer) => {
       const matchesStatus =
         statusFilter === "all" ||
         offer.status === statusFilter ||
@@ -465,7 +467,27 @@ export function OffersList({ offers, hideHeader }: Props) {
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedQuery));
     });
-  }, [normalizedOffers, query, statusFilter]);
+
+    const sorted = [...filtered];
+    sorted.sort((a, b) => {
+      switch (sortKey) {
+        case "createdAtAsc":
+          return a.createdAt.localeCompare(b.createdAt);
+        case "valueDesc":
+          return (b.totalPrice ?? -Infinity) - (a.totalPrice ?? -Infinity);
+        case "valueAsc":
+          return (a.totalPrice ?? Infinity) - (b.totalPrice ?? Infinity);
+        case "customerAsc":
+          return (a.customerName ?? "").localeCompare(b.customerName ?? "", locale, {
+            sensitivity: "base",
+          });
+        case "createdAtDesc":
+        default:
+          return b.createdAt.localeCompare(a.createdAt);
+      }
+    });
+    return sorted;
+  }, [normalizedOffers, query, statusFilter, sortKey, locale]);
 
   const visibleOffers = hideHeader ? normalizedOffers : filteredOffers;
 
@@ -476,13 +498,7 @@ export function OffersList({ offers, hideHeader }: Props) {
       ) : (
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
-            <div className="mb-1.5 flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-              <Badge variant="outline">
-                {t("badges.offerCount", { count: metrics.total })}
-              </Badge>
-              <Badge variant="secondary">{t("badges.salesWorkspace")}</Badge>
-            </div>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               {t("subtitle")}
             </p>
@@ -518,67 +534,67 @@ export function OffersList({ offers, hideHeader }: Props) {
         <>
           {!hideHeader ? (
             <>
-              <div className="grid gap-3 rounded-lg border bg-card p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <span className="mr-1 font-medium">{t("queue")}</span>
-                  <Badge variant="outline">
-                    <CircleDashed size={12} aria-hidden="true" />
-                    {t("badges.draftsToReview", { count: metrics.drafts })}
-                  </Badge>
-                  <Badge variant={metrics.needsAttention > 0 ? "destructive" : "secondary"}>
-                    <TriangleAlert size={12} aria-hidden="true" />
-                    {t("badges.needsAttention", { count: metrics.needsAttention })}
-                  </Badge>
-                  <Badge variant="outline">
-                    <PackageCheck size={12} aria-hidden="true" />
-                    {t("badges.matchedProducts", { count: metrics.matchedProducts })}
-                  </Badge>
-                  <Badge variant="outline">
-                    <CheckCircle2 size={12} aria-hidden="true" />
-                    {t("badges.accepted", { count: metrics.accepted })}
-                  </Badge>
+              <div className="flex flex-col gap-2 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
+                <div className="relative w-full sm:max-w-sm sm:flex-1">
+                  <Search
+                    size={16}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder={t("search.placeholder")}
+                    className="pl-8"
+                    aria-label={t("search.label")}
+                  />
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <div className="relative w-full sm:w-80">
-                    <Search
-                      size={16}
-                      aria-hidden="true"
-                      className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <Input
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      placeholder={t("search.placeholder")}
-                      className="pl-8"
-                      aria-label={t("search.label")}
-                    />
-                  </div>
+                <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
+                  <ListFilter
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground"
+                  />
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+                  >
+                    <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("filters.all")}</SelectItem>
+                      <SelectItem value="draft">{t("filters.draft")}</SelectItem>
+                      <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
+                      <SelectItem value="needs-attention">
+                        {t("filters.needsAttention")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <ListFilter
-                      size={16}
-                      aria-hidden="true"
-                      className="text-muted-foreground"
-                    />
-                    <Select
-                      value={statusFilter}
-                      onValueChange={(value) => setStatusFilter(value as StatusFilter)}
-                    >
-                      <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
-                        {/* <span className="truncate">{getFilterLabel(statusFilter, t)}</span> */}
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t("filters.all")}</SelectItem>
-                        <SelectItem value="draft">{t("filters.draft")}</SelectItem>
-                        <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
-                        <SelectItem value="needs-attention">
-                          {t("filters.needsAttention")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="flex w-full items-center gap-2 sm:w-auto">
+                  <ArrowUpDown
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground"
+                  />
+                  <Select
+                    value={sortKey}
+                    onValueChange={(value) => setSortKey(value as SortKey)}
+                  >
+                    <SelectTrigger className="w-full sm:w-52" aria-label={t("sort.label")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="createdAtDesc">{t("sort.createdAtDesc")}</SelectItem>
+                      <SelectItem value="createdAtAsc">{t("sort.createdAtAsc")}</SelectItem>
+                      <SelectItem value="valueDesc">{t("sort.valueDesc")}</SelectItem>
+                      <SelectItem value="valueAsc">{t("sort.valueAsc")}</SelectItem>
+                      <SelectItem value="customerAsc">{t("sort.customerAsc")}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </>
@@ -612,13 +628,13 @@ export function OffersList({ offers, hideHeader }: Props) {
                 <Table className="w-full min-w-[720px] table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[20%] min-w-0">{t("table.offer")}</TableHead>
-                      <TableHead className="w-[28%] min-w-0">
+                      <TableHead className="w-[22%] min-w-0">{t("table.offer")}</TableHead>
+                      <TableHead className="w-[34%] min-w-0">
                         {t("table.customerRequest")}
                       </TableHead>
                       <TableHead className="w-[12%] min-w-0">{t("table.status")}</TableHead>
-                      <TableHead className="w-[16%] min-w-0">{t("table.coverage")}</TableHead>
-                      <TableHead className="w-[10%] min-w-0 text-right">
+                      <TableHead className="w-[12%] min-w-0">{t("table.createdAt")}</TableHead>
+                      <TableHead className="w-[12%] min-w-0 text-right">
                         {t("table.value")}
                       </TableHead>
                       <TableHead className="w-14 min-w-14 text-right">
@@ -636,9 +652,10 @@ export function OffersList({ offers, hideHeader }: Props) {
                             <div className="grid min-w-0 gap-1">
                               <Link
                                 href={`/offers/${offer.id}`}
-                                className="truncate font-medium hover:text-primary hover:underline"
+                                className="inline-flex min-w-0 items-center gap-1 truncate font-medium hover:text-primary hover:underline"
                               >
                                 {offer.name}
+                                <ArrowUpRight size={13} aria-hidden="true" className="shrink-0" />
                               </Link>
                               <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
                                 <UserRound size={14} aria-hidden="true" />
@@ -667,26 +684,13 @@ export function OffersList({ offers, hideHeader }: Props) {
                               </Tooltip>
                             </div>
                           </TableCell>
-                          <TableCell className="whitespace-normal">
-                            <div className="grid min-w-0 gap-2">
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <Badge variant="outline">
-                                  <PackageCheck size={12} aria-hidden="true" />
-                                  {t("productCount", { count: offer.productCount })}
-                                </Badge>
-                                <AttentionBadge offer={offer} />
-                              </div>
-                              {offer.notesCount > 0 ? (
-                                <span className="text-xs text-muted-foreground">
-                                  {t("notes.generation", { count: offer.notesCount })}
-                                </span>
-                              ) : null}
-                            </div>
+                          <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                            {formatCreatedAt(offer.createdAt, locale)}
                           </TableCell>
                           <TableCell className="text-right font-medium">
                             {offer.totalPrice === null
                               ? t("fallbacks.noValue")
-                              : formatNumber(offer.totalPrice, locale)}
+                              : formatCurrency(offer.totalPrice, offer.currency, locale)}
                           </TableCell>
                           <TableCell className="text-right">
                             <OfferActions offer={offer} />
@@ -704,11 +708,23 @@ export function OffersList({ offers, hideHeader }: Props) {
                   const statusDescription = getStatusDescription(offer.status, t);
 
                   return (
-                    <Card key={offer.id} size="sm">
+                    <Card
+                      key={offer.id}
+                      size="sm"
+                      className="transition-colors hover:ring-primary/40"
+                    >
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <CardTitle className="truncate">{offer.name}</CardTitle>
+                            <CardTitle className="truncate">
+                              <Link
+                                href={`/offers/${offer.id}`}
+                                className="inline-flex max-w-full items-center gap-1 truncate hover:text-primary hover:underline"
+                              >
+                                <span className="truncate">{offer.name}</span>
+                                <ArrowUpRight size={13} aria-hidden="true" className="shrink-0" />
+                              </Link>
+                            </CardTitle>
                             <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                               <UserRound size={14} aria-hidden="true" />
                               <span className="truncate">
@@ -745,11 +761,21 @@ export function OffersList({ offers, hideHeader }: Props) {
                             </Badge>
                           ) : null}
                           {offer.totalPrice !== null ? (
-                            <Badge variant="outline">{formatNumber(offer.totalPrice, locale)}</Badge>
+                            <Badge variant="outline">
+                              {formatCurrency(offer.totalPrice, offer.currency, locale)}
+                            </Badge>
                           ) : null}
                         </div>
 
-                        <OfferActions offer={offer} fullWidth />
+                        <div className="flex items-center justify-between gap-2">
+                          <Button asChild size="sm" variant="outline">
+                            <Link href={`/offers/${offer.id}`}>
+                              <ArrowUpRight size={14} aria-hidden="true" />
+                              {t("actions.reviewOffer")}
+                            </Link>
+                          </Button>
+                          <OfferActions offer={offer} />
+                        </div>
                       </CardContent>
                     </Card>
                   );

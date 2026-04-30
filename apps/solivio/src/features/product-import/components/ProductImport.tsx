@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -46,9 +47,13 @@ type EmbeddingModel = {
 
 type ImportStatus =
   | { kind: "idle" }
-  | { kind: "saving" }
+  | { kind: "saving"; processed: number; total: number }
   | { kind: "done"; count: number }
-  | { kind: "error"; message: string };
+  | { kind: "error"; message: string; processed: number; total: number };
+
+/** Rows per POST. Stays well under the server cap and keeps each request short enough to avoid
+ * proxy timeouts while still amortizing the OpenAI round-trip across many rows. */
+const CHUNK_SIZE = 500;
 
 export function ProductImport() {
   const t = useTranslations("ProductImport");
@@ -117,25 +122,38 @@ export function ProductImport() {
 
   async function handleImport() {
     if (productRows.length === 0 || !selectedModel) return;
-    setStatus({ kind: "saving" });
+    const total = productRows.length;
+    setStatus({ kind: "saving", processed: 0, total });
 
-    try {
-      const response = await fetch("/api/products/import", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ products: productRows, model: selectedModel })
-      });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error ?? `Request failed (${response.status})`);
+    let processed = 0;
+    for (let offset = 0; offset < total; offset += CHUNK_SIZE) {
+      const chunk = productRows.slice(offset, offset + CHUNK_SIZE);
+
+      try {
+        const response = await fetch("/api/products/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ products: chunk, model: selectedModel })
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(payload?.error ?? `Request failed (${response.status})`);
+        }
+      } catch (err) {
+        setStatus({
+          kind: "error",
+          message: err instanceof Error ? err.message : t("previewCard.importError"),
+          processed,
+          total
+        });
+        return;
       }
-      setStatus({ kind: "done", count: payload.count ?? productRows.length });
-    } catch (err) {
-      setStatus({
-        kind: "error",
-        message: err instanceof Error ? err.message : t("previewCard.importError")
-      });
+
+      processed += chunk.length;
+      setStatus({ kind: "saving", processed, total });
     }
+
+    setStatus({ kind: "done", count: processed });
   }
 
   return (
@@ -198,6 +216,7 @@ export function ProductImport() {
                 {t("previewCard.missingColumns", { count: missingColumns.length, columns: missingColumns.join(", ") })}
               </StatusNotice>
             ) : (
+              <>
               <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
                 {models.length > 0 ? (
                   <Select
@@ -231,7 +250,10 @@ export function ProductImport() {
                 >
                   <Upload size={16} aria-hidden="true" />
                   {status.kind === "saving"
-                    ? t("previewCard.importAction.embedding")
+                    ? t("previewCard.importAction.embeddingProgress", {
+                        processed: status.processed,
+                        total: status.total
+                      })
                     : t("previewCard.importAction.saveCount", { count: productRows.length })}
                 </Button>
 
@@ -242,10 +264,32 @@ export function ProductImport() {
                 ) : null}
                 {status.kind === "error" ? (
                   <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-                    {status.message}
+                    {status.processed > 0
+                      ? t("previewCard.importPartialError", {
+                          processed: status.processed,
+                          total: status.total,
+                          message: status.message
+                        })
+                      : status.message}
                   </StatusNotice>
                 ) : null}
               </div>
+
+              {status.kind === "saving" ? (
+                <div className="grid gap-1.5">
+                  <Progress
+                    value={status.total > 0 ? (status.processed / status.total) * 100 : 0}
+                    aria-label={t("previewCard.progressLabel")}
+                  />
+                  <p className="text-xs text-muted-foreground" role="status" aria-live="polite">
+                    {t("previewCard.progressText", {
+                      processed: status.processed,
+                      total: status.total
+                    })}
+                  </p>
+                </div>
+              ) : null}
+              </>
             )}
 
             <div className="overflow-hidden rounded-lg border bg-background/60">

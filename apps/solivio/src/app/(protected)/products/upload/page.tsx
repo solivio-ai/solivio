@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { ProductImport } from "../../../features/product-import";
-import { Badge } from "@/components/ui/badge";
+import { ProductImport } from "@/features/product-import";
+import { AppPage } from "@/components/AppPage";
 
 export async function generateMetadata() {
   const t = await getTranslations("ProductImport.page");
@@ -11,12 +11,9 @@ export default async function ProductUploadPage() {
   const t = await getTranslations("ProductImport.page");
 
   return (
-    <main className="mx-auto grid max-w-[1180px] gap-4 p-4">
+    <AppPage>
       <header className="flex flex-col gap-2 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-2">
-          <Badge className="w-fit" variant="secondary">
-            {t("badge")}
-          </Badge>
           <h1 className="text-2xl leading-tight font-semibold text-foreground">{t("title")}</h1>
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
             {t("description")}
@@ -24,6 +21,6 @@ export default async function ProductUploadPage() {
         </div>
       </header>
       <ProductImport />
-    </main>
+    </AppPage>
   );
 }

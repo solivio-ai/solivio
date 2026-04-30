@@ -1,14 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
-import { OfferBuilderHeader } from "./OfferBuilderHeader";
-import { OfferDebugPanel } from "./OfferDebugPanel";
+import { OfferBuilderActionBar, OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
 import { OfferValidationDialog, type ValidationResult } from "./OfferValidationDialog";
@@ -17,10 +16,9 @@ import type { DraftLine, SaveState } from "./offer-builder-types";
 type OfferBuilderProps = {
   assistantToggle?: ReactNode;
   customerName?: string;
-  discountPercent?: number;
   offer: Offer;
   onOfferChange?: (offer: Offer) => void;
-  onDiscountPercentChange?: (discountPercent: number) => void;
+  onDiscountPercentChange: (discountPercent: number) => void;
   onAccepted?: (offer: Offer) => void;
   onSendToChat?: (message: string) => void;
 };
@@ -78,7 +76,6 @@ async function parseOfferResponse(response: Response): Promise<Offer> {
 export function OfferBuilder({
   assistantToggle,
   customerName,
-  discountPercent: controlledDiscountPercent,
   offer,
   onOfferChange,
   onDiscountPercentChange,
@@ -98,16 +95,18 @@ export function OfferBuilder({
   }, [offer.name, customerName, offer.customerName, tBuilder]);
   const [validateState, setValidateState] = useState<"idle" | "loading">("idle");
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
-  const [localDiscountPercent, setLocalDiscountPercent] = useState(3);
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
+  const [unmatched, setUnmatched] = useState<string[]>(() => offer.unmatched ?? []);
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
-  const discountPercent = controlledDiscountPercent ?? localDiscountPercent;
-  const setDiscountPercent = onDiscountPercentChange ?? setLocalDiscountPercent;
+  const [actionBarCompact, setActionBarCompact] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const discountPercent = offer.discountPercent;
 
   useEffect(() => {
     setLines(toDraftLines(offer));
     setStatus(offer.status);
+    setUnmatched(offer.unmatched ?? []);
   }, [offer]);
 
   const currency = lines[0]?.currency ?? "PLN";
@@ -120,12 +119,42 @@ export function OfferBuilder({
   );
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const estimatedCost = subtotal * 0.7;
-  const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
   const limitedLineCount = lines.filter((line) => line.availability === "limited").length;
   const unpricedLineCount = lines.filter((line) => line.unitPrice <= 0).length;
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
   const generatedDate = offer.generatedAt.slice(0, 10);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let parent = section.parentElement;
+    let scrollContainer: HTMLElement | null = null;
+
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      if (/(auto|scroll)/.test(style.overflowY)) {
+        scrollContainer = parent;
+        break;
+      }
+      parent = parent.parentElement;
+    }
+
+    if (!scrollContainer) return;
+
+    const updateCompactState = () => {
+      setActionBarCompact(scrollContainer.scrollTop > 24);
+    };
+
+    updateCompactState();
+    scrollContainer.addEventListener("scroll", updateCompactState, { passive: true });
+    window.addEventListener("resize", updateCompactState);
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", updateCompactState);
+      window.removeEventListener("resize", updateCompactState);
+    };
+  }, []);
 
   function updateQuantity(productId: string, nextQuantity: number) {
     setLines((current) =>
@@ -170,6 +199,7 @@ export function OfferBuilder({
   function syncOffer(nextOffer: Offer) {
     setStatus(nextOffer.status);
     setLines(toDraftLines(nextOffer));
+    setUnmatched(nextOffer.unmatched ?? []);
     onOfferChange?.(nextOffer);
   }
 
@@ -306,6 +336,25 @@ export function OfferBuilder({
     }
   }
 
+  async function removeUnmatched(item: string) {
+    const nextUnmatched = unmatched.filter((u) => u !== item);
+    setUnmatched(nextUnmatched);
+    markSaving();
+    try {
+      const response = await fetch(`/api/offers/${offer.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unmatched: nextUnmatched })
+      });
+      const nextOffer = await parseOfferResponse(response);
+      syncOffer(nextOffer);
+      markSaved();
+    } catch {
+      setUnmatched(unmatched);
+      markSaveError({ kind: "save-review" });
+    }
+  }
+
   async function saveReview(nextStatus = status, nextLines = lines) {
     markSaving();
 
@@ -315,7 +364,7 @@ export function OfferBuilder({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: nextStatus,
-          unmatched: offer.unmatched,
+          unmatched,
           items: toUpdateItems(nextLines)
         })
       });
@@ -380,43 +429,27 @@ export function OfferBuilder({
   }
 
   return (
-    <section className="grid min-w-0 gap-4 pb-1">
+    <section ref={sectionRef} className="grid min-w-0 gap-4 pb-3">
       <OfferBuilderHeader
-        assistantToggle={assistantToggle}
-        formCustomerName={offer.customerName?.trim() ?? ""}
-        formName={offer.name?.trim() ?? ""}
         generatedDate={generatedDate}
         lineCount={lines.length}
-        offerId={offer.id}
         offerTitle={offerHeaderTitle}
-        onAccept={() => void saveReview("accepted")}
-        onReopen={() => void saveReview("draft")}
-        onValidate={() => void handleValidate()}
-        validateState={validateState}
-        onAddProduct={() => setSearchOpen(true)}
-        onRetrySave={retrySave}
-        saveState={saveState}
         status={status}
         createdBy={offer.createdBy}
         createdAt={offer.generatedAt}
         updatedBy={offer.updatedBy}
         updatedAt={offer.updatedAt}
-        onUpdate={syncOffer}
       />
 
       <OfferProductsReview
         lines={lines}
-        unmatched={offer.unmatched ?? []}
+        unmatched={unmatched}
         commitQuantity={commitQuantity}
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
+        removeUnmatched={(item) => void removeUnmatched(item)}
         updateQuantity={updateQuantity}
         status={status}
-      />
-
-      <OfferDebugPanel
-        clientRequest={offer.clientRequest ?? ""}
-        fragments={offer.debugFragments ?? []}
       />
 
       <OfferSummary
@@ -424,10 +457,9 @@ export function OfferBuilder({
         discount={discount}
         discountPercent={discountPercent}
         limitedLineCount={limitedLineCount}
-        margin={margin}
         notes={offer.notes}
         requestText={requestText}
-        setDiscountPercent={setDiscountPercent}
+        setDiscountPercent={onDiscountPercentChange}
         status={status}
         subtotal={subtotal}
         total={total}
@@ -455,6 +487,24 @@ export function OfferBuilder({
           onSendToChat={onSendToChat}
         />
       )}
+
+      <OfferBuilderActionBar
+        assistantToggle={assistantToggle}
+        compact={actionBarCompact}
+        formCustomerName={offer.customerName?.trim() ?? ""}
+        formName={offer.name?.trim() ?? ""}
+        offerId={offer.id}
+        offerTitle={offerHeaderTitle}
+        onAccept={() => void saveReview("accepted")}
+        onReopen={() => void saveReview("draft")}
+        onValidate={() => void handleValidate()}
+        validateState={validateState}
+        onAddProduct={() => setSearchOpen(true)}
+        onRetrySave={retrySave}
+        saveState={saveState}
+        status={status}
+        onUpdate={syncOffer}
+      />
     </section>
   );
 }

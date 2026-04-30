@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
@@ -8,7 +7,6 @@ type CommercialTotalsProps = {
   currency: DraftLine["currency"];
   discount: number;
   discountPercent: number;
-  margin: number;
   setDiscountPercent: (discountPercent: number) => void;
   subtotal: number;
   total: number;
@@ -19,7 +17,6 @@ export function CommercialTotals({
   currency,
   discount,
   discountPercent,
-  margin,
   setDiscountPercent,
   subtotal,
   total,
@@ -59,10 +56,6 @@ export function CommercialTotals({
         <div className="flex items-center justify-between gap-4 text-base">
           <span className="font-medium">{tCommercial("totalNet")}</span>
           <span className="text-lg font-semibold">{formatCurrency(total, currency)}</span>
-        </div>
-        <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
-          <span>{tCommercial("estimatedMargin")}</span>
-          <Badge variant={margin >= 28 ? "outline" : "destructive"}>{margin.toFixed(1)}%</Badge>
         </div>
       </div>
     </section>

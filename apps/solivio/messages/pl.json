@@ -6,9 +6,24 @@
       "newOffer": "Nowa oferta",
       "catalogUpload": "Import katalogu"
     },
+    "aria": {
+      "closeNavigation": "Zamknij menu nawigacji",
+      "home": "Strona główna Solivio",
+      "toggleNavigation": "Zwiń lub rozwiń menu nawigacji"
+    },
     "actions": {
       "newOffer": "Nowa oferta"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio to otwarty system AI, który zmienia sposób tworzenia ofert w firmach B2B.",
+    "openGraphDescription": "Zamiast ręcznie budować każdą wycenę, Solivio generuje uporządkowane szkice ofert na podstawie Twoich danych — w kilka sekund.",
+    "twitterDescription": "Szkice ofert wspierane przez AI, tworzone z zapytań klientów i danych katalogowych."
+  },
+  "UserMenu": {
+    "signedInAs": "Zalogowano jako",
+    "logOut": "Wyloguj"
   },
   "LanguageSwitcher": {
     "label": "Język",
@@ -38,7 +53,8 @@
       "username": "Nazwa użytkownika",
       "identifier": "Email lub nazwa użytkownika",
       "email": "Email",
-      "password": "Hasło"
+      "password": "Hasło",
+      "rememberMe": "Zapamiętaj mnie"
     },
     "actions": {
       "signIn": "Zaloguj się",
@@ -65,10 +81,6 @@
   "NewOffer": {
     "page": {
       "title": "Nowa oferta",
-      "badges": {
-        "generatedDraft": "Draft generowany przez AI",
-        "review": "Sprawdź i dopracuj"
-      },
       "back": "Wróć"
     },
     "form": {
@@ -158,7 +170,7 @@
         "error": "Nie udało się zapisać zmian.",
         "retry": "Spróbuj ponownie"
       },
-      "createdBy": "Utworzone przez {name}",
+      "createdBy": "Utworzone przez: {name}",
       "lastModifiedBy": "Ostatnia zmiana: {name}",
       "backToDraft": "Przywróć do szkicu",
       "manuallyAdded": "Dodano ręcznie",
@@ -166,14 +178,13 @@
       "done": "Gotowe"
     },
     "review": {
+      "pageTitle": "Przegląd oferty",
       "loading": "Wczytywanie wygenerowanej oferty...",
       "error": "Nie udało się wczytać tej oferty.",
       "notFound": "Oferta niedostępna",
       "createAnother": "Utwórz kolejny szkic",
       "assistant": {
-        "title": "Asystent",
-        "hide": "Ukryj asystenta",
-        "show": "Pokaż asystenta"
+        "title": "Asystent"
       },
       "revisions": "Wersje",
       "resizeLabel": "Zmień rozmiar paneli przeglądu i asystenta",
@@ -191,10 +202,11 @@
         "transferToChat": "Przekaż do czatu",
         "acceptOffer": "Zaakceptuj ofertę",
         "checking": "Sprawdzam...",
+        "acceptWithoutAi": "Zaakceptuj bez sprawdzenia AI",
         "checkWithAI": "Sprawdź z AI",
-        "messageHeader": "**Wyniki walidacji AI**",
+        "messageHeader": "Wyniki walidacji AI",
         "statusLabel": "Status",
-        "chatPrompt": "Czy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?"
+        "chatPrompt": "Pomóż mi rozwiązać problemy wymienione powyżej."
       },
       "summary": {
         "title": "Podsumowanie",
@@ -203,7 +215,6 @@
         "reviewChecks": "Weryfikacja",
         "notes": "Notatki",
         "checks": {
-          "targetMargin": "Docelowa marża: {margin}%",
           "allPriced": "Wszystkie pozycje mają ceny",
           "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",
           "availabilityConfirmed": "Dostępność potwierdzona",
@@ -216,14 +227,15 @@
         "subtotal": "Wartość netto",
         "discount": "Rabat",
         "discountValue": "Wartość rabatu",
-        "totalNet": "Suma netto",
-        "estimatedMargin": "Szacowana marża"
+        "totalNet": "Suma netto"
       },
       "products": {
         "title": "Produkty",
         "description": "Przejrzyj dopasowane produkty, ilości i ceny.",
         "unmatchedTitle": "Niedopasowane pozycje zapytania",
         "unmatchedDescription": "Następujące pozycje z zapytania klienta nie mogły zostać przypisane do żadnego produktu w katalogu:",
+        "removeUnmatched": "Oznacz jako rozwiązane",
+        "removeUnmatchedAria": "Usuń niedopasowaną pozycję: {item}",
         "empty": "Brak produktów w tej ofercie.",
         "match": "Dopasowanie produktu",
         "qty": "Ilość",
@@ -235,14 +247,22 @@
         "details": "Szczegóły",
         "availability": "Dostępność",
         "brand": "Marka",
-      "quantityAria": "Ilość dla {name}",
+        "quantityAria": "Ilość dla {name}",
         "removeAria": "Usuń {name}"
       },
       "acceptedView": {
         "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
-        "attribution": "Autorstwo",
+        "attribution": "Odpowiedzialne osoby",
         "downloadPdf": "Wygeneruj i pobierz PDF",
-        "goToOffers": "Wróć do listy ofert"
+        "goToOffers": "Wróć do listy ofert",
+        "pdfViewer": {
+          "loading": "Ładowanie PDF…",
+          "error": "Nie udało się załadować PDF.",
+          "zoomOut": "Pomniejsz",
+          "zoomIn": "Powiększ",
+          "previousPage": "Poprzednia strona",
+          "nextPage": "Następna strona"
+        }
       }
     },
     "revision": {
@@ -269,6 +289,12 @@
         "qty": "Ilość",
         "unitPrice": "Cena jedn.",
         "total": "Suma",
+        "accepted": "Zaakceptowana",
+        "clientRequest": "Zapytanie klienta",
+        "unmatched": "Nieznalezione pozycje",
+        "subtotal": "Wartość netto",
+        "discount": "Rabat",
+        "totalNet": "Razem netto",
         "close": "Zamknij",
         "restoring": "Przywracanie...",
         "restoreAction": "Przywróć tę wersję"
@@ -278,7 +304,7 @@
   "QuickSearch": {
     "card": {
       "title": "Znajdź produkt",
-      "description": "Przeszukaj katalog i utwórz szkic oferty z wybranych pozycji."
+      "description": "Draft oferty z wybranych produktów."
     },
     "searchPlaceholder": "Szukaj produktów...",
     "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
@@ -287,6 +313,24 @@
       "cancel": "Anuluj",
       "creating": "Tworzenie...",
       "createDraft": "Utwórz szkic oferty"
+    }
+  },
+  "ProductSearchDialog": {
+    "title": "Szukaj produktów",
+    "description": "Przeszukaj katalog i dostosuj ilości przed dodaniem produktów do oferty.",
+    "placeholder": "Szukaj produktów…",
+    "searchAria": "Szukaj",
+    "searchIn": "Szukaj w:",
+    "productsFound": "{count, plural, one {# znaleziony produkt} few {# znalezione produkty} many {# znalezionych produktów} other {# znalezionych produktów}}",
+    "searching": "Szukam...",
+    "noResults": "Brak wyników.",
+    "decreaseQuantity": "Zmniejsz ilość dla {name}",
+    "increaseQuantity": "Zwiększ ilość dla {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Nazwa",
+      "description": "Opis",
+      "manufacturer": "Producent"
     }
   },
   "OfferChat": {
@@ -306,7 +350,7 @@
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty"
+      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",
@@ -344,12 +388,11 @@
       "draftsToReview": "{count} do przeglądu",
       "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
       "needsAttention": "{count} z brakującymi produktami",
-      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
-      "salesWorkspace": "Obszar sprzedaży"
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}"
     },
     "empty": {
-      "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
-      "title": "Nie ma jeszcze ofert"
+      "description": "Generuj oferty bazując na zapytaniach klientów.",
+      "title": "Nie masz jeszcze ofert"
     },
     "filters": {
       "accepted": "Zaakceptowana",
@@ -392,9 +435,18 @@
         "label": "Szkic"
       }
     },
+    "sort": {
+      "label": "Sortuj",
+      "createdAtDesc": "Najnowsze",
+      "createdAtAsc": "Najstarsze",
+      "valueDesc": "Wartość: malejąco",
+      "valueAsc": "Wartość: rosnąco",
+      "customerAsc": "Klient (A–Z)"
+    },
     "table": {
       "actions": "Akcje",
       "coverage": "Pokrycie",
+      "createdAt": "Data zamówienia",
       "customerRequest": "Zapytanie klienta",
       "offer": "Oferta",
       "status": "Status",
@@ -406,7 +458,6 @@
   "ProductImport": {
     "page": {
       "title": "Importuj produkty",
-      "badge": "Produkty",
       "description": "Prześlij katalog CSV, podejrzyj przetworzone wiersze, a następnie zapisz embeddingi za pomocą API serwera."
     },
     "uploadCard": {
@@ -429,14 +480,32 @@
       "modelsUnavailable": "Modele embeddingów niedostępne",
       "importAction": {
         "embedding": "Przetwarzanie...",
+        "embeddingProgress": "Przetwarzanie {processed} / {total}...",
         "saveCount": "Przetwórz i zapisz {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}"
       },
       "importDone": "Zapisano {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}.",
       "importError": "Import nie powiódł się.",
+      "importPartialError": "Import przerwany po zapisaniu {processed} z {total} wierszy: {message}. Możesz uruchomić import ponownie — zaimportowane wiersze zostaną zaktualizowane.",
+      "progressLabel": "Postęp importu",
+      "progressText": "Zaimportowano {processed} z {total} wierszy.",
       "showingFirst": "Pokazywanie pierwszych 50 z {count} wierszy."
     }
   },
+  "QuickOffer": {
+    "errors": {
+      "itemsRequired": "pozycje są wymagane"
+    },
+    "offer": {
+      "title": "Szybka oferta",
+      "description": "Ręczny wybór z katalogu",
+      "note": "Oferta utworzona ręcznie z wyszukiwania produktów",
+      "productNameFallback": "Ręczny wybór",
+      "requestItem": "Ręczny wybór",
+      "rationale": "Wybrane przez użytkownika"
+    }
+  },
   "DemoOffer": {
+    "pageTitle": "Oferta demo",
     "title": "Produkty w ofercie",
     "addProduct": "Dodaj produkt",
     "empty": "Brak dodanych produktów",
@@ -444,9 +513,67 @@
   },
   "Dashboard": {
     "newOffer": {
-      "title": "Zacznij nową ofertę",
-      "description": "Generuj ustrukturyzowane szkice ofert na podstawie swoich danych.",
+      "title": "Dodaj nową ofertę",
+      "description": "Draft oferty z zapytania klienta.",
       "button": "Nowa oferta"
+    },
+    "integrations": {
+      "title": "Źródła danych",
+      "subtitle": "Połącz swoje systemy biznesowe, aby wzmocnić generowanie ofert.",
+      "badge": {
+        "active": "Aktywna",
+        "available": "Dostępna"
+      },
+      "action": {
+        "configure": "Importuj katalog →",
+        "integrate": "Skontaktuj się →"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Katalog produktów",
+          "description": "Wgraj i osadź bazę produktów. Zasila wyszukiwanie katalogu i dopasowywanie AI."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Synchronizuj produkty, poziomy magazynowe i przyjęte zamówienia z systemem ERP."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pobieraj profile klientów i historię transakcji, aby personalizować szkice ofert."
+        },
+        "priceRules": {
+          "name": "Reguły cenowe",
+          "description": "Automatycznie stosuj cele marżowe, rabaty ilościowe i ceny według poziomu klienta."
+        },
+        "inventory": {
+          "name": "Magazyn",
+          "description": "Wyświetlaj dostępność magazynową w czasie rzeczywistym na pozycjach oferty."
+        },
+        "emailDelivery": {
+          "name": "Wysyłka e-mail",
+          "description": "Wysyłaj zaakceptowane oferty bezpośrednio do klientów jako markowe e-maile PDF."
+        },
+        "industryKnowledge": {
+          "name": "Wiedza branżowa",
+          "description": "Dodaj kontekst o branży, segmentach klientów i specyfice sprzedaży, aby lepiej interpretować zapytania."
+        },
+        "documentation": {
+          "name": "Dokumentacja",
+          "description": "Podłącz instrukcje, karty techniczne i materiały sprzedażowe jako źródło odpowiedzi oraz uzasadnień."
+        },
+        "historicalOrders": {
+          "name": "Historyczne zamówienia",
+          "description": "Wykorzystuj wcześniejsze zamówienia do rozpoznawania powtarzalnych potrzeb i preferowanych produktów."
+        },
+        "rfqBenchmarks": {
+          "name": "Benchmarki zapytań ofertowych",
+          "description": "Porównuj nowe zapytania z podobnymi przypadkami, aby szybciej dobrać zakres oferty i poziom cen."
+        },
+        "productReviews": {
+          "name": "Opinie produktowe",
+          "description": "Uwzględniaj opinie klientów i sygnały jakościowe przy rekomendacjach oraz zamiennikach produktów."
+        }
+      }
     }
   }
 }

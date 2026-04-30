@@ -92,6 +92,27 @@
       "when": 1777551000000,
       "tag": "0012_offer_products_position",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1777552000000,
+      "tag": "0013_remove_offer_debug_fragments",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1777553000000,
+      "tag": "0014_offers_discount_percent",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1777554000000,
+      "tag": "0015_reconcile_migration_state",
+      "breakpoints": true
     }
   ]
 }

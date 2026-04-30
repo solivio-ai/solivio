@@ -6,7 +6,6 @@ import type { Offer } from "@solivio/domain";
 import { db } from "../database/db";
 import { products, offerProducts } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
-import type { OfferDebugFragment } from "@solivio/domain";
 import {
   deleteOffer as deleteOfferRow,
   findOfferById,
@@ -50,7 +49,7 @@ export type CreatedOffer = {
   items: OfferLineItem[];
   unmatched: string[];
   notes: string[];
-  debugFragments: OfferDebugFragment[];
+  discountPercent: number;
   createdBy: string | null;
   createdByName: string | null;
   updatedBy: string | null;
@@ -90,7 +89,7 @@ function rowToCreatedOffer(row: OfferRow): CreatedOffer {
     items: row.items,
     unmatched: row.unmatched,
     notes: row.notes,
-    debugFragments: row.debugFragments,
+    discountPercent: row.discountPercent,
     createdBy: row.createdBy,
     createdByName: row.createdByName,
     updatedBy: row.updatedBy,
@@ -110,7 +109,7 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
     updatedAt: offer.updatedAt,
     notes: offer.notes,
     unmatched: offer.unmatched,
-    debugFragments: offer.debugFragments,
+    discountPercent: offer.discountPercent,
     createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
     updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
     items: offer.items.map((item) => ({
@@ -168,7 +167,6 @@ export async function createOffer(
         status: "draft",
         notes: generated.notes,
         unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
-        debugFragments: generated.debugFragments,
         createdBy: userId ?? null,
         updatedBy: userId ?? null,
       },
@@ -263,7 +261,8 @@ export async function addProductToOffer(
   productId: string,
   quantity: number,
   requestItem = "",
-  userId?: string | null
+  userId?: string | null,
+  rationale = ""
 ): Promise<CreatedOffer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
@@ -290,7 +289,7 @@ export async function addProductToOffer(
     quantity,
     unitPriceNet: product.priceNet ?? 0,
     currency: product.currency ?? "PLN",
-    rationale: "",
+    rationale,
     position: existing.items.length
   });
   await setOfferUpdatedBy(offerId, userId ?? null);
@@ -348,3 +347,49 @@ export async function getOffers() {
 }
 
 export { getRecentOffers };
+
+// ── Bulk operations ────────────────────────────────────────────────────────────
+
+type BulkAddItem = {
+  productId: string;
+  quantity: number;
+  requestItem?: string;
+  rationale?: string;
+};
+
+type BulkAddItemResult = {
+  productId: string;
+  status: "added" | "duplicate" | "not_found" | "locked";
+};
+
+export async function bulkAddProductsToOffer(
+  offerId: string,
+  items: BulkAddItem[],
+  userId?: string | null
+): Promise<{ results: BulkAddItemResult[]; offer: Offer | null }> {
+  const results: BulkAddItemResult[] = [];
+
+  for (const item of items) {
+    const outcome = await addProductToOffer(
+      offerId,
+      item.productId,
+      item.quantity,
+      item.requestItem ?? "",
+      userId,
+      item.rationale ?? ""
+    );
+
+    if (outcome === null) {
+      results.push({ productId: item.productId, status: "not_found" });
+    } else if (outcome === "duplicate") {
+      results.push({ productId: item.productId, status: "duplicate" });
+    } else if (outcome === "locked") {
+      results.push({ productId: item.productId, status: "locked" });
+    } else {
+      results.push({ productId: item.productId, status: "added" });
+    }
+  }
+
+  const finalOffer = await getOffer(offerId);
+  return { results, offer: finalOffer };
+}

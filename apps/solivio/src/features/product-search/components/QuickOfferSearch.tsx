@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { PackageSearch, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
 
 export function QuickOfferSearch() {
@@ -58,16 +58,26 @@ export function QuickOfferSearch() {
 
   return (
     <>
-      <Card size="sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t("card.title")}</CardTitle>
-          <CardDescription>
-            {t("card.description")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={() => setOpen(true)}>
-            <Search size={16} className="mr-2" />
+      <Card className="bg-card/80 shadow-sm" size="sm">
+        <CardContent className="grid h-full gap-3 py-1 lg:flex lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-secondary/20 bg-secondary/10 text-secondary dark:text-sidebar-foreground">
+              <PackageSearch size={19} aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <CardTitle className="text-base">{t("card.title")}</CardTitle>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                {t("card.description")}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 w-full justify-start text-muted-foreground lg:w-48 xl:w-64"
+            onClick={() => setOpen(true)}
+          >
+            <Search size={16} aria-hidden="true" />
             {t("searchPlaceholder")}
           </Button>
         </CardContent>

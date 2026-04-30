@@ -5,9 +5,14 @@ import Link from "next/link";
 import { ArrowLeft, Download, User } from "lucide-react";
 
 import type { Offer } from "@solivio/domain";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DraftLine } from "./offer-builder-types";
+import dynamic from "next/dynamic";
+
+const PdfViewer = dynamic(
+  () => import("./PdfViewer").then((m) => ({ default: m.PdfViewer })),
+  { ssr: false }
+);
 
 type OfferAcceptedViewProps = {
   offer: Offer;
@@ -51,19 +56,14 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const lines = toDraftLines(offer);
   const currency = lines[0]?.currency ?? "PLN";
   const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
-  const discount = 0;
-  const total = subtotal;
-  const estimatedCost = subtotal * 0.7;
-  const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
+  const discountPercent = offer.discountPercent;
+  const discountAmount = subtotal * (discountPercent / 100);
+  const total = subtotal - discountAmount;
 
   return (
     <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
       <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
-        <iframe
-          title={tAccepted("pdfPreviewAria")}
-          src={`/api/offers/${offer.id}/pdf`}
-          className="h-[72vh] w-full"
-        />
+        <PdfViewer url={`/api/offers/${offer.id}/pdf`} title={tAccepted("pdfPreviewAria")} />
       </article>
 
       <aside className="grid min-h-0 content-start gap-3">
@@ -78,12 +78,12 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discount")}</span>
-              <span className="font-medium">{discount}%</span>
+              <span className="font-medium">{discountPercent}%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discountValue")}</span>
               <span className="font-medium">
-                {formatMoney(subtotal * (discount / 100), currency)}
+                {formatMoney(discountAmount, currency)}
               </span>
             </div>
             <div className="h-px bg-border" />
@@ -92,12 +92,6 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
               <span>
                 {formatMoney(total, currency)}
               </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">{tCommercial("estimatedMargin")}</span>
-              <Badge variant={margin < 10 ? "destructive" : "secondary"}>
-                {margin.toFixed(1)}%
-              </Badge>
             </div>
           </div>
         </section>

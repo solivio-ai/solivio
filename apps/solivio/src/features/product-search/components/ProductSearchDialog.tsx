@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fieldLabel, ALL_SEARCHABLE_FIELDS } from "../searchableFields";
+import { ALL_SEARCHABLE_FIELDS } from "../searchableFields";
 import type { ProductSearchMatch, SearchableField } from "../hooks/useProductSearch";
 import { useProductSearch } from "../hooks/useProductSearch";
 
@@ -48,6 +49,7 @@ export function ProductSearchDialog({
   renderProductInfo = defaultProductInfo,
   renderFooter,
 }: Props) {
+  const t = useTranslations("ProductSearchDialog");
   const [selectedFields, setSelectedFields] = useState<SearchableField[]>(
     [...(searchFields ?? ALL_SEARCHABLE_FIELDS)]
   );
@@ -112,9 +114,9 @@ export function ProductSearchDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100svh-1rem)] overflow-hidden max-sm:inset-x-2 max-sm:translate-x-0 max-sm:rounded-xl sm:max-w-[min(920px,calc(100vw-2rem))]">
         <DialogHeader>
-          <DialogTitle>Search products</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Search the catalog and adjust quantities before adding products to the offer.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -123,13 +125,13 @@ export function ProductSearchDialog({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search products…"
+            placeholder={t("placeholder")}
           />
           <Button
             variant="outline"
             size="icon"
             onClick={() => search(query)}
-            aria-label="Search"
+            aria-label={t("searchAria")}
           >
             <Search size={16} aria-hidden="true" />
           </Button>
@@ -137,7 +139,7 @@ export function ProductSearchDialog({
 
         <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">Search in:</span>
+            <span className="text-xs text-muted-foreground">{t("searchIn")}</span>
             {ALL_SEARCHABLE_FIELDS.map((field) => {
               const active = selectedFields.includes(field);
               return (
@@ -148,7 +150,7 @@ export function ProductSearchDialog({
                   onClick={() => toggleField(field)}
                   aria-pressed={active}
                 >
-                  {fieldLabel(field)}
+                  {t(`fields.${field}`)}
                 </Button>
               );
             })}
@@ -156,9 +158,9 @@ export function ProductSearchDialog({
 
           <div className="text-xs text-muted-foreground">
             {totalCount !== null && totalCount > 0 ? (
-              <span>{totalCount} products found</span>
+              <span>{t("productsFound", { count: totalCount })}</span>
             ) : isLoading ? (
-              <span>Searching...</span>
+              <span>{t("searching")}</span>
             ) : null}
           </div>
         </div>
@@ -182,7 +184,7 @@ export function ProductSearchDialog({
                         className="size-8 sm:size-7"
                         onClick={() => decrement(product)}
                         disabled={qty === 0}
-                        aria-label={`Decrease quantity for ${product.name}`}
+                        aria-label={t("decreaseQuantity", { name: product.name })}
                       >
                         <Minus size={12} aria-hidden="true" />
                       </Button>
@@ -192,7 +194,7 @@ export function ProductSearchDialog({
                         variant="outline"
                         className="size-8 sm:size-7"
                         onClick={() => increment(product)}
-                        aria-label={`Increase quantity for ${product.name}`}
+                        aria-label={t("increaseQuantity", { name: product.name })}
                       >
                         <Plus size={12} aria-hidden="true" />
                       </Button>
@@ -218,7 +220,7 @@ export function ProductSearchDialog({
           )}
 
           {!isLoading && hasSearched && results.length === 0 && !error && (
-            <p className="py-4 text-center text-sm text-muted-foreground">No results found.</p>
+            <p className="py-4 text-center text-sm text-muted-foreground">{t("noResults")}</p>
           )}
         </div>
         {renderFooter}
