@@ -233,7 +233,7 @@ export function OfferRevisionModal({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="gap-2">
+        <DialogFooter className="gap-2 p-4">
           <Button variant="outline" onClick={onClose} disabled={restoring}>
             {tModal("close")}
           </Button>

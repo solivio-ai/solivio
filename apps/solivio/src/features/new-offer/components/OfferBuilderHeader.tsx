@@ -395,7 +395,7 @@ export function OfferBuilderActionBar({
                     />
                   </div>
                 </div>
-                <DialogFooter className="gap-2 sm:gap-0">
+                <DialogFooter className="gap-2">
                   <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
                     {tList("actions.deleteCancel")}
                   </Button>
