@@ -75,7 +75,7 @@ export function QuickOfferSearch() {
           <Button
             variant="outline"
             size="sm"
-            className="h-9 w-full justify-start text-muted-foreground lg:w-48 xl:w-64"
+            className="h-9 w-fit min-w-40 cursor-pointer justify-center text-muted-foreground"
             onClick={() => setOpen(true)}
           >
             <Search size={16} aria-hidden="true" />

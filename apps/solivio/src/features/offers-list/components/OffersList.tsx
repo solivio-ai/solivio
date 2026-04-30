@@ -522,7 +522,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={t("search.placeholder")}
-                  className="pl-8"
+                  className="pl-8 cursor-text hover:cursor-text"
                   aria-label={t("search.label")}
                 />
               </div>

@@ -326,7 +326,7 @@
       "title": "Find a product",
       "description": "Draft an offer from selected products."
     },
-    "searchPlaceholder": "Search products...",
+    "searchPlaceholder": "Search products",
     "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
     "noItemsSelected": "No items selected",
     "actions": {

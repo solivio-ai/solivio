@@ -58,7 +58,7 @@ export function AppSidebar() {
             />
           </Link>
           <SidebarTrigger
-            className="ml-auto hidden size-8 rounded-lg border border-sidebar-border bg-background/60 text-sidebar-foreground/60 shadow-sm hover:bg-background hover:text-sidebar-foreground focus-visible:border-sidebar-border focus-visible:ring-1 focus-visible:ring-sidebar-border/80 md:flex group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:ml-0"
+            className="ml-auto hidden size-8 cursor-pointer rounded-lg border border-sidebar-border bg-background/60 text-sidebar-foreground/60 shadow-sm hover:bg-background hover:text-sidebar-foreground focus-visible:border-sidebar-border focus-visible:ring-1 focus-visible:ring-sidebar-border/80 md:flex group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:ml-0"
             aria-label={t("aria.toggleNavigation")}
           />
           <Button
