@@ -62,10 +62,6 @@
     border-radius: 0.5rem;
   }
 
-  .header {
-    border-bottom: 1px solid var(--sl-color-hairline);
-  }
-
   .sl-markdown-content code:not(:where(pre *)) {
     border: 1px solid var(--sl-color-hairline);
   }
