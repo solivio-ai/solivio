@@ -383,8 +383,8 @@
       "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}"
     },
     "empty": {
-      "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
-      "title": "Nie ma jeszcze ofert"
+      "description": "Generuj oferty bazując na zapytaniach klientów.",
+      "title": "Nie masz jeszcze ofert"
     },
     "filters": {
       "accepted": "Zaakceptowana",

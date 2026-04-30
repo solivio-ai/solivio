@@ -28,7 +28,7 @@ type IntegrationConfig = {
 };
 
 const INTEGRATIONS: IntegrationConfig[] = [
-  { key: "productCatalog", icon: Package, active: true, href: "/products/upload" },
+  { key: "productCatalog", icon: Package, active: true },
   { key: "erp", icon: Factory, active: false },
   { key: "crm", icon: Users, active: false },
   { key: "priceRules", icon: DollarSign, active: false },
@@ -101,7 +101,7 @@ export async function IntegrationsSection() {
                 >
                   {t("integrations.action.configure")}
                 </Link>
-              ) : (
+              ) : ( !active &&
                 <span className="text-xs text-muted-foreground">
                   {t("integrations.action.integrate")}
                 </span>
