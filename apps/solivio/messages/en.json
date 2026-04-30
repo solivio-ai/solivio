@@ -522,6 +522,19 @@
       }
     }
   },
+  "QuickOffer": {
+    "errors": {
+      "itemsRequired": "items are required"
+    },
+    "offer": {
+      "title": "Quick Offer",
+      "description": "Manual selection from catalog",
+      "note": "Offer created manually from product search",
+      "productNameFallback": "Manual selection",
+      "requestItem": "Manual Selection",
+      "rationale": "Selected by user"
+    }
+  },
   "DemoOffer": {
     "pageTitle": "Demo offer",
     "title": "Offer products",

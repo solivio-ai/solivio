@@ -477,6 +477,19 @@
       "showingFirst": "Pokazywanie pierwszych 50 z {count} wierszy."
     }
   },
+  "QuickOffer": {
+    "errors": {
+      "itemsRequired": "pozycje są wymagane"
+    },
+    "offer": {
+      "title": "Szybka oferta",
+      "description": "Ręczny wybór z katalogu",
+      "note": "Oferta utworzona ręcznie z wyszukiwania produktów",
+      "productNameFallback": "Ręczny wybór",
+      "requestItem": "Ręczny wybór",
+      "rationale": "Wybrane przez użytkownika"
+    }
+  },
   "DemoOffer": {
     "pageTitle": "Oferta demo",
     "title": "Produkty w ofercie",
