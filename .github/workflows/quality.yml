@@ -30,3 +30,29 @@ jobs:
 
       - name: Typecheck
         run: yarn typecheck
+
+      - name: Prepare app environment
+        run: |
+          cat > apps/solivio/.env.local <<'EOF'
+          DATABASE_URL=postgresql://solivio:solivio@localhost:5432/solivio
+          OPENAI_API_KEY=
+          OPENAI_MODEL=openai/gpt-5.4-mini
+          BETTER_AUTH_URL=http://localhost:3000
+          BETTER_AUTH_SECRET=solivio-ci-better-auth-secret-solivio-ci
+          AUTH_SIGNUP_ENABLED=true
+          AUTH_CREDENTIALS_ENABLED=true
+          AUTH_SSO_ENABLED=false
+          EOF
+
+      - name: Install Playwright browser
+        run: yarn playwright install --with-deps chromium
+
+      - name: Start database and apply migrations
+        run: yarn setup
+
+      - name: Run end-to-end tests
+        run: yarn e2e
+
+      - name: Stop database
+        if: always()
+        run: yarn db:down

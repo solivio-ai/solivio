@@ -23,6 +23,7 @@
     "openapi:generate": "yarn workspace @solivio/docs openapi:generate",
     "build": "yarn workspace @solivio/app build && yarn workspace @solivio/docs build",
     "check": "biome check .",
+    "e2e": "playwright test",
     "typecheck": "yarn workspace @solivio/domain typecheck && yarn workspace @solivio/app typecheck",
     "start": "yarn workspace @solivio/app start",
     "setup": "yarn db:up && yarn db:wait && yarn db:migrate",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@biomejs/biome": "2.4.13",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/oxide-darwin-arm64": "4.2.4",
     "@types/node": "^24.12.2",
     "@types/pg": "^8.20.0",
