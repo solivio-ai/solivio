@@ -33,11 +33,6 @@ RUN mkdir -p apps/solivio/public \
  && mv apps/solivio/public.deref apps/solivio/public \
  && yarn workspace @solivio/app build
 
-FROM build AS db-push
-WORKDIR /app/apps/solivio
-ENV NODE_ENV=production
-CMD ["yarn", "db:migrate"]
-
 FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
@@ -51,7 +46,10 @@ RUN addgroup --system --gid 1001 nodejs \
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/.next/static ./apps/solivio/.next/static
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/public ./apps/solivio/public
+COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/drizzle ./apps/solivio/drizzle
+COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/scripts/migrate.mjs ./apps/solivio/scripts/migrate.mjs
+COPY --from=build --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 
 USER nextjs
 EXPOSE 3000
-CMD ["node", "apps/solivio/server.js"]
+CMD ["sh", "-c", "cd apps/solivio && node scripts/migrate.mjs && cd /app && exec node apps/solivio/server.js"]

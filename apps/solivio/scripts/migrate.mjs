@@ -1,10 +1,14 @@
-import { config as loadEnv } from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 
-loadEnv({ path: ".env.local" });
-loadEnv({ path: ".env" });
+try {
+  const { config: loadEnv } = await import("dotenv");
+  loadEnv({ path: ".env.local" });
+  loadEnv({ path: ".env" });
+} catch {
+  // Production images receive DATABASE_URL from the container environment.
+}
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {

@@ -36,16 +36,6 @@ services:
       timeout: 5s
       retries: 5
 
-  db-push:
-    image: ghcr.io/solivio-ai/solivio-db-push:${IMAGE_TAG:-latest}
-    container_name: solivio-db-push
-    restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-
   app:
     image: ghcr.io/solivio-ai/solivio-app:${IMAGE_TAG:-latest}
     container_name: solivio-app
@@ -53,8 +43,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      db-push:
-        condition: service_completed_successfully
     environment:
       DATABASE_URL: ${DATABASE_URL}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
