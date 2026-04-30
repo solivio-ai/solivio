@@ -6,9 +6,23 @@
       "newOffer": "Nowa oferta",
       "catalogUpload": "Import katalogu"
     },
+    "aria": {
+      "closeNavigation": "Zamknij menu nawigacji",
+      "home": "Strona główna Solivio"
+    },
     "actions": {
       "newOffer": "Nowa oferta"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio to otwarty system AI, który zmienia sposób tworzenia ofert w firmach B2B.",
+    "openGraphDescription": "Zamiast ręcznie budować każdą wycenę, Solivio generuje uporządkowane szkice ofert na podstawie Twoich danych — w kilka sekund.",
+    "twitterDescription": "Szkice ofert wspierane przez AI, tworzone z zapytań klientów i danych katalogowych."
+  },
+  "UserMenu": {
+    "signedInAs": "Zalogowano jako",
+    "logOut": "Wyloguj"
   },
   "LanguageSwitcher": {
     "label": "Język",

@@ -6,9 +6,23 @@
       "newOffer": "New Offer",
       "catalogUpload": "Catalog Upload"
     },
+    "aria": {
+      "closeNavigation": "Close navigation menu",
+      "home": "Solivio home"
+    },
     "actions": {
       "newOffer": "New offer"
     }
+  },
+  "Metadata": {
+    "titleTemplate": "%s | Solivio",
+    "description": "Solivio is an open-source AI system that transforms how B2B companies create offers.",
+    "openGraphDescription": "Instead of building every quote manually, Solivio generates structured offer drafts based on your data — in seconds.",
+    "twitterDescription": "AI-assisted offer drafts from customer requests and catalog data."
+  },
+  "UserMenu": {
+    "signedInAs": "Signed in as",
+    "logOut": "Log out"
   },
   "LanguageSwitcher": {
     "label": "Language",
@@ -442,6 +456,13 @@
       "importDone": "Saved {count, plural, one {# product} other {# products}}.",
       "importError": "Import failed.",
       "showingFirst": "Showing the first 50 of {count} rows."
+    }
+  },
+  "Dashboard": {
+    "newOffer": {
+      "title": "Start a new offer",
+      "description": "Generate structured offer drafts based on your data.",
+      "button": "New offer"
     }
   },
   "DemoOffer": {

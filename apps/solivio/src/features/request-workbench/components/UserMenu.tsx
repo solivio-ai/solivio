@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { authClient, useSession } from "@/lib/auth-client";
 
 export function UserMenu() {
+  const t = useTranslations("UserMenu");
   const { data: session } = useSession();
   const { signOut } = authClient;
   const handleSignOut = () =>
@@ -31,13 +33,13 @@ export function UserMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-52">
           <DropdownMenuLabel className="font-normal text-muted-foreground text-xs">
-            Signed in as
+            {t("signedInAs")}
           </DropdownMenuLabel>
           <DropdownMenuLabel className="-mt-1">{session?.user.name || session?.user.email}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
             <LogOut size={14} aria-hidden="true" />
-            Log out
+            {t("logOut")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

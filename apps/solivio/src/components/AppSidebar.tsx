@@ -47,7 +47,7 @@ export function AppSidebar() {
             variant="ghost"
             size="icon-sm"
             onClick={closeMobileSidebar}
-            aria-label="Close navigation menu"
+            aria-label={t("aria.closeNavigation")}
           >
             <X size={16} aria-hidden="true" />
           </Button>
@@ -56,7 +56,7 @@ export function AppSidebar() {
           href="/"
           onClick={closeMobileSidebar}
           className="flex min-w-0 items-center"
-          aria-label="Solivio home"
+          aria-label={t("aria.home")}
         >
           <SolivioLogo
             width={180}
