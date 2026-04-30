@@ -62,7 +62,7 @@ const s = StyleSheet.create({
   intro: { fontSize: 9, color: GRAY_500, marginBottom: 16, lineHeight: 1.5 },
 
   // Table
-  tableHeader: { flexDirection: "row", backgroundColor: TEAL, padding: "5 6", borderRadius: "3 3 0 0" },
+  tableHeader: { flexDirection: "row", backgroundColor: TEAL, padding: "5 6" },
   tableHeaderText: { fontWeight: 700, color: "#FFFFFF", fontSize: 7.5 },
   tableRow: { flexDirection: "row", padding: "5 6", borderBottomWidth: 0.5, borderBottomColor: GRAY_200 },
   tableRowAlt: { backgroundColor: GRAY_50 },
