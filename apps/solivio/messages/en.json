@@ -470,10 +470,14 @@
       "modelsUnavailable": "Embedding models unavailable",
       "importAction": {
         "embedding": "Embedding...",
+        "embeddingProgress": "Embedding {processed} / {total}...",
         "saveCount": "Embed and save {count, plural, one {# product} other {# products}}"
       },
       "importDone": "Saved {count, plural, one {# product} other {# products}}.",
       "importError": "Import failed.",
+      "importPartialError": "Import stopped after saving {processed} of {total} rows: {message}. Re-running is safe — already-imported rows will be updated.",
+      "progressLabel": "Import progress",
+      "progressText": "Imported {processed} of {total} rows.",
       "showingFirst": "Showing the first 50 of {count} rows."
     }
   },

@@ -7,10 +7,14 @@ import {
 import { importProductsWithEmbeddings } from "../../../../server/products/productEmbeddingService";
 
 export const runtime = "nodejs";
+/** Headroom for slow OpenAI embedding round-trips on the largest allowed batch. */
+export const maxDuration = 300;
 
 const VALID_MODEL_IDS = new Set<string>(EMBEDDING_MODELS.map((m) => m.id));
 const STRING_FIELDS = ["sku", "name", "description", "manufacturer", "currency"] as const;
 const NUMBER_FIELDS = ["priceNet", "priceGross", "vatRate"] as const;
+/** Per-request cap. Aligns with the client chunk size; clients must split larger catalogs. */
+const MAX_ROWS_PER_REQUEST = 1000;
 
 function normalize(raw: unknown): ProductImportRow | null {
   if (!raw || typeof raw !== "object") return null;
@@ -38,6 +42,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Body must include a non-empty 'products' array." },
         { status: 400 }
+      );
+    }
+
+    if (rawList.length > MAX_ROWS_PER_REQUEST) {
+      return NextResponse.json(
+        {
+          error: `Too many products in one request (${rawList.length}). Send at most ${MAX_ROWS_PER_REQUEST} per request.`
+        },
+        { status: 413 }
       );
     }
 

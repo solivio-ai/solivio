@@ -470,10 +470,14 @@
       "modelsUnavailable": "Modele embeddingów niedostępne",
       "importAction": {
         "embedding": "Przetwarzanie...",
+        "embeddingProgress": "Przetwarzanie {processed} / {total}...",
         "saveCount": "Przetwórz i zapisz {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}"
       },
       "importDone": "Zapisano {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}.",
       "importError": "Import nie powiódł się.",
+      "importPartialError": "Import przerwany po zapisaniu {processed} z {total} wierszy: {message}. Możesz uruchomić import ponownie — zaimportowane wiersze zostaną zaktualizowane.",
+      "progressLabel": "Postęp importu",
+      "progressText": "Zaimportowano {processed} z {total} wierszy.",
       "showingFirst": "Pokazywanie pierwszych 50 z {count} wierszy."
     }
   },
