@@ -12,7 +12,6 @@ type OfferSummaryProps = {
   discount: number;
   discountPercent: number;
   limitedLineCount: number;
-  margin: number;
   notes: Offer["notes"];
   requestText: string;
   setDiscountPercent: (discountPercent: number) => void;
@@ -27,7 +26,6 @@ export function OfferSummary({
   discount,
   discountPercent,
   limitedLineCount,
-  margin,
   notes,
   requestText,
   setDiscountPercent,
@@ -52,8 +50,7 @@ export function OfferSummary({
 
           <section className="grid gap-3">
             <h2 className="text-sm font-medium">{tSummary("reviewChecks")}</h2>
-            <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-              <ValidationRow ok={margin >= 28} text={tSummary("checks.targetMargin", { margin: margin.toFixed(1) })} />
+            <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
               <ValidationRow
                 ok={unpricedLineCount === 0}
                 text={
@@ -93,7 +90,6 @@ export function OfferSummary({
           currency={currency}
           discount={discount}
           discountPercent={discountPercent}
-          margin={margin}
           setDiscountPercent={setDiscountPercent}
           subtotal={subtotal}
           total={total}

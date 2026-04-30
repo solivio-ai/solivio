@@ -20,7 +20,8 @@ export function buildPdfOfferPayload(offer: Offer): PdfOfferRequest {
       number: `OFR-${offer.id.slice(0, 8).toUpperCase()}`,
       issueDate: toIsoDate(issueDate),
       validUntil: toIsoDate(addDays(issueDate, 14)),
-      currency: "PLN"
+      currency: "PLN",
+      discountPercent: offer.discountPercent
     },
     seller: {
       name: "Nordfield Systems Sp. z o.o.",

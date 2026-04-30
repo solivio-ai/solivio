@@ -8,7 +8,7 @@ import {
 } from "@react-pdf/renderer";
 
 import { calculateTotals } from "../lib/calculateTotals";
-import { formatDate, formatMoney, formatNumber, formatVatRate } from "../lib/formatters";
+import { formatDate, formatMoney, formatNumber, formatPercent, formatVatRate } from "../lib/formatters";
 import type { PdfOfferRequest } from "../lib/schema";
 
 // Load fonts from remote URLs for consistent PDF rendering.
@@ -62,7 +62,7 @@ const s = StyleSheet.create({
   intro: { fontSize: 9, color: GRAY_500, marginBottom: 16, lineHeight: 1.5 },
 
   // Table
-  tableHeader: { flexDirection: "row", backgroundColor: TEAL, padding: "5 6", borderRadius: "3 3 0 0" },
+  tableHeader: { flexDirection: "row", backgroundColor: TEAL, padding: "5 6" },
   tableHeaderText: { fontWeight: 700, color: "#FFFFFF", fontSize: 7.5 },
   tableRow: { flexDirection: "row", padding: "5 6", borderBottomWidth: 0.5, borderBottomColor: GRAY_200 },
   tableRowAlt: { backgroundColor: GRAY_50 },
@@ -118,7 +118,8 @@ type Props = { data: PdfOfferRequest };
 
 export function OfferDocument({ data }: Props) {
   const { offer, seller, buyer, items, terms } = data;
-  const { itemsWithTotals, totals } = calculateTotals(items);
+  const { itemsWithTotals, totals } = calculateTotals(items, offer.discountPercent);
+  const hasDiscount = totals.discountPercent > 0;
 
   return (
     <Document title={`Oferta ${offer.number}`} author={seller.name}>
@@ -207,6 +208,24 @@ export function OfferDocument({ data }: Props) {
         {/* Totals */}
         <View style={s.totalsSection} wrap={false} minPresenceAhead={120}>
           <View style={s.totalsBox}>
+            {hasDiscount && (
+              <>
+                <View style={s.totalsRow}>
+                  <Text style={s.totalsLabel}>Wartość netto</Text>
+                  <Text style={s.totalsValue}>
+                    {formatMoney(totals.subtotalNet, offer.currency)}
+                  </Text>
+                </View>
+                <View style={s.totalsRow}>
+                  <Text style={s.totalsLabel}>
+                    Rabat ({formatPercent(totals.discountPercent)})
+                  </Text>
+                  <Text style={s.totalsValue}>
+                    -{formatMoney(totals.discountAmount, offer.currency)}
+                  </Text>
+                </View>
+              </>
+            )}
             <View style={s.totalsRow}>
               <Text style={s.totalsLabel}>Razem netto</Text>
               <Text style={s.totalsValue}>

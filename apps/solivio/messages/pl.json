@@ -79,10 +79,6 @@
   "NewOffer": {
     "page": {
       "title": "Nowa oferta",
-      "badges": {
-        "generatedDraft": "Draft generowany przez AI",
-        "review": "Sprawdź i dopracuj"
-      },
       "back": "Wróć"
     },
     "form": {
@@ -180,6 +176,7 @@
       "done": "Gotowe"
     },
     "review": {
+      "pageTitle": "Przegląd oferty",
       "loading": "Wczytywanie wygenerowanej oferty...",
       "error": "Nie udało się wczytać tej oferty.",
       "notFound": "Oferta niedostępna",
@@ -205,10 +202,11 @@
         "transferToChat": "Przekaż do czatu",
         "acceptOffer": "Zaakceptuj ofertę",
         "checking": "Sprawdzam...",
+        "acceptWithoutAi": "Zaakceptuj bez sprawdzenia AI",
         "checkWithAI": "Sprawdź z AI",
-        "messageHeader": "**Wyniki walidacji AI**",
+        "messageHeader": "Wyniki walidacji AI",
         "statusLabel": "Status",
-        "chatPrompt": "Czy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?"
+        "chatPrompt": "Pomóż mi rozwiązać problemy wymienione powyżej."
       },
       "summary": {
         "title": "Podsumowanie",
@@ -217,7 +215,6 @@
         "reviewChecks": "Weryfikacja",
         "notes": "Notatki",
         "checks": {
-          "targetMargin": "Docelowa marża: {margin}%",
           "allPriced": "Wszystkie pozycje mają ceny",
           "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",
           "availabilityConfirmed": "Dostępność potwierdzona",
@@ -230,8 +227,7 @@
         "subtotal": "Wartość netto",
         "discount": "Rabat",
         "discountValue": "Wartość rabatu",
-        "totalNet": "Suma netto",
-        "estimatedMargin": "Szacowana marża"
+        "totalNet": "Suma netto"
       },
       "products": {
         "title": "Produkty",
@@ -311,6 +307,24 @@
       "createDraft": "Utwórz szkic oferty"
     }
   },
+  "ProductSearchDialog": {
+    "title": "Szukaj produktów",
+    "description": "Przeszukaj katalog i dostosuj ilości przed dodaniem produktów do oferty.",
+    "placeholder": "Szukaj produktów…",
+    "searchAria": "Szukaj",
+    "searchIn": "Szukaj w:",
+    "productsFound": "{count, plural, one {# znaleziony produkt} few {# znalezione produkty} many {# znalezionych produktów} other {# znalezionych produktów}}",
+    "searching": "Szukam...",
+    "noResults": "Brak wyników.",
+    "decreaseQuantity": "Zmniejsz ilość dla {name}",
+    "increaseQuantity": "Zwiększ ilość dla {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Nazwa",
+      "description": "Opis",
+      "manufacturer": "Producent"
+    }
+  },
   "OfferChat": {
     "title": "Asystent Solivio",
     "status": {
@@ -366,8 +380,7 @@
       "draftsToReview": "{count} do przeglądu",
       "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
       "needsAttention": "{count} z brakującymi produktami",
-      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
-      "salesWorkspace": "Obszar sprzedaży"
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}"
     },
     "empty": {
       "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
@@ -428,7 +441,6 @@
   "ProductImport": {
     "page": {
       "title": "Importuj produkty",
-      "badge": "Produkty",
       "description": "Prześlij katalog CSV, podejrzyj przetworzone wiersze, a następnie zapisz embeddingi za pomocą API serwera."
     },
     "uploadCard": {
@@ -459,6 +471,7 @@
     }
   },
   "DemoOffer": {
+    "pageTitle": "Oferta demo",
     "title": "Produkty w ofercie",
     "addProduct": "Dodaj produkt",
     "empty": "Brak dodanych produktów",

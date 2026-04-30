@@ -79,10 +79,6 @@
   "NewOffer": {
     "page": {
       "title": "New offer",
-      "badges": {
-        "generatedDraft": "AI-generated draft",
-        "review": "Review & adjust"
-      },
       "back": "Back"
     },
     "form": {
@@ -180,6 +176,7 @@
       "done": "Done"
     },
     "review": {
+      "pageTitle": "Offer review",
       "loading": "Loading generated offer...",
       "error": "Could not load this offer.",
       "notFound": "Offer not available",
@@ -205,10 +202,11 @@
         "transferToChat": "Transfer to chat",
         "acceptOffer": "Accept offer",
         "checking": "Checking...",
+        "acceptWithoutAi": "Accept without AI check",
         "checkWithAI": "Check with AI",
-        "messageHeader": "**AI Validation Results**",
+        "messageHeader": "AI Validation Results",
         "statusLabel": "Status",
-        "chatPrompt": "Can you suggest solutions for missing items or comment on these results?"
+        "chatPrompt": "Please help me resolve the problems listed above."
       },
       "summary": {
         "title": "Summary",
@@ -217,7 +215,6 @@
         "reviewChecks": "Review checks",
         "notes": "Notes",
         "checks": {
-          "targetMargin": "Target margin: {margin}%",
           "allPriced": "All lines have prices",
           "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
           "availabilityConfirmed": "Availability confirmed",
@@ -230,8 +227,7 @@
         "subtotal": "Subtotal",
         "discount": "Discount",
         "discountValue": "Discount value",
-        "totalNet": "Total net",
-        "estimatedMargin": "Estimated margin"
+        "totalNet": "Total net"
       },
       "products": {
         "title": "Products",
@@ -311,6 +307,24 @@
       "createDraft": "Create Draft Offer"
     }
   },
+  "ProductSearchDialog": {
+    "title": "Search products",
+    "description": "Search the catalog and adjust quantities before adding products to the offer.",
+    "placeholder": "Search products…",
+    "searchAria": "Search",
+    "searchIn": "Search in:",
+    "productsFound": "{count, plural, one {# product found} other {# products found}}",
+    "searching": "Searching...",
+    "noResults": "No results found.",
+    "decreaseQuantity": "Decrease quantity for {name}",
+    "increaseQuantity": "Increase quantity for {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Name",
+      "description": "Description",
+      "manufacturer": "Manufacturer"
+    }
+  },
   "OfferChat": {
     "title": "Solivio Assistant",
     "status": {
@@ -366,8 +380,7 @@
       "draftsToReview": "{count} to review",
       "matchedProducts": "{count, plural, one {# matched product} other {# matched products}}",
       "needsAttention": "{count} with gaps",
-      "offerCount": "{count, plural, one {# offer} other {# offers}}",
-      "salesWorkspace": "Sales workspace"
+      "offerCount": "{count, plural, one {# offer} other {# offers}}"
     },
     "empty": {
       "description": "Generate structured offer drafts based on your customer requests.",
@@ -428,7 +441,6 @@
   "ProductImport": {
     "page": {
       "title": "Import products",
-      "badge": "Products",
       "description": "Upload a CSV catalog, preview parsed rows, then save embeddings behind the server API."
     },
     "uploadCard": {
@@ -504,6 +516,7 @@
     }
   },
   "DemoOffer": {
+    "pageTitle": "Demo offer",
     "title": "Offer products",
     "addProduct": "Add product",
     "empty": "No products added yet",

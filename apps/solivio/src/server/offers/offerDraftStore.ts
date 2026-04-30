@@ -36,6 +36,7 @@ export function updateOfferDraft(
       product?: Offer["items"][number]["product"];
     }>;
     unmatched?: string[];
+    discountPercent?: number;
   }
 ) {
   const offer = getOfferDraft(id);
@@ -81,6 +82,7 @@ export function updateOfferDraft(
         ? (update.clientRequest ?? undefined)
         : offer.clientRequest,
     unmatched: update.unmatched ?? offer.unmatched,
+    discountPercent: update.discountPercent ?? offer.discountPercent,
     items: nextItems
   };
 

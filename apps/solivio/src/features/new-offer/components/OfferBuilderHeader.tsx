@@ -246,19 +246,31 @@ export function OfferBuilderHeader({
             {t("backToDraft")}
           </Button>
         ) : (
-          <Button
-            className="w-full sm:w-auto"
-            size="sm"
-            onClick={onValidate}
-            disabled={validateState === "loading"}
-          >
-            {validateState === "loading" ? (
-              <Loader2 size={16} aria-hidden="true" className="animate-spin" />
-            ) : (
-              <ShieldCheck size={16} aria-hidden="true" />
-            )}
-            {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
-          </Button>
+          <>
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              onClick={onAccept}
+              disabled={saveState === "saving"}
+            >
+              <CheckCircle2 size={16} aria-hidden="true" />
+              {tReview("validation.acceptWithoutAi")}
+            </Button>
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              onClick={onValidate}
+              disabled={validateState === "loading"}
+            >
+              {validateState === "loading" ? (
+                <Loader2 size={16} aria-hidden="true" className="animate-spin" />
+              ) : (
+                <ShieldCheck size={16} aria-hidden="true" />
+              )}
+              {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
+            </Button>
+          </>
         )}
         {persisted ? (
           <>

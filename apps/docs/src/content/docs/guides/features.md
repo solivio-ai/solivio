@@ -64,10 +64,13 @@ Use it to:
 - add products from catalog search,
 - remove incorrect products,
 - review unmatched request items,
-- adjust the working discount,
+- adjust the offer discount,
 - check margin, pricing, availability, and acceptance status.
 
-Changes are saved through server API routes and persisted in Postgres.
+Changes are saved through server API routes and persisted in Postgres. The
+offer discount is stored on the offer itself, so it survives reloads, is
+included in revision snapshots, and is rendered as a separate line in the
+generated PDF.
 
 ## 5. Use product search and quick offers
 

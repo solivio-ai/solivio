@@ -19,6 +19,13 @@ export function formatVatRate(rate: number): string {
   return `${Math.round(rate * 100)}%`;
 }
 
+export function formatPercent(value: number): string {
+  return new Intl.NumberFormat("pl-PL", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value) + "%";
+}
+
 export function formatDate(isoDate: string): string {
   return new Intl.DateTimeFormat("pl-PL", {
     day: "2-digit",

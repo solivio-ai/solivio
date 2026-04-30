@@ -4,10 +4,12 @@ import { getTranslations } from "next-intl/server";
 
 import { NewOfferForm } from "../../../features/new-offer";
 import { AppPage } from "@/components/AppPage";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "New offer" };
+export async function generateMetadata() {
+  const t = await getTranslations("NewOffer.page");
+  return { title: t("title") };
+}
 
 export default async function NewOfferPage() {
   const t = await getTranslations("NewOffer.page");
@@ -15,13 +17,7 @@ export default async function NewOfferPage() {
   return (
     <AppPage>
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="grid gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-          <div className="flex flex-wrap gap-2">
-            <Badge>{t("badges.generatedDraft")}</Badge>
-            <Badge variant="secondary">{t("badges.review")}</Badge>
-          </div>
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <Button asChild variant="outline" size="sm">
           <Link href="/">
             <ArrowLeft size={16} aria-hidden="true" />

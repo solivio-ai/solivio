@@ -1,7 +1,12 @@
+import { getTranslations } from "next-intl/server";
+
 import { OfferReview } from "../../../features/new-offer";
 import { AppPage } from "@/components/AppPage";
 
-export const metadata = { title: "Offer review" };
+export async function generateMetadata() {
+  const t = await getTranslations("NewOffer.review");
+  return { title: t("pageTitle") };
+}
 
 type OfferReviewPageProps = {
   params: Promise<{

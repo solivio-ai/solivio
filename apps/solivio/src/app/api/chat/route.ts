@@ -17,16 +17,8 @@ import { getOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
-const DEFAULT_DISCOUNT_PERCENT = 3;
-
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
-}
-
-function parseDiscountPercent(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value)
-    ? Math.max(0, value)
-    : DEFAULT_DISCOUNT_PERCENT;
 }
 
 function getLatestUserMessage(messages: UIMessage[]) {
@@ -39,7 +31,8 @@ function getLatestUserMessage(messages: UIMessage[]) {
   return null;
 }
 
-function formatOfferContext(offer: Offer, discountPercent: number) {
+function formatOfferContext(offer: Offer) {
+  const discountPercent = offer.discountPercent;
   const currency = offer.items[0]?.currency ?? offer.items[0]?.product?.currency ?? "PLN";
   const subtotal = offer.items.reduce((sum, item) => {
     const unitPrice = item.unitPriceNet ?? item.product?.priceNet ?? 0;
@@ -47,8 +40,6 @@ function formatOfferContext(offer: Offer, discountPercent: number) {
   }, 0);
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const estimatedCost = subtotal * 0.7;
-  const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
   const limitedLineCount = offer.items.filter((item) => item.product?.availability === "limited").length;
   const unpricedLineCount = offer.items.filter(
     (item) => (item.unitPriceNet ?? item.product?.priceNet ?? 0) <= 0
@@ -67,8 +58,6 @@ function formatOfferContext(offer: Offer, discountPercent: number) {
     `Subtotal: ${subtotal} ${currency}`,
     `Discount: ${discountPercent}% (${discount} ${currency})`,
     `Total net: ${total} ${currency}`,
-    `Estimated margin: ${margin.toFixed(1)}%`,
-    `Target margin check: ${margin >= 28 ? "passed" : "below target"}`,
     `Pricing check: ${unpricedLineCount === 0 ? "all lines have prices" : `${unpricedLineCount} line(s) need a unit price`}`,
     `Availability check: ${limitedLineCount === 0 ? "availability confirmed" : `${limitedLineCount} line(s) need availability confirmation`}`,
     `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,
@@ -127,7 +116,6 @@ export async function POST(request: Request) {
   const messages = body.messages as UIMessage[];
   const offerId = typeof body.offerId === "string" ? body.offerId : null;
   const threadId = typeof body.threadId === "string" ? body.threadId : null;
-  const discountPercent = parseDiscountPercent(body.discountPercent);
   const shouldPersist = Boolean(offerId && threadId);
 
   if ((offerId && !threadId) || (!offerId && threadId)) {
@@ -167,7 +155,7 @@ export async function POST(request: Request) {
       ? (await getOffer(offerId)) ?? getOfferDraft(offerId)
       : getOfferDraft(offerId)
     : null;
-  const offerContext = serverOffer ? formatOfferContext(serverOffer, discountPercent) : null;
+  const offerContext = serverOffer ? formatOfferContext(serverOffer) : null;
   const messagesWithContext = offerContext
     ? [
         {

@@ -6,6 +6,7 @@ export const sampleOffer: PdfOfferRequest = {
     issueDate: "2026-04-28",
     validUntil: "2026-05-28",
     currency: "PLN",
+    discountPercent: 5,
   },
   seller: {
     name: "Nordic Instalacje Sp. z o.o.",
