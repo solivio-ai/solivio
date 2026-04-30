@@ -65,10 +65,6 @@
   "NewOffer": {
     "page": {
       "title": "Nowa oferta",
-      "badges": {
-        "generatedDraft": "Draft generowany przez AI",
-        "review": "Sprawdź i dopracuj"
-      },
       "back": "Wróć"
     },
     "form": {
@@ -191,6 +187,7 @@
         "transferToChat": "Przekaż do czatu",
         "acceptOffer": "Zaakceptuj ofertę",
         "checking": "Sprawdzam...",
+        "acceptWithoutAi": "Zaakceptuj bez sprawdzenia AI",
         "checkWithAI": "Sprawdź z AI",
         "messageHeader": "**Wyniki walidacji AI**",
         "statusLabel": "Status",
@@ -344,8 +341,7 @@
       "draftsToReview": "{count} do przeglądu",
       "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
       "needsAttention": "{count} z brakującymi produktami",
-      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
-      "salesWorkspace": "Obszar sprzedaży"
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}"
     },
     "empty": {
       "description": "Generuj uporządkowane szkice ofert na podstawie zapytań klientów.",
@@ -406,7 +402,6 @@
   "ProductImport": {
     "page": {
       "title": "Importuj produkty",
-      "badge": "Produkty",
       "description": "Prześlij katalog CSV, podejrzyj przetworzone wiersze, a następnie zapisz embeddingi za pomocą API serwera."
     },
     "uploadCard": {

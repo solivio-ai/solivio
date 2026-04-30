@@ -481,7 +481,6 @@ export function OffersList({ offers, hideHeader }: Props) {
               <Badge variant="outline">
                 {t("badges.offerCount", { count: metrics.total })}
               </Badge>
-              <Badge variant="secondary">{t("badges.salesWorkspace")}</Badge>
             </div>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               {t("subtitle")}

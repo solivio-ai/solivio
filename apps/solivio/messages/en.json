@@ -65,10 +65,6 @@
   "NewOffer": {
     "page": {
       "title": "New offer",
-      "badges": {
-        "generatedDraft": "AI-generated draft",
-        "review": "Review & adjust"
-      },
       "back": "Back"
     },
     "form": {
@@ -191,6 +187,7 @@
         "transferToChat": "Transfer to chat",
         "acceptOffer": "Accept offer",
         "checking": "Checking...",
+        "acceptWithoutAi": "Accept without AI check",
         "checkWithAI": "Check with AI",
         "messageHeader": "**AI Validation Results**",
         "statusLabel": "Status",
@@ -344,8 +341,7 @@
       "draftsToReview": "{count} to review",
       "matchedProducts": "{count, plural, one {# matched product} other {# matched products}}",
       "needsAttention": "{count} with gaps",
-      "offerCount": "{count, plural, one {# offer} other {# offers}}",
-      "salesWorkspace": "Sales workspace"
+      "offerCount": "{count, plural, one {# offer} other {# offers}}"
     },
     "empty": {
       "description": "Generate structured offer drafts based on your customer requests.",
@@ -406,7 +402,6 @@
   "ProductImport": {
     "page": {
       "title": "Import products",
-      "badge": "Products",
       "description": "Upload a CSV catalog, preview parsed rows, then save embeddings behind the server API."
     },
     "uploadCard": {
