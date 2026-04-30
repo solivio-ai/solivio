@@ -215,7 +215,6 @@
         "reviewChecks": "Weryfikacja",
         "notes": "Notatki",
         "checks": {
-          "targetMargin": "Docelowa marża: {margin}%",
           "allPriced": "Wszystkie pozycje mają ceny",
           "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",
           "availabilityConfirmed": "Dostępność potwierdzona",
@@ -228,8 +227,7 @@
         "subtotal": "Wartość netto",
         "discount": "Rabat",
         "discountValue": "Wartość rabatu",
-        "totalNet": "Suma netto",
-        "estimatedMargin": "Szacowana marża"
+        "totalNet": "Suma netto"
       },
       "products": {
         "title": "Produkty",

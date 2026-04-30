@@ -40,8 +40,6 @@ function formatOfferContext(offer: Offer) {
   }, 0);
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const estimatedCost = subtotal * 0.7;
-  const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
   const limitedLineCount = offer.items.filter((item) => item.product?.availability === "limited").length;
   const unpricedLineCount = offer.items.filter(
     (item) => (item.unitPriceNet ?? item.product?.priceNet ?? 0) <= 0
@@ -60,8 +58,6 @@ function formatOfferContext(offer: Offer) {
     `Subtotal: ${subtotal} ${currency}`,
     `Discount: ${discountPercent}% (${discount} ${currency})`,
     `Total net: ${total} ${currency}`,
-    `Estimated margin: ${margin.toFixed(1)}%`,
-    `Target margin check: ${margin >= 28 ? "passed" : "below target"}`,
     `Pricing check: ${unpricedLineCount === 0 ? "all lines have prices" : `${unpricedLineCount} line(s) need a unit price`}`,
     `Availability check: ${limitedLineCount === 0 ? "availability confirmed" : `${limitedLineCount} line(s) need availability confirmation`}`,
     `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,

@@ -115,8 +115,6 @@ export function OfferBuilder({
   );
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const estimatedCost = subtotal * 0.7;
-  const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
   const limitedLineCount = lines.filter((line) => line.availability === "limited").length;
   const unpricedLineCount = lines.filter((line) => line.unitPrice <= 0).length;
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
@@ -414,7 +412,6 @@ export function OfferBuilder({
         discount={discount}
         discountPercent={discountPercent}
         limitedLineCount={limitedLineCount}
-        margin={margin}
         notes={offer.notes}
         requestText={requestText}
         setDiscountPercent={onDiscountPercentChange}

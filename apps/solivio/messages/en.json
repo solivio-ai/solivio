@@ -215,7 +215,6 @@
         "reviewChecks": "Review checks",
         "notes": "Notes",
         "checks": {
-          "targetMargin": "Target margin: {margin}%",
           "allPriced": "All lines have prices",
           "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
           "availabilityConfirmed": "Availability confirmed",
@@ -228,8 +227,7 @@
         "subtotal": "Subtotal",
         "discount": "Discount",
         "discountValue": "Discount value",
-        "totalNet": "Total net",
-        "estimatedMargin": "Estimated margin"
+        "totalNet": "Total net"
       },
       "products": {
         "title": "Products",
