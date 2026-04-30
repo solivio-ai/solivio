@@ -433,9 +433,18 @@
         "label": "Szkic"
       }
     },
+    "sort": {
+      "label": "Sortuj",
+      "createdAtDesc": "Najnowsze",
+      "createdAtAsc": "Najstarsze",
+      "valueDesc": "Wartość: malejąco",
+      "valueAsc": "Wartość: rosnąco",
+      "customerAsc": "Klient (A–Z)"
+    },
     "table": {
       "actions": "Akcje",
       "coverage": "Pokrycie",
+      "createdAt": "Data zamówienia",
       "customerRequest": "Zapytanie klienta",
       "offer": "Oferta",
       "status": "Status",
