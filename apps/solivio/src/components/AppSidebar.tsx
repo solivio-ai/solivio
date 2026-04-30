@@ -94,7 +94,7 @@ export function AppSidebar() {
                 >
                   <Link href={href} onClick={closeMobileSidebar}>
                     <Icon size={16} aria-hidden="true" />
-                    <span>{label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
