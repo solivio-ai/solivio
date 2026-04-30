@@ -1,8 +1,8 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommercialTotals } from "./CommercialTotals";
 import { ValidationRow } from "./ValidationRow";
 import type { DraftLine } from "./offer-builder-types";
@@ -38,8 +38,10 @@ export function OfferSummary({
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
-        <CardTitle>{tSummary("title")}</CardTitle>
-        <CardDescription>{tSummary("description")}</CardDescription>
+        <CardTitle className="flex items-center gap-2">
+          <FileText size={16} aria-hidden="true" className="text-primary" />
+          {tSummary("title")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid min-w-0 content-start gap-4">
