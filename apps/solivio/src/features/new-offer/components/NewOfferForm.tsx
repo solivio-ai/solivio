@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import type { CreatedOffer } from "@/server/offers/offerService";
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
 type GenerationState = "idle" | "running" | "complete";
+type NoticeKey = "initial" | "preparing" | "generated" | "error";
 
 export function NewOfferForm() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export function NewOfferForm() {
   const generationT = useTranslations("NewOffer.generation");
   const [customerName, setCustomerName] = useState("");
   const [clientRequest, setClientRequest] = useState("");
-  const [notice, setNotice] = useState(t("notices.initial"));
+  const [noticeKey, setNoticeKey] = useState<NoticeKey>("initial");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generationState, setGenerationState] = useState<GenerationState>("idle");
   const [generationStartedAt, setGenerationStartedAt] = useState<number | null>(null);
@@ -54,7 +55,7 @@ export function NewOfferForm() {
     setGenerationState("running");
     setGenerationStartedAt(startedAt);
     setGenerationElapsedMs(0);
-    setNotice(t("notices.preparing"));
+    setNoticeKey("preparing");
 
     try {
       const response = await fetch("/api/offers", {
@@ -70,10 +71,10 @@ export function NewOfferForm() {
       const json = (await response.json()) as { offer: CreatedOffer };
       setGenerationState("complete");
       setGenerationElapsedMs(Date.now() - startedAt);
-      setNotice(t("notices.generated"));
+      setNoticeKey("generated");
       router.push(`/offers/${json.offer.id}`);
     } catch {
-      setNotice(t("notices.error"));
+      setNoticeKey("error");
       setGenerationState("idle");
       setGenerationStartedAt(null);
       setGenerationElapsedMs(0);
@@ -89,7 +90,6 @@ export function NewOfferForm() {
             <FileText size={18} aria-hidden="true" className="text-primary" />
             <CardTitle>{t("title")}</CardTitle>
           </div>
-          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-3.5" onSubmit={handleSubmit}>
@@ -123,7 +123,7 @@ export function NewOfferForm() {
                 <Sparkles size={16} aria-hidden="true" />
                 {isSubmitting ? t("actions.preparing") : t("actions.generate")}
               </Button>
-              <p className="text-sm text-muted-foreground">{notice}</p>
+              <p className="text-sm text-muted-foreground">{t(`notices.${noticeKey}`)}</p>
             </div>
           </form>
         </CardContent>
@@ -131,7 +131,7 @@ export function NewOfferForm() {
 
       <Dialog open={generationState !== "idle"}>
         <DialogContent
-          className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto sm:max-w-3xl"
+          className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-primary/20 bg-background/95 shadow-2xl sm:max-w-3xl"
           showCloseButton={false}
         >
           <DialogHeader className="sr-only">

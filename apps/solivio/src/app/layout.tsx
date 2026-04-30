@@ -68,9 +68,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
-                  <header className="flex h-9 shrink-0 items-center border-b border-border px-2">
-                    <SidebarTrigger />
-                  </header>
+                  <SidebarTrigger className="fixed left-3 top-3 z-40 border border-border bg-background shadow-sm md:hidden" />
                   {children}
                 </SidebarInset>
               </SidebarProvider>
