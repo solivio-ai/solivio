@@ -261,7 +261,8 @@ export async function addProductToOffer(
   productId: string,
   quantity: number,
   requestItem = "",
-  userId?: string | null
+  userId?: string | null,
+  rationale = ""
 ): Promise<CreatedOffer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
@@ -288,7 +289,7 @@ export async function addProductToOffer(
     quantity,
     unitPriceNet: product.priceNet ?? 0,
     currency: product.currency ?? "PLN",
-    rationale: "",
+    rationale,
     position: existing.items.length
   });
   await setOfferUpdatedBy(offerId, userId ?? null);
@@ -346,3 +347,49 @@ export async function getOffers() {
 }
 
 export { getRecentOffers };
+
+// ── Bulk operations ────────────────────────────────────────────────────────────
+
+type BulkAddItem = {
+  productId: string;
+  quantity: number;
+  requestItem?: string;
+  rationale?: string;
+};
+
+type BulkAddItemResult = {
+  productId: string;
+  status: "added" | "duplicate" | "not_found" | "locked";
+};
+
+export async function bulkAddProductsToOffer(
+  offerId: string,
+  items: BulkAddItem[],
+  userId?: string | null
+): Promise<{ results: BulkAddItemResult[]; offer: Offer | null }> {
+  const results: BulkAddItemResult[] = [];
+
+  for (const item of items) {
+    const outcome = await addProductToOffer(
+      offerId,
+      item.productId,
+      item.quantity,
+      item.requestItem ?? "",
+      userId,
+      item.rationale ?? ""
+    );
+
+    if (outcome === null) {
+      results.push({ productId: item.productId, status: "not_found" });
+    } else if (outcome === "duplicate") {
+      results.push({ productId: item.productId, status: "duplicate" });
+    } else if (outcome === "locked") {
+      results.push({ productId: item.productId, status: "locked" });
+    } else {
+      results.push({ productId: item.productId, status: "added" });
+    }
+  }
+
+  const finalOffer = await getOffer(offerId);
+  return { results, offer: finalOffer };
+}

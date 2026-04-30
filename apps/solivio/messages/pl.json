@@ -348,7 +348,7 @@
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty"
+      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",
@@ -433,9 +433,18 @@
         "label": "Szkic"
       }
     },
+    "sort": {
+      "label": "Sortuj",
+      "createdAtDesc": "Najnowsze",
+      "createdAtAsc": "Najstarsze",
+      "valueDesc": "Wartość: malejąco",
+      "valueAsc": "Wartość: rosnąco",
+      "customerAsc": "Klient (A–Z)"
+    },
     "table": {
       "actions": "Akcje",
       "coverage": "Pokrycie",
+      "createdAt": "Data zamówienia",
       "customerRequest": "Zapytanie klienta",
       "offer": "Oferta",
       "status": "Status",
