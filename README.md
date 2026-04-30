@@ -3,15 +3,16 @@
 </p>
 
 <p align="center">
-  <strong>Quotes shouldn't take hours. They should start from your data.</strong>
+  <strong>Stop building quotes. Start closing deals.</strong>
   <br />
-  </p>
+  <strong>Fix your quoting process - using your data and knowledge.</strong>
+</p>
 
 Solivio is an open-source product created by Derave Software.
 
-It combines an implementation process with an open-source software foundation built for companies where product catalogs contain thousands of items and offers often include dozens of line items.
+It combines an implementation process with an open-source software foundation built for companies where product catalogs contain thousands of items and quotes often include dozens of line items.
 
-Solivio helps sales teams move from manual quoting to data-driven quoting. Instead of rebuilding every offer from scratch, it uses AI and company knowledge to prepare a draft offer that a salesperson reviews, adjusts, validates, and moves further through the organization.
+Solivio helps teams move from manual quoting to a data- and knowledge-driven process. Instead of rebuilding every quote from scratch, it uses AI plus connected business context to prepare a draft quote that the sales team reviews, adjusts, validates, and moves further through the organization.
 
 ## 💡 What Solivio Is
 
@@ -23,19 +24,19 @@ It is especially relevant when the business operates with:
 - 🧩 many configurable or multi-line offers
 - 🧠 data scattered across ERP, CRM, price lists, documents, and people's heads
 - ✅ approval-heavy processes
-- ⏳ long onboarding time for new salespeople
+- ⏳ long onboarding time for new sales team members
 
-The goal is not to replace the salesperson. The goal is to reduce repetitive operational work, standardize quoting, and help the team respond faster with more consistency.
+Solivio is both an implementation process and an open-source software product. The goal is not to replace the sales team. The goal is to reduce repetitive operational work, standardize quoting, and help teams respond faster with more consistency.
 
-Solivio is also meant to support consultative selling. It should connect many data points and help teams build the best possible offer, not only the fastest one.
+Solivio is also meant to support consultative selling. It should connect many data points and help teams generate the best possible quote, not only the fastest one.
 
 ## 🚨 Why Solivio Exists
 
 In many organizations, quoting is still a fragmented process:
 
-- 🧑‍💼 senior salespeople spend time on operational work instead of selling
-- 🌱 junior salespeople need months to become effective
-- 📝 every offer is built slightly differently
+- 🧑‍💼 senior sales team members spend time on operational work instead of selling
+- 🌱 new sales team members need months to become effective
+- 📝 every quote is built slightly differently
 - 🚦 approvals, pricing, and product knowledge create bottlenecks
 - 🔗 ERP, CRM, Excel, price lists, and internal know-how do not work as one system
 
@@ -48,10 +49,10 @@ Solivio exists to solve that operational gap.
 Solivio shortens the quoting process through an AI-assisted workflow:
 
 1. 📥 A customer sends an inquiry.
-2. 🔎 Solivio reads the inquiry together with connected business data.
+2. 🔎 Solivio reads the inquiry together with connected sources such as product catalogs, CRM, ERP, FAQ, customer profile, pricing policies, product instructions, industry knowledge, and additional `.md` guidance files.
 3. 🧠 The system extracts requirements, searches for matching products, and prepares recommendations.
-4. 🧾 Solivio generates a draft offer.
-5. 👤 A salesperson reviews, edits, validates, and accepts it.
+4. 🧾 Solivio generates a draft quote.
+5. 👥 The sales team reviews it, edits it if needed, validates it, and accepts it.
 6. 🚀 The accepted draft moves into downstream steps defined during implementation, such as ERP sync or final PDF generation.
 
 Each implementation starts with mapping the real quoting process inside the client organization. What happens after the draft is generated depends on that mapped workflow.
@@ -60,9 +61,9 @@ Each implementation starts with mapping the real quoting process inside the clie
 
 Solivio focuses on the bottlenecks that make quoting difficult to scale:
 
-1. ⏳ Onboarding slows down growth. New salespeople need months to become effective, so team expansion takes too long.
-2. 💸 Senior salespeople are trapped in operations. Top performers spend time building offers and supporting juniors instead of generating revenue.
-3. 📏 Offer quality depends on the person, not the process. Juniors work slower, seniors work faster, and consistency suffers.
+1. ⏳ Onboarding slows down growth. New sales team members need months to become effective, so team expansion takes too long.
+2. 💸 Senior team members are trapped in operations. Top performers spend time building quotes and supporting juniors instead of generating revenue.
+3. 📏 Quote quality depends on the person, not the process. Juniors work slower, seniors work faster, and consistency suffers.
 4. 📈 Quoting does not scale with demand. Every additional inquiry creates more manual work and more chaos.
 5. 🔌 Data is fragmented across systems. ERP, CRM, Excel, price lists, and internal know-how require repeated copy-paste work.
 
@@ -71,9 +72,9 @@ Solivio focuses on the bottlenecks that make quoting difficult to scale:
 Solivio is meant to help companies:
 
 - ⚡ shorten quote turnaround time
-- 🧹 reduce manual operational work
-- 📏 standardize offer quality across the team
-- 🧑‍🏫 make onboarding less dependent on senior employees
+- 🧹 reduce manual operational work and retyping into ERP or quoting systems
+- 📏 standardize quote quality across the team
+- 🧑‍🏫 make onboarding less dependent on senior team members
 - 🚀 improve sales capacity without growing chaos
 - 🔁 create a more scalable quoting process
 
@@ -81,13 +82,13 @@ Solivio is meant to help companies:
 
 Solivio aims to become the layer between customer inquiry and final offer by providing:
 
-- 🤖 automatic draft offer generation based on data
-- 🔗 CRM, ERP, and price-list integration
+- 🤖 automatic draft quote generation based on data
+- 🔗 CRM, ERP, FAQ, price-list, and knowledge-base integration
 - 🧩 support for configurable products and bundles
 - ✅ approval-aware workflows such as discount acceptance
 - 📍 a central source of truth about product and customer context
-- 🚀 faster onboarding for salespeople
-- 📬 support for multiple channels such as email, phone, and partner or account-based workflows
+- 🚀 faster onboarding for sales teams
+- 📬 support for multiple channels such as email, phone, and B2B workflows
 
 ## 🌍 Open-Source Repository
 
