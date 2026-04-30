@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowRight,
   BarChart3,
   BookOpen,
   DollarSign,
@@ -12,7 +13,6 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,6 @@ type IntegrationConfig = {
   key: string;
   icon: LucideIcon;
   active: boolean;
-  href?: string;
 };
 
 const INTEGRATIONS: IntegrationConfig[] = [
@@ -44,73 +43,82 @@ export async function IntegrationsSection() {
   const t = await getTranslations("Dashboard");
 
   return (
-    <section>
-      <div className="mb-3">
-        <h2 className="text-base font-semibold">{t("integrations.title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("integrations.subtitle")}</p>
+    <section className="space-y-3">
+      <div>
+        <h2 className="text-lg font-semibold">{t("integrations.title")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{t("integrations.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {INTEGRATIONS.map(({ key, icon: Icon, active, href }) => (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {INTEGRATIONS.map(({ key, icon: Icon, active }) => (
           <Card
             key={key}
             size="sm"
             className={cn(
+              "h-full gap-0 py-0 shadow-sm transition-colors",
               active
-                ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20"
-                : "border-dashed bg-muted/30 opacity-70 transition-opacity hover:opacity-100",
+                ? "bg-primary/5 ring-primary/30"
+                : "bg-muted/45 text-muted-foreground grayscale ring-border/70 hover:bg-muted/55",
             )}
           >
-            <CardHeader>
-              <div className="flex items-center gap-2">
+            <CardHeader className="flex flex-1 flex-col gap-3 p-4">
+              <div className="flex items-start gap-3">
                 <div
                   className={cn(
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-md",
-                    active ? "bg-green-100 dark:bg-green-900/40" : "bg-muted",
+                    "flex size-9 shrink-0 items-center justify-center rounded-lg border",
+                    active
+                      ? "border-primary/35 bg-primary/15 text-secondary dark:text-primary"
+                      : "border-border/70 bg-background/50 text-muted-foreground/75",
                   )}
                 >
-                  <Icon
-                    size={14}
-                    aria-hidden="true"
-                    className={
-                      active ? "text-green-700 dark:text-green-400" : "text-muted-foreground/70"
-                    }
-                  />
+                  <Icon size={16} aria-hidden="true" />
                 </div>
-                <CardTitle>{t(`integrations.items.${key}.name`)}</CardTitle>
+                <div className="min-w-0 flex-1">
+                  <CardTitle
+                    className={cn("text-sm leading-5", !active && "text-muted-foreground")}
+                  >
+                    {t(`integrations.items.${key}.name`)}
+                  </CardTitle>
+                  <CardDescription
+                    className={cn(
+                      "mt-1 line-clamp-3 leading-5",
+                      !active && "text-muted-foreground/75",
+                    )}
+                  >
+                    {t(`integrations.items.${key}.description`)}
+                  </CardDescription>
+                </div>
               </div>
-              <CardDescription className={cn(!active && "text-muted-foreground/75")}>
-                {t(`integrations.items.${key}.description`)}
-              </CardDescription>
             </CardHeader>
 
-            <CardFooter className="justify-between">
-              {active && (
+            <CardFooter
+              className={cn(
+                "mt-auto gap-3 px-4 py-3",
+                active ? "justify-start bg-muted/35" : "justify-between bg-muted/65",
+              )}
+            >
+              {active ? (
                 <Badge
-                  variant={active ? "outline" : "secondary"}
-                  className={cn(
-                    active &&
-                      "border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900/40 dark:text-green-400",
-                  )}
+                  variant="outline"
+                  className="border-primary/45 bg-primary/15 text-foreground"
                 >
+                  <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
                   {t("integrations.badge.active")}
                 </Badge>
-              )}
-              {!active && <div></div>}
-
-              {active && href ? (
-                <Link
-                  href={href}
-                  className="text-xs text-primary underline underline-offset-2 hover:no-underline"
-                >
-                  {t("integrations.action.configure")}
-                </Link>
               ) : (
-                !active && (
-                  <span className="text-xs text-muted-foreground">
-                    {t("integrations.action.integrate")}
-                  </span>
-                )
+                <Badge
+                  variant="outline"
+                  className="border-border/70 bg-background/50 text-muted-foreground"
+                >
+                  {t("integrations.badge.available")}
+                </Badge>
+              )}
+
+              {!active && (
+                <span className="inline-flex h-6 items-center gap-1 text-xs font-medium text-muted-foreground/80">
+                  {t("integrations.action.integrate")}
+                  <ArrowRight size={13} aria-hidden="true" />
+                </span>
               )}
             </CardFooter>
           </Card>

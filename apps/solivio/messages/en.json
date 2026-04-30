@@ -525,8 +525,7 @@
         "available": "Available"
       },
       "action": {
-        "configure": "Import catalog →",
-        "integrate": "Get in touch →"
+        "integrate": "Get in touch"
       },
       "items": {
         "productCatalog": {

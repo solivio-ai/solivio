@@ -547,8 +547,7 @@
         "available": "Dostępna"
       },
       "action": {
-        "configure": "Importuj katalog →",
-        "integrate": "Skontaktuj się →"
+        "integrate": "Skontaktuj się"
       },
       "items": {
         "productCatalog": {

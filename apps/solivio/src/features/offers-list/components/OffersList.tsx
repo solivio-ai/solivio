@@ -677,9 +677,9 @@ export function OffersList({ offers, hideHeader }: Props) {
                       className="transition-colors hover:ring-primary/40"
                     >
                       <CardHeader>
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1">
                           <div className="min-w-0">
-                            <CardTitle className="truncate">
+                            <CardTitle className="min-w-0">
                               <Link
                                 href={`/offers/${offer.id}`}
                                 className="inline-flex max-w-full items-center gap-1 truncate hover:text-primary hover:underline"
@@ -695,7 +695,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                           </div>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="inline-flex w-fit shrink-0 cursor-default">
+                              <span className="inline-flex w-fit max-w-full shrink-0 cursor-default justify-self-end">
                                 <StatusBadge status={offer.status} label={statusLabel} />
                               </span>
                             </TooltipTrigger>
