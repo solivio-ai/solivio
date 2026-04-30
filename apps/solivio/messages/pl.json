@@ -180,6 +180,7 @@
       "done": "Gotowe"
     },
     "review": {
+      "pageTitle": "Przegląd oferty",
       "loading": "Wczytywanie wygenerowanej oferty...",
       "error": "Nie udało się wczytać tej oferty.",
       "notFound": "Oferta niedostępna",

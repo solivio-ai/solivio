@@ -180,6 +180,7 @@
       "done": "Done"
     },
     "review": {
+      "pageTitle": "Offer review",
       "loading": "Loading generated offer...",
       "error": "Could not load this offer.",
       "notFound": "Offer not available",
