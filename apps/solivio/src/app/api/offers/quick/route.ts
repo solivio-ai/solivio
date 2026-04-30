@@ -22,7 +22,6 @@ export async function POST(request: Request) {
   const generated: GeneratedOffer = {
     notes: ["Offer created manually from product search"],
     unmatched: [],
-    debugFragments: [],
     items: items.map((i: any) => ({
       productId: i.productId,
       productName: typeof i.productName === "string" ? i.productName : "Manual selection",

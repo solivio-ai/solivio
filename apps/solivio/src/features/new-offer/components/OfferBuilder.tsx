@@ -8,7 +8,6 @@ import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
 import { OfferBuilderHeader } from "./OfferBuilderHeader";
-import { OfferDebugPanel } from "./OfferDebugPanel";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
 import { OfferValidationDialog, type ValidationResult } from "./OfferValidationDialog";
@@ -412,11 +411,6 @@ export function OfferBuilder({
         removeProduct={(productId) => void removeProduct(productId)}
         updateQuantity={updateQuantity}
         status={status}
-      />
-
-      <OfferDebugPanel
-        clientRequest={offer.clientRequest ?? ""}
-        fragments={offer.debugFragments ?? []}
       />
 
       <OfferSummary
