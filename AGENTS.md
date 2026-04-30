@@ -28,6 +28,8 @@ Use `yarn check` as the single repository quality gate for Biome.
 
 Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes.
 
+Playwright e2e tests use the normal local app path: `yarn setup` prepares Postgres and migrations, and `yarn e2e` runs against `http://localhost:3000` while starting `yarn dev` if needed. Do not add separate e2e setup scripts. CI (`.github/workflows/quality.yml`) runs `yarn check`, `yarn typecheck`, prepares `.env.local`, runs `yarn setup`, and then runs `yarn e2e`.
+
 ## Build
 
 Production images are produced via `docker-compose.build.yml`:

@@ -21,6 +21,11 @@ dist/
 build/
 *.tsbuildinfo
 
+# playwright
+test-results/
+playwright-report/
+blob-report/
+
 # local env
 .env
 .env.*

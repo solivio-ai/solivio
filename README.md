@@ -133,10 +133,26 @@ Useful commands:
 ```bash
 yarn check
 yarn typecheck
+yarn e2e
 yarn docs:dev
 yarn db:migrate
 yarn db:down
 ```
+
+## 🧪 End-to-End Tests
+
+Playwright tests live in `e2e/` and use the same local app path as source
+development. Run the regular setup first:
+
+```bash
+yarn setup
+yarn e2e
+```
+
+`yarn e2e` starts `yarn dev` on `http://localhost:3000` if the app is not
+already running. Set `PLAYWRIGHT_BASE_URL` only when you want to point the same
+tests at an already-running app URL. If Playwright browsers are missing, run
+`yarn playwright install chromium` once.
 
 Docs:
 

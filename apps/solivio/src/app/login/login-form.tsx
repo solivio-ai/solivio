@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,11 +29,13 @@ export function LoginForm({
   const t = useTranslations("LoginForm");
   const [mode, setMode] = useState<Mode>(initialMode);
   const [error, setError] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   const hasSocial = googleEnabled || microsoftEnabled;
   const isSignIn = mode === "signin";
+  const isFormDisabled = isPending || !isHydrated;
   const nextMode = isSignIn ? "signup" : "signin";
   const modeHref = nextMode === "signup" ? "/login?mode=signup" : "/login";
   const title = isSignIn ? t("title.signin") : t("title.signup");
@@ -83,6 +85,10 @@ export function LoginForm({
     });
   }
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-5 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
       <header>
@@ -101,7 +107,7 @@ export function LoginForm({
                 type="text"
                 required
                 autoComplete="username"
-                disabled={isPending}
+                disabled={isFormDisabled}
               />
             </Field>
           )}
@@ -114,7 +120,7 @@ export function LoginForm({
                 type="text"
                 required
                 autoComplete="username"
-                disabled={isPending}
+                disabled={isFormDisabled}
               />
             </Field>
           ) : (
@@ -125,7 +131,7 @@ export function LoginForm({
                 type="email"
                 required
                 autoComplete="email"
-                disabled={isPending}
+                disabled={isFormDisabled}
               />
             </Field>
           )}
@@ -137,7 +143,7 @@ export function LoginForm({
               type="password"
               required
               autoComplete={isSignIn ? "current-password" : "new-password"}
-              disabled={isPending}
+              disabled={isFormDisabled}
             />
           </Field>
 
@@ -148,14 +154,14 @@ export function LoginForm({
                 name="rememberMe"
                 checked={rememberMe}
                 onChange={(event) => setRememberMe(event.target.checked)}
-                disabled={isPending}
+                disabled={isFormDisabled}
                 className="size-4 rounded border-input accent-primary"
               />
               {t("fields.rememberMe")}
             </label>
           )}
 
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isFormDisabled}>
             {submitLabel}
           </Button>
         </form>

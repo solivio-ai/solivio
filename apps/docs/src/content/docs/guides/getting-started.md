@@ -137,6 +137,17 @@ yarn dev
 
 Open the app at `http://localhost:3000`, sign up, and start from the dashboard.
 
+Run the end-to-end smoke tests against the same local app path:
+
+```bash
+yarn e2e
+```
+
+`yarn e2e` starts `yarn dev` automatically when the app is not already running.
+It expects the normal `yarn setup` database step above to have been completed.
+If Playwright browsers are not installed yet, run
+`yarn playwright install chromium` once.
+
 ## Run the docs
 
 ```bash
@@ -174,6 +185,7 @@ yarn db:down
 | --- | --- |
 | `yarn dev` | Start the Next.js app on port 3000. |
 | `yarn docs:dev` | Start the separate docs site on port 4321. |
+| `yarn e2e` | Run Playwright smoke tests against the local app. |
 | `yarn openapi:generate` | Generate OpenAPI JSON from API route contracts. |
 | `yarn typecheck` | Type-check all workspaces. |
 | `yarn build` | Build all workspaces, including the docs site. |
