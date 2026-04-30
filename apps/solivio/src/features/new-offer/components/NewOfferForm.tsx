@@ -21,6 +21,7 @@ import type { CreatedOffer } from "@/server/offers/offerService";
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
 type GenerationState = "idle" | "running" | "complete";
+type NoticeKey = "initial" | "preparing" | "generated" | "error";
 
 export function NewOfferForm() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export function NewOfferForm() {
   const generationT = useTranslations("NewOffer.generation");
   const [customerName, setCustomerName] = useState("");
   const [clientRequest, setClientRequest] = useState("");
-  const [notice, setNotice] = useState(t("notices.initial"));
+  const [noticeKey, setNoticeKey] = useState<NoticeKey>("initial");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generationState, setGenerationState] = useState<GenerationState>("idle");
   const [generationStartedAt, setGenerationStartedAt] = useState<number | null>(null);
@@ -54,7 +55,7 @@ export function NewOfferForm() {
     setGenerationState("running");
     setGenerationStartedAt(startedAt);
     setGenerationElapsedMs(0);
-    setNotice(t("notices.preparing"));
+    setNoticeKey("preparing");
 
     try {
       const response = await fetch("/api/offers", {
@@ -70,10 +71,10 @@ export function NewOfferForm() {
       const json = (await response.json()) as { offer: CreatedOffer };
       setGenerationState("complete");
       setGenerationElapsedMs(Date.now() - startedAt);
-      setNotice(t("notices.generated"));
+      setNoticeKey("generated");
       router.push(`/offers/${json.offer.id}`);
     } catch {
-      setNotice(t("notices.error"));
+      setNoticeKey("error");
       setGenerationState("idle");
       setGenerationStartedAt(null);
       setGenerationElapsedMs(0);
@@ -123,7 +124,7 @@ export function NewOfferForm() {
                 <Sparkles size={16} aria-hidden="true" />
                 {isSubmitting ? t("actions.preparing") : t("actions.generate")}
               </Button>
-              <p className="text-sm text-muted-foreground">{notice}</p>
+              <p className="text-sm text-muted-foreground">{t(`notices.${noticeKey}`)}</p>
             </div>
           </form>
         </CardContent>
