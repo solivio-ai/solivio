@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { createOfferRequestSchema, offerResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
+import { generateOfferName } from "@/server/agents/offerNameAgent";
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { createOffer, toOfferDomain } from "@/server/offers/offerService";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
@@ -31,8 +32,17 @@ export async function POST(request: Request) {
   }
 
   const { customerName, clientRequest } = parsed.data;
-  const generated = await generateOfferWithAgent(clientRequest, customerName);
-  const offer = await createOffer(customerName, clientRequest, generated, auth.session.user.id);
+  const [generated, offerName] = await Promise.all([
+    generateOfferWithAgent(clientRequest, customerName),
+    generateOfferName(clientRequest, customerName)
+  ]);
+  const offer = await createOffer(
+    customerName,
+    clientRequest,
+    generated,
+    auth.session.user.id,
+    offerName
+  );
 
   saveOfferDraft(toOfferDomain(offer));
 

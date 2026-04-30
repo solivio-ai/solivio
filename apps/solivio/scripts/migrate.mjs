@@ -1,8 +1,11 @@
+import { config as loadEnv } from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
-import { config } from "dotenv";
-config({ path: ".env.local" });
+
+loadEnv({ path: ".env.local" });
+loadEnv({ path: ".env" });
+
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
   console.error("[migrate] DATABASE_URL is required");

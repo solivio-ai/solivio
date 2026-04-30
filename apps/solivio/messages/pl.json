@@ -141,6 +141,9 @@
     },
     "builder": {
       "titleFallback": "Szkic oferty",
+      "lineItem": {
+        "requested": "Zapytanie:"
+      },
       "status": {
         "draft": "Szkic",
         "accepted": "Zaakceptowana"
@@ -154,7 +157,136 @@
         "saved": "Wszystkie zmiany zapisane.",
         "error": "Nie udało się zapisać zmian.",
         "retry": "Spróbuj ponownie"
+      },
+      "createdBy": "Utworzone przez {name}",
+      "lastModifiedBy": "Ostatnia zmiana: {name}",
+      "backToDraft": "Przywróć do szkicu",
+      "manuallyAdded": "Dodano ręcznie",
+      "noRequestText": "Do tego szkicu nie dołączono tekstu zapytania klienta.",
+      "done": "Gotowe"
+    },
+    "review": {
+      "loading": "Wczytywanie wygenerowanej oferty...",
+      "error": "Nie udało się wczytać tej oferty.",
+      "notFound": "Oferta niedostępna",
+      "createAnother": "Utwórz kolejny szkic",
+      "assistant": {
+        "title": "Asystent",
+        "hide": "Ukryj asystenta",
+        "show": "Pokaż asystenta"
+      },
+      "revisions": "Wersje",
+      "resizeLabel": "Zmień rozmiar paneli przeglądu i asystenta",
+      "validation": {
+        "title": "Wynik walidacji AI",
+        "verdict": {
+          "pass": "Oferta kompletna",
+          "partial": "Częściowo spełniona",
+          "fail": "Wymagania niespełnione"
+        },
+        "missingRequirements": "Brakujące wymagania",
+        "notes": "Uwagi",
+        "allMet": "Wszystkie wymagania klienta są spełnione.",
+        "close": "Zamknij",
+        "transferToChat": "Przekaż do czatu",
+        "acceptOffer": "Zaakceptuj ofertę",
+        "checking": "Sprawdzam...",
+        "checkWithAI": "Sprawdź z AI",
+        "messageHeader": "**Wyniki walidacji AI**",
+        "statusLabel": "Status",
+        "chatPrompt": "Czy możesz zaproponować rozwiązania dla brakujących pozycji lub skomentować te wyniki?"
+      },
+      "summary": {
+        "title": "Podsumowanie",
+        "description": "Podsumowanie i weryfikacja przed wysłaniem szkicu.",
+        "customerRequest": "Zapytanie klienta",
+        "reviewChecks": "Weryfikacja",
+        "notes": "Notatki",
+        "checks": {
+          "targetMargin": "Docelowa marża: {margin}%",
+          "allPriced": "Wszystkie pozycje mają ceny",
+          "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",
+          "availabilityConfirmed": "Dostępność potwierdzona",
+          "missingAvailability": "{count, plural, one {# pozycja wymaga potwierdzenia dostępności} few {# pozycje wymagają potwierdzenia dostępności} many {# pozycji wymaga potwierdzenia dostępności} other {# pozycji wymaga potwierdzenia dostępności}}",
+          "offerAccepted": "Oferta zaakceptowana"
+        }
+      },
+      "commercial": {
+        "title": "Podsumowanie handlowe",
+        "subtotal": "Wartość netto",
+        "discount": "Rabat",
+        "discountValue": "Wartość rabatu",
+        "totalNet": "Suma netto",
+        "estimatedMargin": "Szacowana marża"
+      },
+      "products": {
+        "title": "Produkty",
+        "description": "Przejrzyj dopasowane produkty, ilości i ceny.",
+        "unmatchedTitle": "Niedopasowane pozycje zapytania",
+        "unmatchedDescription": "Następujące pozycje z zapytania klienta nie mogły zostać przypisane do żadnego produktu w katalogu:",
+        "empty": "Brak produktów w tej ofercie.",
+        "match": "Dopasowanie produktu",
+        "qty": "Ilość",
+        "unitPrice": "Cena jedn.",
+        "lineTotal": "Wartość",
+        "actions": "Akcje",
+        "sku": "SKU",
+        "requested": "Zapytanie",
+        "details": "Szczegóły",
+        "availability": "Dostępność",
+        "brand": "Marka",
+      "quantityAria": "Ilość dla {name}",
+        "removeAria": "Usuń {name}"
+      },
+      "acceptedView": {
+        "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
+        "attribution": "Autorstwo",
+        "downloadPdf": "Wygeneruj i pobierz PDF",
+        "goToOffers": "Wróć do listy ofert"
       }
+    },
+    "revision": {
+      "timeline": {
+        "justNow": "przed chwilą",
+        "ago": "{time} temu",
+        "empty": "Brak zapisanych wersji.",
+        "checkpoint": "Wersje są zapisywane automatycznie podczas edycji.",
+        "revisionLabel": "Wersja {number}",
+        "latest": "Najnowsza",
+        "accepted": "Zaakceptowana"
+      },
+      "modal": {
+        "previewAria": "Podgląd wersji {number}",
+        "title": "Wersja {number}",
+        "savedBy": "Zapisane przez {name}",
+        "loading": "Wczytywanie wersji...",
+        "name": "Nazwa",
+        "customer": "Klient",
+        "status": "Status",
+        "notes": "Notatki",
+        "lineItems": "Pozycje ({count})",
+        "product": "Produkt",
+        "qty": "Ilość",
+        "unitPrice": "Cena jedn.",
+        "total": "Suma",
+        "close": "Zamknij",
+        "restoring": "Przywracanie...",
+        "restoreAction": "Przywróć tę wersję"
+      }
+    }
+  },
+  "QuickSearch": {
+    "card": {
+      "title": "Znajdź produkt",
+      "description": "Przeszukaj katalog i utwórz szkic oferty z wybranych pozycji."
+    },
+    "searchPlaceholder": "Szukaj produktów...",
+    "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
+    "noItemsSelected": "Brak wybranych pozycji",
+    "actions": {
+      "cancel": "Anuluj",
+      "creating": "Tworzenie...",
+      "createDraft": "Utwórz szkic oferty"
     }
   },
   "OfferChat": {
@@ -270,5 +402,51 @@
     },
     "title": "Oferty",
     "subtitle": "Przeglądaj wygenerowane drafty, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
+  },
+  "ProductImport": {
+    "page": {
+      "title": "Importuj produkty",
+      "badge": "Produkty",
+      "description": "Prześlij katalog CSV, podejrzyj przetworzone wiersze, a następnie zapisz embeddingi za pomocą API serwera."
+    },
+    "uploadCard": {
+      "title": "Import katalogu",
+      "description": "Wybierz plik CSV z kolumnami: sku, name, description, manufacturer, price_net, price_gross, vat_rate oraz currency. Obsługiwane są separatory: przecinek, średnik i tabulator; ceny mogą używać kropki . lub przecinka , jako separatora dziesiętnego.",
+      "chooseFile": "Wybierz plik CSV",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub przeciągnij plik tutaj",
+      "emptyError": "Plik CSV wydaje się być pusty.",
+      "parseError": "Błąd przetwarzania pliku CSV.",
+      "readError": "Nie udało się odczytać pliku."
+    },
+    "previewCard": {
+      "title": "Podgląd",
+      "rowCount": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wierszy}}",
+      "clear": "Wyczyść",
+      "missingColumns": "Brakujące kolumny ({count}): {columns}.",
+      "modelLabel": "Model embeddingów",
+      "modelPlaceholder": "Model embeddingów",
+      "modelsUnavailable": "Modele embeddingów niedostępne",
+      "importAction": {
+        "embedding": "Przetwarzanie...",
+        "saveCount": "Przetwórz i zapisz {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}"
+      },
+      "importDone": "Zapisano {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}.",
+      "importError": "Import nie powiódł się.",
+      "showingFirst": "Pokazywanie pierwszych 50 z {count} wierszy."
+    }
+  },
+  "DemoOffer": {
+    "title": "Produkty w ofercie",
+    "addProduct": "Dodaj produkt",
+    "empty": "Brak dodanych produktów",
+    "qty": "szt: {count}"
+  },
+  "Dashboard": {
+    "newOffer": {
+      "title": "Zacznij nową ofertę",
+      "description": "Generuj ustrukturyzowane szkice ofert na podstawie swoich danych.",
+      "button": "Nowa oferta"
+    }
   }
 }

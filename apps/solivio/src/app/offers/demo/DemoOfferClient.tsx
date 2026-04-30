@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
@@ -12,6 +13,7 @@ import {
 type OfferItem = { product: ProductSearchMatch; quantity: number };
 
 export function DemoOfferClient() {
+  const t = useTranslations("DemoOffer");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Record<string, OfferItem>>({});
 
@@ -34,16 +36,16 @@ export function DemoOfferClient() {
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Offer products</h1>
+        <h1 className="text-lg font-semibold">{t("title")}</h1>
         <Button size="sm" onClick={() => setOpen(true)}>
           <Plus size={16} aria-hidden="true" />
-          Add product
+          {t("addProduct")}
         </Button>
       </div>
 
       {addedList.length === 0 ? (
         <div className="rounded-lg border border-dashed p-6 text-center">
-          <p className="text-sm text-muted-foreground">No products added yet</p>
+          <p className="text-sm text-muted-foreground">{t("empty")}</p>
         </div>
       ) : (
         <div className="grid gap-2">
@@ -58,7 +60,7 @@ export function DemoOfferClient() {
                   {item.product.sku}
                 </span>
               </div>
-              <span className="text-sm text-primary">qty: {item.quantity}</span>
+              <span className="text-sm text-primary">{t("qty", { count: item.quantity })}</span>
             </div>
           ))}
         </div>

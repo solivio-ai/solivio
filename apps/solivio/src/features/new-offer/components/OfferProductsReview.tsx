@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PackageSearch, Info, AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -42,6 +43,7 @@ export function OfferProductsReview({
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
+   const tProducts = useTranslations("NewOffer.review.products");
   const previousSignaturesRef = useRef<Map<string, string>>(new Map());
   const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [updatedLineIds, setUpdatedLineIds] = useState<Set<string>>(new Set());
@@ -103,19 +105,19 @@ export function OfferProductsReview({
       <CardHeader className="pb-1">
         <div className="flex items-center gap-2">
           <PackageSearch size={18} aria-hidden="true" className="text-primary" />
-          <CardTitle>Products</CardTitle>
+          <CardTitle>{tProducts("title")}</CardTitle>
         </div>
-        <CardDescription>Review the matched products, quantities, and pricing first.</CardDescription>
+        <CardDescription>{tProducts("description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid min-w-0 gap-3">
         {unmatched && unmatched.length > 0 && (
           <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
             <div className="flex items-center gap-2 text-destructive mb-1.5 font-medium">
               <AlertTriangle size={16} aria-hidden="true" />
-              <span>Unmatched Request Items</span>
+              <span>{tProducts("unmatchedTitle")}</span>
             </div>
             <p className="text-sm text-muted-foreground mb-2">
-              The following items from the customer's request could not be mapped to any products in our catalog:
+              {tProducts("unmatchedDescription")}
             </p>
             <ul className="list-disc pl-5 text-sm space-y-1">
               {unmatched.map((item, idx) => (
@@ -127,7 +129,7 @@ export function OfferProductsReview({
         <div className="grid gap-3 md:hidden">
           {lines.length === 0 ? (
             <div className="rounded-lg border border-foreground/15 p-8 text-center text-sm text-muted-foreground">
-              No products in this offer yet.
+              {tProducts("empty")}
             </div>
           ) : (
             lines.map((line) => (
@@ -155,12 +157,12 @@ export function OfferProductsReview({
           <Table className="min-w-[720px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[54%] min-w-[320px]">Product Match</TableHead>
-                <TableHead className="w-24 text-right">Qty</TableHead>
-                <TableHead className="w-28 text-right">Unit price</TableHead>
-                <TableHead className="w-32 text-right">Line total</TableHead>
+                <TableHead className="w-[54%] min-w-[320px]">{tProducts("match")}</TableHead>
+                <TableHead className="w-24 text-right">{tProducts("qty")}</TableHead>
+                <TableHead className="w-28 text-right">{tProducts("unitPrice")}</TableHead>
+                <TableHead className="w-32 text-right">{tProducts("lineTotal")}</TableHead>
                 <TableHead className="w-10 text-right">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{tProducts("actions")}</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -168,7 +170,7 @@ export function OfferProductsReview({
               {lines.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-28 text-center text-sm text-muted-foreground">
-                    No products in this offer yet.
+                    {tProducts("empty")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -186,29 +188,29 @@ export function OfferProductsReview({
                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                           <span className="text-sm font-semibold">{line.name}</span>
                           {line.sku ? (
-                            <span className="text-xs text-muted-foreground">SKU: {line.sku}</span>
+                            <span className="text-xs text-muted-foreground">{tProducts("sku")}: {line.sku}</span>
                           ) : null}
                         </div>
                         {line.requestItem ? (
                           <div className="mt-1 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
                             <span className="shrink-0 font-medium text-secondary">
-                              Requested:
+                              {tProducts("requested")}:
                             </span>
                             <span className="italic text-foreground">{line.requestItem}</span>
                           </div>
                         ) : null}
 
                         {/* Collapsible details */}
-                        {(line.availability || line.manufacturer || line.rationale || line.description) ? (
+                        {(line.availability || line.manufacturer || line.rationale) ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
                               <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
-                                Details
+                                {tProducts("details")}
                               </AccordionTrigger>
                               <AccordionContent className="grid gap-2 pb-0">
                                 {line.availability ? (
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground">Availability:</span>
+                                    <span className="text-xs text-muted-foreground">{tProducts("availability")}:</span>
                                     <Badge
                                       variant={
                                         line.availability === "limited"
@@ -223,18 +225,13 @@ export function OfferProductsReview({
                                   </div>
                                 ) : null}
                                 {line.manufacturer ? (
-                                  <span className="text-xs text-muted-foreground">Brand: {line.manufacturer}</span>
+                                  <span className="text-xs text-muted-foreground">{tProducts("brand")}: {line.manufacturer}</span>
                                 ) : null}
                                 {line.rationale ? (
                                   <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
                                     <Info size={14} className="mt-0.5 shrink-0 text-primary/70" />
                                     <p>{line.rationale}</p>
                                   </div>
-                                ) : null}
-                                {line.description ? (
-                                  <p className="text-xs leading-relaxed text-muted-foreground border-t pt-2">
-                                    {line.description}
-                                  </p>
                                 ) : null}
                               </AccordionContent>
                             </AccordionItem>
@@ -244,7 +241,7 @@ export function OfferProductsReview({
                     </TableCell>
                     <TableCell className="text-right align-top pt-4">
                       <Input
-                        aria-label={`Quantity for ${line.name}`}
+                        aria-label={tProducts("quantityAria", { name: line.name })}
                         className="ml-auto w-20 text-right"
                         min={1}
                         type="number"
@@ -273,7 +270,7 @@ export function OfferProductsReview({
                         className="size-8 text-muted-foreground hover:text-destructive"
                         onClick={() => removeProduct(line.productId)}
                         disabled={pendingProductIds.has(line.productId) || isLocked}
-                        aria-label={`Remove ${line.name}`}
+                        aria-label={tProducts("removeAria", { name: line.name })}
                       >
                         {pendingProductIds.has(line.productId) ? (
                           <Loader2 size={14} aria-hidden="true" className="animate-spin" />

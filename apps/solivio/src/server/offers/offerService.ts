@@ -141,7 +141,8 @@ export async function createOffer(
   customerName: string | undefined,
   clientRequest: string,
   generated: GeneratedOffer,
-  userId?: string | null
+  userId?: string | null,
+  name?: string
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
 
@@ -161,6 +162,7 @@ export async function createOffer(
   return db.transaction(async (tx) => {
     const offer = await insertOffer(
       {
+        name: name ?? "Draft",
         customerName: customerName ?? null,
         clientRequest,
         status: "draft",

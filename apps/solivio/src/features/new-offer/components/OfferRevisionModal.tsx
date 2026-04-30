@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { useEffect, useState } from "react";
 import { Loader2, RotateCcw, X } from "lucide-react";
@@ -22,6 +23,7 @@ export function OfferRevisionModal({
   onClose,
   onRestored,
 }: OfferRevisionModalProps) {
+   const tModal = useTranslations("NewOffer.revision.modal");
   const [fullRevision, setFullRevision] = useState<OfferRevision | null>(null);
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState(false);
@@ -65,7 +67,7 @@ export function OfferRevisionModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       role="dialog"
       aria-modal="true"
-      aria-label={`Revision ${revision?.revisionNumber ?? ""} preview`}
+      aria-label={tModal("previewAria", { number: revision?.revisionNumber ?? "" })}
     >
       <div className="relative mx-4 flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border bg-background shadow-lg">
         {/* Header */}
@@ -73,7 +75,7 @@ export function OfferRevisionModal({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-semibold">
-                Revision {revision?.revisionNumber}
+                {tModal("title", { number: revision?.revisionNumber })}
                 {revision?.name && (
                   <span className="ml-2 font-normal text-muted-foreground italic">
                     — {revision.name}
@@ -82,18 +84,18 @@ export function OfferRevisionModal({
               </h2>
               {revision?.acceptedAt && (
                 <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
-                  Accepted
+                  {tModal("accepted")}
                 </span>
               )}
             </div>
             {revision?.createdBy && (
               <p className="text-xs text-muted-foreground">
-                Saved by {revision.createdBy.name} ·{" "}
+                {tModal("savedBy", { name: revision.createdBy.name })} ·{" "}
                 {new Date(revision.createdAt).toLocaleString("pl-PL")}
               </p>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label={tModal("close")}>
             <X size={16} />
           </Button>
         </div>
@@ -101,29 +103,29 @@ export function OfferRevisionModal({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4">
           {loading || !snapshot ? (
-            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+            <div className="flex h-full items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
               <Loader2 size={16} className="animate-spin" />
-              Loading revision...
+              {tModal("loading")}
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               {/* Metadata */}
               <section className="grid gap-1 text-sm">
                 <div className="flex gap-2">
-                  <span className="w-32 text-muted-foreground">Name</span>
+                  <span className="w-32 text-muted-foreground">{tModal("name")}</span>
                   <span className="font-medium">{snapshot.name}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="w-32 text-muted-foreground">Customer</span>
+                  <span className="w-32 text-muted-foreground">{tModal("customer")}</span>
                   <span>{snapshot.customerName ?? "—"}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="w-32 text-muted-foreground">Status</span>
+                  <span className="w-32 text-muted-foreground">{tModal("status")}</span>
                   <span className="capitalize">{snapshot.status}</span>
                 </div>
                 {snapshot.notes.length > 0 && (
                   <div className="flex gap-2">
-                    <span className="w-32 text-muted-foreground shrink-0">Notes</span>
+                    <span className="w-32 text-muted-foreground shrink-0">{tModal("notes")}</span>
                     <ul className="list-disc pl-4">
                       {snapshot.notes.map((note, i) => (
                         <li key={i}>{note}</li>
@@ -136,15 +138,15 @@ export function OfferRevisionModal({
               {/* Line items table */}
               <section>
                 <h3 className="mb-2 text-sm font-medium">
-                  Line items ({snapshot.lineItems.length})
+                  {tModal("lineItems", { count: snapshot.lineItems.length })}
                 </h3>
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-left text-xs text-muted-foreground">
-                      <th className="pb-1 font-normal">Product</th>
-                      <th className="pb-1 font-normal text-right">Qty</th>
-                      <th className="pb-1 font-normal text-right">Unit price</th>
-                      <th className="pb-1 font-normal text-right">Total</th>
+                      <th className="pb-1 font-normal">{tModal("product")}</th>
+                      <th className="pb-1 font-normal text-right">{tModal("qty")}</th>
+                      <th className="pb-1 font-normal text-right">{tModal("unitPrice")}</th>
+                      <th className="pb-1 font-normal text-right">{tModal("total")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -175,18 +177,18 @@ export function OfferRevisionModal({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 border-t px-4 py-3">
           <Button variant="outline" onClick={onClose} disabled={restoring}>
-            Close
+            {tModal("close")}
           </Button>
           <Button onClick={handleRestore} disabled={restoring || loading}>
             {restoring ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                Restoring...
+                {tModal("restoring")}
               </>
             ) : (
               <>
                 <RotateCcw size={14} />
-                Restore this revision
+                {tModal("restoreAction")}
               </>
             )}
           </Button>

@@ -124,7 +124,7 @@ export function OfferBuilder({
   const margin = total > 0 ? ((total - estimatedCost) / total) * 100 : 0;
   const limitedLineCount = lines.filter((line) => line.availability === "limited").length;
   const unpricedLineCount = lines.filter((line) => line.unitPrice <= 0).length;
-  const requestText = offer.clientRequest?.trim() || "No customer request text was attached to this draft.";
+  const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
   const generatedDate = offer.generatedAt.slice(0, 10);
 
   function updateQuantity(productId: string, nextQuantity: number) {
@@ -274,10 +274,10 @@ export function OfferBuilder({
       description: product.description,
       manufacturer: product.manufacturer,
       quantity,
-      requestItem: "Manually added",
+      requestItem: tBuilder("manuallyAdded"),
       unitPrice: 0,
       currency: "PLN",
-      rationale: "Manually added",
+      rationale: tBuilder("manuallyAdded"),
       source: "database",
     };
 
@@ -292,7 +292,7 @@ export function OfferBuilder({
         body: JSON.stringify({
           productId: product.id,
           quantity,
-          requestItem: "Manually added"
+          requestItem: tBuilder("manuallyAdded")
         })
       });
       const nextOffer = await parseOfferResponse(response);
@@ -441,7 +441,7 @@ export function OfferBuilder({
         onQuantityChange={handleSearchQuantityChange}
         renderFooter={
           <div className="flex items-center justify-end gap-2 pt-4 border-t w-full mt-auto">
-            <Button onClick={() => setSearchOpen(false)}>Done</Button>
+            <Button onClick={() => setSearchOpen(false)}>{tBuilder("done")}</Button>
           </div>
         }
       />

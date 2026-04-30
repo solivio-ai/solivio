@@ -9,7 +9,8 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type { Offer, OfferRevision } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const chatRef = useRef<OfferChatHandle>(null);
+  const tReview = useTranslations("NewOffer.review");
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         if (!ignore) {
           setState({
             kind: "error",
-            message: error instanceof Error ? error.message : "Could not load this offer."
+            message: error instanceof Error ? error.message : tReview("error")
           });
         }
       });
@@ -145,7 +147,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       <Card>
         <CardContent className="flex min-h-48 items-center justify-center gap-2 text-sm text-muted-foreground">
           <Loader2 size={16} aria-hidden="true" className="animate-spin" />
-          Loading generated offer...
+          {tReview("loading")}
         </CardContent>
       </Card>
     );
@@ -157,7 +159,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} aria-hidden="true" className="text-destructive" />
-            <CardTitle>Offer not available</CardTitle>
+            <CardTitle>{tReview("notFound")}</CardTitle>
           </div>
           <CardDescription>{state.message}</CardDescription>
         </CardHeader>
@@ -165,7 +167,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
           <Button asChild variant="outline">
             <Link href="/offers/new">
               <ArrowLeft size={16} aria-hidden="true" />
-              Create another draft
+              {tReview("createAnother")}
             </Link>
           </Button>
         </CardContent>
@@ -198,7 +200,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   }
 
   function renderAssistantToggle(compact = false) {
-    const label = assistantOpen ? "Hide assistant" : "Show assistant";
+    const label = assistantOpen ? tReview("assistant.hide") : tReview("assistant.show");
     const Icon = assistantOpen ? PanelRightClose : PanelRightOpen;
 
     return (
@@ -215,7 +217,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             className={cn("shrink-0", !compact && "w-full sm:w-auto")}
           >
             <Icon size={16} aria-hidden="true" />
-            {!compact ? <span>{assistantOpen ? "Hide assistant" : "Assistant"}</span> : null}
+            {!compact ? <span>{assistantOpen ? tReview("assistant.hide") : tReview("assistant.title")}</span> : null}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">{label}</TooltipContent>
@@ -240,7 +242,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             )}
             onClick={() => setRightPanel("chat")}
           >
-            Assistant
+            {tReview("assistant.title")}
           </Button>
           <Button
             type="button"
@@ -254,7 +256,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
             )}
             onClick={() => setRightPanel("revisions")}
           >
-            Revisions
+            {tReview("revisions")}
           </Button>
           {renderAssistantToggle(true)}
         </div>
@@ -316,7 +318,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
 
             <ResizableHandle
               withHandle
-              aria-label="Resize offer review and assistant panes"
+              aria-label={tReview("resizeLabel")}
             />
 
             <ResizablePanel

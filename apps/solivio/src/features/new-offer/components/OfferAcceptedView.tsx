@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import Link from "next/link";
 import { ArrowLeft, Download, User } from "lucide-react";
@@ -43,6 +44,10 @@ function formatMoney(value: number, currency: string) {
 }
 
 export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewProps) {
+  const t = useTranslations("NewOffer.builder");
+  const tReview = useTranslations("NewOffer.review");
+  const tAccepted = useTranslations("NewOffer.review.acceptedView");
+  const tCommercial = useTranslations("NewOffer.review.commercial");
   const lines = toDraftLines(offer);
   const currency = lines[0]?.currency ?? "PLN";
   const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
@@ -55,7 +60,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
     <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
       <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
         <iframe
-          title="Accepted offer PDF preview"
+          title={tAccepted("pdfPreviewAria")}
           src={`/api/offers/${offer.id}/pdf`}
           className="h-[72vh] w-full"
         />
@@ -63,33 +68,33 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
 
       <aside className="grid min-h-0 content-start gap-3">
         <section className="rounded-lg border bg-card p-4">
-          <h2 className="text-sm font-semibold">Commercial totals</h2>
+          <h2 className="text-sm font-semibold">{tCommercial("title")}</h2>
           <div className="mt-4 grid gap-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-muted-foreground">{tCommercial("subtotal")}</span>
               <span className="font-medium">
                 {formatMoney(subtotal, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Discount</span>
+              <span className="text-muted-foreground">{tCommercial("discount")}</span>
               <span className="font-medium">{discount}%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Discount value</span>
+              <span className="text-muted-foreground">{tCommercial("discountValue")}</span>
               <span className="font-medium">
                 {formatMoney(subtotal * (discount / 100), currency)}
               </span>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-center justify-between text-base font-semibold">
-              <span>Total net</span>
+              <span>{tCommercial("totalNet")}</span>
               <span>
                 {formatMoney(total, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Estimated margin</span>
+              <span className="text-muted-foreground">{tCommercial("estimatedMargin")}</span>
               <Badge variant={margin < 10 ? "destructive" : "secondary"}>
                 {margin.toFixed(1)}%
               </Badge>
@@ -99,7 +104,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
 
         {(offer.createdBy?.name || offer.updatedBy?.name) && (
           <section className="rounded-lg border bg-card p-4">
-            <h2 className="mb-2 text-sm font-semibold">Attribution</h2>
+            <h2 className="mb-2 text-sm font-semibold">{tAccepted("attribution")}</h2>
             <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               {offer.createdBy?.name && (
                 <span
@@ -107,7 +112,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
                   title={new Date(offer.generatedAt).toLocaleString("pl-PL")}
                 >
                   <User size={11} aria-hidden="true" />
-                  Created by {offer.createdBy.name}
+                  {t("createdBy", { name: offer.createdBy.name })}
                 </span>
               )}
               {offer.updatedBy?.name && (
@@ -116,7 +121,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
                   title={offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined}
                 >
                   <User size={11} aria-hidden="true" />
-                  Last modified by {offer.updatedBy.name}
+                  {t("lastModifiedBy", { name: offer.updatedBy.name })}
                 </span>
               )}
             </div>
@@ -126,18 +131,18 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
         <div className="grid w-full max-w-sm content-start auto-rows-min gap-2 self-start rounded-lg border bg-card p-3">
           <Button onClick={() => downloadPdf(offer.id)}>
             <Download size={16} aria-hidden="true" />
-            Generate and download PDF
+            {tAccepted("downloadPdf")}
           </Button>
           <Button variant="outline" onClick={onBackToDraft}>
             <ArrowLeft size={16} aria-hidden="true" />
-            Back to draft
+            {t("backToDraft")}
           </Button>
           <Button
             asChild
             variant="outline"
             className="justify-center"
           >
-            <Link href="/offers">Go to offers list</Link>
+            <Link href="/offers">{tAccepted("goToOffers")}</Link>
           </Button>
         </div>
       </aside>

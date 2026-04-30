@@ -104,6 +104,7 @@ export function OfferBuilderHeader({
   const router = useRouter();
   const t = useTranslations("NewOffer.builder");
   const tSave = useTranslations("NewOffer.builder.save");
+  const tReview = useTranslations("NewOffer.review");
   const tList = useTranslations("OffersList");
 
   const persisted = isPersistedOfferId(offerId);
@@ -205,7 +206,7 @@ export function OfferBuilderHeader({
                 title={createdAt ? new Date(createdAt).toLocaleString("pl-PL") : undefined}
               >
                 <User size={11} aria-hidden="true" />
-                Created by {createdBy.name}
+                {t("createdBy", { name: createdBy.name })}
               </span>
             )}
             {updatedBy?.name && (
@@ -214,7 +215,7 @@ export function OfferBuilderHeader({
                 title={updatedAt ? new Date(updatedAt).toLocaleString("pl-PL") : undefined}
               >
                 <User size={11} aria-hidden="true" />
-                Last modified by {updatedBy.name}
+                {t("lastModifiedBy", { name: updatedBy.name })}
               </span>
             )}
           </div>
@@ -242,7 +243,7 @@ export function OfferBuilderHeader({
             onClick={onReopen}
           >
             <RotateCcw size={16} aria-hidden="true" />
-            Back to draft
+            {t("backToDraft")}
           </Button>
         ) : (
           <Button
@@ -256,7 +257,7 @@ export function OfferBuilderHeader({
             ) : (
               <ShieldCheck size={16} aria-hidden="true" />
             )}
-            {validateState === "loading" ? "Sprawdzam..." : "Sprawdź z AI"}
+            {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
           </Button>
         )}
         {persisted ? (

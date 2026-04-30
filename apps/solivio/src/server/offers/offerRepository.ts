@@ -14,6 +14,7 @@ const updatedByUser = alias(user, "updated_by_user");
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type InsertOfferData = {
+  name: string;
   customerName: string | null;
   clientRequest: string;
   status: Offer["status"];

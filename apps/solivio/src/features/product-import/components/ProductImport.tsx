@@ -9,6 +9,7 @@ import {
   RotateCcw,
   Upload
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ProductImportRow } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ type ImportStatus =
   | { kind: "error"; message: string };
 
 export function ProductImport() {
+  const t = useTranslations("ProductImport");
   const [fileName, setFileName] = useState<string | null>(null);
   const [parseResult, setParseResult] = useState<CsvParseResult | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -94,15 +96,15 @@ export function ProductImport() {
       try {
         const result = parseCsv(String(reader.result ?? ""));
         if (result.headers.length === 0) {
-          setParseError("The CSV file appears to be empty.");
+          setParseError(t("uploadCard.emptyError"));
           return;
         }
         setParseResult(result);
       } catch {
-        setParseError("Failed to parse CSV.");
+        setParseError(t("uploadCard.parseError"));
       }
     };
-    reader.onerror = () => setParseError("Failed to read the file.");
+    reader.onerror = () => setParseError(t("uploadCard.readError"));
     reader.readAsText(file);
   }
 
@@ -131,7 +133,7 @@ export function ProductImport() {
     } catch (err) {
       setStatus({
         kind: "error",
-        message: err instanceof Error ? err.message : "Import failed."
+        message: err instanceof Error ? err.message : t("previewCard.importError")
       });
     }
   }
@@ -141,19 +143,11 @@ export function ProductImport() {
       <Card size="sm">
         <CardHeader className="flex flex-row items-center gap-2 pb-1">
           <Upload size={18} aria-hidden="true" className="text-primary" />
-          <CardTitle className="text-base">Catalog upload</CardTitle>
+          <CardTitle className="text-base">{t("uploadCard.title")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3">
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Pick a CSV file with columns: <strong className="text-foreground">sku</strong>,{" "}
-            <strong className="text-foreground">name</strong>,{" "}
-            <strong className="text-foreground">description</strong>,{" "}
-            <strong className="text-foreground">manufacturer</strong>,{" "}
-            <strong className="text-foreground">price_net</strong>,{" "}
-            <strong className="text-foreground">price_gross</strong>,{" "}
-            <strong className="text-foreground">vat_rate</strong>, and{" "}
-            <strong className="text-foreground">currency</strong>. Comma, semicolon, and tab separators
-            are supported; prices may use either <code>.</code> or <code>,</code> as the decimal mark.
+            {t("uploadCard.description")}
           </p>
           <div className="grid gap-2">
             <Label
@@ -161,9 +155,9 @@ export function ProductImport() {
               className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-4 py-4 text-center transition-colors hover:bg-muted/40"
             >
               <FileSpreadsheet size={24} aria-hidden="true" className="text-primary" />
-              <span className="text-base font-semibold">{fileName ?? "Choose a CSV file"}</span>
+              <span className="text-base font-semibold">{fileName ?? t("uploadCard.chooseFile")}</span>
               <span className="text-sm text-muted-foreground">
-                {fileName ? "Click to pick another file" : "or drop one onto this field"}
+                {fileName ? t("uploadCard.pickAnother") : t("uploadCard.dropOne")}
               </span>
             </Label>
             <input
@@ -187,21 +181,21 @@ export function ProductImport() {
           <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <Database size={18} aria-hidden="true" className="text-primary" />
-              <CardTitle className="text-base">Preview</CardTitle>
+              <CardTitle className="text-base">{t("previewCard.title")}</CardTitle>
               <Badge variant="outline">
-                {parseResult.rows.length} row{parseResult.rows.length === 1 ? "" : "s"}
+                {t("previewCard.rowCount", { count: parseResult.rows.length })}
               </Badge>
             </div>
             <Button variant="ghost" type="button" onClick={handleReset}>
               <RotateCcw size={16} aria-hidden="true" />
-              Clear
+              {t("previewCard.clear")}
             </Button>
           </CardHeader>
 
           <CardContent className="grid gap-3">
             {missingColumns.length > 0 ? (
               <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-                Missing required column{missingColumns.length === 1 ? "" : "s"}: {missingColumns.join(", ")}.
+                {t("previewCard.missingColumns", { count: missingColumns.length, columns: missingColumns.join(", ") })}
               </StatusNotice>
             ) : (
               <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
@@ -214,8 +208,8 @@ export function ProductImport() {
                     }}
                     disabled={status.kind === "saving"}
                   >
-                    <SelectTrigger className="w-full sm:w-[280px]" aria-label="Embedding model">
-                      <SelectValue placeholder="Embedding model" />
+                    <SelectTrigger className="w-full sm:w-[280px]" aria-label={t("previewCard.modelLabel")}>
+                      <SelectValue placeholder={t("previewCard.modelPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {models.map((model) => (
@@ -226,7 +220,7 @@ export function ProductImport() {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant="outline">Embedding models unavailable</Badge>
+                  <Badge variant="outline">{t("previewCard.modelsUnavailable")}</Badge>
                 )}
 
                 <Button
@@ -237,13 +231,13 @@ export function ProductImport() {
                 >
                   <Upload size={16} aria-hidden="true" />
                   {status.kind === "saving"
-                    ? "Embedding..."
-                    : `Embed and save ${productRows.length} product${productRows.length === 1 ? "" : "s"}`}
+                    ? t("previewCard.importAction.embedding")
+                    : t("previewCard.importAction.saveCount", { count: productRows.length })}
                 </Button>
 
                 {status.kind === "done" ? (
                   <StatusNotice tone="success" icon={<CheckCircle2 size={16} aria-hidden="true" />}>
-                    Saved {status.count} product{status.count === 1 ? "" : "s"}.
+                    {t("previewCard.importDone", { count: status.count })}
                   </StatusNotice>
                 ) : null}
                 {status.kind === "error" ? (
@@ -281,7 +275,7 @@ export function ProductImport() {
 
             {parseResult.rows.length > 50 ? (
               <p className="text-sm text-muted-foreground">
-                Showing the first 50 of {parseResult.rows.length} rows.
+                {t("previewCard.showingFirst", { count: parseResult.rows.length })}
               </p>
             ) : null}
           </CardContent>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
@@ -9,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
 
 export function QuickOfferSearch() {
+   const t = useTranslations("QuickSearch");
   const [open, setOpen] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [isCreating, setIsCreating] = useState(false);
@@ -58,15 +60,15 @@ export function QuickOfferSearch() {
     <>
       <Card size="sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Find a product</CardTitle>
+          <CardTitle className="text-lg">{t("card.title")}</CardTitle>
           <CardDescription>
-            Search the catalog and create a draft offer from selected items.
+            {t("card.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={() => setOpen(true)}>
             <Search size={16} className="mr-2" />
-            Search products...
+            {t("searchPlaceholder")}
           </Button>
         </CardContent>
       </Card>
@@ -80,18 +82,18 @@ export function QuickOfferSearch() {
           <div className="flex items-center justify-between gap-4 pt-4 border-t w-full mt-auto">
             <div className="text-sm text-muted-foreground font-medium">
               {selectedCount > 0 ? (
-                <span className="text-primary">{selectedCount} items selected</span>
+                <span className="text-primary">{t("itemsSelected", { count: selectedCount })}</span>
               ) : (
-                "No items selected"
+                t("noItemsSelected")
               )}
             </div>
             <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button variant="ghost" onClick={() => setOpen(false)}>{t("actions.cancel")}</Button>
               <Button 
                 disabled={selectedCount === 0 || isCreating} 
                 onClick={handleCreateOffer}
               >
-                {isCreating ? "Creating..." : "Create Draft Offer"}
+                {isCreating ? t("actions.creating") : t("actions.createDraft")}
               </Button>
             </div>
           </div>
