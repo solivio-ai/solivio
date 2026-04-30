@@ -1,13 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
-import { OfferBuilderHeader } from "./OfferBuilderHeader";
+import { OfferBuilderActionBar, OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
 import { OfferValidationDialog, type ValidationResult } from "./OfferValidationDialog";
@@ -98,6 +98,8 @@ export function OfferBuilder({
   const [searchOpen, setSearchOpen] = useState(false);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
+  const [actionBarCompact, setActionBarCompact] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const discountPercent = offer.discountPercent;
 
   useEffect(() => {
@@ -119,6 +121,38 @@ export function OfferBuilder({
   const unpricedLineCount = lines.filter((line) => line.unitPrice <= 0).length;
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
   const generatedDate = offer.generatedAt.slice(0, 10);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let parent = section.parentElement;
+    let scrollContainer: HTMLElement | null = null;
+
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      if (/(auto|scroll)/.test(style.overflowY)) {
+        scrollContainer = parent;
+        break;
+      }
+      parent = parent.parentElement;
+    }
+
+    if (!scrollContainer) return;
+
+    const updateCompactState = () => {
+      setActionBarCompact(scrollContainer.scrollTop > 24);
+    };
+
+    updateCompactState();
+    scrollContainer.addEventListener("scroll", updateCompactState, { passive: true });
+    window.addEventListener("resize", updateCompactState);
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", updateCompactState);
+      window.removeEventListener("resize", updateCompactState);
+    };
+  }, []);
 
   function updateQuantity(productId: string, nextQuantity: number) {
     setLines((current) =>
@@ -373,28 +407,16 @@ export function OfferBuilder({
   }
 
   return (
-    <section className="grid min-w-0 gap-4 pb-1">
+    <section ref={sectionRef} className="grid min-w-0 gap-4 pb-3">
       <OfferBuilderHeader
-        assistantToggle={assistantToggle}
-        formCustomerName={offer.customerName?.trim() ?? ""}
-        formName={offer.name?.trim() ?? ""}
         generatedDate={generatedDate}
         lineCount={lines.length}
-        offerId={offer.id}
         offerTitle={offerHeaderTitle}
-        onAccept={() => void saveReview("accepted")}
-        onReopen={() => void saveReview("draft")}
-        onValidate={() => void handleValidate()}
-        validateState={validateState}
-        onAddProduct={() => setSearchOpen(true)}
-        onRetrySave={retrySave}
-        saveState={saveState}
         status={status}
         createdBy={offer.createdBy}
         createdAt={offer.generatedAt}
         updatedBy={offer.updatedBy}
         updatedAt={offer.updatedAt}
-        onUpdate={syncOffer}
       />
 
       <OfferProductsReview
@@ -442,6 +464,24 @@ export function OfferBuilder({
           onSendToChat={onSendToChat}
         />
       )}
+
+      <OfferBuilderActionBar
+        assistantToggle={assistantToggle}
+        compact={actionBarCompact}
+        formCustomerName={offer.customerName?.trim() ?? ""}
+        formName={offer.name?.trim() ?? ""}
+        offerId={offer.id}
+        offerTitle={offerHeaderTitle}
+        onAccept={() => void saveReview("accepted")}
+        onReopen={() => void saveReview("draft")}
+        onValidate={() => void handleValidate()}
+        validateState={validateState}
+        onAddProduct={() => setSearchOpen(true)}
+        onRetrySave={retrySave}
+        saveState={saveState}
+        status={status}
+        onUpdate={syncOffer}
+      />
     </section>
   );
 }
