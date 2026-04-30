@@ -23,7 +23,29 @@
   },
   "UserMenu": {
     "signedInAs": "Zalogowano jako",
-    "logOut": "Wyloguj"
+    "logOut": "Wyloguj",
+    "changePassword": "Zmień hasło"
+  },
+  "ChangePassword": {
+    "title": "Zmień hasło",
+    "description": "Podaj aktualne hasło i wybierz nowe.",
+    "fields": {
+      "currentPassword": "Aktualne hasło",
+      "newPassword": "Nowe hasło",
+      "confirmPassword": "Potwierdź nowe hasło"
+    },
+    "actions": {
+      "cancel": "Anuluj",
+      "submit": "Zaktualizuj hasło",
+      "submitting": "Aktualizowanie..."
+    },
+    "errors": {
+      "mismatch": "Hasła nie są zgodne.",
+      "tooShort": "Nowe hasło musi mieć co najmniej 8 znaków.",
+      "invalidCurrent": "Aktualne hasło jest nieprawidłowe.",
+      "generic": "Nie udało się zaktualizować hasła."
+    },
+    "success": "Hasło zaktualizowane."
   },
   "LanguageSwitcher": {
     "label": "Język",

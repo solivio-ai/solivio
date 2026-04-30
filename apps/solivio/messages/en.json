@@ -23,7 +23,29 @@
   },
   "UserMenu": {
     "signedInAs": "Signed in as",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "changePassword": "Change password"
+  },
+  "ChangePassword": {
+    "title": "Change password",
+    "description": "Enter your current password and choose a new one.",
+    "fields": {
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "submit": "Update password",
+      "submitting": "Updating..."
+    },
+    "errors": {
+      "mismatch": "New passwords do not match.",
+      "tooShort": "New password must be at least 8 characters.",
+      "invalidCurrent": "Current password is incorrect.",
+      "generic": "Could not update password."
+    },
+    "success": "Password updated."
   },
   "LanguageSwitcher": {
     "label": "Language",

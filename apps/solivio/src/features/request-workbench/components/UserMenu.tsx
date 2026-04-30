@@ -1,9 +1,9 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { KeyRound, LogOut, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,14 +15,19 @@ import {
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { authClient, useSession } from "@/lib/auth-client";
 
+import { ChangePasswordDialog } from "./ChangePasswordDialog";
+
 export function UserMenu() {
   const t = useTranslations("UserMenu");
   const { data: session } = useSession();
   const { signOut } = authClient;
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
   const handleSignOut = () =>
     signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } });
 
   const displayName = session?.user.name || session?.user.email || "";
+  const hasCredentials = !!session?.user;
 
   return (
     <div className="flex items-center gap-1">
@@ -42,12 +47,20 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuLabel className="-mt-1">{displayName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {hasCredentials && (
+            <DropdownMenuItem onSelect={() => setChangePasswordOpen(true)}>
+              <KeyRound size={14} aria-hidden="true" />
+              {t("changePassword")}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
             <LogOut size={14} aria-hidden="true" />
             {t("logOut")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </div>
   );
 }
