@@ -61,6 +61,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   const [selectedRevision, setSelectedRevision] = useState<OfferRevision | null>(null);
   const assistantPanelRef = useRef<PanelImperativeHandle>(null);
   const chatRef = useRef<OfferChatHandle>(null);
+  const pendingChatMessage = useRef<string | null>(null);
   const discountPersistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tReview = useTranslations("NewOffer.review");
   const isWideLayout = useMediaQuery("(min-width: 1280px)");
@@ -173,10 +174,20 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     }, 500);
   }, [offerId]);
 
+  useEffect(() => {
+    if (!assistantOpen || rightPanel !== "chat" || !pendingChatMessage.current) return;
+    chatRef.current?.sendText(pendingChatMessage.current);
+    pendingChatMessage.current = null;
+  }, [assistantOpen, rightPanel]);
+
   function handleSendToChat(message: string) {
+    if (assistantOpen && rightPanel === "chat" && chatRef.current) {
+      chatRef.current.sendText(message);
+      return;
+    }
+    pendingChatMessage.current = message;
     setAssistantOpen(true);
     setRightPanel("chat");
-    chatRef.current?.sendText(message);
   }
 
   if (state.kind === "loading") {

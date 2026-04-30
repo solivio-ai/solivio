@@ -140,8 +140,6 @@ export function NewOfferForm() {
           </DialogHeader>
           {generationState !== "idle" ? (
             <OfferGenerationProgress
-              clientRequest={clientRequest}
-              customerName={customerName}
               elapsedMs={generationElapsedMs}
               state={generationState}
             />

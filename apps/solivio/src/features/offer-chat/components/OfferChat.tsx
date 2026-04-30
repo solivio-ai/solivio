@@ -205,6 +205,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
     if (!pendingExternal || isInputDisabled) return;
     void sendText(pendingExternal);
     setPendingExternal(null);
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom("smooth")));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingExternal, isInputDisabled]);
 
@@ -272,7 +273,9 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   async function sendText(text: string) {
     if (!text || isInputDisabled) return;
 
-    await sendMessage({ text });
+    const messagePromise = sendMessage({ text });
+    requestAnimationFrame(() => scrollToBottom("smooth"));
+    await messagePromise;
     if (offer) {
       await refreshThreads().catch(() => undefined);
     }
