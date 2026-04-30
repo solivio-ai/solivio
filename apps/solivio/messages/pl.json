@@ -249,7 +249,7 @@
         "details": "Szczegóły",
         "availability": "Dostępność",
         "brand": "Marka",
-      "quantityAria": "Ilość dla {name}",
+        "quantityAria": "Ilość dla {name}",
         "removeAria": "Usuń {name}"
       },
       "acceptedView": {
@@ -466,9 +466,47 @@
   },
   "Dashboard": {
     "newOffer": {
-      "title": "Zacznij nową ofertę",
+      "title": "Dodaj nową ofertę",
       "description": "Generuj ustrukturyzowane szkice ofert na podstawie swoich danych.",
       "button": "Nowa oferta"
+    },
+    "integrations": {
+      "title": "Integracje",
+      "subtitle": "Połącz swoje systemy biznesowe, aby wzmocnić generowanie ofert.",
+      "badge": {
+        "active": "Aktywna",
+        "available": "Dostępna"
+      },
+      "action": {
+        "configure": "Importuj katalog →",
+        "integrate": "Integruj →"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Katalog produktów",
+          "description": "Wgraj i osadź bazę produktów. Zasila wyszukiwanie katalogu i dopasowywanie AI."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Synchronizuj produkty, poziomy magazynowe i przyjęte zamówienia z systemem ERP."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pobieraj profile klientów i historię transakcji, aby personalizować szkice ofert."
+        },
+        "priceRules": {
+          "name": "Reguły cenowe",
+          "description": "Automatycznie stosuj cele marżowe, rabaty ilościowe i ceny według poziomu klienta."
+        },
+        "inventory": {
+          "name": "Magazyn",
+          "description": "Wyświetlaj dostępność magazynową w czasie rzeczywistym na pozycjach oferty."
+        },
+        "emailDelivery": {
+          "name": "Wysyłka e-mail",
+          "description": "Wysyłaj zaakceptowane oferty bezpośrednio do klientów jako markowe e-maile PDF."
+        }
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,13 +8,14 @@ import { OffersList } from "@/features/offers-list/components/OffersList";
 import { getRecentOffers } from "@/server/offers/offerService";
 import { QuickOfferSearch } from "@/features/product-search";
 import { AppPage } from "@/components/AppPage";
+import { IntegrationsSection } from "@/features/integrations/components/IntegrationsSection";
 
 export default async function Home() {
   const t = await getTranslations("Dashboard");
   const recentOffers = await getRecentOffers(10);
 
   return (
-    <AppPage>
+    <AppPage className="gap-8">
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-dashed" size="sm">
           <CardHeader className="pb-3">
@@ -39,6 +40,8 @@ export default async function Home() {
       <div>
         <OffersList offers={recentOffers} hideHeader />
       </div>
+
+      <IntegrationsSection />
     </AppPage>
   );
 }

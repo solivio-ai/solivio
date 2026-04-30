@@ -249,7 +249,7 @@
         "details": "Details",
         "availability": "Availability",
         "brand": "Brand",
-      "quantityAria": "Quantity for {name}",
+        "quantityAria": "Quantity for {name}",
         "removeAria": "Remove {name}"
       },
       "acceptedView": {
@@ -463,6 +463,44 @@
       "title": "Start a new offer",
       "description": "Generate structured offer drafts based on your data.",
       "button": "New offer"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "Connect your business systems to power offer generation.",
+      "badge": {
+        "active": "Active",
+        "available": "Available"
+      },
+      "action": {
+        "configure": "Import catalog →",
+        "integrate": "Integrate →"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Product Catalog",
+          "description": "Upload and embed your product database. Powers catalog search and AI matching."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Sync products, stock levels, and accepted orders with your ERP system."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pull customer profiles and deal history to personalize offer drafts."
+        },
+        "priceRules": {
+          "name": "Price Rules",
+          "description": "Apply margin targets, volume discounts, and customer-tier pricing automatically."
+        },
+        "inventory": {
+          "name": "Inventory",
+          "description": "Show real-time stock availability on offer line items before sending."
+        },
+        "emailDelivery": {
+          "name": "Email Delivery",
+          "description": "Send accepted offers directly to customers as branded PDF emails."
+        }
+      }
     }
   },
   "DemoOffer": {
