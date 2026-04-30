@@ -1,24 +1,24 @@
 import "server-only";
 
-import { inArray, eq, and } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
+
 import type { Offer } from "@solivio/domain";
 
-import { db } from "../database/db";
-import { products, offerProducts } from "../database/schema";
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
+import { db } from "../database/db";
+import { offerProducts, products } from "../database/schema";
+import type { OfferRow, UpdateOfferMetaInput } from "./offerRepository";
 import {
+  deleteOfferProduct,
   deleteOffer as deleteOfferRow,
   findOfferById,
-  insertOffer,
-  insertOfferProducts,
-  insertOfferProduct,
-  updateOfferMeta as persistOfferMeta,
-  updateOfferProduct,
-  deleteOfferProduct,
   getRecentOffers,
+  insertOffer,
+  insertOfferProduct,
+  insertOfferProducts,
+  updateOfferMeta as persistOfferMeta,
   setOfferUpdatedBy,
-  type OfferRow,
-  type UpdateOfferMetaInput
+  updateOfferProduct,
 } from "./offerRepository";
 import { saveRevision } from "./offerRevisionService";
 
@@ -128,9 +128,9 @@ export function toOfferDomain(offer: CreatedOffer): Offer {
         manufacturer: item.productManufacturer,
         priceNet: item.unitPriceNet,
         currency: item.currency as NonNullable<Offer["items"][number]["product"]>["currency"],
-        source: "semantic-search" as const
-      }
-    }))
+        source: "semantic-search" as const,
+      },
+    })),
   };
 }
 
@@ -141,17 +141,19 @@ export async function createOffer(
   clientRequest: string,
   generated: GeneratedOffer,
   userId?: string | null,
-  name?: string
+  name?: string,
 ): Promise<CreatedOffer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
 
   // Pre-validate product IDs outside transaction to build unmatched list.
   const productIds = items.map((i) => i.productId);
-  const existingProducts = productIds.length > 0
-    ? await db.select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
-        .from(products)
-        .where(inArray(products.id, productIds))
-    : [];
+  const existingProducts =
+    productIds.length > 0
+      ? await db
+          .select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
+          .from(products)
+          .where(inArray(products.id, productIds))
+      : [];
   const priceMap = new Map(existingProducts.map((p) => [p.id, p]));
   const validItems = items.filter((item) => priceMap.has(item.productId));
   const hallucinated = items
@@ -170,7 +172,7 @@ export async function createOffer(
         createdBy: userId ?? null,
         updatedBy: userId ?? null,
       },
-      tx
+      tx,
     );
 
     await insertOfferProducts(
@@ -184,10 +186,10 @@ export async function createOffer(
           unitPriceNet: catalog.priceNet ?? 0,
           currency: catalog.currency ?? "PLN",
           rationale: item.rationale,
-          position: index
+          position: index,
         };
       }),
-      tx
+      tx,
     );
 
     const row = await findOfferById(offer.id, tx);
@@ -204,7 +206,7 @@ export async function getOffer(id: string): Promise<Offer | null> {
 export async function updateOfferStatusAndFetch(
   offerId: string,
   status: Offer["status"],
-  userId?: string | null
+  userId?: string | null,
 ): Promise<Offer | null> {
   return updateOfferMeta(offerId, { status }, userId);
 }
@@ -212,7 +214,7 @@ export async function updateOfferStatusAndFetch(
 export async function updateOfferMeta(
   offerId: string,
   data: UpdateOfferMetaInput,
-  userId?: string | null
+  userId?: string | null,
 ): Promise<Offer | null> {
   return db.transaction(async (tx) => {
     const existing = await findOfferById(offerId, tx);
@@ -234,7 +236,7 @@ export async function updateOfferMeta(
         .update(offerProducts)
         .set({
           unitPriceNet: products.priceNet,
-          currency: products.currency
+          currency: products.currency,
         })
         .from(products)
         .where(and(eq(offerProducts.offerId, offerId), eq(offerProducts.productId, products.id)));
@@ -262,16 +264,16 @@ export async function addProductToOffer(
   quantity: number,
   requestItem = "",
   userId?: string | null,
-  rationale = ""
+  rationale = "",
 ): Promise<CreatedOffer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
- 
+
   // Prevent adding products to an accepted offer
   if (existing.status === "accepted") {
     return "locked";
   }
- 
+
   const duplicate = existing.items.find((i) => i.productId === productId);
   if (duplicate) return "duplicate";
   const product = await db
@@ -290,7 +292,7 @@ export async function addProductToOffer(
     unitPriceNet: product.priceNet ?? 0,
     currency: product.currency ?? "PLN",
     rationale,
-    position: existing.items.length
+    position: existing.items.length,
   });
   await setOfferUpdatedBy(offerId, userId ?? null);
   await saveRevision(offerId, userId ?? null);
@@ -302,16 +304,16 @@ export async function updateOfferLineItem(
   offerProductId: string,
   offerId: string,
   quantity: number,
-  userId?: string | null
+  userId?: string | null,
 ): Promise<CreatedOffer | null | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
- 
+
   // Prevent editing line items in an accepted offer
   if (existing.status === "accepted") {
     return "locked";
   }
- 
+
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return null;
   await updateOfferProduct(offerProductId, offerId, { quantity });
@@ -324,16 +326,16 @@ export async function updateOfferLineItem(
 export async function removeOfferLineItem(
   offerProductId: string,
   offerId: string,
-  userId?: string | null
+  userId?: string | null,
 ): Promise<boolean | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
- 
+
   // Prevent removing products from an accepted offer
   if (existing.status === "accepted") {
     return "locked";
   }
- 
+
   const item = existing.items.find((i) => i.offerProductId === offerProductId);
   if (!item) return false;
   await deleteOfferProduct(offerProductId, offerId);
@@ -365,7 +367,7 @@ type BulkAddItemResult = {
 export async function bulkAddProductsToOffer(
   offerId: string,
   items: BulkAddItem[],
-  userId?: string | null
+  userId?: string | null,
 ): Promise<{ results: BulkAddItemResult[]; offer: Offer | null }> {
   const results: BulkAddItemResult[] = [];
 
@@ -376,7 +378,7 @@ export async function bulkAddProductsToOffer(
       item.quantity,
       item.requestItem ?? "",
       userId,
-      item.rationale ?? ""
+      item.rationale ?? "",
     );
 
     if (outcome === null) {

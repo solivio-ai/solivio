@@ -1,9 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowUpDown,
   ArrowUpRight,
@@ -11,6 +7,7 @@ import {
   CircleDashed,
   FileText,
   ListFilter,
+  MoreHorizontal,
   PackageCheck,
   Pencil,
   Plus,
@@ -18,8 +15,11 @@ import {
   Trash2,
   TriangleAlert,
   UserRound,
-  MoreHorizontal,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 
 import {
   AlertDialog,
@@ -61,7 +61,6 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -74,17 +73,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
-type SortKey =
-  | "createdAtDesc"
-  | "createdAtAsc"
-  | "valueDesc"
-  | "valueAsc"
-  | "customerAsc";
+type SortKey = "createdAtDesc" | "createdAtAsc" | "valueDesc" | "valueAsc" | "customerAsc";
 type T = ReturnType<typeof useTranslations<"OffersList">>;
 
 type OfferRow = {
@@ -152,9 +145,7 @@ function toIsoString(value: string | Date | undefined) {
 }
 
 function isPersistedOfferId(id: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    id
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 }
 
 function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
@@ -194,12 +185,6 @@ function getStatusDescription(status: string, t: T) {
 
 function getStatusLabel(status: string, t: T) {
   return isKnownStatus(status) ? t(`status.${status}.label`) : status;
-}
-
-function getFilterLabel(filter: StatusFilter, t: T) {
-  if (filter === "needs-attention") return t("filters.needsAttention");
-  if (filter === "all") return t("filters.all");
-  return t(`filters.${filter}`);
 }
 
 function formatCurrency(value: number, currency: string, locale: string) {
@@ -399,11 +384,7 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>{t("actions.deleteCancel")}</AlertDialogCancel>
-            <Button
-              variant="destructive"
-              disabled={deleting}
-              onClick={() => void handleDelete()}
-            >
+            <Button variant="destructive" disabled={deleting} onClick={() => void handleDelete()}>
               {t("actions.deleteOfferConfirm")}
             </Button>
           </AlertDialogFooter>
@@ -442,7 +423,7 @@ export function OffersList({ offers, hideHeader }: Props) {
 
   const normalizedOffers = useMemo(
     () => offers.map((offer) => normalizeOffer(offer, t)),
-    [offers, t]
+    [offers, t],
   );
 
   const filteredOffers = useMemo(() => {
@@ -481,7 +462,6 @@ export function OffersList({ offers, hideHeader }: Props) {
           return (a.customerName ?? "").localeCompare(b.customerName ?? "", locale, {
             sensitivity: "base",
           });
-        case "createdAtDesc":
         default:
           return b.createdAt.localeCompare(a.createdAt);
       }
@@ -499,9 +479,7 @@ export function OffersList({ offers, hideHeader }: Props) {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              {t("subtitle")}
-            </p>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
           <Button asChild size="sm" className="w-full sm:w-auto sm:self-start lg:self-auto">
             <Link href="/offers/new">
@@ -533,71 +511,56 @@ export function OffersList({ offers, hideHeader }: Props) {
       ) : (
         <>
           {!hideHeader ? (
-            <>
-              <div className="flex flex-col gap-2 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
-                <div className="relative w-full sm:max-w-sm sm:flex-1">
-                  <Search
-                    size={16}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder={t("search.placeholder")}
-                    className="pl-8"
-                    aria-label={t("search.label")}
-                  />
-                </div>
-
-                <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
-                  <ListFilter
-                    size={16}
-                    aria-hidden="true"
-                    className="text-muted-foreground"
-                  />
-                  <Select
-                    value={statusFilter}
-                    onValueChange={(value) => setStatusFilter(value as StatusFilter)}
-                  >
-                    <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t("filters.all")}</SelectItem>
-                      <SelectItem value="draft">{t("filters.draft")}</SelectItem>
-                      <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
-                      <SelectItem value="needs-attention">
-                        {t("filters.needsAttention")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex w-full items-center gap-2 sm:w-auto">
-                  <ArrowUpDown
-                    size={16}
-                    aria-hidden="true"
-                    className="text-muted-foreground"
-                  />
-                  <Select
-                    value={sortKey}
-                    onValueChange={(value) => setSortKey(value as SortKey)}
-                  >
-                    <SelectTrigger className="w-full sm:w-52" aria-label={t("sort.label")}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="createdAtDesc">{t("sort.createdAtDesc")}</SelectItem>
-                      <SelectItem value="createdAtAsc">{t("sort.createdAtAsc")}</SelectItem>
-                      <SelectItem value="valueDesc">{t("sort.valueDesc")}</SelectItem>
-                      <SelectItem value="valueAsc">{t("sort.valueAsc")}</SelectItem>
-                      <SelectItem value="customerAsc">{t("sort.customerAsc")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="flex flex-col gap-2 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
+              <div className="relative w-full sm:max-w-sm sm:flex-1">
+                <Search
+                  size={16}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder={t("search.placeholder")}
+                  className="pl-8"
+                  aria-label={t("search.label")}
+                />
               </div>
-            </>
+
+              <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
+                <ListFilter size={16} aria-hidden="true" className="text-muted-foreground" />
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+                >
+                  <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("filters.all")}</SelectItem>
+                    <SelectItem value="draft">{t("filters.draft")}</SelectItem>
+                    <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
+                    <SelectItem value="needs-attention">{t("filters.needsAttention")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex w-full items-center gap-2 sm:w-auto">
+                <ArrowUpDown size={16} aria-hidden="true" className="text-muted-foreground" />
+                <Select value={sortKey} onValueChange={(value) => setSortKey(value as SortKey)}>
+                  <SelectTrigger className="w-full sm:w-52" aria-label={t("sort.label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAtDesc">{t("sort.createdAtDesc")}</SelectItem>
+                    <SelectItem value="createdAtAsc">{t("sort.createdAtAsc")}</SelectItem>
+                    <SelectItem value="valueDesc">{t("sort.valueDesc")}</SelectItem>
+                    <SelectItem value="valueAsc">{t("sort.valueAsc")}</SelectItem>
+                    <SelectItem value="customerAsc">{t("sort.customerAsc")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           ) : null}
 
           {visibleOffers.length === 0 ? (
@@ -727,9 +690,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                             </CardTitle>
                             <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                               <UserRound size={14} aria-hidden="true" />
-                              <span className="truncate">
-                                {getCustomerLabel(offer, t)}
-                              </span>
+                              <span className="truncate">{getCustomerLabel(offer, t)}</span>
                             </div>
                           </div>
                           <Tooltip>

@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 import {
   errorResponseSchema,
   offerResponseSchema,
-  updateOfferRequestSchema
+  updateOfferRequestSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { getOffer, updateOfferMeta, deleteOffer } from "@/server/offers/offerService";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
+import { deleteOffer, getOffer, updateOfferMeta } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -27,17 +27,19 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const { offerId } = await context.params;
 
-  const offer = isUuid(offerId) ? (await getOffer(offerId)) ?? getOfferDraft(offerId) : getOfferDraft(offerId);
+  const offer = isUuid(offerId)
+    ? ((await getOffer(offerId)) ?? getOfferDraft(offerId))
+    : getOfferDraft(offerId);
 
   if (!offer) {
     return NextResponse.json(
       errorResponseSchema.parse({
         error: {
           code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+          message: `Offer '${offerId}' was not found.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -57,10 +59,10 @@ export async function PATCH(request: Request, context: RouteContext) {
         error: {
           code: "invalid_request",
           message: "Request body must match the offer update contract.",
-          issues: input.error.issues.map((issue) => issue.message)
-        }
+          issues: input.error.issues.map((issue) => issue.message),
+        },
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -74,14 +76,18 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const offer =
     isUuid(offerId) && hasPersistedPatch
-      ? (await updateOfferMeta(offerId, {
-          status: input.data.status,
-          name: input.data.name,
-          customerName: input.data.customerName,
-          clientRequest: input.data.clientRequest,
-          discountPercent: input.data.discountPercent,
-          unmatched: input.data.unmatched
-        }, auth.session.user.id)) ?? updateOfferDraft(offerId, input.data)
+      ? ((await updateOfferMeta(
+          offerId,
+          {
+            status: input.data.status,
+            name: input.data.name,
+            customerName: input.data.customerName,
+            clientRequest: input.data.clientRequest,
+            discountPercent: input.data.discountPercent,
+            unmatched: input.data.unmatched,
+          },
+          auth.session.user.id,
+        )) ?? updateOfferDraft(offerId, input.data))
       : updateOfferDraft(offerId, input.data);
 
   if (!offer) {
@@ -91,10 +97,10 @@ export async function PATCH(request: Request, context: RouteContext) {
         errorResponseSchema.parse({
           error: {
             code: "offer_locked",
-            message: "This offer has been accepted and cannot be modified."
-          }
+            message: "This offer has been accepted and cannot be modified.",
+          },
         }),
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -102,10 +108,10 @@ export async function PATCH(request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+          message: `Offer '${offerId}' was not found.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -123,10 +129,10 @@ export async function DELETE(_request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+          message: `Offer '${offerId}' was not found.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -136,10 +142,10 @@ export async function DELETE(_request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+          message: `Offer '${offerId}' was not found.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 

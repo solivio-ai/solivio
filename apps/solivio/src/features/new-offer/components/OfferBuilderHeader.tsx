@@ -1,9 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import {
   AlertCircle,
   CheckCircle2,
@@ -16,6 +12,10 @@ import {
   Trash2,
   User,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
 import type { Offer } from "@solivio/domain";
 import {
@@ -47,12 +47,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import type { SaveState } from "./offer-builder-types";
 
 function isPersistedOfferId(id: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    id
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 }
 
 type OfferBuilderHeaderProps = {
@@ -216,21 +215,21 @@ export function OfferBuilderActionBar({
           Icon: Loader2,
           className: "text-muted-foreground",
           iconClassName: "animate-spin",
-          label: tSave("saving")
+          label: tSave("saving"),
         }
       : saveState === "saved"
         ? {
             Icon: CheckCircle2,
             className: "text-muted-foreground",
             iconClassName: "text-primary",
-            label: tSave("saved")
+            label: tSave("saved"),
           }
         : saveState === "error"
           ? {
               Icon: AlertCircle,
               className: "text-destructive",
               iconClassName: "text-destructive",
-              label: tSave("error")
+              label: tSave("error"),
             }
           : null;
   const SaveStatusIcon = saveStatus?.Icon;
@@ -253,9 +252,7 @@ export function OfferBuilderActionBar({
               {saveState === "error" ? (
                 <Button type="button" size="sm" variant="outline" onClick={onRetrySave}>
                   <RotateCcw size={14} aria-hidden="true" />
-                  <span className={compact ? "sr-only sm:not-sr-only" : ""}>
-                    {tSave("retry")}
-                  </span>
+                  <span className={compact ? "sr-only sm:not-sr-only" : ""}>{tSave("retry")}</span>
                 </Button>
               ) : null}
             </div>
@@ -281,9 +278,7 @@ export function OfferBuilderActionBar({
               onClick={onReopen}
             >
               <RotateCcw size={16} aria-hidden="true" />
-              <span className={compact ? "sr-only md:not-sr-only" : ""}>
-                {t("backToDraft")}
-              </span>
+              <span className={compact ? "sr-only md:not-sr-only" : ""}>{t("backToDraft")}</span>
             </Button>
           ) : (
             <>
@@ -317,7 +312,9 @@ export function OfferBuilderActionBar({
                   <ShieldCheck size={16} aria-hidden="true" />
                 )}
                 <span className={compact ? "sr-only sm:not-sr-only" : ""}>
-                  {validateState === "loading" ? tReview("validation.checking") : tReview("validation.checkWithAI")}
+                  {validateState === "loading"
+                    ? tReview("validation.checking")
+                    : tReview("validation.checkWithAI")}
                 </span>
               </Button>
             </>
@@ -366,74 +363,76 @@ export function OfferBuilderActionBar({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-            <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>{tList("actions.editDetailsTitle")}</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-2">
-                  <div className="grid gap-2">
-                    <Label htmlFor={`offer-builder-edit-name-${offerId}`}>
-                      {tList("actions.fieldName")}
-                    </Label>
-                    <Input
-                      id={`offer-builder-edit-name-${offerId}`}
-                      value={editName}
-                      onChange={(event) => setEditName(event.target.value)}
-                      autoComplete="off"
-                    />
+              <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{tList("actions.editDetailsTitle")}</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor={`offer-builder-edit-name-${offerId}`}>
+                        {tList("actions.fieldName")}
+                      </Label>
+                      <Input
+                        id={`offer-builder-edit-name-${offerId}`}
+                        value={editName}
+                        onChange={(event) => setEditName(event.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor={`offer-builder-edit-customer-${offerId}`}>
+                        {tList("actions.fieldCustomerName")}
+                      </Label>
+                      <Input
+                        id={`offer-builder-edit-customer-${offerId}`}
+                        value={editCustomer}
+                        onChange={(event) => setEditCustomer(event.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor={`offer-builder-edit-customer-${offerId}`}>
-                      {tList("actions.fieldCustomerName")}
-                    </Label>
-                    <Input
-                      id={`offer-builder-edit-customer-${offerId}`}
-                      value={editCustomer}
-                      onChange={(event) => setEditCustomer(event.target.value)}
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-                <DialogFooter className="gap-2">
-                  <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
-                    {tList("actions.deleteCancel")}
-                  </Button>
-                  <Button
-                    type="button"
-                    disabled={saving || !editName.trim()}
-                    onClick={() => void handleSaveEdit()}
-                  >
-                    {tList("actions.saveChanges")}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  <DialogFooter className="gap-2">
+                    <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
+                      {tList("actions.deleteCancel")}
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={saving || !editName.trim()}
+                      onClick={() => void handleSaveEdit()}
+                    >
+                      {tList("actions.saveChanges")}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
-            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{tList("actions.deleteOfferConfirmTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {tList("actions.deleteOfferConfirmDescription", { name: offerTitle })}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={deleting}>{tList("actions.deleteCancel")}</AlertDialogCancel>
-                  <Button
-                    variant="destructive"
-                    disabled={deleting}
-                    onClick={() => void handleDelete()}
-                  >
-                    {tList("actions.deleteOfferConfirm")}
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
-        ) : null}
-        {assistantToggle}
-      </div>
+              <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{tList("actions.deleteOfferConfirmTitle")}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {tList("actions.deleteOfferConfirmDescription", { name: offerTitle })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleting}>
+                      {tList("actions.deleteCancel")}
+                    </AlertDialogCancel>
+                    <Button
+                      variant="destructive"
+                      disabled={deleting}
+                      onClick={() => void handleDelete()}
+                    >
+                      {tList("actions.deleteOfferConfirm")}
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          ) : null}
+          {assistantToggle}
+        </div>
       </div>
     </div>
   );

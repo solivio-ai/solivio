@@ -3,9 +3,9 @@ import "server-only";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
-import { db } from "../database/db";
 import type { Offer } from "@solivio/domain";
 
+import { db } from "../database/db";
 import { offerProducts, offers, products, user } from "../database/schema";
 
 const createdByUser = alias(user, "created_by_user");
@@ -84,10 +84,7 @@ export async function insertOfferProducts(items: InsertOfferProductData[], tx: T
 }
 
 export async function insertOfferProduct(data: InsertOfferProductData, tx: Tx = db) {
-  const [item] = await tx
-    .insert(offerProducts)
-    .values(data)
-    .returning({ id: offerProducts.id });
+  const [item] = await tx.insert(offerProducts).values(data).returning({ id: offerProducts.id });
   return item;
 }
 
@@ -100,11 +97,7 @@ export type UpdateOfferMetaInput = {
   unmatched?: string[];
 };
 
-export async function updateOfferMeta(
-  offerId: string,
-  data: UpdateOfferMetaInput,
-  tx: Tx = db
-) {
+export async function updateOfferMeta(offerId: string, data: UpdateOfferMetaInput, tx: Tx = db) {
   const patch: {
     updatedAt: Date;
     status?: Offer["status"];
@@ -129,22 +122,12 @@ export async function updateOfferMeta(
   return offer ?? null;
 }
 
-export async function setOfferUpdatedBy(
-  offerId: string,
-  updatedBy: string | null,
-  tx: Tx = db
-) {
-  await tx
-    .update(offers)
-    .set({ updatedBy, updatedAt: new Date() })
-    .where(eq(offers.id, offerId));
+export async function setOfferUpdatedBy(offerId: string, updatedBy: string | null, tx: Tx = db) {
+  await tx.update(offers).set({ updatedBy, updatedAt: new Date() }).where(eq(offers.id, offerId));
 }
 
 export async function deleteOffer(offerId: string, tx: Tx = db) {
-  const [row] = await tx
-    .delete(offers)
-    .where(eq(offers.id, offerId))
-    .returning({ id: offers.id });
+  const [row] = await tx.delete(offers).where(eq(offers.id, offerId)).returning({ id: offers.id });
   return row ?? null;
 }
 
@@ -152,7 +135,7 @@ export async function updateOfferProduct(
   offerProductId: string,
   offerId: string,
   data: { quantity: number },
-  tx: Tx = db
+  tx: Tx = db,
 ) {
   await tx
     .update(offerProducts)
@@ -160,11 +143,7 @@ export async function updateOfferProduct(
     .where(and(eq(offerProducts.id, offerProductId), eq(offerProducts.offerId, offerId)));
 }
 
-export async function deleteOfferProduct(
-  offerProductId: string,
-  offerId: string,
-  tx: Tx = db
-) {
+export async function deleteOfferProduct(offerProductId: string, offerId: string, tx: Tx = db) {
   await tx
     .delete(offerProducts)
     .where(and(eq(offerProducts.id, offerProductId), eq(offerProducts.offerId, offerId)));
@@ -195,10 +174,13 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
       productManufacturer: products.manufacturer,
       requestItem: offerProducts.requestItem,
       quantity: offerProducts.quantity,
-      unitPriceNet: sql<number>`CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END`.mapWith(Number),
+      unitPriceNet:
+        sql<number>`CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END`.mapWith(
+          Number,
+        ),
       currency: offerProducts.currency,
       rationale: offerProducts.rationale,
-      position: offerProducts.position
+      position: offerProducts.position,
     })
     .from(offers)
     .leftJoin(createdByUser, eq(createdByUser.id, offers.createdBy))
@@ -240,8 +222,8 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
         unitPriceNet: row.unitPriceNet ?? 0,
         currency: row.currency ?? "PLN",
         rationale: row.rationale!,
-        position: row.position!
-      }))
+        position: row.position!,
+      })),
   };
 }
 
@@ -259,8 +241,11 @@ export async function getRecentOffers(limit: number = 10, tx: Tx = db) {
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
       productCount: sql<number>`COUNT(${offerProducts.id})`.mapWith(Number),
-      totalPrice: sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(Number),
-      currency: sql<string>`COALESCE(MIN(CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.currency}, ${offerProducts.currency}) ELSE ${offerProducts.currency} END), 'PLN')`
+      totalPrice:
+        sql<number>`COALESCE(SUM(${offerProducts.quantity} * CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.priceNet}, ${offerProducts.unitPriceNet}) ELSE ${offerProducts.unitPriceNet} END), 0)`.mapWith(
+          Number,
+        ),
+      currency: sql<string>`COALESCE(MIN(CASE WHEN ${offers.status} = 'draft' THEN COALESCE(${products.currency}, ${offerProducts.currency}) ELSE ${offerProducts.currency} END), 'PLN')`,
     })
     .from(offers)
     .leftJoin(offerProducts, eq(offerProducts.offerId, offers.id))

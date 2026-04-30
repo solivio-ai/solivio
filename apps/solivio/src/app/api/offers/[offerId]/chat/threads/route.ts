@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 
 import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import {
-  createOfferChatThread,
-  listOfferChatThreads
-} from "@/server/offer-chat/offerChatService";
+import { createOfferChatThread, listOfferChatThreads } from "@/server/offer-chat/offerChatService";
 import { getOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
@@ -24,10 +21,10 @@ async function requireOffer(offerId: string) {
     errorResponseSchema.parse({
       error: {
         code: "offer_not_found",
-        message: `Offer '${offerId}' was not found.`
-      }
+        message: `Offer '${offerId}' was not found.`,
+      },
     }),
-    { status: 404 }
+    { status: 404 },
   );
 }
 

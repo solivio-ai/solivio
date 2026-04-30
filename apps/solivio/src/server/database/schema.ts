@@ -10,7 +10,7 @@ import {
   text,
   timestamp,
   uuid,
-  vector
+  vector,
 } from "drizzle-orm/pg-core";
 
 import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
@@ -34,8 +34,8 @@ export const offers = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    check("offers_discount_percent_range", sql`${table.discountPercent} BETWEEN 0 AND 100`)
-  ]
+    check("offers_discount_percent_range", sql`${table.discountPercent} BETWEEN 0 AND 100`),
+  ],
 );
 
 // ── Better Auth tables ─────────────────────────────────────────────────────────
@@ -102,15 +102,20 @@ export const products = pgTable(
     description: text("description").notNull(),
     manufacturer: text("manufacturer").notNull(),
     priceNet: numeric("price_net", { precision: 12, scale: 2, mode: "number" }).notNull(),
-    priceGross: numeric("price_gross", { precision: 12, scale: 2, mode: "number" }).notNull().default(0),
+    priceGross: numeric("price_gross", { precision: 12, scale: 2, mode: "number" })
+      .notNull()
+      .default(0),
     vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(0),
     currency: text("currency").notNull(),
     combinedEmbedding: vector("combined_embedding", { dimensions: 1536 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index("products_combined_emb_idx").using("hnsw", table.combinedEmbedding.op("vector_cosine_ops"))
-  ]
+    index("products_combined_emb_idx").using(
+      "hnsw",
+      table.combinedEmbedding.op("vector_cosine_ops"),
+    ),
+  ],
 );
 
 export const offerProducts = pgTable("offer_products", {
@@ -127,7 +132,7 @@ export const offerProducts = pgTable("offer_products", {
   currency: text("currency").default("PLN"),
   rationale: text("rationale").notNull(),
   position: integer("position").notNull().default(0),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const offerChatThreads = pgTable(
@@ -139,12 +144,12 @@ export const offerChatThreads = pgTable(
       .references(() => offers.id, { onDelete: "cascade" }),
     title: text("title").notNull().default("New chat"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     index("offer_chat_threads_offer_id_idx").on(table.offerId),
-    index("offer_chat_threads_created_at_idx").on(table.createdAt)
-  ]
+    index("offer_chat_threads_created_at_idx").on(table.createdAt),
+  ],
 );
 
 export const offerChatMessages = pgTable(
@@ -156,12 +161,12 @@ export const offerChatMessages = pgTable(
       .references(() => offerChatThreads.id, { onDelete: "cascade" }),
     role: text("role").notNull(),
     parts: jsonb("parts").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     index("offer_chat_messages_thread_id_idx").on(table.threadId),
-    index("offer_chat_messages_created_at_idx").on(table.createdAt)
-  ]
+    index("offer_chat_messages_created_at_idx").on(table.createdAt),
+  ],
 );
 
 export const offerRevisions = pgTable(
@@ -178,7 +183,5 @@ export const offerRevisions = pgTable(
     /** Non-null when this revision was created by accepting the offer. Prices are locked. */
     acceptedAt: timestamp("accepted_at", { withTimezone: true }),
   },
-  (table) => [
-    index("offer_revisions_offer_id_idx").on(table.offerId),
-  ]
+  (table) => [index("offer_revisions_offer_id_idx").on(table.offerId)],
 );

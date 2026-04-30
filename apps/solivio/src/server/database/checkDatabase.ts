@@ -4,17 +4,18 @@ const localDatabaseUrl = "postgresql://solivio:solivio@localhost:5432/solivio";
 
 export async function checkDatabase() {
   const databaseUrl =
-    process.env.DATABASE_URL ?? (process.env.NODE_ENV === "development" ? localDatabaseUrl : undefined);
+    process.env.DATABASE_URL ??
+    (process.env.NODE_ENV === "development" ? localDatabaseUrl : undefined);
 
   if (!databaseUrl) {
     return {
-      status: "not-configured" as const
+      status: "not-configured" as const,
     };
   }
 
   const client = new Client({
     connectionString: databaseUrl,
-    connectionTimeoutMillis: 750
+    connectionTimeoutMillis: 750,
   });
 
   try {
@@ -39,12 +40,12 @@ export async function checkDatabase() {
       status: "reachable" as const,
       source: process.env.DATABASE_URL ? ("env" as const) : ("development-default" as const),
       serverVersion: row.server_version,
-      vectorVersion: row.vector_version ?? "not-installed"
+      vectorVersion: row.vector_version ?? "not-installed",
     };
   } catch (error) {
     return {
       status: "unreachable" as const,
-      message: error instanceof Error ? error.message : "Unable to connect to database"
+      message: error instanceof Error ? error.message : "Unable to connect to database",
     };
   } finally {
     await client.end().catch(() => undefined);

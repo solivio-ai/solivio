@@ -5,6 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SolivioLogo } from "@/components/SolivioLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -18,9 +21,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { SolivioLogo } from "@/components/SolivioLogo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/features/request-workbench/components/UserMenu";
 import { cn } from "@/lib/utils";
 
@@ -90,7 +90,7 @@ export function AppSidebar() {
                     "h-10 rounded-lg !bg-transparent px-3 text-[15px] font-medium text-sidebar-foreground/65 hover:!bg-background/70 hover:text-sidebar-foreground",
                     "data-[active=true]:!bg-background data-[active=true]:text-secondary data-[active=true]:shadow-[inset_3px_0_0_hsl(var(--primary)),0_1px_2px_hsl(var(--border)/0.7)] dark:data-[active=true]:!bg-primary/12 dark:data-[active=true]:text-sidebar-foreground",
                     "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&>span]:hidden",
-                    "group-data-[collapsible=icon]:data-[active=true]:!bg-primary/15 group-data-[collapsible=icon]:data-[active=true]:text-sidebar-foreground group-data-[collapsible=icon]:data-[active=true]:shadow-none group-data-[collapsible=icon]:data-[active=true]:ring-1 group-data-[collapsible=icon]:data-[active=true]:ring-primary/45 dark:group-data-[collapsible=icon]:data-[active=true]:!bg-primary/20"
+                    "group-data-[collapsible=icon]:data-[active=true]:!bg-primary/15 group-data-[collapsible=icon]:data-[active=true]:text-sidebar-foreground group-data-[collapsible=icon]:data-[active=true]:shadow-none group-data-[collapsible=icon]:data-[active=true]:ring-1 group-data-[collapsible=icon]:data-[active=true]:ring-primary/45 dark:group-data-[collapsible=icon]:data-[active=true]:!bg-primary/20",
                   )}
                 >
                   <Link href={href} onClick={closeMobileSidebar}>

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
 import {
   errorResponseSchema,
   productSearchRequestSchema,
-  productSearchResponseSchema
+  productSearchResponseSchema,
 } from "@/server/api/contracts";
-import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
 import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
@@ -24,10 +24,10 @@ export async function POST(request: Request) {
           error: {
             code: "invalid_request",
             message: "Request body must include a non-empty prompt.",
-            issues: parsed.error.issues.map((issue) => issue.message)
-          }
+            issues: parsed.error.issues.map((issue) => issue.message),
+          },
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,10 +40,10 @@ export async function POST(request: Request) {
       errorResponseSchema.parse({
         error: {
           code: "product_search_failed",
-          message
-        }
+          message,
+        },
       }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

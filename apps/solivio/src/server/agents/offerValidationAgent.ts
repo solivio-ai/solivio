@@ -36,7 +36,7 @@ export const offerValidationResultSchema = z.object({
   verdict: z.enum(["pass", "partial", "fail"]),
   summary: z.string().describe("1–2 sentence overall assessment"),
   issues: z.array(z.string()).describe("Specific problems found in the offer"),
-  missingRequirements: z.array(z.string()).describe("Customer requirements not addressed")
+  missingRequirements: z.array(z.string()).describe("Customer requirements not addressed"),
 });
 
 export type OfferValidationResult = z.infer<typeof offerValidationResultSchema>;
@@ -50,13 +50,13 @@ type OfferItem = {
 export async function validateOfferWithAgent(
   clientRequest: string,
   items: OfferItem[],
-  unmatched: string[]
+  unmatched: string[],
 ): Promise<OfferValidationResult> {
   const agent = new Agent({
     name: "offer-validation-agent",
     instructions: VALIDATION_INSTRUCTIONS,
     model: getOpenAIModel(),
-    voltOpsClient
+    voltOpsClient,
   });
 
   const itemsSummary = items
@@ -71,13 +71,13 @@ export async function validateOfferWithAgent(
   const message = [
     `Customer request:\n${clientRequest}`,
     `\nCurrent offer items:\n${itemsSummary}`,
-    unmatchedSummary
+    unmatchedSummary,
   ]
     .filter(Boolean)
     .join("\n");
 
   const result = await agent.generateText(message, {
-    output: Output.object({ schema: offerValidationResultSchema })
+    output: Output.object({ schema: offerValidationResultSchema }),
   });
 
   return offerValidationResultSchema.parse(result.output);

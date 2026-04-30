@@ -31,8 +31,8 @@ export const chatAgent = new Agent({
     "After a tool call succeeds, confirm the change to the user in plain language.",
 
     "If no offer context is provided, answer as a general Solivio assistant.",
-    "Keep answers concise, practical, and focused on helping a salesperson review the draft."
+    "Keep answers concise, practical, and focused on helping a salesperson review the draft.",
   ].join(" "),
   model: getOpenAIModel(),
-  tools: offerLineItemTools
+  tools: offerLineItemTools,
 });

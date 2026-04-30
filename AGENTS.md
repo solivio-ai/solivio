@@ -13,6 +13,21 @@ yarn dev                                                # Next.js on :3000
 
 `yarn setup` must run on a fresh checkout before `yarn dev`, and again whenever new Drizzle migrations are added. `yarn db:migrate` applies pending migrations without restarting the database.
 
+## Code Quality
+
+Biome is the single formatting, linting, and import-organization tool for this repository.
+
+Agents may ignore formatting noise while actively editing, but must normalize and verify their work before handing it back:
+
+```bash
+yarn biome check --write .   # formats, sorts imports, and applies safe lint fixes
+yarn check                   # verifies formatting, lint rules, and import organization
+```
+
+Use `yarn check` as the single repository quality gate for Biome.
+
+Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes.
+
 ## Build
 
 Production images are produced via `docker-compose.build.yml`:

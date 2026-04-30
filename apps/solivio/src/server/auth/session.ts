@@ -3,7 +3,8 @@ import "server-only";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { auth, type Session } from "./auth";
+import type { Session } from "./auth";
+import { auth } from "./auth";
 
 export async function getCurrentSession(): Promise<Session | null> {
   return auth.api.getSession({ headers: await headers() });

@@ -1,14 +1,14 @@
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { FileText, Plus } from "lucide-react";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
+import { AppPage } from "@/components/AppPage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { OffersList } from "@/features/offers-list/components/OffersList";
-import { getRecentOffers } from "@/server/offers/offerService";
-import { QuickOfferSearch } from "@/features/product-search";
-import { AppPage } from "@/components/AppPage";
 import { IntegrationsSection } from "@/features/integrations/components/IntegrationsSection";
+import { OffersList } from "@/features/offers-list/components/OffersList";
+import { QuickOfferSearch } from "@/features/product-search";
+import { getRecentOffers } from "@/server/offers/offerService";
 
 export default async function Home() {
   const t = await getTranslations("Dashboard");

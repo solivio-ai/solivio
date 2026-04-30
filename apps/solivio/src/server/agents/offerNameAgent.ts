@@ -18,29 +18,29 @@ Rules:
 `.trim();
 
 const offerNameOutputSchema = z.object({
-  name: z.string().describe("A short, descriptive offer name (max 8 words)")
+  name: z.string().describe("A short, descriptive offer name (max 8 words)"),
 });
 
 const offerNameAgent = new Agent({
   name: "offer-name-agent",
   instructions: OFFER_NAME_INSTRUCTIONS,
   model: getOpenAIModel(),
-  voltOpsClient
+  voltOpsClient,
 });
 
 export async function generateOfferName(
   clientRequest: string,
-  customerName?: string
+  customerName?: string,
 ): Promise<string> {
   const userMessage = [
     customerName ? `Customer: ${customerName}.` : "",
-    `Request: ${clientRequest}`
+    `Request: ${clientRequest}`,
   ]
     .filter(Boolean)
     .join("\n");
 
   const result = await offerNameAgent.generateText(userMessage, {
-    output: Output.object({ schema: offerNameOutputSchema })
+    output: Output.object({ schema: offerNameOutputSchema }),
   });
 
   const parsed = offerNameOutputSchema.parse(result.output);

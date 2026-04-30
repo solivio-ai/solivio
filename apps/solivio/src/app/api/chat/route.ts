@@ -1,17 +1,12 @@
-import { after } from "next/server";
-import { NextResponse } from "next/server";
-import type { Offer } from "@solivio/domain";
-import type { UIMessage } from "ai";
-
 import { setWaitUntil } from "@voltagent/core";
+import type { UIMessage } from "ai";
+import { after, NextResponse } from "next/server";
 
-import { errorResponseSchema } from "@/server/api/contracts";
+import type { Offer } from "@solivio/domain";
 import { chatAgent } from "@/server/agents/chatAgent";
+import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import {
-  appendOfferChatMessage,
-  getOfferChatThread
-} from "@/server/offer-chat/offerChatService";
+import { appendOfferChatMessage, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 import { getOfferDraft } from "@/server/offers/offerDraftStore";
 import { getOffer } from "@/server/offers/offerService";
 
@@ -40,9 +35,11 @@ function formatOfferContext(offer: Offer) {
   }, 0);
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const limitedLineCount = offer.items.filter((item) => item.product?.availability === "limited").length;
+  const limitedLineCount = offer.items.filter(
+    (item) => item.product?.availability === "limited",
+  ).length;
   const unpricedLineCount = offer.items.filter(
-    (item) => (item.unitPriceNet ?? item.product?.priceNet ?? 0) <= 0
+    (item) => (item.unitPriceNet ?? item.product?.priceNet ?? 0) <= 0,
   ).length;
   const lines = [
     "Current offer context:",
@@ -62,7 +59,7 @@ function formatOfferContext(offer: Offer) {
     `Availability check: ${limitedLineCount === 0 ? "availability confirmed" : `${limitedLineCount} line(s) need availability confirmation`}`,
     `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,
     "",
-    "Products:"
+    "Products:",
   ];
 
   if (offer.items.length === 0) {
@@ -92,8 +89,8 @@ function formatOfferContext(offer: Offer) {
           `   Quantity: ${item.quantity}`,
           `   Unit price net: ${price}`,
           `   Confidence: ${item.confidence ?? product?.matchScore ?? "not provided"}`,
-          `   Rationale: ${item.rationale}`
-        ].join("\n")
+          `   Rationale: ${item.rationale}`,
+        ].join("\n"),
       );
     });
   }
@@ -102,7 +99,9 @@ function formatOfferContext(offer: Offer) {
   if (offer.notes.length === 0) {
     lines.push("- No notes.");
   } else {
-    offer.notes.forEach((note) => lines.push(`- ${note}`));
+    for (const note of offer.notes) {
+      lines.push(`- ${note}`);
+    }
   }
 
   return lines.join("\n");
@@ -123,10 +122,10 @@ export async function POST(request: Request) {
       errorResponseSchema.parse({
         error: {
           code: "invalid_chat_thread",
-          message: "Both offerId and threadId are required for persistent offer chat."
-        }
+          message: "Both offerId and threadId are required for persistent offer chat.",
+        },
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -137,10 +136,10 @@ export async function POST(request: Request) {
         errorResponseSchema.parse({
           error: {
             code: "chat_thread_not_found",
-            message: `Chat thread '${threadId}' was not found for offer '${offerId}'.`
-          }
+            message: `Chat thread '${threadId}' was not found for offer '${offerId}'.`,
+          },
         }),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -152,7 +151,7 @@ export async function POST(request: Request) {
 
   const serverOffer: Offer | null = offerId
     ? isUuid(offerId)
-      ? (await getOffer(offerId)) ?? getOfferDraft(offerId)
+      ? ((await getOffer(offerId)) ?? getOfferDraft(offerId))
       : getOfferDraft(offerId)
     : null;
   const offerContext = serverOffer ? formatOfferContext(serverOffer) : null;
@@ -168,12 +167,12 @@ export async function POST(request: Request) {
                 "Use this offer context to answer the user's questions.",
                 "When the user requests a change to the offer, use the available tools to apply it directly.",
                 "",
-                offerContext
-              ].join("\n")
-            }
-          ]
+                offerContext,
+              ].join("\n"),
+            },
+          ],
         },
-        ...messages
+        ...messages,
       ]
     : messages;
 
@@ -187,9 +186,9 @@ export async function POST(request: Request) {
       await appendOfferChatMessage(threadId!, {
         id: crypto.randomUUID(),
         role: "assistant",
-        parts: [{ type: "text", text }]
+        parts: [{ type: "text", text }],
       });
-    }
+    },
   });
 
   return result.toUIMessageStreamResponse();

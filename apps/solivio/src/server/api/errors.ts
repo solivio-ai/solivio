@@ -5,7 +5,7 @@ export function apiError(code: string, message: string, issues?: string[]) {
     error: {
       code,
       message,
-      issues: issues && issues.length > 0 ? issues : undefined
-    }
+      issues: issues && issues.length > 0 ? issues : undefined,
+    },
   });
 }

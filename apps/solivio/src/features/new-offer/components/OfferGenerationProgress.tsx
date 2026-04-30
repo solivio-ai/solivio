@@ -174,7 +174,6 @@ export function OfferGenerationProgress({ elapsedMs, state }: OfferGenerationPro
             );
           })}
         </ol>
-
       </div>
     </section>
   );

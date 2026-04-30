@@ -1,8 +1,8 @@
 "use client";
 
 import { FileText, Sparkles } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { CreatedOffer } from "@/server/offers/offerService";
+
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
 type GenerationState = "idle" | "running" | "complete";
@@ -61,7 +62,7 @@ export function NewOfferForm() {
       const response = await fetch("/api/offers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerName, clientRequest })
+        body: JSON.stringify({ customerName, clientRequest }),
       });
 
       if (!response.ok) {
@@ -139,10 +140,7 @@ export function NewOfferForm() {
             <DialogDescription>{generationT("dialogDescription")}</DialogDescription>
           </DialogHeader>
           {generationState !== "idle" ? (
-            <OfferGenerationProgress
-              elapsedMs={generationElapsedMs}
-              state={generationState}
-            />
+            <OfferGenerationProgress elapsedMs={generationElapsedMs} state={generationState} />
           ) : null}
         </DialogContent>
       </Dialog>

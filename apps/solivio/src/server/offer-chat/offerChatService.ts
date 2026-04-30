@@ -1,7 +1,7 @@
 import "server-only";
 
-import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { UIMessage } from "ai";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/server/database/db";
 import { offerChatMessages, offerChatThreads } from "@/server/database/schema";
@@ -20,7 +20,7 @@ function toThread(row: typeof offerChatThreads.$inferSelect): OfferChatThread {
     offerId: row.offerId,
     title: row.title,
     createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString()
+    updatedAt: row.updatedAt.toISOString(),
   };
 }
 
@@ -46,10 +46,7 @@ export async function listOfferChatThreads(offerId: string) {
 }
 
 export async function createOfferChatThread(offerId: string, title = "New chat") {
-  const [thread] = await db
-    .insert(offerChatThreads)
-    .values({ offerId, title })
-    .returning();
+  const [thread] = await db.insert(offerChatThreads).values({ offerId, title }).returning();
 
   return toThread(thread);
 }
@@ -74,7 +71,7 @@ export async function getOfferChatMessages(threadId: string): Promise<UIMessage[
   return rows.map((row) => ({
     id: row.id,
     role: row.role as UIMessage["role"],
-    parts: row.parts as UIMessage["parts"]
+    parts: row.parts as UIMessage["parts"],
   }));
 }
 
@@ -85,7 +82,7 @@ export async function appendOfferChatMessage(threadId: string, message: UIMessag
       id: message.id,
       threadId,
       role: message.role,
-      parts: message.parts
+      parts: message.parts,
     })
     .onConflictDoNothing();
 
@@ -94,7 +91,7 @@ export async function appendOfferChatMessage(threadId: string, message: UIMessag
       .update(offerChatThreads)
       .set({
         updatedAt: new Date(),
-        title: sql`case when ${offerChatThreads.title} = 'New chat' then ${titleFromMessage(message)} else ${offerChatThreads.title} end`
+        title: sql`case when ${offerChatThreads.title} = 'New chat' then ${titleFromMessage(message)} else ${offerChatThreads.title} end`,
       })
       .where(eq(offerChatThreads.id, threadId));
     return;

@@ -2,42 +2,39 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 
+import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
+
 import { db } from "../database/db";
 import { offerProducts, offers } from "../database/schema";
-import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
+import { findOfferById, insertOfferProducts, setOfferUpdatedBy } from "./offerRepository";
 import {
   findRevisionById,
   findRevisionsByOfferId,
   insertRevision,
 } from "./offerRevisionRepository";
-import {
-  findOfferById,
-  insertOfferProducts,
-  setOfferUpdatedBy,
-} from "./offerRepository";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
-function rowToRevision(row: {
-  id: string;
-  offerId: string;
-  revisionNumber: number;
-  name?: string | null;
-  createdById: string | null;
-  createdByName: string | null;
-  createdAt: Date;
-  acceptedAt?: Date | null;
-  snapshot?: OfferRevisionSnapshot;
-} & ({ snapshot: OfferRevisionSnapshot } | { snapshot?: never })): OfferRevision {
+function rowToRevision(
+  row: {
+    id: string;
+    offerId: string;
+    revisionNumber: number;
+    name?: string | null;
+    createdById: string | null;
+    createdByName: string | null;
+    createdAt: Date;
+    acceptedAt?: Date | null;
+    snapshot?: OfferRevisionSnapshot;
+  } & ({ snapshot: OfferRevisionSnapshot } | { snapshot?: never }),
+): OfferRevision {
   return {
     id: row.id,
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
     name: row.name ?? undefined,
     snapshot: row.snapshot,
-    createdBy: row.createdById
-      ? { id: row.createdById, name: row.createdByName ?? "" }
-      : null,
+    createdBy: row.createdById ? { id: row.createdById, name: row.createdByName ?? "" } : null,
     createdAt: row.createdAt.toISOString(),
     acceptedAt: row.acceptedAt?.toISOString() ?? null,
   };
@@ -47,7 +44,7 @@ export async function saveRevision(
   offerId: string,
   userId: string | null,
   acceptedAt?: Date | null,
-  tx: Tx = db
+  tx: Tx = db,
 ): Promise<OfferRevision | null> {
   const row = await findOfferById(offerId, tx);
   if (!row) return null;
@@ -86,7 +83,7 @@ export async function listRevisions(offerId: string): Promise<OfferRevision[]> {
 
 export async function getRevision(
   offerId: string,
-  revisionId: string
+  revisionId: string,
 ): Promise<OfferRevision | null> {
   const row = await findRevisionById(revisionId, offerId);
   if (!row) return null;
@@ -96,7 +93,7 @@ export async function getRevision(
 export async function restoreRevision(
   offerId: string,
   revisionId: string,
-  userId: string | null
+  userId: string | null,
 ): Promise<OfferRevision | null> {
   const revisionRow = await findRevisionById(revisionId, offerId);
   if (!revisionRow) return null;
@@ -124,7 +121,7 @@ export async function restoreRevision(
           rationale: item.rationale,
           position: item.position,
         })),
-        tx
+        tx,
       );
     }
 

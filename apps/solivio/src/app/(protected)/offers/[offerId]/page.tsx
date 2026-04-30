@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
-import { OfferReview } from "@/features/new-offer";
 import { AppPage } from "@/components/AppPage";
+import { OfferReview } from "@/features/new-offer";
 
 export async function generateMetadata() {
   const t = await getTranslations("NewOffer.review");

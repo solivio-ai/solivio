@@ -1,12 +1,12 @@
-import { demoOffer } from "@solivio/domain";
 import { NextResponse } from "next/server";
 
+import { demoOffer } from "@solivio/domain";
+import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
+import { generateOfferName } from "@/server/agents/offerNameAgent";
 import { createOfferRequestSchema, offerResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { generateOfferName } from "@/server/agents/offerNameAgent";
-import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
-import { createOffer, toOfferDomain } from "@/server/offers/offerService";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
+import { createOffer, toOfferDomain } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -27,21 +27,21 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { error: { code: "VALIDATION_ERROR", message: "clientRequest is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const { customerName, clientRequest } = parsed.data;
   const [generated, offerName] = await Promise.all([
     generateOfferWithAgent(clientRequest, customerName),
-    generateOfferName(clientRequest, customerName)
+    generateOfferName(clientRequest, customerName),
   ]);
   const offer = await createOffer(
     customerName,
     clientRequest,
     generated,
     auth.session.user.id,
-    offerName
+    offerName,
   );
 
   saveOfferDraft(toOfferDomain(offer));

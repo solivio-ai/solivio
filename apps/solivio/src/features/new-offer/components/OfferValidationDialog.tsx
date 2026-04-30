@@ -1,7 +1,7 @@
 "use client";
 
+import { AlertTriangle, CheckCircle2, MessageSquare, Send, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, CheckCircle2, MessageSquare, XCircle, Send } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 export type ValidationResult = {
@@ -31,7 +31,13 @@ type OfferValidationDialogProps = {
 
 function formatValidationMessage(result: ValidationResult, t: (key: string) => string): string {
   const verdictLabel = t(`verdict.${result.verdict}`);
-  const lines: string[] = [t("messageHeader"), "", `${t("statusLabel")}: ${verdictLabel}`, "", result.summary];
+  const lines: string[] = [
+    t("messageHeader"),
+    "",
+    `${t("statusLabel")}: ${verdictLabel}`,
+    "",
+    result.summary,
+  ];
 
   if (result.missingRequirements.length > 0) {
     lines.push("", `${t("missingRequirements")}:`, ...result.missingRequirements);
@@ -53,20 +59,20 @@ const getVerdictConfig = (t: (key: string) => string) => ({
     Icon: CheckCircle2,
     iconClass: "text-green-500",
     badgeVariant: "default" as const,
-    label: t("verdict.pass")
+    label: t("verdict.pass"),
   },
   partial: {
     Icon: AlertTriangle,
     iconClass: "text-amber-500",
     badgeVariant: "secondary" as const,
-    label: t("verdict.partial")
+    label: t("verdict.partial"),
   },
   fail: {
     Icon: XCircle,
     iconClass: "text-destructive",
     badgeVariant: "destructive" as const,
-    label: t("verdict.fail")
-  }
+    label: t("verdict.fail"),
+  },
 });
 
 export function OfferValidationDialog({
@@ -104,7 +110,11 @@ export function OfferValidationDialog({
               <ul className="grid gap-1">
                 {result.missingRequirements.map((req, i) => (
                   <li key={i} className="flex gap-2 text-sm">
-                    <XCircle size={14} className="mt-0.5 shrink-0 text-destructive" aria-hidden="true" />
+                    <XCircle
+                      size={14}
+                      className="mt-0.5 shrink-0 text-destructive"
+                      aria-hidden="true"
+                    />
                     <span>{req}</span>
                   </li>
                 ))}
@@ -118,7 +128,11 @@ export function OfferValidationDialog({
               <ul className="grid gap-1">
                 {result.issues.map((issue, i) => (
                   <li key={i} className="flex gap-2 text-sm">
-                    <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-500" aria-hidden="true" />
+                    <AlertTriangle
+                      size={14}
+                      className="mt-0.5 shrink-0 text-amber-500"
+                      aria-hidden="true"
+                    />
                     <span>{issue}</span>
                   </li>
                 ))}
@@ -126,19 +140,19 @@ export function OfferValidationDialog({
             </section>
           )}
 
-          {result.verdict === "pass" && result.issues.length === 0 && result.missingRequirements.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              {t("allMet")}
-            </p>
-          )}
+          {result.verdict === "pass" &&
+            result.issues.length === 0 &&
+            result.missingRequirements.length === 0 && (
+              <p className="text-sm text-muted-foreground">{t("allMet")}</p>
+            )}
         </div>
 
         <DialogFooter className="flex-wrap gap-2 sm:flex-nowrap sm:gap-0">
           <div className="flex gap-2 w-full">
             <div className="grow">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              {t("close")}
-            </Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                {t("close")}
+              </Button>
             </div>
             {onSendToChat && (
               <Button

@@ -1,7 +1,7 @@
 import "server-only";
 
-import { Output } from "ai";
 import { Agent, createTool } from "@voltagent/core";
+import { Output } from "ai";
 import { z } from "zod";
 
 import { lookupProductsBySkus, searchProductsBatch } from "../products/productSearchService";
@@ -67,19 +67,19 @@ const offerItemSchema = z.object({
   productSku: z.string().describe("SKU of the matched product"),
   requestItem: z.string().describe("Exact phrase from the customer request for this item"),
   quantity: z.number().int().positive().describe("Quantity the customer requested"),
-  rationale: z.string().describe("Why this product matches the request")
+  rationale: z.string().describe("Why this product matches the request"),
 });
 
 const fragmentKindSchema = z
   .enum(["sku", "description"])
   .describe(
-    "How the fragment was looked up: 'sku' for exact SKU match, 'description' for semantic search"
+    "How the fragment was looked up: 'sku' for exact SKU match, 'description' for semantic search",
   );
 
 const agentOutputSchema = z.object({
   items: z.array(offerItemSchema),
   unmatched: z.array(z.string()).describe("requestFragment values with no catalog match"),
-  notes: z.array(z.string()).describe("Additional notes or substitutions")
+  notes: z.array(z.string()).describe("Additional notes or substitutions"),
 });
 
 export type GeneratedOffer = z.infer<typeof agentOutputSchema>;
@@ -88,7 +88,7 @@ export type GeneratedOffer = z.infer<typeof agentOutputSchema>;
 
 export async function generateOfferWithAgent(
   clientRequest: string,
-  customerName?: string
+  customerName?: string,
 ): Promise<GeneratedOffer> {
   const searchProductsTool = createTool({
     name: "search_products",
@@ -100,10 +100,10 @@ export async function generateOfferWithAgent(
           .array(
             z.object({
               query: z.string().describe("The SKU or bilingual description query"),
-              kind: fragmentKindSchema
-            })
+              kind: fragmentKindSchema,
+            }),
           )
-          .describe("One entry per distinct request fragment")
+          .describe("One entry per distinct request fragment"),
       })
       .strict(),
     outputSchema: z.object({
@@ -116,11 +116,11 @@ export async function generateOfferWithAgent(
               id: z.string(),
               sku: z.string(),
               name: z.string(),
-              similarity: z.number()
-            })
-          )
-        })
-      )
+              similarity: z.number(),
+            }),
+          ),
+        }),
+      ),
     }),
     execute: async ({ queries }) => {
       const skuQueries = queries.filter((q) => q.kind === "sku").map((q) => q.query);
@@ -129,7 +129,7 @@ export async function generateOfferWithAgent(
       const [skuMap, descMap] = await Promise.all([
         lookupProductsBySkus(skuQueries),
         // Top-10 candidates per query (recall stage). LLM reranks in next agent pass (precision).
-        searchProductsBatch(descQueries, { limit: 10, minSimilarity: 0 })
+        searchProductsBatch(descQueries, { limit: 10, minSimilarity: 0 }),
       ]);
 
       const results = queries.map(({ query, kind }) => {
@@ -144,13 +144,13 @@ export async function generateOfferWithAgent(
           id: m.id,
           sku: m.sku,
           name: m.name,
-          similarity: m.similarity
+          similarity: m.similarity,
         }));
         return { query, kind, matches };
       });
 
       return { results };
-    }
+    },
   });
 
   const agent = new Agent({
@@ -158,18 +158,18 @@ export async function generateOfferWithAgent(
     instructions: OFFER_AGENT_INSTRUCTIONS,
     model: getOpenAIModel(),
     tools: [searchProductsTool],
-    voltOpsClient
+    voltOpsClient,
   });
 
   const userMessage = [
     customerName ? `Customer: ${customerName}.` : "",
-    `Request: ${clientRequest}`
+    `Request: ${clientRequest}`,
   ]
     .filter(Boolean)
     .join("\n");
 
   const result = await agent.generateText(userMessage, {
-    output: Output.object({ schema: agentOutputSchema })
+    output: Output.object({ schema: agentOutputSchema }),
   });
 
   return agentOutputSchema.parse(result.output);

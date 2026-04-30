@@ -2,9 +2,10 @@ import "server-only";
 
 import { and, desc, eq, max, sql } from "drizzle-orm";
 
+import type { OfferRevisionSnapshot } from "@solivio/domain";
+
 import { db } from "../database/db";
 import { offerRevisions, user } from "../database/schema";
-import type { OfferRevisionSnapshot } from "@solivio/domain";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
@@ -28,10 +29,7 @@ export type RevisionRow = {
   acceptedAt: Date | null;
 };
 
-export async function insertRevision(
-  data: InsertRevisionData,
-  tx: Tx = db
-): Promise<RevisionRow> {
+export async function insertRevision(data: InsertRevisionData, tx: Tx = db): Promise<RevisionRow> {
   const [maxRow] = await tx
     .select({ max: max(offerRevisions.revisionNumber) })
     .from(offerRevisions)
@@ -65,7 +63,7 @@ export async function insertRevision(
 
 export async function findRevisionsByOfferId(
   offerId: string,
-  tx: Tx = db
+  tx: Tx = db,
 ): Promise<Omit<RevisionRow, "snapshot">[]> {
   const rows = await tx
     .select({
@@ -98,7 +96,7 @@ export async function findRevisionsByOfferId(
 export async function findRevisionById(
   revisionId: string,
   offerId: string,
-  tx: Tx = db
+  tx: Tx = db,
 ): Promise<RevisionRow | null> {
   const rows = await tx
     .select({
@@ -114,12 +112,7 @@ export async function findRevisionById(
     })
     .from(offerRevisions)
     .leftJoin(user, eq(user.id, offerRevisions.createdBy))
-    .where(
-      and(
-        eq(offerRevisions.id, revisionId),
-        eq(offerRevisions.offerId, offerId)
-      )
-    );
+    .where(and(eq(offerRevisions.id, revisionId), eq(offerRevisions.offerId, offerId)));
 
   if (rows.length === 0) return null;
   const row = rows[0];

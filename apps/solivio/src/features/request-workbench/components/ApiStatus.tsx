@@ -2,6 +2,7 @@
 
 import { RefreshCcw, Server } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 
 type HealthState =
@@ -17,7 +18,7 @@ export function ApiStatus() {
 
     try {
       const response = await fetch("/api/health", {
-        cache: "no-store"
+        cache: "no-store",
       });
 
       if (!response.ok) {
@@ -27,12 +28,12 @@ export function ApiStatus() {
       const payload = (await response.json()) as { timestamp?: string };
       setHealth({
         state: "online",
-        timestamp: payload.timestamp ?? new Date().toISOString()
+        timestamp: payload.timestamp ?? new Date().toISOString(),
       });
     } catch (error) {
       setHealth({
         state: "offline",
-        message: error instanceof Error ? error.message : "API unavailable"
+        message: error instanceof Error ? error.message : "API unavailable",
       });
     }
   }, []);
@@ -42,7 +43,10 @@ export function ApiStatus() {
   }, [checkHealth]);
 
   return (
-    <section className="flex min-h-12 items-center gap-3 rounded-lg border bg-card px-3 py-2 text-card-foreground" aria-label="API status">
+    <section
+      className="flex min-h-12 items-center gap-3 rounded-lg border bg-card px-3 py-2 text-card-foreground"
+      aria-label="API status"
+    >
       <Server size={18} aria-hidden="true" className="text-primary" />
       <div className="flex min-w-[110px] items-center gap-2 text-sm">
         <span
@@ -62,7 +66,13 @@ export function ApiStatus() {
               : "API offline"}
         </span>
       </div>
-      <Button type="button" variant="ghost" size="icon" onClick={checkHealth} aria-label="Refresh API status">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={checkHealth}
+        aria-label="Refresh API status"
+      >
         <RefreshCcw size={16} aria-hidden="true" />
       </Button>
     </section>

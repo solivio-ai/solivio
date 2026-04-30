@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,8 +38,12 @@ export function LoginForm({
   const modeHref = nextMode === "signup" ? "/login?mode=signup" : "/login";
   const title = isSignIn ? t("title.signin") : t("title.signup");
   const submitLabel = isPending
-    ? isSignIn ? t("actions.signingIn") : t("actions.creatingAccount")
-    : isSignIn ? t("actions.signIn") : t("actions.signUp");
+    ? isSignIn
+      ? t("actions.signingIn")
+      : t("actions.creatingAccount")
+    : isSignIn
+      ? t("actions.signIn")
+      : t("actions.signUp");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -115,7 +119,14 @@ export function LoginForm({
             </Field>
           ) : (
             <Field htmlFor="email" label={t("fields.email")}>
-              <Input id="email" name="email" type="email" required autoComplete="email" disabled={isPending} />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                disabled={isPending}
+              />
             </Field>
           )}
 
@@ -144,7 +155,9 @@ export function LoginForm({
             </label>
           )}
 
-          <Button type="submit" disabled={isPending}>{submitLabel}</Button>
+          <Button type="submit" disabled={isPending}>
+            {submitLabel}
+          </Button>
         </form>
       )}
 

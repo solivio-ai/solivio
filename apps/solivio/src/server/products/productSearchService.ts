@@ -2,7 +2,8 @@ import "server-only";
 
 import { openai } from "@ai-sdk/openai";
 import { embed, embedMany } from "ai";
-import { type AnyColumn, desc, inArray, sql } from "drizzle-orm";
+import type { AnyColumn } from "drizzle-orm";
+import { desc, inArray, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { products } from "../database/schema";
@@ -59,13 +60,13 @@ function cosineSimilarity(column: AnyColumn, vector: string) {
 
 export async function searchProductsByPrompt(
   prompt: string,
-  options: SearchProductsOptions = {}
+  options: SearchProductsOptions = {},
 ): Promise<ProductSearchMatch[]> {
   if (prompt.trim().length === 0) return [];
 
   const { embedding } = await embed({
     model: openai.embedding(options.model ?? "text-embedding-3-small"),
-    value: prompt.trim()
+    value: prompt.trim(),
   });
 
   const pgVector = toPostgresVector(embedding);
@@ -81,7 +82,7 @@ export async function searchProductsByPrompt(
       manufacturer: products.manufacturer,
       priceNet: products.priceNet,
       currency: products.currency,
-      similarity
+      similarity,
     })
     .from(products)
     .orderBy(desc(similarity))
@@ -94,7 +95,7 @@ export async function searchProductsByPrompt(
 
 // Exact SKU lookup. Identifiers belong in B-tree, not in vector space.
 export async function lookupProductsBySkus(
-  skus: string[]
+  skus: string[],
 ): Promise<Map<string, ProductSearchMatch>> {
   const trimmed = skus.map((s) => s.trim()).filter((s) => s.length > 0);
   if (trimmed.length === 0) return new Map();
@@ -107,7 +108,7 @@ export async function lookupProductsBySkus(
       description: products.description,
       manufacturer: products.manufacturer,
       priceNet: products.priceNet,
-      currency: products.currency
+      currency: products.currency,
     })
     .from(products)
     .where(inArray(products.sku, trimmed));
@@ -117,14 +118,14 @@ export async function lookupProductsBySkus(
 
 export async function searchProductsBatch(
   prompts: string[],
-  options: SearchProductsOptions = {}
+  options: SearchProductsOptions = {},
 ): Promise<Map<string, ProductSearchMatch[]>> {
   const nonEmpty = prompts.filter((p) => p.trim().length > 0);
   if (nonEmpty.length === 0) return new Map();
 
   const { embeddings } = await embedMany({
     model: openai.embedding(options.model ?? "text-embedding-3-small"),
-    values: nonEmpty.map((p) => p.trim())
+    values: nonEmpty.map((p) => p.trim()),
   });
 
   const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
@@ -144,7 +145,7 @@ export async function searchProductsBatch(
           manufacturer: products.manufacturer,
           priceNet: products.priceNet,
           currency: products.currency,
-          similarity
+          similarity,
         })
         .from(products)
         .orderBy(desc(similarity))
@@ -155,7 +156,7 @@ export async function searchProductsBatch(
         .filter((row) => row.similarity >= minSimilarity);
 
       return [nonEmpty[i]!, matches] as const;
-    })
+    }),
   );
 
   return new Map(entries);

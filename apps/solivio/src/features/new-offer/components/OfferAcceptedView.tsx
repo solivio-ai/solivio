@@ -1,18 +1,18 @@
 "use client";
-import { useTranslations } from "next-intl";
 
-import Link from "next/link";
 import { ArrowLeft, Download, User } from "lucide-react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
-import type { DraftLine } from "./offer-builder-types";
-import dynamic from "next/dynamic";
 
-const PdfViewer = dynamic(
-  () => import("./PdfViewer").then((m) => ({ default: m.PdfViewer })),
-  { ssr: false }
-);
+import type { DraftLine } from "./offer-builder-types";
+
+const PdfViewer = dynamic(() => import("./PdfViewer").then((m) => ({ default: m.PdfViewer })), {
+  ssr: false,
+});
 
 type OfferAcceptedViewProps = {
   offer: Offer;
@@ -42,15 +42,14 @@ function downloadPdf(offerId: string) {
 }
 
 function formatMoney(value: number, currency: string) {
-  return new Intl.NumberFormat("pl-PL", {
+  return `${new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value) + ` ${currency}`;
+  }).format(value)} ${currency}`;
 }
 
 export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewProps) {
   const t = useTranslations("NewOffer.builder");
-  const tReview = useTranslations("NewOffer.review");
   const tAccepted = useTranslations("NewOffer.review.acceptedView");
   const tCommercial = useTranslations("NewOffer.review.commercial");
   const lines = toDraftLines(offer);
@@ -72,9 +71,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
           <div className="mt-4 grid gap-3 text-sm">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("subtotal")}</span>
-              <span className="font-medium">
-                {formatMoney(subtotal, currency)}
-              </span>
+              <span className="font-medium">{formatMoney(subtotal, currency)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discount")}</span>
@@ -82,16 +79,12 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">{tCommercial("discountValue")}</span>
-              <span className="font-medium">
-                {formatMoney(discountAmount, currency)}
-              </span>
+              <span className="font-medium">{formatMoney(discountAmount, currency)}</span>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-center justify-between text-base font-semibold">
               <span>{tCommercial("totalNet")}</span>
-              <span>
-                {formatMoney(total, currency)}
-              </span>
+              <span>{formatMoney(total, currency)}</span>
             </div>
           </div>
         </section>
@@ -112,7 +105,9 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
               {offer.updatedBy?.name && (
                 <span
                   className="flex items-center gap-1.5"
-                  title={offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined}
+                  title={
+                    offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined
+                  }
                 >
                   <User size={11} aria-hidden="true" />
                   {t("lastModifiedBy", { name: offer.updatedBy.name })}
@@ -131,11 +126,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
             <ArrowLeft size={16} aria-hidden="true" />
             {t("backToDraft")}
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="justify-center"
-          >
+          <Button asChild variant="outline" className="justify-center">
             <Link href="/offers">{tAccepted("goToOffers")}</Link>
           </Button>
         </div>

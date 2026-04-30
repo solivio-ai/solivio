@@ -1,6 +1,7 @@
 import "server-only";
 
-import { demoOffer, type Offer } from "@solivio/domain";
+import type { Offer } from "@solivio/domain";
+import { demoOffer } from "@solivio/domain";
 
 type OfferStore = Map<string, Offer>;
 
@@ -37,7 +38,7 @@ export function updateOfferDraft(
     }>;
     unmatched?: string[];
     discountPercent?: number;
-  }
+  },
 ) {
   const offer = getOfferDraft(id);
   if (!offer) return null;
@@ -54,7 +55,7 @@ export function updateOfferDraft(
             rationale: itemUpdate.rationale ?? "Manually added",
             requestItem: itemUpdate.requestItem,
             confidence: itemUpdate.confidence,
-            product: itemUpdate.product
+            product: itemUpdate.product,
           };
         }
 
@@ -64,7 +65,7 @@ export function updateOfferDraft(
           rationale: itemUpdate.rationale ?? existingItem.rationale,
           requestItem: itemUpdate.requestItem ?? existingItem.requestItem,
           confidence: itemUpdate.confidence ?? existingItem.confidence,
-          product: itemUpdate.product ?? existingItem.product
+          product: itemUpdate.product ?? existingItem.product,
         };
       })
     : offer.items;
@@ -74,16 +75,14 @@ export function updateOfferDraft(
     status: update.status ?? offer.status,
     name: update.name ?? offer.name,
     customerName:
-      update.customerName !== undefined
-        ? (update.customerName ?? undefined)
-        : offer.customerName,
+      update.customerName !== undefined ? (update.customerName ?? undefined) : offer.customerName,
     clientRequest:
       update.clientRequest !== undefined
         ? (update.clientRequest ?? undefined)
         : offer.clientRequest,
     unmatched: update.unmatched ?? offer.unmatched,
     discountPercent: update.discountPercent ?? offer.discountPercent,
-    items: nextItems
+    items: nextItems,
   };
 
   offerDrafts.set(id, nextOffer);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+
 import type { SearchableField } from "../searchableFields";
 
 export type ProductSearchMatch = {
@@ -37,7 +38,7 @@ const PAGE_SIZE = 20;
 async function fetchPage(
   query: string,
   offset: number,
-  searchFields?: SearchableField[]
+  searchFields?: SearchableField[],
 ): Promise<{ products: ProductSearchMatch[]; totalCount: number }> {
   const response = await fetch("/api/products/text-search", {
     method: "POST",
@@ -50,13 +51,10 @@ async function fetchPage(
     }),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as
-      | { error?: string | { message?: string } }
-      | null;
-    const message =
-      typeof payload?.error === "string"
-        ? payload.error
-        : payload?.error?.message;
+    const payload = (await response.json().catch(() => null)) as {
+      error?: string | { message?: string };
+    } | null;
+    const message = typeof payload?.error === "string" ? payload.error : payload?.error?.message;
 
     if (response.status === 401) {
       throw new Error("Your session expired. Sign in again to search products.");
@@ -155,7 +153,7 @@ export function useProductSearch({ searchFields }: Config = {}) {
       const { products, totalCount } = await fetchPage(
         currentQueryRef.current,
         offsetRef.current,
-        searchFieldsRef.current
+        searchFieldsRef.current,
       );
       if (requestId !== requestIdRef.current) return;
       const nextOffset = offsetRef.current + products.length;

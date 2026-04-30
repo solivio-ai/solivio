@@ -13,7 +13,7 @@ const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
   priceNet: ["price_net", "pricenet", "cena_netto", "net_price", "netto"],
   priceGross: ["price_gross", "pricegross", "cena_brutto", "gross_price", "brutto"],
   vatRate: ["vat_rate", "vatrate", "vat", "stawka_vat", "tax_rate"],
-  currency: ["currency", "waluta", "ccy"]
+  currency: ["currency", "waluta", "ccy"],
 };
 
 // Accepts European-formatted prices ("1.234,56" / "112,98") alongside
@@ -21,7 +21,10 @@ const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
 // promotes a trailing decimal comma to a dot before parsing.
 function parseDecimal(raw: string): number | null {
   if (!raw) return null;
-  const cleaned = raw.replace(/\s/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+  const cleaned = raw
+    .replace(/\s/g, "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "")
+    .replace(",", ".");
   const value = Number(cleaned);
   return Number.isFinite(value) ? value : null;
 }
@@ -102,7 +105,7 @@ export function parseCsv(text: string): CsvParseResult {
 }
 
 export function resolveColumnMap(
-  headers: string[]
+  headers: string[],
 ): Partial<Record<keyof ProductImportRow, string>> {
   const lower = headers.map((h) => h.toLowerCase());
   const map: Partial<Record<keyof ProductImportRow, string>> = {};
@@ -115,7 +118,7 @@ export function resolveColumnMap(
 
 export function extractProductRows(
   rows: Record<string, string>[],
-  columnMap: Partial<Record<keyof ProductImportRow, string>>
+  columnMap: Partial<Record<keyof ProductImportRow, string>>,
 ): ProductImportRow[] {
   if (
     !columnMap.sku ||
@@ -158,7 +161,7 @@ export function extractProductRows(
         priceNet,
         priceGross,
         vatRate,
-        currency
+        currency,
       });
     }
   }
@@ -166,9 +169,9 @@ export function extractProductRows(
 }
 
 export function getMissingColumns(
-  columnMap: Partial<Record<keyof ProductImportRow, string>>
+  columnMap: Partial<Record<keyof ProductImportRow, string>>,
 ): string[] {
   return (Object.keys(COLUMN_ALIASES) as (keyof ProductImportRow)[]).filter(
-    (field) => !columnMap[field]
+    (field) => !columnMap[field],
   );
 }

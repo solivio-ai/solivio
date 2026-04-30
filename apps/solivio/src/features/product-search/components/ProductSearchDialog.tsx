@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ALL_SEARCHABLE_FIELDS } from "../searchableFields";
+
 import type { ProductSearchMatch, SearchableField } from "../hooks/useProductSearch";
 import { useProductSearch } from "../hooks/useProductSearch";
+import { ALL_SEARCHABLE_FIELDS } from "../searchableFields";
 
 type Props = {
   open: boolean;
@@ -50,12 +51,23 @@ export function ProductSearchDialog({
   renderFooter,
 }: Props) {
   const t = useTranslations("ProductSearchDialog");
-  const [selectedFields, setSelectedFields] = useState<SearchableField[]>(
-    [...(searchFields ?? ALL_SEARCHABLE_FIELDS)]
-  );
+  const [selectedFields, setSelectedFields] = useState<SearchableField[]>([
+    ...(searchFields ?? ALL_SEARCHABLE_FIELDS),
+  ]);
 
-  const { query, setQuery, results, totalCount, isLoading, error, hasSearched, hasMore, search, loadMore, resetSearch } =
-    useProductSearch({ searchFields: selectedFields });
+  const {
+    query,
+    setQuery,
+    results,
+    totalCount,
+    isLoading,
+    error,
+    hasSearched,
+    hasMore,
+    search,
+    loadMore,
+    resetSearch,
+  } = useProductSearch({ searchFields: selectedFields });
 
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +94,7 @@ export function ProductSearchDialog({
       ([entry]) => {
         if (entry.isIntersecting) loadMore();
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -115,9 +127,7 @@ export function ProductSearchDialog({
       <DialogContent className="max-h-[calc(100svh-1rem)] overflow-hidden max-sm:inset-x-2 max-sm:translate-x-0 max-sm:rounded-xl sm:max-w-[min(920px,calc(100vw-2rem))]">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>
-            {t("description")}
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex gap-2">
@@ -215,9 +225,7 @@ export function ProductSearchDialog({
             </div>
           )}
 
-          {!isLoading && error && (
-            <p className="py-2 text-sm text-destructive">{error}</p>
-          )}
+          {!isLoading && error && <p className="py-2 text-sm text-destructive">{error}</p>}
 
           {!isLoading && hasSearched && results.length === 0 && !error && (
             <p className="py-4 text-center text-sm text-muted-foreground">{t("noResults")}</p>

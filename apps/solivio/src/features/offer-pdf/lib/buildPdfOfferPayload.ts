@@ -21,19 +21,19 @@ export function buildPdfOfferPayload(offer: Offer): PdfOfferRequest {
       issueDate: toIsoDate(issueDate),
       validUntil: toIsoDate(addDays(issueDate, 14)),
       currency: "PLN",
-      discountPercent: offer.discountPercent
+      discountPercent: offer.discountPercent,
     },
     seller: {
       name: "Nordfield Systems Sp. z o.o.",
       address: "ul. Przemyslowa 12, 00-001 Warszawa",
       nip: "525-000-00-00",
-      contact: "handlowy@sprzedawca.example.com"
+      contact: "handlowy@sprzedawca.example.com",
     },
     buyer: {
       name: offer.customerName?.trim() || "Customer",
       address: "ul. Klienta 7, 00-950 Warszawa",
       nip: "521-000-00-00",
-      contact: "zakupy@klient.example.com"
+      contact: "zakupy@klient.example.com",
     },
     items: offer.items.map((item) => ({
       sku: item.product?.sku,
@@ -42,8 +42,8 @@ export function buildPdfOfferPayload(offer: Offer): PdfOfferRequest {
       quantity: item.quantity,
       unit: "szt.",
       unitPriceNet: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-      vatRate: 0.23
+      vatRate: 0.23,
     })),
-    terms: {}
+    terms: {},
   };
 }

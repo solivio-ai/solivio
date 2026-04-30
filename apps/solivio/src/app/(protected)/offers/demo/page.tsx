@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 
-import { DemoOfferClient } from "./DemoOfferClient";
 import { AppPage } from "@/components/AppPage";
+
+import { DemoOfferClient } from "./DemoOfferClient";
 
 export async function generateMetadata() {
   const t = await getTranslations("DemoOffer");

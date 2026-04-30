@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -42,7 +42,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
           size="icon-sm"
           className={cn(
             "text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
-            className
+            className,
           )}
           aria-label={label}
           onClick={() => applyTheme(nextTheme)}

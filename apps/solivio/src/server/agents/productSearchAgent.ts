@@ -1,7 +1,7 @@
 import "server-only";
 
-import { Output } from "ai";
 import { Agent, createTool } from "@voltagent/core";
+import { Output } from "ai";
 import { z } from "zod";
 
 import { searchProductsByPrompt } from "../products/productSearchService";
@@ -9,7 +9,7 @@ import { getOpenAIModel } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
 const agentResponseSchema = z.object({
-  answer: z.string().min(1)
+  answer: z.string().min(1),
 });
 
 export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
@@ -29,14 +29,14 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
           name: z.string(),
           description: z.string(),
           manufacturer: z.string(),
-          similarity: z.number()
-        })
-      )
+          similarity: z.number(),
+        }),
+      ),
     }),
     execute: async () => ({
       prompt,
-      products
-    })
+      products,
+    }),
   });
 
   const agent = new Agent({
@@ -46,18 +46,18 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
       "Always call the search_products tool before answering.",
       "Only reference products returned by that tool.",
       "Answer in the same language as the user's prompt.",
-      "Keep the answer concise and practical for a salesperson."
+      "Keep the answer concise and practical for a salesperson.",
     ].join(" "),
     model: getOpenAIModel(),
     tools: [searchProductsTool],
-    voltOpsClient
+    voltOpsClient,
   });
 
   const result = await agent.generateText(
     `Find the best product matches for this request:\n${prompt}`,
     {
-      output: Output.object({ schema: agentResponseSchema })
-    }
+      output: Output.object({ schema: agentResponseSchema }),
+    },
   );
 
   const response = agentResponseSchema.parse(result.output);
@@ -68,6 +68,6 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
       products.length > 0
         ? response.answer
         : "Nie znaleziono pasujących produktów w tabeli products dla tego prompta.",
-    products
+    products,
   };
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { EMBEDDING_MODELS } from "../../../server/products/embeddingModels";
 
 export const runtime = "nodejs";

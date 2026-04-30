@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { ProductImport } from "@/features/product-import";
+
 import { AppPage } from "@/components/AppPage";
+import { ProductImport } from "@/features/product-import";
 
 export async function generateMetadata() {
   const t = await getTranslations("ProductImport.page");

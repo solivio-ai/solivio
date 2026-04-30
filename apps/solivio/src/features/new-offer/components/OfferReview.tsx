@@ -1,28 +1,24 @@
 "use client";
 
+import { AlertTriangle, ArrowLeft, Loader2, PanelRightClose, PanelRightOpen } from "lucide-react";
 import Link from "next/link";
-import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  Loader2,
-  PanelRightClose,
-  PanelRightOpen,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 
 import type { Offer, OfferRevision } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { OfferBuilder } from "./OfferBuilder";
-import { OfferAcceptedView } from "./OfferAcceptedView";
-import { OfferChat, type OfferChatHandle } from "@/features/offer-chat/components/OfferChat";
-import { OfferRevisionTimeline } from "./OfferRevisionTimeline";
-import { OfferRevisionModal } from "./OfferRevisionModal";
+import type { OfferChatHandle } from "@/features/offer-chat/components/OfferChat";
+import { OfferChat } from "@/features/offer-chat/components/OfferChat";
 import { cn } from "@/lib/utils";
+
+import { OfferAcceptedView } from "./OfferAcceptedView";
+import { OfferBuilder } from "./OfferBuilder";
+import { OfferRevisionModal } from "./OfferRevisionModal";
+import { OfferRevisionTimeline } from "./OfferRevisionTimeline";
 
 type OfferReviewProps = {
   offerId: string;
@@ -93,12 +89,14 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     setState({ kind: "loading" });
 
     fetchOffer()
-      .then((offer: Offer) => { if (!ignore) setState({ kind: "ready", offer }); })
+      .then((offer: Offer) => {
+        if (!ignore) setState({ kind: "ready", offer });
+      })
       .catch((error: unknown) => {
         if (!ignore) {
           setState({
             kind: "error",
-            message: error instanceof Error ? error.message : tReview("error")
+            message: error instanceof Error ? error.message : tReview("error"),
           });
         }
       });
@@ -112,7 +110,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     setRevisionsLoading(true);
     try {
       const response = await fetch(`/api/offers/${offerId}/revisions`);
-      const data = await response.json() as { revisions: OfferRevision[] };
+      const data = (await response.json()) as { revisions: OfferRevision[] };
       setRevisions(data.revisions);
     } catch {
       // ignore
@@ -137,42 +135,48 @@ export function OfferReview({ offerId }: OfferReviewProps) {
       .catch(() => {});
   }, [fetchOffer]);
 
-  useEffect(() => () => {
-    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+    },
+    [],
+  );
 
-  const handleDiscountPercentChange = useCallback((nextDiscountPercent: number) => {
-    setState((current) => {
-      if (current.kind !== "ready") return current;
-      return {
-        kind: "ready",
-        offer: { ...current.offer, discountPercent: nextDiscountPercent }
-      };
-    });
+  const handleDiscountPercentChange = useCallback(
+    (nextDiscountPercent: number) => {
+      setState((current) => {
+        if (current.kind !== "ready") return current;
+        return {
+          kind: "ready",
+          offer: { ...current.offer, discountPercent: nextDiscountPercent },
+        };
+      });
 
-    if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
-    discountPersistTimer.current = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/offers/${offerId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ discountPercent: nextDiscountPercent })
-        });
-        if (!response.ok) return;
-        const payload = await response.json();
-        // Merge server-side fields (updatedAt, updatedBy, ...) but keep the latest user input.
-        setState((current) => {
-          if (current.kind !== "ready") return current;
-          return {
-            kind: "ready",
-            offer: { ...payload.offer, discountPercent: current.offer.discountPercent }
-          };
-        });
-      } catch {
-        // ignore — input remains optimistic; a later edit will retry the PATCH.
-      }
-    }, 500);
-  }, [offerId]);
+      if (discountPersistTimer.current) clearTimeout(discountPersistTimer.current);
+      discountPersistTimer.current = setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/offers/${offerId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ discountPercent: nextDiscountPercent }),
+          });
+          if (!response.ok) return;
+          const payload = await response.json();
+          // Merge server-side fields (updatedAt, updatedBy, ...) but keep the latest user input.
+          setState((current) => {
+            if (current.kind !== "ready") return current;
+            return {
+              kind: "ready",
+              offer: { ...payload.offer, discountPercent: current.offer.discountPercent },
+            };
+          });
+        } catch {
+          // ignore — input remains optimistic; a later edit will retry the PATCH.
+        }
+      }, 500);
+    },
+    [offerId],
+  );
 
   useEffect(() => {
     if (!assistantOpen || rightPanel !== "chat" || !pendingChatMessage.current) return;
@@ -237,7 +241,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     const response = await fetch(`/api/offers/${offerId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" })
+      body: JSON.stringify({ status: "draft" }),
     });
 
     if (!response.ok) return;
@@ -285,7 +289,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               "h-7 flex-1 rounded-md",
               rightPanel === "chat"
                 ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
-                : "text-muted-foreground"
+                : "text-muted-foreground",
             )}
             onClick={() => setRightPanel("chat")}
           >
@@ -299,7 +303,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               "h-7 flex-1 rounded-md",
               rightPanel === "revisions"
                 ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
-                : "text-muted-foreground"
+                : "text-muted-foreground",
             )}
             onClick={() => setRightPanel("revisions")}
           >
@@ -361,10 +365,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
               </div>
             </ResizablePanel>
 
-            <ResizableHandle
-              withHandle
-              aria-label={tReview("resizeLabel")}
-            />
+            <ResizableHandle withHandle aria-label={tReview("resizeLabel")} />
 
             <ResizablePanel
               id="offer-assistant-panel"

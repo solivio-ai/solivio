@@ -17,7 +17,7 @@ export async function GET(_request: Request, context: RouteContext) {
   if (!revision) {
     return NextResponse.json(
       { error: { code: "revision_not_found", message: `Revision '${revisionId}' was not found.` } },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

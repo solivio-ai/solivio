@@ -20,10 +20,10 @@ export function formatVatRate(rate: number): string {
 }
 
 export function formatPercent(value: number): string {
-  return new Intl.NumberFormat("pl-PL", {
+  return `${new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(value) + "%";
+  }).format(value)}%`;
 }
 
 export function formatDate(isoDate: string): string {

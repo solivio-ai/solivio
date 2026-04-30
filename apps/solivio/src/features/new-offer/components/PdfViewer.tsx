@@ -1,10 +1,11 @@
 "use client";
 
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,10 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
   }
 
   return (
-    <div className="flex h-full flex-col items-center overflow-auto bg-muted/40 [scrollbar-gutter:stable] [scrollbar-width:thin]">
+    <section
+      className="flex h-full flex-col items-center overflow-auto bg-muted/40 [scrollbar-gutter:stable] [scrollbar-width:thin]"
+      aria-label={title}
+    >
       <div className="sticky top-0 z-10 flex w-full items-center justify-between border-b bg-card px-3 py-1.5 shadow-sm">
         <div className="flex items-center gap-1">
           <Button
@@ -105,6 +109,6 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           />
         </Document>
       </div>
-    </div>
+    </section>
   );
 }

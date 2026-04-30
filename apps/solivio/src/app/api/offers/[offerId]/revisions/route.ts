@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuth } from "@/server/auth/session";
-import { saveRevision, listRevisions } from "@/server/offers/offerRevisionService";
+import { listRevisions, saveRevision } from "@/server/offers/offerRevisionService";
 
 export const runtime = "nodejs";
 
@@ -17,7 +17,7 @@ export async function POST(_request: Request, context: RouteContext) {
   if (!revision) {
     return NextResponse.json(
       { error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` } },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-import { NewOfferForm } from "@/features/new-offer";
 import { AppPage } from "@/components/AppPage";
 import { Button } from "@/components/ui/button";
+import { NewOfferForm } from "@/features/new-offer";
 
 export async function generateMetadata() {
   const t = await getTranslations("NewOffer.page");

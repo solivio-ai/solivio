@@ -3,10 +3,7 @@ import "server-only";
 import { createTool } from "@voltagent/core";
 import { z } from "zod";
 
-import {
-  searchProductsByPrompt,
-  searchProductsBatch,
-} from "../products/productSearchService";
+import { searchProductsBatch, searchProductsByPrompt } from "../products/productSearchService";
 import {
   addProductToOffer,
   bulkAddProductsToOffer,
@@ -47,10 +44,7 @@ export const offerLineItemTools = [
     description:
       "Add a product to an offer by its exact UUID. Only call this after you have resolved the product ID — use search_products first if the user gave a name or description instead of an ID.",
     parameters: z.object({
-      offerId: z
-        .string()
-        .uuid()
-        .describe("ID of the offer to add the product to"),
+      offerId: z.string().uuid().describe("ID of the offer to add the product to"),
       productId: z.string().uuid().describe("ID of the product to add"),
       quantity: z.number().int().positive().describe("Number of units to add"),
       requestItem: z
@@ -83,19 +77,9 @@ export const offerLineItemTools = [
     description:
       "Update the quantity of a specific line item in an offer. Use this when the user asks to change how many units of a product are in the offer.",
     parameters: z.object({
-      offerId: z
-        .string()
-        .uuid()
-        .describe("ID of the offer containing the line item"),
-      offerProductId: z
-        .string()
-        .uuid()
-        .describe("ID of the line item to update"),
-      quantity: z
-        .number()
-        .int()
-        .positive()
-        .describe("New quantity for the line item"),
+      offerId: z.string().uuid().describe("ID of the offer containing the line item"),
+      offerProductId: z.string().uuid().describe("ID of the line item to update"),
+      quantity: z.number().int().positive().describe("New quantity for the line item"),
     }),
     execute: async (input) => {
       const offer = await updateOfferLineItem(input.offerProductId, input.offerId, input.quantity);
@@ -110,20 +94,11 @@ export const offerLineItemTools = [
     description:
       "Remove a product line item from an offer. Use this when the user asks to remove or delete a product from the offer.",
     parameters: z.object({
-      offerId: z
-        .string()
-        .uuid()
-        .describe("ID of the offer to remove the line item from"),
-      offerProductId: z
-        .string()
-        .uuid()
-        .describe("ID of the line item to remove"),
+      offerId: z.string().uuid().describe("ID of the offer to remove the line item from"),
+      offerProductId: z.string().uuid().describe("ID of the line item to remove"),
     }),
     execute: async (input) => {
-      const removed = await removeOfferLineItem(
-        input.offerProductId,
-        input.offerId,
-      );
+      const removed = await removeOfferLineItem(input.offerProductId, input.offerId);
       if (removed === "locked") return { error: "offer_locked" };
       if (!removed) return { error: "not_found" };
       return { success: true };
@@ -158,9 +133,7 @@ export const offerLineItemTools = [
         return { requirement, matches, hasMatch: matches.length > 0 };
       });
 
-      const unmatchedRequirements = proposals
-        .filter((p) => !p.hasMatch)
-        .map((p) => p.requirement);
+      const unmatchedRequirements = proposals.filter((p) => !p.hasMatch).map((p) => p.requirement);
 
       return { proposals, unmatchedRequirements };
     },
@@ -171,10 +144,7 @@ export const offerLineItemTools = [
     description:
       "Add multiple products to an offer in a single call. Use this after propose_products_for_requirements when the user confirms which products to add, or when adding several products at once from resolved product UUIDs.",
     parameters: z.object({
-      offerId: z
-        .string()
-        .uuid()
-        .describe("ID of the offer to add the products to"),
+      offerId: z.string().uuid().describe("ID of the offer to add the products to"),
       items: z
         .array(
           z.object({

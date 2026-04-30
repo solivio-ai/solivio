@@ -1,16 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
-import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
+import type { ProductSearchMatch } from "@/features/product-search";
+import { ProductSearchDialog } from "@/features/product-search";
+
 import { OfferBuilderActionBar, OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
 import { OfferSummary } from "./OfferSummary";
-import { OfferValidationDialog, type ValidationResult } from "./OfferValidationDialog";
+import type { ValidationResult } from "./OfferValidationDialog";
+import { OfferValidationDialog } from "./OfferValidationDialog";
 import type { DraftLine, SaveState } from "./offer-builder-types";
 
 type OfferBuilderProps = {
@@ -60,8 +63,8 @@ function toUpdateItems(lines: DraftLine[]) {
       description: line.description,
       manufacturer: line.manufacturer,
       availability: line.availability,
-      source: line.source ?? ("database" as const)
-    }
+      source: line.source ?? ("database" as const),
+    },
   }));
 }
 
@@ -110,12 +113,10 @@ export function OfferBuilder({
   }, [offer]);
 
   const currency = lines[0]?.currency ?? "PLN";
-  const searchQuantities = Object.fromEntries(
-    lines.map((line) => [line.productId, line.quantity])
-  );
+  const searchQuantities = Object.fromEntries(lines.map((line) => [line.productId, line.quantity]));
   const subtotal = useMemo(
     () => lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0),
-    [lines]
+    [lines],
   );
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
@@ -164,8 +165,8 @@ export function OfferBuilder({
               ...line,
               quantity: Math.max(1, Math.trunc(nextQuantity || 1)),
             }
-          : line
-      )
+          : line,
+      ),
     );
   }
 
@@ -212,9 +213,7 @@ export function OfferBuilder({
   async function persistQuantity(line: DraftLine, nextQuantity: number) {
     const quantity = Math.max(1, Math.trunc(nextQuantity || 1));
     const nextLines = lines.map((currentLine) =>
-      currentLine.productId === line.productId
-        ? { ...currentLine, quantity }
-        : currentLine
+      currentLine.productId === line.productId ? { ...currentLine, quantity } : currentLine,
     );
 
     setLines(nextLines);
@@ -230,7 +229,7 @@ export function OfferBuilder({
       const response = await fetch(`/api/offers/${offer.id}/products/${line.offerProductId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity })
+        body: JSON.stringify({ quantity }),
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
@@ -265,7 +264,7 @@ export function OfferBuilder({
       }
 
       const response = await fetch(`/api/offers/${offer.id}/products/${line.offerProductId}`, {
-        method: "DELETE"
+        method: "DELETE",
       });
 
       if (!response.ok) {
@@ -322,8 +321,8 @@ export function OfferBuilder({
         body: JSON.stringify({
           productId: product.id,
           quantity,
-          requestItem: tBuilder("manuallyAdded")
-        })
+          requestItem: tBuilder("manuallyAdded"),
+        }),
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
@@ -344,7 +343,7 @@ export function OfferBuilder({
       const response = await fetch(`/api/offers/${offer.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ unmatched: nextUnmatched })
+        body: JSON.stringify({ unmatched: nextUnmatched }),
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
@@ -365,8 +364,8 @@ export function OfferBuilder({
         body: JSON.stringify({
           status: nextStatus,
           unmatched,
-          items: toUpdateItems(nextLines)
-        })
+          items: toUpdateItems(nextLines),
+        }),
       });
 
       const nextOffer = await parseOfferResponse(response);
@@ -481,7 +480,9 @@ export function OfferBuilder({
       {validationResult && (
         <OfferValidationDialog
           open
-          onOpenChange={(open) => { if (!open) setValidationResult(null); }}
+          onOpenChange={(open) => {
+            if (!open) setValidationResult(null);
+          }}
           result={validationResult}
           onAccept={() => updateStatus("accepted")}
           onSendToChat={onSendToChat}

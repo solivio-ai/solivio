@@ -9,10 +9,10 @@ function sectionSidebarPlugin() {
       "config:setup"({ addRouteMiddleware }) {
         addRouteMiddleware({
           entrypoint: "./src/starlightRouteData.ts",
-          order: "post"
+          order: "post",
         });
-      }
-    }
+      },
+    },
   };
 }
 
@@ -21,23 +21,24 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Solivio",
-      description: "Docs for the open-source AI system that transforms how B2B companies create offers.",
+      description:
+        "Docs for the open-source AI system that transforms how B2B companies create offers.",
       logo: {
         light: "./src/assets/solivio-logo.png",
         dark: "./src/assets/solivio-logo-dark.png",
         alt: "Solivio",
-        replacesTitle: true
+        replacesTitle: true,
       },
       favicon: "/favicon.png",
       customCss: ["./src/styles/solivio.css"],
       head: [
         { tag: "link", attrs: { rel: "apple-touch-icon", href: "/favicon.png" } },
-        { tag: "meta", attrs: { name: "theme-color", content: "#ffffff" } }
+        { tag: "meta", attrs: { name: "theme-color", content: "#ffffff" } },
       ],
       components: {
         Header: "./src/components/Header.astro",
         ThemeProvider: "./src/components/ThemeProvider.astro",
-        ThemeSelect: "./src/components/ThemeSelect.astro"
+        ThemeSelect: "./src/components/ThemeSelect.astro",
       },
       plugins: [
         starlightOpenAPI([
@@ -49,15 +50,15 @@ export default defineConfig({
               operations: {
                 badges: true,
                 labels: "summary",
-                sort: "document"
+                sort: "document",
               },
               tags: {
-                sort: "document"
-              }
-            }
-          }
+                sort: "document",
+              },
+            },
+          },
         ]),
-        sectionSidebarPlugin()
+        sectionSidebarPlugin(),
       ],
       sidebar: [
         {
@@ -66,17 +67,15 @@ export default defineConfig({
             { label: "Overview", link: "/guides/" },
             { label: "Getting started", link: "/guides/getting-started/" },
             { label: "Deployment", link: "/guides/deployment/" },
-            { label: "Feature walkthrough", link: "/guides/features/" }
-          ]
+            { label: "Feature walkthrough", link: "/guides/features/" },
+          ],
         },
         {
           label: "Development",
-          items: [
-            { label: "API contract", link: "/dev/api-contract/" }
-          ]
+          items: [{ label: "API contract", link: "/dev/api-contract/" }],
         },
-        ...openAPISidebarGroups
-      ]
-    })
-  ]
+        ...openAPISidebarGroups,
+      ],
+    }),
+  ],
 });

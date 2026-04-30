@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 
 import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import {
-  getOfferChatMessages,
-  getOfferChatThread
-} from "@/server/offer-chat/offerChatService";
+import { getOfferChatMessages, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 
 export const runtime = "nodejs";
 
@@ -28,10 +25,10 @@ export async function GET(_request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "chat_thread_not_found",
-          message: `Chat thread '${threadId}' was not found for offer '${offerId}'.`
-        }
+          message: `Chat thread '${threadId}' was not found for offer '${offerId}'.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 

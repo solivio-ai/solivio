@@ -3,13 +3,13 @@ import { NextResponse } from "next/server";
 import {
   errorResponseSchema,
   offerResponseSchema,
-  updateOfferLineItemRequestSchema
+  updateOfferLineItemRequestSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import {
   removeOfferLineItem,
   toOfferDomain,
-  updateOfferLineItem
+  updateOfferLineItem,
 } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
@@ -23,9 +23,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (auth.response) return auth.response;
 
   const { offerId, offerProductId } = await context.params;
-  const parsed = updateOfferLineItemRequestSchema.safeParse(
-    await request.json().catch(() => ({}))
-  );
+  const parsed = updateOfferLineItemRequestSchema.safeParse(await request.json().catch(() => ({})));
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -33,24 +31,29 @@ export async function PATCH(request: Request, context: RouteContext) {
         error: {
           code: "invalid_request",
           message: "Request body is invalid.",
-          issues: parsed.error.issues.map((i) => i.message)
-        }
+          issues: parsed.error.issues.map((i) => i.message),
+        },
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const offer = await updateOfferLineItem(offerProductId, offerId, parsed.data.quantity, auth.session.user.id);
+  const offer = await updateOfferLineItem(
+    offerProductId,
+    offerId,
+    parsed.data.quantity,
+    auth.session.user.id,
+  );
 
   if (offer === "locked") {
     return NextResponse.json(
       errorResponseSchema.parse({
         error: {
           code: "offer_locked",
-          message: "This offer has been accepted and cannot be modified."
-        }
+          message: "This offer has been accepted and cannot be modified.",
+        },
       }),
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -59,10 +62,10 @@ export async function PATCH(request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "not_found",
-          message: "Offer or line item was not found."
-        }
+          message: "Offer or line item was not found.",
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -81,10 +84,10 @@ export async function DELETE(_request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "offer_locked",
-          message: "This offer has been accepted and cannot be modified."
-        }
+          message: "This offer has been accepted and cannot be modified.",
+        },
       }),
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -93,10 +96,10 @@ export async function DELETE(_request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "not_found",
-          message: "Offer or line item was not found."
-        }
+          message: "Offer or line item was not found.",
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 

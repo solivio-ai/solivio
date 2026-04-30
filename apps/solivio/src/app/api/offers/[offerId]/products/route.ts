@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import {
   addOfferProductRequestSchema,
   errorResponseSchema,
-  offerResponseSchema
+  offerResponseSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { addProductToOffer, toOfferDomain } from "@/server/offers/offerService";
@@ -19,9 +19,7 @@ export async function POST(request: Request, context: RouteContext) {
   if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
-  const parsed = addOfferProductRequestSchema.safeParse(
-    await request.json().catch(() => ({}))
-  );
+  const parsed = addOfferProductRequestSchema.safeParse(await request.json().catch(() => ({})));
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -29,25 +27,31 @@ export async function POST(request: Request, context: RouteContext) {
         error: {
           code: "invalid_request",
           message: "Request body is invalid.",
-          issues: parsed.error.issues.map((i) => i.message)
-        }
+          issues: parsed.error.issues.map((i) => i.message),
+        },
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const { productId, quantity, requestItem } = parsed.data;
-  const offer = await addProductToOffer(offerId, productId, quantity, requestItem, auth.session.user.id);
+  const offer = await addProductToOffer(
+    offerId,
+    productId,
+    quantity,
+    requestItem,
+    auth.session.user.id,
+  );
 
   if (offer === null) {
     return NextResponse.json(
       errorResponseSchema.parse({
         error: {
           code: "offer_not_found",
-          message: `Offer '${offerId}' was not found.`
-        }
+          message: `Offer '${offerId}' was not found.`,
+        },
       }),
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -56,10 +60,10 @@ export async function POST(request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "offer_locked",
-          message: "This offer has been accepted and cannot be modified."
-        }
+          message: "This offer has been accepted and cannot be modified.",
+        },
       }),
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -68,15 +72,15 @@ export async function POST(request: Request, context: RouteContext) {
       errorResponseSchema.parse({
         error: {
           code: "duplicate_product",
-          message: "This product is already in the offer. Use the update endpoint to change its quantity."
-        }
+          message:
+            "This product is already in the offer. Use the update endpoint to change its quantity.",
+        },
       }),
-      { status: 409 }
+      { status: 409 },
     );
   }
 
-  return NextResponse.json(
-    offerResponseSchema.parse({ offer: toOfferDomain(offer) }),
-    { status: 201 }
-  );
+  return NextResponse.json(offerResponseSchema.parse({ offer: toOfferDomain(offer) }), {
+    status: 201,
+  });
 }

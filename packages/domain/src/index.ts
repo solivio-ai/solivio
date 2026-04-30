@@ -119,36 +119,36 @@ export const workflowSteps: WorkflowStep[] = [
     title: "Customer request",
     owner: "customer",
     status: "mocked",
-    description: "Raw request text is captured in the system."
+    description: "Raw request text is captured in the system.",
   },
   {
     id: "requirement-extraction",
     title: "Requirement extraction",
     owner: "system",
     status: "mocked",
-    description: "The request is reduced to needs, constraints, and missing details."
+    description: "The request is reduced to needs, constraints, and missing details.",
   },
   {
     id: "product-matching",
     title: "Product matching",
     owner: "system",
     status: "planned",
-    description: "Products are ranked by fit, availability, and replacement options."
+    description: "Products are ranked by fit, availability, and replacement options.",
   },
   {
     id: "offer-generation",
     title: "Draft offer",
     owner: "system",
     status: "mocked",
-    description: "A draft offer is generated from the matched products."
+    description: "A draft offer is generated from the matched products.",
   },
   {
     id: "sales-review",
     title: "Sales review",
     owner: "sales",
     status: "planned",
-    description: "A salesperson edits, validates, and accepts the final offer."
-  }
+    description: "A salesperson edits, validates, and accepts the final offer.",
+  },
 ];
 
 export const demoProducts: Product[] = [
@@ -160,7 +160,7 @@ export const demoProducts: Product[] = [
     priceNet: 510,
     currency: "PLN",
     tags: ["solar", "panel", "roof", "energy"],
-    summary: "High-efficiency roof panel for small commercial installations."
+    summary: "High-efficiency roof panel for small commercial installations.",
   },
   {
     id: "hybrid-inverter-8kw",
@@ -170,7 +170,7 @@ export const demoProducts: Product[] = [
     priceNet: 6800,
     currency: "PLN",
     tags: ["inverter", "hybrid", "storage", "energy"],
-    summary: "Hybrid inverter prepared for battery storage and grid fallback."
+    summary: "Hybrid inverter prepared for battery storage and grid fallback.",
   },
   {
     id: "battery-storage-12kwh",
@@ -180,7 +180,7 @@ export const demoProducts: Product[] = [
     priceNet: 14800,
     currency: "PLN",
     tags: ["battery", "storage", "backup", "energy"],
-    summary: "Modular storage unit for load shifting and backup scenarios."
+    summary: "Modular storage unit for load shifting and backup scenarios.",
   },
   {
     id: "energy-monitor-pro",
@@ -190,8 +190,8 @@ export const demoProducts: Product[] = [
     priceNet: 1250,
     currency: "PLN",
     tags: ["monitoring", "metering", "dashboard", "energy"],
-    summary: "Metering and reporting module for customer-facing energy dashboards."
-  }
+    summary: "Metering and reporting module for customer-facing energy dashboards.",
+  },
 ];
 
 export const demoRequest: CustomerRequest = {
@@ -203,8 +203,8 @@ export const demoRequest: CustomerRequest = {
     "small commercial installation",
     "photovoltaic panels",
     "battery storage",
-    "energy monitoring"
-  ]
+    "energy monitoring",
+  ],
 };
 
 export const demoOffer: Offer = {
@@ -230,8 +230,8 @@ export const demoOffer: Offer = {
         availability: demoProducts[0].availability,
         priceNet: demoProducts[0].priceNet,
         currency: demoProducts[0].currency,
-        source: "demo"
-      }
+        source: "demo",
+      },
     },
     {
       productId: "hybrid-inverter-8kw",
@@ -246,8 +246,8 @@ export const demoOffer: Offer = {
         availability: demoProducts[1].availability,
         priceNet: demoProducts[1].priceNet,
         currency: demoProducts[1].currency,
-        source: "demo"
-      }
+        source: "demo",
+      },
     },
     {
       productId: "battery-storage-12kwh",
@@ -262,8 +262,8 @@ export const demoOffer: Offer = {
         availability: demoProducts[2].availability,
         priceNet: demoProducts[2].priceNet,
         currency: demoProducts[2].currency,
-        source: "demo"
-      }
+        source: "demo",
+      },
     },
     {
       productId: "energy-monitor-pro",
@@ -278,12 +278,12 @@ export const demoOffer: Offer = {
         availability: demoProducts[3].availability,
         priceNet: demoProducts[3].priceNet,
         currency: demoProducts[3].currency,
-        source: "demo"
-      }
-    }
+        source: "demo",
+      },
+    },
   ],
   notes: [
     "Availability must be checked before the offer is sent.",
-    "Sales review should confirm roof size, installation region, and final quantities."
-  ]
+    "Sales review should confirm roof size, installation region, and final quantities.",
+  ],
 };

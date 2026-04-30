@@ -1,15 +1,10 @@
 "use client";
 
 import { Languages } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { defaultLocale, isLocale, localeCookieName, locales } from "@/i18n/locales";
 import { cn } from "@/lib/utils";
@@ -48,7 +43,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
               className={cn(
                 "w-full",
                 "group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:px-0",
-                "group-data-[collapsible=icon]:[&>svg:last-child]:hidden"
+                "group-data-[collapsible=icon]:[&>svg:last-child]:hidden",
               )}
               aria-label={t("label")}
             >
@@ -60,7 +55,12 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
           </TooltipTrigger>
           <TooltipContent side="right">{activeLanguageLabel}</TooltipContent>
         </Tooltip>
-        <SelectContent position="popper" side="top" align="start" className="min-w-(--radix-select-trigger-width)">
+        <SelectContent
+          position="popper"
+          side="top"
+          align="start"
+          className="min-w-(--radix-select-trigger-width)"
+        >
           {locales.map((locale) => (
             <SelectItem key={locale} value={locale}>
               {t(`languages.${locale}`)}

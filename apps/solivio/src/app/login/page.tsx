@@ -2,11 +2,12 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { LoginForm } from "./login-form";
 import { SolivioLogo } from "@/components/SolivioLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { authFlags } from "@/server/auth/auth";
 import { getCurrentSession } from "@/server/auth/session";
+
+import { LoginForm } from "./login-form";
 
 type LoginPageProps = {
   searchParams?: Promise<{
@@ -40,9 +41,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             className="h-10 w-auto object-contain"
             priority
           />
-          <span className="text-sm leading-tight text-muted-foreground">
-            {t("tagline")}
-          </span>
+          <span className="text-sm leading-tight text-muted-foreground">{t("tagline")}</span>
         </div>
         <LoginForm
           initialMode={initialMode}

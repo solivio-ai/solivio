@@ -1,13 +1,14 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import { cookies } from "next/headers";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
+
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -42,19 +43,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const [locale, cookieStore] = await Promise.all([
-    getLocale(),
-    cookies(),
-  ]);
+  const [locale, cookieStore] = await Promise.all([getLocale(), cookies()]);
   const theme = cookieStore.get("solivio-theme")?.value === "dark" ? "dark" : "light";
 
   return (
-    <html lang={locale} className={cn(theme === "dark" && "dark", inter.variable)} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={cn(theme === "dark" && "dark", inter.variable)}
+      suppressHydrationWarning
+    >
       <body>
         <NextIntlClientProvider>
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </NextIntlClientProvider>
       </body>
     </html>

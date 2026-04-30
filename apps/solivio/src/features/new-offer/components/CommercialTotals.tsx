@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
+
 import { Input } from "@/components/ui/input";
+
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 
@@ -22,7 +24,7 @@ export function CommercialTotals({
   total,
   isLocked,
 }: CommercialTotalsProps) {
-   const tCommercial = useTranslations("NewOffer.review.commercial");
+  const tCommercial = useTranslations("NewOffer.review.commercial");
   return (
     <section className="grid min-w-0 content-start gap-3 rounded-lg border border-foreground/15 bg-background/60 p-3">
       <h2 className="text-sm font-medium">{tCommercial("title")}</h2>

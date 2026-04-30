@@ -3,9 +3,10 @@ import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { CommercialTotals } from "./CommercialTotals";
-import { ValidationRow } from "./ValidationRow";
 import type { DraftLine } from "./offer-builder-types";
+import { ValidationRow } from "./ValidationRow";
 
 type OfferSummaryProps = {
   currency: DraftLine["currency"];
@@ -34,7 +35,7 @@ export function OfferSummary({
   total,
   unpricedLineCount,
 }: OfferSummaryProps) {
-   const tSummary = useTranslations("NewOffer.review.summary");
+  const tSummary = useTranslations("NewOffer.review.summary");
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
@@ -47,7 +48,9 @@ export function OfferSummary({
         <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
             <h2 className="text-sm font-medium">{tSummary("customerRequest")}</h2>
-            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{requestText}</div>
+            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+              {requestText}
+            </div>
           </section>
 
           <section className="grid gap-3">
@@ -77,8 +80,15 @@ export function OfferSummary({
               <h2 className="text-sm font-medium">{tSummary("notes")}</h2>
               <div className="grid gap-2">
                 {notes.map((note) => (
-                  <div key={note} className="flex gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed">
-                    <AlertTriangle size={15} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
+                  <div
+                    key={note}
+                    className="flex gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed"
+                  >
+                    <AlertTriangle
+                      size={15}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-primary"
+                    />
                     <span>{note}</span>
                   </div>
                 ))}

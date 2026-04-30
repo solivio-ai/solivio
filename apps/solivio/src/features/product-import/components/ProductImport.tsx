@@ -1,15 +1,17 @@
 "use client";
 
-import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
   Database,
   FileSpreadsheet,
   RotateCcw,
-  Upload
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ChangeEvent, ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import type { ProductImportRow } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +23,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Table,
@@ -29,14 +31,15 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
+
+import type { CsvParseResult } from "../lib/parseProductCsv";
 import {
   extractProductRows,
   getMissingColumns,
   parseCsv,
   resolveColumnMap,
-  type CsvParseResult
 } from "../lib/parseProductCsv";
 
 type EmbeddingModel = {
@@ -77,12 +80,12 @@ export function ProductImport() {
 
   const columnMap = useMemo(
     () => (parseResult ? resolveColumnMap(parseResult.headers) : {}),
-    [parseResult]
+    [parseResult],
   );
 
   const productRows: ProductImportRow[] = useMemo(
     () => (parseResult ? extractProductRows(parseResult.rows, columnMap) : []),
-    [parseResult, columnMap]
+    [parseResult, columnMap],
   );
 
   const missingColumns = useMemo(() => getMissingColumns(columnMap), [columnMap]);
@@ -133,7 +136,7 @@ export function ProductImport() {
         const response = await fetch("/api/products/import", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ products: chunk, model: selectedModel })
+          body: JSON.stringify({ products: chunk, model: selectedModel }),
         });
         const payload = await response.json().catch(() => null);
         if (!response.ok) {
@@ -144,7 +147,7 @@ export function ProductImport() {
           kind: "error",
           message: err instanceof Error ? err.message : t("previewCard.importError"),
           processed,
-          total
+          total,
         });
         return;
       }
@@ -173,7 +176,9 @@ export function ProductImport() {
               className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-4 py-4 text-center transition-colors hover:bg-muted/40"
             >
               <FileSpreadsheet size={24} aria-hidden="true" className="text-primary" />
-              <span className="text-base font-semibold">{fileName ?? t("uploadCard.chooseFile")}</span>
+              <span className="text-base font-semibold">
+                {fileName ?? t("uploadCard.chooseFile")}
+              </span>
               <span className="text-sm text-muted-foreground">
                 {fileName ? t("uploadCard.pickAnother") : t("uploadCard.dropOne")}
               </span>
@@ -213,82 +218,96 @@ export function ProductImport() {
           <CardContent className="grid gap-3">
             {missingColumns.length > 0 ? (
               <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-                {t("previewCard.missingColumns", { count: missingColumns.length, columns: missingColumns.join(", ") })}
+                {t("previewCard.missingColumns", {
+                  count: missingColumns.length,
+                  columns: missingColumns.join(", "),
+                })}
               </StatusNotice>
             ) : (
               <>
-              <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
-                {models.length > 0 ? (
-                  <Select
-                    value={selectedModel}
-                    onValueChange={(value) => {
-                      setSelectedModel(value);
-                      setStatus({ kind: "idle" });
-                    }}
-                    disabled={status.kind === "saving"}
+                <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
+                  {models.length > 0 ? (
+                    <Select
+                      value={selectedModel}
+                      onValueChange={(value) => {
+                        setSelectedModel(value);
+                        setStatus({ kind: "idle" });
+                      }}
+                      disabled={status.kind === "saving"}
+                    >
+                      <SelectTrigger
+                        className="w-full sm:w-[280px]"
+                        aria-label={t("previewCard.modelLabel")}
+                      >
+                        <SelectValue placeholder={t("previewCard.modelPlaceholder")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {models.map((model) => (
+                          <SelectItem key={model.id} value={model.id}>
+                            {model.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="outline">{t("previewCard.modelsUnavailable")}</Badge>
+                  )}
+
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleImport}
+                    disabled={
+                      status.kind === "saving" || productRows.length === 0 || !selectedModel
+                    }
                   >
-                    <SelectTrigger className="w-full sm:w-[280px]" aria-label={t("previewCard.modelLabel")}>
-                      <SelectValue placeholder={t("previewCard.modelPlaceholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          {model.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Badge variant="outline">{t("previewCard.modelsUnavailable")}</Badge>
-                )}
-
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleImport}
-                  disabled={status.kind === "saving" || productRows.length === 0 || !selectedModel}
-                >
-                  <Upload size={16} aria-hidden="true" />
-                  {status.kind === "saving"
-                    ? t("previewCard.importAction.embeddingProgress", {
-                        processed: status.processed,
-                        total: status.total
-                      })
-                    : t("previewCard.importAction.saveCount", { count: productRows.length })}
-                </Button>
-
-                {status.kind === "done" ? (
-                  <StatusNotice tone="success" icon={<CheckCircle2 size={16} aria-hidden="true" />}>
-                    {t("previewCard.importDone", { count: status.count })}
-                  </StatusNotice>
-                ) : null}
-                {status.kind === "error" ? (
-                  <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-                    {status.processed > 0
-                      ? t("previewCard.importPartialError", {
+                    <Upload size={16} aria-hidden="true" />
+                    {status.kind === "saving"
+                      ? t("previewCard.importAction.embeddingProgress", {
                           processed: status.processed,
                           total: status.total,
-                          message: status.message
                         })
-                      : status.message}
-                  </StatusNotice>
-                ) : null}
-              </div>
+                      : t("previewCard.importAction.saveCount", { count: productRows.length })}
+                  </Button>
 
-              {status.kind === "saving" ? (
-                <div className="grid gap-1.5">
-                  <Progress
-                    value={status.total > 0 ? (status.processed / status.total) * 100 : 0}
-                    aria-label={t("previewCard.progressLabel")}
-                  />
-                  <p className="text-xs text-muted-foreground" role="status" aria-live="polite">
-                    {t("previewCard.progressText", {
-                      processed: status.processed,
-                      total: status.total
-                    })}
-                  </p>
+                  {status.kind === "done" ? (
+                    <StatusNotice
+                      tone="success"
+                      icon={<CheckCircle2 size={16} aria-hidden="true" />}
+                    >
+                      {t("previewCard.importDone", { count: status.count })}
+                    </StatusNotice>
+                  ) : null}
+                  {status.kind === "error" ? (
+                    <StatusNotice
+                      tone="error"
+                      icon={<AlertTriangle size={16} aria-hidden="true" />}
+                    >
+                      {status.processed > 0
+                        ? t("previewCard.importPartialError", {
+                            processed: status.processed,
+                            total: status.total,
+                            message: status.message,
+                          })
+                        : status.message}
+                    </StatusNotice>
+                  ) : null}
                 </div>
-              ) : null}
+
+                {status.kind === "saving" ? (
+                  <div className="grid gap-1.5">
+                    <Progress
+                      value={status.total > 0 ? (status.processed / status.total) * 100 : 0}
+                      aria-label={t("previewCard.progressLabel")}
+                    />
+                    <p className="text-xs text-muted-foreground" role="status" aria-live="polite">
+                      {t("previewCard.progressText", {
+                        processed: status.processed,
+                        total: status.total,
+                      })}
+                    </p>
+                  </div>
+                ) : null}
               </>
             )}
 
@@ -306,7 +325,10 @@ export function ProductImport() {
                     {parseResult.rows.slice(0, 50).map((row, i) => (
                       <TableRow key={i}>
                         {parseResult.headers.map((header) => (
-                          <TableCell key={header} className="max-w-[320px] whitespace-normal text-muted-foreground">
+                          <TableCell
+                            key={header}
+                            className="max-w-[320px] whitespace-normal text-muted-foreground"
+                          >
                             {row[header]}
                           </TableCell>
                         ))}
@@ -332,7 +354,7 @@ export function ProductImport() {
 function StatusNotice({
   children,
   icon,
-  tone
+  tone,
 }: {
   children: ReactNode;
   icon: ReactNode;

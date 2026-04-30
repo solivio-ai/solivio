@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import type { SearchableField } from "@/features/product-search/searchableFields";
+import { ALL_SEARCHABLE_FIELDS } from "@/features/product-search/searchableFields";
 import { errorResponseSchema } from "@/server/api/contracts";
-import { ALL_SEARCHABLE_FIELDS, type SearchableField } from "@/features/product-search/searchableFields";
-import { searchProductsByText } from "@/server/products/productTextSearchService";
 import { requireAuth } from "@/server/auth/session";
+import { searchProductsByText } from "@/server/products/productTextSearchService";
 
 export const runtime = "nodejs";
 
@@ -28,7 +29,7 @@ const responseSchema = z
         name: z.string(),
         description: z.string(),
         manufacturer: z.string(),
-      })
+      }),
     ),
     totalCount: z.number().int().nonnegative(),
   })
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
         errorResponseSchema.parse({
           error: { code: "invalid_request", message: "Body must include a non-empty query." },
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       errorResponseSchema.parse({ error: { code: "text_search_failed", message } }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

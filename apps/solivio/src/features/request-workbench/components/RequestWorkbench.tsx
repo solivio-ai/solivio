@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const workflowStatusStyles = {
   mocked: "border-primary/35 bg-primary/10",
   planned: "border-secondary/70 bg-secondary/35",
-  ready: "border-chart-4/60 bg-chart-4/15"
+  ready: "border-chart-4/60 bg-chart-4/15",
 };
 
 export function RequestWorkbench() {
@@ -24,7 +24,7 @@ export function RequestWorkbench() {
               key={step.id}
               className={cn(
                 "grid min-h-[118px] grid-cols-[36px_1fr] items-start gap-3 rounded-lg border p-3",
-                workflowStatusStyles[step.status]
+                workflowStatusStyles[step.status],
               )}
             >
               <span className="inline-flex size-8 items-center justify-center rounded-lg bg-background text-xs font-bold text-primary ring-1 ring-border">
@@ -33,9 +33,13 @@ export function RequestWorkbench() {
               <div className="grid gap-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="text-base leading-tight font-semibold">{step.title}</h2>
-                  <Badge variant={step.status === "planned" ? "secondary" : "outline"}>{step.status}</Badge>
+                  <Badge variant={step.status === "planned" ? "secondary" : "outline"}>
+                    {step.status}
+                  </Badge>
                 </div>
-                <p className="mb-0 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+                <p className="mb-0 text-sm leading-relaxed text-muted-foreground">
+                  {step.description}
+                </p>
               </div>
             </article>
           ))}

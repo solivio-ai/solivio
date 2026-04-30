@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Clock, RotateCcw, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { OfferRevision } from "@solivio/domain";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +12,10 @@ type OfferRevisionTimelineProps = {
   onSelect: (revision: OfferRevision) => void;
 };
 
-function relativeTime(iso: string, t: (key: string, values?: any) => string): string {
+function relativeTime(
+  iso: string,
+  t: (key: string, values?: Record<string, string>) => string,
+): string {
   const diff = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 1) return t("justNow");

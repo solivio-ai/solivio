@@ -1,8 +1,8 @@
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
   BookOpen,
+  DollarSign,
   Factory,
   FileText,
   Gauge,
@@ -10,19 +10,13 @@ import {
   Mail,
   Package,
   Star,
-  type LucideIcon,
   Users,
-  DollarSign,
 } from "lucide-react";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type IntegrationConfig = {
@@ -64,7 +58,7 @@ export async function IntegrationsSection() {
             className={cn(
               active
                 ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20"
-                : "border-dashed bg-muted/30 opacity-70 transition-opacity hover:opacity-100"
+                : "border-dashed bg-muted/30 opacity-70 transition-opacity hover:opacity-100",
             )}
           >
             <CardHeader>
@@ -72,18 +66,14 @@ export async function IntegrationsSection() {
                 <div
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-md",
-                    active
-                      ? "bg-green-100 dark:bg-green-900/40"
-                      : "bg-muted"
+                    active ? "bg-green-100 dark:bg-green-900/40" : "bg-muted",
                   )}
                 >
                   <Icon
                     size={14}
                     aria-hidden="true"
                     className={
-                      active
-                        ? "text-green-700 dark:text-green-400"
-                        : "text-muted-foreground/70"
+                      active ? "text-green-700 dark:text-green-400" : "text-muted-foreground/70"
                     }
                   />
                 </div>
@@ -95,16 +85,18 @@ export async function IntegrationsSection() {
             </CardHeader>
 
             <CardFooter className="justify-between">
-              {active && <Badge
-                variant={active ? "outline" : "secondary"}
-                className={cn(
-                  active &&
-                    "border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900/40 dark:text-green-400"
-                )}
-              >
-                {t("integrations.badge.active")}
-              </Badge>}
-              {!active && (<div></div>)}
+              {active && (
+                <Badge
+                  variant={active ? "outline" : "secondary"}
+                  className={cn(
+                    active &&
+                      "border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900/40 dark:text-green-400",
+                  )}
+                >
+                  {t("integrations.badge.active")}
+                </Badge>
+              )}
+              {!active && <div></div>}
 
               {active && href ? (
                 <Link
@@ -113,10 +105,12 @@ export async function IntegrationsSection() {
                 >
                   {t("integrations.action.configure")}
                 </Link>
-              ) : ( !active &&
-                <span className="text-xs text-muted-foreground">
-                  {t("integrations.action.integrate")}
-                </span>
+              ) : (
+                !active && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("integrations.action.integrate")}
+                  </span>
+                )
               )}
             </CardFooter>
           </Card>

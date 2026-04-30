@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { KeyRound, LogOut, User } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import {
   DropdownMenu,
@@ -24,7 +24,13 @@ export function UserMenu() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const handleSignOut = () =>
-    signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/login"; } } });
+    signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = "/login";
+        },
+      },
+    });
 
   const displayName = session?.user.name || session?.user.email || "";
   const hasCredentials = !!session?.user;
@@ -53,7 +59,10 @@ export function UserMenu() {
               {t("changePassword")}
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+          <DropdownMenuItem
+            onClick={handleSignOut}
+            className="text-destructive focus:text-destructive"
+          >
             <LogOut size={14} aria-hidden="true" />
             {t("logOut")}
           </DropdownMenuItem>

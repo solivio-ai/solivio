@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -129,7 +129,12 @@ export function ChangePasswordDialog({ open, onOpenChange }: Props) {
           {success && <p className="text-sm text-emerald-600 dark:text-emerald-500">{success}</p>}
 
           <DialogFooter className="-mx-4 -mb-4 mt-2">
-            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isPending}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleOpenChange(false)}
+              disabled={isPending}
+            >
               {t("actions.cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>

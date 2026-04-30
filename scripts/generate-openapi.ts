@@ -2,16 +2,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  OpenAPIRegistry,
-  OpenApiGeneratorV31
-} from "@asteasolutions/zod-to-openapi";
+import { OpenAPIRegistry, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
 
-import {
-  apiContracts,
-  apiTags,
-  type ApiResponseContract
-} from "../apps/solivio/src/server/api/contracts";
+import type { ApiResponseContract } from "../apps/solivio/src/server/api/contracts";
+import { apiContracts, apiTags } from "../apps/solivio/src/server/api/contracts";
 
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputFile = path.join(rootDirectory, "apps/docs/public/openapi/solivio.json");
@@ -29,12 +23,12 @@ for (const contract of apiContracts) {
             required: contract.requestBody.required ?? true,
             content: {
               "application/json": {
-                schema: contract.requestBody.schema
-              }
-            }
-          }
+                schema: contract.requestBody.schema,
+              },
+            },
+          },
         }
-      : {})
+      : {}),
   };
 
   registry.registerPath({
@@ -46,12 +40,12 @@ for (const contract of apiContracts) {
     tags: contract.tags,
     ...(contract.requiresAuth ? { security: [{ sessionCookie: [] }] } : {}),
     ...(Object.keys(request).length > 0 ? { request } : {}),
-    responses: toOpenApiResponses(contract.responses)
+    responses: toOpenApiResponses(contract.responses),
   });
 }
 
 const generator = new OpenApiGeneratorV31(registry.definitions, {
-  sortComponents: "alphabetically"
+  sortComponents: "alphabetically",
 });
 
 const document = generator.generateDocument({
@@ -64,17 +58,17 @@ const document = generator.generateDocument({
     version: "0.1.0",
     license: {
       name: "MIT",
-      identifier: "MIT"
-    }
+      identifier: "MIT",
+    },
   },
   servers: [
     {
       url: "/",
-      description: "Solivio API origin"
-    }
+      description: "Solivio API origin",
+    },
   ],
   tags: [...apiTags],
-  security: []
+  security: [],
 });
 
 document.components = {
@@ -85,9 +79,9 @@ document.components = {
       type: "apiKey",
       in: "cookie",
       name: "better-auth.session_token",
-      description: "Better Auth session cookie. Secure deployments may use a prefixed cookie name."
-    }
-  }
+      description: "Better Auth session cookie. Secure deployments may use a prefixed cookie name.",
+    },
+  },
 };
 
 await mkdir(path.dirname(outputFile), { recursive: true });
@@ -105,22 +99,22 @@ function toOpenApiResponses(responses: Record<number, ApiResponseContract>) {
             content: Object.fromEntries(
               Object.entries(response.content).map(([mediaType, content]) => [
                 mediaType,
-                content.schema ? { schema: content.schema } : {}
-              ])
-            )
+                content.schema ? { schema: content.schema } : {},
+              ]),
+            ),
           }
         : response.schema
           ? {
               description: response.description,
               content: {
                 "application/json": {
-                  schema: response.schema
-                }
-              }
+                  schema: response.schema,
+                },
+              },
             }
           : {
-              description: response.description
-            }
-    ])
+              description: response.description,
+            },
+    ]),
   );
 }

@@ -43,7 +43,7 @@ export function calculateItemTotals(item: OfferItem): ItemTotals {
 
 export function calculateTotals(
   items: OfferItem[],
-  discountPercent: number = 0
+  discountPercent: number = 0,
 ): {
   itemsWithTotals: ItemWithTotals[];
   totals: OfferTotals;
@@ -64,9 +64,7 @@ export function calculateTotals(
   const discountFactor = new Decimal(discountPercent).div(100);
   const discountAmount = subtotalNet.mul(discountFactor).toDecimalPlaces(2);
   const totalNet = subtotalNet.sub(discountAmount).toDecimalPlaces(2);
-  const totalVat = subtotalVat
-    .mul(new Decimal(1).sub(discountFactor))
-    .toDecimalPlaces(2);
+  const totalVat = subtotalVat.mul(new Decimal(1).sub(discountFactor)).toDecimalPlaces(2);
   const totalGross = totalNet.add(totalVat).toDecimalPlaces(2);
 
   return {

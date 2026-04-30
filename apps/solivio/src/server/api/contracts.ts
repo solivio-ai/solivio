@@ -1,4 +1,5 @@
-import { z, type ZodObject, type ZodType } from "zod";
+import type { ZodObject, ZodType } from "zod";
+import { z } from "zod";
 
 import { pdfOfferRequestSchema } from "../../features/offer-pdf/lib/schema";
 
@@ -35,32 +36,32 @@ export type ApiContract = {
 export const apiTags = [
   {
     name: "Auth",
-    description: "Better Auth session and identity routes."
+    description: "Better Auth session and identity routes.",
   },
   {
     name: "System",
-    description: "Operational status and readiness checks."
+    description: "Operational status and readiness checks.",
   },
   {
     name: "Products",
-    description: "Product candidate data used by matching."
+    description: "Product candidate data used by matching.",
   },
   {
     name: "Requests",
-    description: "Customer request intake and requirement extraction."
+    description: "Customer request intake and requirement extraction.",
   },
   {
     name: "Offers",
-    description: "Draft offer generation boundaries."
+    description: "Draft offer generation boundaries.",
   },
   {
     name: "Chat",
-    description: "AI chat streams and persisted offer review conversations."
+    description: "AI chat streams and persisted offer review conversations.",
   },
   {
     name: "Documents",
-    description: "PDF offer rendering endpoints."
-  }
+    description: "PDF offer rendering endpoints.",
+  },
 ] as const;
 
 export const availabilitySchema = z
@@ -78,32 +79,36 @@ export const productSchema = z
     priceNet: z.number().nonnegative(),
     currency: currencySchema,
     tags: z.array(z.string()),
-    summary: z.string()
+    summary: z.string(),
   })
   .strict()
   .meta({
     id: "Product",
-    description: "A product candidate that can be matched into an offer."
+    description: "A product candidate that can be matched into an offer.",
   });
 
 export const productsResponseSchema = z
   .object({
-    products: z.array(productSchema)
+    products: z.array(productSchema),
   })
   .strict()
   .meta({ id: "ProductsResponse" });
 
 export const productSearchRequestSchema = z
   .object({
-    prompt: z.string().trim().min(1).meta({
-      examples: ["Need a battery-ready photovoltaic setup for a small office."]
-    }),
-    limit: z.number().int().positive().max(10).optional()
+    prompt: z
+      .string()
+      .trim()
+      .min(1)
+      .meta({
+        examples: ["Need a battery-ready photovoltaic setup for a small office."],
+      }),
+    limit: z.number().int().positive().max(10).optional(),
   })
   .strict()
   .meta({
     id: "ProductSearchRequest",
-    description: "Prompt used for semantic product matching."
+    description: "Prompt used for semantic product matching.",
   });
 
 export const productSearchMatchSchema = z
@@ -115,24 +120,24 @@ export const productSearchMatchSchema = z
     manufacturer: z.string(),
     nameSimilarity: z.number().min(-1).max(1),
     descriptionSimilarity: z.number().min(-1).max(1),
-    similarity: z.number().min(-1).max(1)
+    similarity: z.number().min(-1).max(1),
   })
   .strict()
   .meta({
     id: "ProductSearchMatch",
-    description: "A database product matched semantically against the prompt."
+    description: "A database product matched semantically against the prompt.",
   });
 
 export const productSearchResponseSchema = z
   .object({
     prompt: z.string(),
     answer: z.string(),
-    products: z.array(productSearchMatchSchema)
+    products: z.array(productSearchMatchSchema),
   })
   .strict()
   .meta({
     id: "ProductSearchResponse",
-    description: "Semantic product matches plus an agent summary."
+    description: "Semantic product matches plus an agent summary.",
   });
 
 export const customerRequestSourceSchema = z
@@ -145,28 +150,28 @@ export const customerRequestSchema = z
     customerName: z.string().meta({ examples: ["Demo customer"] }),
     source: customerRequestSourceSchema,
     text: z.string(),
-    requirements: z.array(z.string())
+    requirements: z.array(z.string()),
   })
   .strict()
   .meta({
     id: "CustomerRequest",
-    description: "Raw customer request text plus extracted requirements."
+    description: "Raw customer request text plus extracted requirements.",
   });
 
 export const createCustomerRequestRequestSchema = z
   .object({
     customerName: z.string().optional(),
-    customerText: z.string().optional()
+    customerText: z.string().optional(),
   })
   .strict()
   .meta({
     id: "CreateCustomerRequestRequest",
-    description: "Draft request input accepted by the mocked intake boundary."
+    description: "Draft request input accepted by the mocked intake boundary.",
   });
 
 export const customerRequestResponseSchema = z
   .object({
-    request: customerRequestSchema
+    request: customerRequestSchema,
   })
   .strict()
   .meta({ id: "CustomerRequestResponse" });
@@ -184,12 +189,12 @@ export const offerItemProductSchema = z
     priceNet: z.number().nonnegative().optional(),
     currency: currencySchema.optional(),
     matchScore: z.number().min(-1).max(1).optional(),
-    source: z.enum(["demo", "database", "semantic-search"])
+    source: z.enum(["demo", "database", "semantic-search"]),
   })
   .strict()
   .meta({
     id: "OfferItemProduct",
-    description: "Product snapshot used to render an offer line without frontend fixture lookup."
+    description: "Product snapshot used to render an offer line without frontend fixture lookup.",
   });
 
 export const offerItemSchema = z
@@ -204,44 +209,44 @@ export const offerItemSchema = z
     confidence: z.number().min(0).max(100).optional(),
     unitPriceNet: z.number().nonnegative().optional(),
     currency: currencySchema.optional(),
-    product: offerItemProductSchema.optional()
+    product: offerItemProductSchema.optional(),
   })
   .meta({
     id: "OfferItem",
-    description: "A product line item included in an offer."
+    description: "A product line item included in an offer.",
   });
 
 export const createOfferRequestSchema = z
   .object({
     customerName: z.string().optional(),
-    clientRequest: z.string().min(1)
+    clientRequest: z.string().min(1),
   })
   .strict()
   .meta({
     id: "CreateOfferRequest",
-    description: "Input accepted when generating a new draft offer."
+    description: "Input accepted when generating a new draft offer.",
   });
 
 export const addOfferProductRequestSchema = z
   .object({
     productId: z.string().uuid(),
     quantity: z.number().int().positive(),
-    requestItem: z.string().optional()
+    requestItem: z.string().optional(),
   })
   .strict()
   .meta({
     id: "AddOfferProductRequest",
-    description: "Product and quantity to add as a line item to an offer."
+    description: "Product and quantity to add as a line item to an offer.",
   });
 
 export const updateOfferLineItemRequestSchema = z
   .object({
-    quantity: z.number().int().positive()
+    quantity: z.number().int().positive(),
   })
   .strict()
   .meta({
     id: "UpdateOfferLineItemRequest",
-    description: "New quantity for an existing offer line item."
+    description: "New quantity for an existing offer line item.",
   });
 
 export const offerSchema = z
@@ -259,16 +264,16 @@ export const offerSchema = z
     unmatched: z.array(z.string()).optional(),
     discountPercent: z.number().min(0).max(100),
     createdBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
-    updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional()
+    updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
   })
   .meta({
     id: "Offer",
-    description: "A draft or accepted offer for a customer request."
+    description: "A draft or accepted offer for a customer request.",
   });
 
 export const offerResponseSchema = z
   .object({
-    offer: offerSchema
+    offer: offerSchema,
   })
   .strict()
   .meta({ id: "OfferResponse" });
@@ -282,12 +287,12 @@ export const offerRevisionSnapshotLineItemSchema = z
     quantity: z.number().int().positive(),
     unitPriceNet: z.number().nonnegative(),
     currency: z.string(),
-    rationale: z.string()
+    rationale: z.string(),
   })
   .strict()
   .meta({
     id: "OfferRevisionSnapshotLineItem",
-    description: "Line item captured in an offer revision snapshot."
+    description: "Line item captured in an offer revision snapshot.",
   });
 
 export const offerRevisionSnapshotSchema = z
@@ -299,18 +304,18 @@ export const offerRevisionSnapshotSchema = z
     notes: z.array(z.string()),
     unmatched: z.array(z.string()),
     discountPercent: z.number().min(0).max(100).default(0),
-    lineItems: z.array(offerRevisionSnapshotLineItemSchema)
+    lineItems: z.array(offerRevisionSnapshotLineItemSchema),
   })
   .strict()
   .meta({
     id: "OfferRevisionSnapshot",
-    description: "Stored offer state that can be restored later."
+    description: "Stored offer state that can be restored later.",
   });
 
 export const offerRevisionUserSchema = z
   .object({
     id: z.string(),
-    name: z.string()
+    name: z.string(),
   })
   .strict()
   .meta({ id: "OfferRevisionUser" });
@@ -322,24 +327,24 @@ export const offerRevisionSchema = z
     revisionNumber: z.number().int().positive(),
     snapshot: offerRevisionSnapshotSchema.optional(),
     createdBy: offerRevisionUserSchema.nullable(),
-    createdAt: z.string().datetime()
+    createdAt: z.string().datetime(),
   })
   .strict()
   .meta({
     id: "OfferRevision",
-    description: "Saved revision metadata and optional snapshot for an offer."
+    description: "Saved revision metadata and optional snapshot for an offer.",
   });
 
 export const offerRevisionResponseSchema = z
   .object({
-    revision: offerRevisionSchema
+    revision: offerRevisionSchema,
   })
   .strict()
   .meta({ id: "OfferRevisionResponse" });
 
 export const offerRevisionsResponseSchema = z
   .object({
-    revisions: z.array(offerRevisionSchema)
+    revisions: z.array(offerRevisionSchema),
   })
   .strict()
   .meta({ id: "OfferRevisionsResponse" });
@@ -347,16 +352,18 @@ export const offerRevisionsResponseSchema = z
 export const restoreOfferRevisionResponseSchema = z
   .object({
     offer: offerSchema.nullable(),
-    revision: offerRevisionSchema
+    revision: offerRevisionSchema,
   })
   .strict()
   .meta({ id: "RestoreOfferRevisionResponse" });
 
 /** Product snapshot for update payloads — priceNet and currency are stripped to prevent price overwrites. */
-const updateOfferItemProductSchema = offerItemProductSchema.omit({ priceNet: true, currency: true }).meta({
-  id: "UpdateOfferItemProduct",
-  description: "Product snapshot without pricing fields. Prices are read-only from the catalog."
-});
+const updateOfferItemProductSchema = offerItemProductSchema
+  .omit({ priceNet: true, currency: true })
+  .meta({
+    id: "UpdateOfferItemProduct",
+    description: "Product snapshot without pricing fields. Prices are read-only from the catalog.",
+  });
 
 export const updateOfferItemRequestSchema = z
   .object({
@@ -365,12 +372,13 @@ export const updateOfferItemRequestSchema = z
     requestItem: z.string().optional(),
     rationale: z.string().optional(),
     confidence: z.number().min(0).max(100).optional(),
-    product: updateOfferItemProductSchema.optional()
+    product: updateOfferItemProductSchema.optional(),
   })
   .strict()
   .meta({
     id: "UpdateOfferItemRequest",
-    description: "Editable fields for an offer item. Unit price and currency are read-only from the product catalog."
+    description:
+      "Editable fields for an offer item. Unit price and currency are read-only from the product catalog.",
   });
 
 export const updateOfferRequestSchema = z
@@ -381,12 +389,12 @@ export const updateOfferRequestSchema = z
     status: offerStatusSchema.optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
     unmatched: z.array(z.string()).optional(),
-    discountPercent: z.number().min(0).max(100).optional()
+    discountPercent: z.number().min(0).max(100).optional(),
   })
   .strict()
   .meta({
     id: "UpdateOfferRequest",
-    description: "Review edits that can be applied to a generated offer draft."
+    description: "Review edits that can be applied to a generated offer draft.",
   });
 
 export const databaseStatusSchema = z
@@ -397,19 +405,19 @@ export const databaseStatusSchema = z
         status: z.literal("reachable"),
         source: z.enum(["env", "development-default"]),
         serverVersion: z.string(),
-        vectorVersion: z.string()
+        vectorVersion: z.string(),
       })
       .strict(),
     z
       .object({
         status: z.literal("unreachable"),
-        message: z.string()
+        message: z.string(),
       })
-      .strict()
+      .strict(),
   ])
   .meta({
     id: "DatabaseStatus",
-    description: "Database readiness information returned by the health endpoint."
+    description: "Database readiness information returned by the health endpoint.",
   });
 
 export const healthResponseSchema = z
@@ -417,7 +425,7 @@ export const healthResponseSchema = z
     app: z.literal("solivio"),
     status: z.literal("ok"),
     database: databaseStatusSchema,
-    timestamp: z.string().datetime()
+    timestamp: z.string().datetime(),
   })
   .strict()
   .meta({ id: "HealthResponse" });
@@ -428,49 +436,49 @@ export const errorResponseSchema = z
       .object({
         code: z.string(),
         message: z.string(),
-        issues: z.array(z.string()).optional()
+        issues: z.array(z.string()).optional(),
       })
-      .strict()
+      .strict(),
   })
   .strict()
   .meta({
     id: "ErrorResponse",
-    description: "Standard API error payload."
+    description: "Standard API error payload.",
   });
 
 export const unauthorizedResponseSchema = z
   .object({
-    error: z.string()
+    error: z.string(),
   })
   .strict()
   .meta({
     id: "UnauthorizedResponse",
-    description: "Returned when no valid Better Auth session is present."
+    description: "Returned when no valid Better Auth session is present.",
   });
 
 export const plainErrorResponseSchema = z
   .object({
-    error: z.string()
+    error: z.string(),
   })
   .strict()
   .meta({
     id: "PlainErrorResponse",
-    description: "Legacy plain string error payload."
+    description: "Legacy plain string error payload.",
   });
 
 export const authPathParamsSchema = z
   .object({
-    authPath: z.string()
+    authPath: z.string(),
   })
   .strict()
   .meta({
     id: "AuthPathParams",
-    description: "Catch-all path segment delegated to Better Auth."
+    description: "Catch-all path segment delegated to Better Auth.",
   });
 
 export const offerPathParamsSchema = z
   .object({
-    offerId: z.string()
+    offerId: z.string(),
   })
   .strict()
   .meta({ id: "OfferPathParams" });
@@ -478,7 +486,7 @@ export const offerPathParamsSchema = z
 export const offerProductPathParamsSchema = z
   .object({
     offerId: z.string(),
-    offerProductId: z.string()
+    offerProductId: z.string(),
   })
   .strict()
   .meta({ id: "OfferProductPathParams" });
@@ -486,7 +494,7 @@ export const offerProductPathParamsSchema = z
 export const offerRevisionPathParamsSchema = z
   .object({
     offerId: z.string(),
-    revisionId: z.string()
+    revisionId: z.string(),
   })
   .strict()
   .meta({ id: "OfferRevisionPathParams" });
@@ -494,19 +502,19 @@ export const offerRevisionPathParamsSchema = z
 export const offerChatMessagesPathParamsSchema = z
   .object({
     offerId: z.string(),
-    threadId: z.string()
+    threadId: z.string(),
   })
   .strict()
   .meta({ id: "OfferChatMessagesPathParams" });
 
 export const offerPdfQuerySchema = z
   .object({
-    download: z.enum(["1"]).optional()
+    download: z.enum(["1"]).optional(),
   })
   .strict()
   .meta({
     id: "OfferPdfQuery",
-    description: "Set download=1 to return the PDF as an attachment."
+    description: "Set download=1 to return the PDF as an attachment.",
   });
 
 export const embeddingModelIdSchema = z
@@ -517,17 +525,17 @@ export const embeddingModelSchema = z
   .object({
     id: embeddingModelIdSchema,
     label: z.string(),
-    dimensions: z.number().int().positive()
+    dimensions: z.number().int().positive(),
   })
   .strict()
   .meta({
     id: "EmbeddingModel",
-    description: "Embedding model that can be selected for product import."
+    description: "Embedding model that can be selected for product import.",
   });
 
 export const embeddingModelsResponseSchema = z
   .object({
-    models: z.array(embeddingModelSchema)
+    models: z.array(embeddingModelSchema),
   })
   .strict()
   .meta({ id: "EmbeddingModelsResponse" });
@@ -541,12 +549,12 @@ export const productTextSearchRequestSchema = z
     query: z.string().trim().min(1),
     limit: z.number().int().positive().max(20).optional(),
     offset: z.number().int().min(0).optional(),
-    searchFields: z.array(productTextSearchFieldSchema).min(1).optional()
+    searchFields: z.array(productTextSearchFieldSchema).min(1).optional(),
   })
   .strict()
   .meta({
     id: "ProductTextSearchRequest",
-    description: "Keyword product search request."
+    description: "Keyword product search request.",
   });
 
 export const productTextSearchMatchSchema = z
@@ -555,18 +563,18 @@ export const productTextSearchMatchSchema = z
     sku: z.string(),
     name: z.string(),
     description: z.string(),
-    manufacturer: z.string()
+    manufacturer: z.string(),
   })
   .strict()
   .meta({
     id: "ProductTextSearchMatch",
-    description: "Database product matched by keyword search."
+    description: "Database product matched by keyword search.",
   });
 
 export const productTextSearchResponseSchema = z
   .object({
     products: z.array(productTextSearchMatchSchema),
-    totalCount: z.number().int().nonnegative()
+    totalCount: z.number().int().nonnegative(),
   })
   .strict()
   .meta({ id: "ProductTextSearchResponse" });
@@ -580,28 +588,28 @@ export const productImportRowSchema = z
     priceNet: z.number().nonnegative(),
     priceGross: z.number().nonnegative(),
     vatRate: z.number().min(0),
-    currency: z.string().min(1)
+    currency: z.string().min(1),
   })
   .strict()
   .meta({
     id: "ProductImportRow",
-    description: "Catalog product row accepted by the import endpoint."
+    description: "Catalog product row accepted by the import endpoint.",
   });
 
 export const productImportRequestSchema = z
   .object({
     products: z.array(productImportRowSchema).min(1),
-    model: embeddingModelIdSchema.optional()
+    model: embeddingModelIdSchema.optional(),
   })
   .strict()
   .meta({
     id: "ProductImportRequest",
-    description: "Products to upsert and embed."
+    description: "Products to upsert and embed.",
   });
 
 export const productImportResponseSchema = z
   .object({
-    count: z.number().int().nonnegative()
+    count: z.number().int().nonnegative(),
   })
   .strict()
   .meta({ id: "ProductImportResponse" });
@@ -618,12 +626,12 @@ export const createdOfferLineItemSchema = z
     quantity: z.number().int().positive(),
     unitPriceNet: z.number().nonnegative(),
     currency: z.string(),
-    rationale: z.string()
+    rationale: z.string(),
   })
   .strict()
   .meta({
     id: "CreatedOfferLineItem",
-    description: "Persisted offer line returned immediately after offer creation."
+    description: "Persisted offer line returned immediately after offer creation.",
   });
 
 export const createdOfferSchema = z
@@ -636,17 +644,17 @@ export const createdOfferSchema = z
     generatedAt: z.string().datetime(),
     items: z.array(createdOfferLineItemSchema),
     unmatched: z.array(z.string()),
-    notes: z.array(z.string())
+    notes: z.array(z.string()),
   })
   .strict()
   .meta({
     id: "CreatedOffer",
-    description: "Persisted offer shape returned by creation endpoints."
+    description: "Persisted offer shape returned by creation endpoints.",
   });
 
 export const createdOfferResponseSchema = z
   .object({
-    offer: createdOfferSchema
+    offer: createdOfferSchema,
   })
   .strict()
   .meta({ id: "CreatedOfferResponse" });
@@ -656,17 +664,17 @@ export const quickOfferItemSchema = z
     productId: z.string(),
     productName: z.string().optional(),
     productSku: z.string().optional(),
-    quantity: z.number().int().positive()
+    quantity: z.number().int().positive(),
   })
   .strict()
   .meta({
     id: "QuickOfferItem",
-    description: "Manual product selection used to create a quick offer."
+    description: "Manual product selection used to create a quick offer.",
   });
 
 export const quickOfferRequestSchema = z
   .object({
-    items: z.array(quickOfferItemSchema).min(1)
+    items: z.array(quickOfferItemSchema).min(1),
   })
   .strict()
   .meta({ id: "QuickOfferRequest" });
@@ -677,57 +685,55 @@ export const offerChatThreadSchema = z
     offerId: z.string(),
     title: z.string(),
     createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime()
+    updatedAt: z.string().datetime(),
   })
   .strict()
   .meta({
     id: "OfferChatThread",
-    description: "Persisted chat thread attached to an offer."
+    description: "Persisted chat thread attached to an offer.",
   });
 
 export const offerChatThreadsResponseSchema = z
   .object({
-    threads: z.array(offerChatThreadSchema)
+    threads: z.array(offerChatThreadSchema),
   })
   .strict()
   .meta({ id: "OfferChatThreadsResponse" });
 
 export const createOfferChatThreadRequestSchema = z
   .object({
-    title: z.string().trim().min(1).optional()
+    title: z.string().trim().min(1).optional(),
   })
   .strict()
   .meta({ id: "CreateOfferChatThreadRequest" });
 
 export const offerChatThreadResponseSchema = z
   .object({
-    thread: offerChatThreadSchema
+    thread: offerChatThreadSchema,
   })
   .strict()
   .meta({ id: "OfferChatThreadResponse" });
 
-export const uiMessagePartSchema = z
-  .record(z.string(), z.unknown())
-  .meta({
-    id: "UiMessagePart",
-    description: "AI SDK UI message part."
-  });
+export const uiMessagePartSchema = z.record(z.string(), z.unknown()).meta({
+  id: "UiMessagePart",
+  description: "AI SDK UI message part.",
+});
 
 export const uiMessageSchema = z
   .object({
     id: z.string().optional(),
     role: z.string(),
-    parts: z.array(uiMessagePartSchema)
+    parts: z.array(uiMessagePartSchema),
   })
   .passthrough()
   .meta({
     id: "UiMessage",
-    description: "AI SDK UI message."
+    description: "AI SDK UI message.",
   });
 
 export const offerChatMessagesResponseSchema = z
   .object({
-    messages: z.array(uiMessageSchema)
+    messages: z.array(uiMessageSchema),
   })
   .strict()
   .meta({ id: "OfferChatMessagesResponse" });
@@ -736,39 +742,40 @@ export const chatRequestSchema = z
   .object({
     messages: z.array(uiMessageSchema),
     offerId: z.string().optional(),
-    threadId: z.string().optional()
+    threadId: z.string().optional(),
   })
   .strict()
   .meta({
     id: "ChatRequest",
-    description: "AI SDK chat request. offerId and threadId must be provided together when persisting messages."
+    description:
+      "AI SDK chat request. offerId and threadId must be provided together when persisting messages.",
   });
 
 export const offerPdfRequestSchema = pdfOfferRequestSchema.meta({
   id: "OfferPdfRequest",
-  description: "Offer payload rendered into a PDF document."
+  description: "Offer payload rendered into a PDF document.",
 });
 
 const authenticatedResponses = <T extends Record<number, ApiResponseContract>>(responses: T) => ({
   ...responses,
   401: {
     description: "No valid Better Auth session was present.",
-    schema: unauthorizedResponseSchema
-  }
+    schema: unauthorizedResponseSchema,
+  },
 });
 
 const pdfResponse = (description: string): ApiResponseContract => ({
   description,
   content: {
-    "application/pdf": {}
-  }
+    "application/pdf": {},
+  },
 });
 
 const sseResponse = (description: string): ApiResponseContract => ({
   description,
   content: {
-    "text/event-stream": {}
-  }
+    "text/event-stream": {},
+  },
 });
 
 export const apiContracts = [
@@ -783,12 +790,12 @@ export const apiContracts = [
     requestParams: authPathParamsSchema,
     responses: {
       200: {
-        description: "Better Auth handled the GET request."
+        description: "Better Auth handled the GET request.",
       },
       400: {
-        description: "Better Auth rejected the request."
-      }
-    }
+        description: "Better Auth rejected the request.",
+      },
+    },
   },
   {
     method: "post",
@@ -801,12 +808,12 @@ export const apiContracts = [
     requestParams: authPathParamsSchema,
     responses: {
       200: {
-        description: "Better Auth handled the POST request."
+        description: "Better Auth handled the POST request.",
       },
       400: {
-        description: "Better Auth rejected the request."
-      }
-    }
+        description: "Better Auth rejected the request.",
+      },
+    },
   },
   {
     method: "get",
@@ -817,9 +824,9 @@ export const apiContracts = [
     responses: {
       200: {
         description: "The app is reachable and reports database readiness.",
-        schema: healthResponseSchema
-      }
-    }
+        schema: healthResponseSchema,
+      },
+    },
   },
   {
     method: "get",
@@ -830,9 +837,9 @@ export const apiContracts = [
     responses: {
       200: {
         description: "Embedding models available for product import.",
-        schema: embeddingModelsResponseSchema
-      }
-    }
+        schema: embeddingModelsResponseSchema,
+      },
+    },
   },
   {
     method: "get",
@@ -844,9 +851,9 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "Mocked product candidates available for request matching.",
-        schema: productsResponseSchema
-      }
-    })
+        schema: productsResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -858,22 +865,22 @@ export const apiContracts = [
     requestBody: {
       description: "Prompt used for semantic product matching against embedded products.",
       required: true,
-      schema: productSearchRequestSchema
+      schema: productSearchRequestSchema,
     },
     responses: authenticatedResponses({
       200: {
         description: "Semantic matches from the products table with an AI summary.",
-        schema: productSearchResponseSchema
+        schema: productSearchResponseSchema,
       },
       400: {
         description: "The request body could not be parsed or validated.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       500: {
         description: "The server could not complete the semantic product search.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -885,22 +892,22 @@ export const apiContracts = [
     requestBody: {
       description: "Keyword search query, pagination, and optional searchable fields.",
       required: true,
-      schema: productTextSearchRequestSchema
+      schema: productTextSearchRequestSchema,
     },
     responses: authenticatedResponses({
       200: {
         description: "Matching products and total result count.",
-        schema: productTextSearchResponseSchema
+        schema: productTextSearchResponseSchema,
       },
       400: {
         description: "The request body did not include a valid query.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       500: {
         description: "The server could not complete the text search.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -911,22 +918,22 @@ export const apiContracts = [
     requestBody: {
       description: "Catalog rows to upsert and embed.",
       required: true,
-      schema: productImportRequestSchema
+      schema: productImportRequestSchema,
     },
     responses: {
       200: {
         description: "Number of products imported.",
-        schema: productImportResponseSchema
+        schema: productImportResponseSchema,
       },
       400: {
         description: "The import body was invalid.",
-        schema: plainErrorResponseSchema
+        schema: plainErrorResponseSchema,
       },
       500: {
         description: "The import failed while embedding or writing products.",
-        schema: plainErrorResponseSchema
-      }
-    }
+        schema: plainErrorResponseSchema,
+      },
+    },
   },
   {
     method: "get",
@@ -938,9 +945,9 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "The current mocked request and extracted requirements.",
-        schema: customerRequestResponseSchema
-      }
-    })
+        schema: customerRequestResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -952,18 +959,18 @@ export const apiContracts = [
     requestBody: {
       description: "Raw customer request text for mocked requirement extraction.",
       required: false,
-      schema: createCustomerRequestRequestSchema
+      schema: createCustomerRequestRequestSchema,
     },
     responses: authenticatedResponses({
       201: {
         description: "A mocked request object with extracted requirements.",
-        schema: customerRequestResponseSchema
+        schema: customerRequestResponseSchema,
       },
       400: {
         description: "The request body could not be parsed or validated.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -975,9 +982,9 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "The current mocked draft offer.",
-        schema: offerResponseSchema
-      }
-    })
+        schema: offerResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -990,18 +997,18 @@ export const apiContracts = [
     requestBody: {
       description: "Customer name and request text for the new offer.",
       required: false,
-      schema: createOfferRequestSchema
+      schema: createOfferRequestSchema,
     },
     responses: authenticatedResponses({
       201: {
         description: "A newly persisted draft offer.",
-        schema: createdOfferResponseSchema
+        schema: createdOfferResponseSchema,
       },
       400: {
         description: "The request body could not be parsed or validated.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1014,13 +1021,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "The requested offer.",
-        schema: offerResponseSchema
+        schema: offerResponseSchema,
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "patch",
@@ -1033,22 +1040,22 @@ export const apiContracts = [
     requestBody: {
       description: "Review edits to apply to the offer.",
       required: true,
-      schema: updateOfferRequestSchema
+      schema: updateOfferRequestSchema,
     },
     responses: authenticatedResponses({
       200: {
         description: "The updated offer.",
-        schema: offerResponseSchema
+        schema: offerResponseSchema,
       },
       400: {
         description: "The request body did not match the offer update contract.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "delete",
@@ -1060,13 +1067,13 @@ export const apiContracts = [
     requestParams: offerPathParamsSchema,
     responses: authenticatedResponses({
       204: {
-        description: "The offer was deleted."
+        description: "The offer was deleted.",
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1079,9 +1086,9 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "Revision history for the offer.",
-        schema: offerRevisionsResponseSchema
-      }
-    })
+        schema: offerRevisionsResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1094,13 +1101,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       201: {
         description: "The saved offer revision.",
-        schema: offerRevisionResponseSchema
+        schema: offerRevisionResponseSchema,
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1113,13 +1120,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "The requested offer revision.",
-        schema: offerRevisionResponseSchema
+        schema: offerRevisionResponseSchema,
       },
       404: {
         description: "The revision was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1132,13 +1139,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "The restored offer and the revision created by the restore action.",
-        schema: restoreOfferRevisionResponseSchema
+        schema: restoreOfferRevisionResponseSchema,
       },
       404: {
         description: "The revision was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1150,18 +1157,18 @@ export const apiContracts = [
     requestBody: {
       description: "Manual product selections to turn into a draft offer.",
       required: true,
-      schema: quickOfferRequestSchema
+      schema: quickOfferRequestSchema,
     },
     responses: authenticatedResponses({
       201: {
         description: "A newly persisted manual offer.",
-        schema: createdOfferResponseSchema
+        schema: createdOfferResponseSchema,
       },
       400: {
         description: "No product selections were provided.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1174,26 +1181,26 @@ export const apiContracts = [
     requestBody: {
       description: "Product and quantity to add as an offer line.",
       required: true,
-      schema: addOfferProductRequestSchema
+      schema: addOfferProductRequestSchema,
     },
     responses: authenticatedResponses({
       201: {
         description: "The offer after adding the line item.",
-        schema: offerResponseSchema
+        schema: offerResponseSchema,
       },
       400: {
         description: "The request body was invalid.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       404: {
         description: "The offer or product was not found.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       409: {
         description: "The product is already in the offer.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "patch",
@@ -1206,22 +1213,22 @@ export const apiContracts = [
     requestBody: {
       description: "New quantity for the offer line item.",
       required: true,
-      schema: updateOfferLineItemRequestSchema
+      schema: updateOfferLineItemRequestSchema,
     },
     responses: authenticatedResponses({
       200: {
         description: "The offer after updating the line item.",
-        schema: offerResponseSchema
+        schema: offerResponseSchema,
       },
       400: {
         description: "The request body was invalid.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       404: {
         description: "The offer or line item was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "delete",
@@ -1233,13 +1240,13 @@ export const apiContracts = [
     requestParams: offerProductPathParamsSchema,
     responses: authenticatedResponses({
       204: {
-        description: "The line item was removed."
+        description: "The line item was removed.",
       },
       404: {
         description: "The offer or line item was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1251,19 +1258,19 @@ export const apiContracts = [
     requestBody: {
       description: "AI SDK messages plus optional persistent offer chat identifiers.",
       required: true,
-      schema: chatRequestSchema
+      schema: chatRequestSchema,
     },
     responses: authenticatedResponses({
       200: sseResponse("Server-sent event stream of AI SDK UI message chunks."),
       400: {
         description: "Only one of offerId or threadId was provided.",
-        schema: errorResponseSchema
+        schema: errorResponseSchema,
       },
       404: {
         description: "The persistent chat thread was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1276,13 +1283,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "Chat threads attached to the offer.",
-        schema: offerChatThreadsResponseSchema
+        schema: offerChatThreadsResponseSchema,
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "post",
@@ -1295,18 +1302,18 @@ export const apiContracts = [
     requestBody: {
       description: "Optional chat thread title.",
       required: false,
-      schema: createOfferChatThreadRequestSchema
+      schema: createOfferChatThreadRequestSchema,
     },
     responses: authenticatedResponses({
       201: {
         description: "The created chat thread.",
-        schema: offerChatThreadResponseSchema
+        schema: offerChatThreadResponseSchema,
       },
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1319,13 +1326,13 @@ export const apiContracts = [
     responses: authenticatedResponses({
       200: {
         description: "Messages in the offer chat thread.",
-        schema: offerChatMessagesResponseSchema
+        schema: offerChatMessagesResponseSchema,
       },
       404: {
         description: "The chat thread was not found for the offer.",
-        schema: errorResponseSchema
-      }
-    })
+        schema: errorResponseSchema,
+      },
+    }),
   },
   {
     method: "get",
@@ -1334,8 +1341,8 @@ export const apiContracts = [
     summary: "Render sample offer PDF",
     tags: ["Documents"],
     responses: {
-      200: pdfResponse("A sample offer PDF.")
-    }
+      200: pdfResponse("A sample offer PDF."),
+    },
   },
   {
     method: "post",
@@ -1346,15 +1353,15 @@ export const apiContracts = [
     requestBody: {
       description: "Offer document payload to render.",
       required: true,
-      schema: offerPdfRequestSchema
+      schema: offerPdfRequestSchema,
     },
     responses: {
       200: pdfResponse("The rendered offer PDF."),
       400: {
         description: "The PDF payload was invalid.",
-        schema: errorResponseSchema
-      }
-    }
+        schema: errorResponseSchema,
+      },
+    },
   },
   {
     method: "get",
@@ -1369,8 +1376,8 @@ export const apiContracts = [
       200: pdfResponse("The rendered PDF for the persisted offer."),
       404: {
         description: "The offer was not found.",
-        schema: errorResponseSchema
-      }
-    })
-  }
+        schema: errorResponseSchema,
+      },
+    }),
+  },
 ] as const satisfies readonly ApiContract[];

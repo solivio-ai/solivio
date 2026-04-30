@@ -1,13 +1,23 @@
 "use client";
 
-import type { KeyboardEvent, ReactNode } from "react";
-import { createElement, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import type { Offer } from "@solivio/domain";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import type { UIMessage } from "ai";
+import { DefaultChatTransport } from "ai";
 import { ArrowUp, Plus, Sparkles, User } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { KeyboardEvent, ReactNode } from "react";
+import {
+  createElement,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,15 +62,17 @@ function renderHeading(line: string, index: number): ReactNode {
   const raw = match[2].trimEnd();
   const tag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   const size =
-    level <= 2 ? "text-[0.9375rem] font-semibold leading-snug" : "text-sm font-semibold leading-snug";
+    level <= 2
+      ? "text-[0.9375rem] font-semibold leading-snug"
+      : "text-sm font-semibold leading-snug";
 
   return createElement(
     tag,
     {
       key: index,
-      className: cn(size, index > 0 ? "mt-2.5" : "")
+      className: cn(size, index > 0 ? "mt-2.5" : ""),
     },
-    renderInlineMarkdown(raw)
+    renderInlineMarkdown(raw),
   );
 }
 
@@ -94,7 +106,9 @@ function renderMarkdownLine(line: string, index: number) {
         <span aria-hidden="true" className="font-medium leading-relaxed">
           •
         </span>
-        <span className="min-w-0 flex-1 leading-relaxed">{renderInlineMarkdown(unorderedItem[1])}</span>
+        <span className="min-w-0 flex-1 leading-relaxed">
+          {renderInlineMarkdown(unorderedItem[1])}
+        </span>
       </p>
     );
   }
@@ -123,23 +137,21 @@ async function readJsonResponse(response: Response) {
   } catch {
     return {
       error: {
-        message: text
-      }
+        message: text,
+      },
     };
   }
 }
 
-export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function OfferChat({
-  className,
-  headerAction,
-  offer,
-  onOfferChanged
-}, ref) {
+export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function OfferChat(
+  { className, headerAction, offer, onOfferChanged },
+  ref,
+) {
   const t = useTranslations("OfferChat");
   const questionSuggestions = [
     t("suggestions.summarize"),
     t("suggestions.mostExpensive"),
-    t("suggestions.upsell")
+    t("suggestions.upsell"),
   ];
 
   const [threads, setThreads] = useState<OfferChatThread[]>([]);
@@ -152,7 +164,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   }>({ offerId: null, threadId: null });
   offerChatRequestContextRef.current = {
     offerId: offer?.id ?? null,
-    threadId: activeThreadId
+    threadId: activeThreadId,
   };
 
   const transport = useMemo(
@@ -161,9 +173,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
         prepareSendMessagesRequest: ({ body, id, messages, trigger, messageId }) => {
           const ctx = offerChatRequestContextRef.current;
           const threadBody =
-            ctx.offerId && ctx.threadId
-              ? { offerId: ctx.offerId, threadId: ctx.threadId }
-              : {};
+            ctx.offerId && ctx.threadId ? { offerId: ctx.offerId, threadId: ctx.threadId } : {};
 
           return {
             body: {
@@ -172,21 +182,21 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
               messages,
               trigger,
               messageId,
-              ...threadBody
-            }
+              ...threadBody,
+            },
           };
-        }
+        },
       }),
-    []
+    [],
   );
   const { messages, sendMessage, setMessages, status } = useChat({
     transport,
     onFinish: ({ message }) => {
       const hasToolResult = message.parts.some(
-        (p) => p.type.startsWith("tool-") && "state" in p && p.state === "output-available"
+        (p) => p.type.startsWith("tool-") && "state" in p && p.state === "output-available",
       );
       if (hasToolResult) onOfferChanged?.();
-    }
+    },
   });
   const [input, setInput] = useState("");
 
@@ -198,7 +208,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   useImperativeHandle(ref, () => ({
     sendText: (text: string) => {
       setPendingExternal(text);
-    }
+    },
   }));
 
   useEffect(() => {
@@ -206,7 +216,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
     void sendText(pendingExternal);
     setPendingExternal(null);
     requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom("smooth")));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingExternal, isInputDisabled]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
@@ -254,7 +264,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
       setMessages(payload.messages as UIMessage[]);
       requestAnimationFrame(() => scrollToBottom("instant"));
     },
-    [offer, scrollToBottom, setMessages]
+    [offer, scrollToBottom, setMessages],
   );
 
   const createThread = useCallback(async () => {
@@ -388,7 +398,12 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
   }
 
   return (
-    <Card className={cn("flex min-h-0 w-full flex-1 gap-0 rounded-xl border border-foreground/15 py-0 shadow-sm ring-0", className)}>
+    <Card
+      className={cn(
+        "flex min-h-0 w-full flex-1 gap-0 rounded-xl border border-foreground/15 py-0 shadow-sm ring-0",
+        className,
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-foreground/15 px-4 py-3">
         <CardTitle className="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary">
           <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -426,10 +441,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
           ) : null}
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span
-              className={cn(
-                "size-2 rounded-full",
-                isLoading ? "bg-primary" : "bg-secondary"
-              )}
+              className={cn("size-2 rounded-full", isLoading ? "bg-primary" : "bg-secondary")}
             />
             {isLoading ? t("status.thinking") : t("status.ready")}
           </div>
@@ -480,7 +492,7 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
                   "max-w-[82%] whitespace-pre-wrap rounded-lg px-3.5 py-2.5 text-sm leading-relaxed",
                   isUser
                     ? "bg-primary text-primary-foreground"
-                    : "border border-foreground/15 bg-muted/60 text-foreground"
+                    : "border border-foreground/15 bg-muted/60 text-foreground",
                 )}
               >
                 {isUser ? (

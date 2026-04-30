@@ -1,9 +1,9 @@
-import { renderToBuffer } from "@react-pdf/renderer";
 import type { DocumentProps } from "@react-pdf/renderer";
-import type { ReactElement } from "react";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
+import type { ReactElement } from "react";
 
-import { OfferDocument, buildPdfOfferPayload } from "@/features/offer-pdf";
+import { buildPdfOfferPayload, OfferDocument } from "@/features/offer-pdf";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
 
@@ -34,13 +34,13 @@ export async function GET(request: Request, context: RouteContext) {
   if (!offer) {
     return NextResponse.json(
       { error: { code: "OFFER_NOT_FOUND", message: `Offer '${offerId}' was not found.` } },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
   const payload = buildPdfOfferPayload(offer);
   const buffer = await renderToBuffer(
-    <OfferDocument data={payload} /> as ReactElement<DocumentProps>
+    (<OfferDocument data={payload} />) as ReactElement<DocumentProps>,
   );
 
   const asAttachment = new URL(request.url).searchParams.get("download") === "1";

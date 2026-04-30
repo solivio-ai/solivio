@@ -25,4 +25,4 @@ yarn db:up
 - Prefer a working mock over an unfinished integration.
 - Keep public UI, docs, metadata, and repository copy aligned with the README and docs brand guide.
 - Document any new environment variable in the relevant `.env.example`.
-- Run `yarn typecheck` before opening a pull request.
+- Run `yarn check` and `yarn typecheck` before opening a pull request.

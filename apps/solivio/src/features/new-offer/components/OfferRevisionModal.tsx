@@ -1,8 +1,8 @@
 "use client";
-import { useTranslations } from "next-intl";
 
-import { useEffect, useState } from "react";
 import { AlertTriangle, Loader2, RotateCcw, User } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import type { OfferRevision } from "@solivio/domain";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { formatCurrency } from "./offer-builder-types";
 
 type OfferRevisionModalProps = {
@@ -55,10 +56,9 @@ export function OfferRevisionModal({
     if (!revision) return;
     setRestoring(true);
     try {
-      const response = await fetch(
-        `/api/offers/${offerId}/revisions/${revision.id}/restore`,
-        { method: "POST" }
-      );
+      const response = await fetch(`/api/offers/${offerId}/revisions/${revision.id}/restore`, {
+        method: "POST",
+      });
       if (response.ok) {
         onClose();
         onRestored();
@@ -70,10 +70,8 @@ export function OfferRevisionModal({
 
   const snapshot = fullRevision?.snapshot;
 
-  const subtotal = snapshot?.lineItems.reduce(
-    (sum, item) => sum + item.quantity * item.unitPriceNet,
-    0
-  ) ?? 0;
+  const subtotal =
+    snapshot?.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPriceNet, 0) ?? 0;
   const discount = subtotal * ((snapshot?.discountPercent ?? 0) / 100);
   const total = subtotal - discount;
   const currency = snapshot?.lineItems[0]?.currency as "PLN" | "EUR" | undefined;
@@ -87,9 +85,7 @@ export function OfferRevisionModal({
         {/* Header */}
         <DialogHeader className="gap-1 border-b px-5 py-4">
           <div className="flex items-center gap-2 pr-6">
-            <DialogTitle>
-              {tModal("title", { number: revision?.revisionNumber ?? "" })}
-            </DialogTitle>
+            <DialogTitle>{tModal("title", { number: revision?.revisionNumber ?? "" })}</DialogTitle>
             {revision?.name && (
               <span className="text-sm font-normal text-muted-foreground italic">
                 — {revision.name}
@@ -132,15 +128,24 @@ export function OfferRevisionModal({
                 {snapshot.clientRequest && (
                   <div className="grid gap-1 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("clientRequest")}</span>
-                    <div className="leading-relaxed text-muted-foreground line-clamp-10 whitespace-pre-wrap overflow-auto">{snapshot.clientRequest}</div>
+                    <div className="leading-relaxed text-muted-foreground line-clamp-10 whitespace-pre-wrap overflow-auto">
+                      {snapshot.clientRequest}
+                    </div>
                   </div>
                 )}
                 {snapshot.notes.length > 0 && (
                   <div className="grid gap-1.5 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("notes")}</span>
                     {snapshot.notes.map((note, i) => (
-                      <div key={i} className="flex gap-2 rounded-md border border-foreground/10 bg-muted/40 px-2.5 py-2 text-xs">
-                        <AlertTriangle size={13} className="mt-0.5 shrink-0 text-amber-500" aria-hidden="true" />
+                      <div
+                        key={i}
+                        className="flex gap-2 rounded-md border border-foreground/10 bg-muted/40 px-2.5 py-2 text-xs"
+                      >
+                        <AlertTriangle
+                          size={13}
+                          className="mt-0.5 shrink-0 text-amber-500"
+                          aria-hidden="true"
+                        />
                         <span>{note}</span>
                       </div>
                     ))}
@@ -150,7 +155,10 @@ export function OfferRevisionModal({
                   <div className="grid gap-1.5 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("unmatched")}</span>
                     {snapshot.unmatched.map((item, i) => (
-                      <div key={i} className="flex gap-2 rounded-md border border-destructive/20 bg-destructive/5 px-2.5 py-2 text-xs text-destructive">
+                      <div
+                        key={i}
+                        className="flex gap-2 rounded-md border border-destructive/20 bg-destructive/5 px-2.5 py-2 text-xs text-destructive"
+                      >
                         {item}
                       </div>
                     ))}
@@ -182,7 +190,9 @@ export function OfferRevisionModal({
                               <span className="ml-2 text-xs text-muted-foreground">{item.sku}</span>
                             )}
                             {item.rationale && (
-                              <p className="mt-0.5 text-xs text-muted-foreground">{item.rationale}</p>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                {item.rationale}
+                              </p>
                             )}
                           </td>
                           <td className="px-3 py-2.5 text-right">{item.quantity}</td>
@@ -190,7 +200,10 @@ export function OfferRevisionModal({
                             {formatCurrency(item.unitPriceNet, item.currency as "PLN" | "EUR")}
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums font-medium">
-                            {formatCurrency(item.quantity * item.unitPriceNet, item.currency as "PLN" | "EUR")}
+                            {formatCurrency(
+                              item.quantity * item.unitPriceNet,
+                              item.currency as "PLN" | "EUR",
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -256,13 +269,7 @@ export function OfferRevisionModal({
   );
 }
 
-function MetaRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
       <span className="w-28 shrink-0 text-muted-foreground">{label}</span>
@@ -283,7 +290,10 @@ function LoadingSkeleton() {
         <Skeleton className="h-4 w-24 rounded" />
         <div className="rounded-lg border border-foreground/15 overflow-hidden">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-4 border-b border-foreground/10 px-3 py-2.5 last:border-0">
+            <div
+              key={i}
+              className="flex gap-4 border-b border-foreground/10 px-3 py-2.5 last:border-0"
+            >
               <Skeleton className="h-4 flex-1 rounded" />
               <Skeleton className="h-4 w-8 rounded" />
               <Skeleton className="h-4 w-16 rounded" />

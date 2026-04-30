@@ -2,12 +2,11 @@ import "server-only";
 
 import { count, ilike, or } from "drizzle-orm";
 
+import type { SearchableField } from "@/features/product-search/searchableFields";
+import { ALL_SEARCHABLE_FIELDS } from "@/features/product-search/searchableFields";
+
 import { db } from "../database/db";
 import { products } from "../database/schema";
-import {
-  ALL_SEARCHABLE_FIELDS,
-  type SearchableField,
-} from "@/features/product-search/searchableFields";
 import { FIELD_COLUMNS } from "./searchableProductColumns";
 
 export type ProductTextSearchResult = {
@@ -31,13 +30,12 @@ type Options = {
 
 export async function searchProductsByText(
   query: string,
-  { limit = 20, offset = 0, searchFields }: Options = {}
+  { limit = 20, offset = 0, searchFields }: Options = {},
 ): Promise<ProductTextSearchPage> {
   const trimmed = query.trim();
   if (!trimmed) return { products: [], totalCount: 0 };
 
-  const fields =
-    searchFields && searchFields.length > 0 ? searchFields : ALL_SEARCHABLE_FIELDS;
+  const fields = searchFields && searchFields.length > 0 ? searchFields : ALL_SEARCHABLE_FIELDS;
 
   const pattern = `%${trimmed}%`;
   const conditions = fields.map((f) => ilike(FIELD_COLUMNS[f], pattern));

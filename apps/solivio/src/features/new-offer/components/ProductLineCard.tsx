@@ -1,9 +1,16 @@
+import { Info, Loader2, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Info, Loader2, Trash2 } from "lucide-react";
+
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 
@@ -32,7 +39,11 @@ export function ProductLineCard({
       {/* Always visible: name + SKU */}
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-semibold">{line.name}</span>
-        {line.sku ? <span className="text-xs text-muted-foreground">{tProducts("sku")}: {line.sku}</span> : null}
+        {line.sku ? (
+          <span className="text-xs text-muted-foreground">
+            {tProducts("sku")}: {line.sku}
+          </span>
+        ) : null}
       </div>
 
       {/* Highlighted requested item */}
@@ -46,7 +57,10 @@ export function ProductLineCard({
       {/* Quantity / unit price / line total / remove */}
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[minmax(8rem,1fr)_auto_auto_auto] sm:items-end">
         <div className="grid gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground" htmlFor={`${line.productId}-quantity`}>
+          <label
+            className="text-xs font-medium text-muted-foreground"
+            htmlFor={`${line.productId}-quantity`}
+          >
             {tProducts("qty")}
           </label>
           <Input
@@ -57,7 +71,12 @@ export function ProductLineCard({
             max={10000}
             type="number"
             value={line.quantity}
-            onChange={(event) => updateQuantity(line.productId, Math.min(10000, Math.max(1, Number(event.target.value) || 1)))}
+            onChange={(event) =>
+              updateQuantity(
+                line.productId,
+                Math.min(10000, Math.max(1, Number(event.target.value) || 1)),
+              )
+            }
             onBlur={() => commitQuantity(line.productId)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
@@ -68,12 +87,20 @@ export function ProductLineCard({
           />
         </div>
         <div className="grid gap-1.5 text-right">
-          <span className="text-xs font-medium text-muted-foreground">{tProducts("unitPrice")}</span>
-          <span className="flex h-9 items-center justify-end text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {tProducts("unitPrice")}
+          </span>
+          <span className="flex h-9 items-center justify-end text-sm">
+            {formatCurrency(line.unitPrice, line.currency)}
+          </span>
         </div>
         <div className="grid gap-1.5 text-right">
-          <span className="text-xs font-medium text-muted-foreground">{tProducts("lineTotal")}</span>
-          <span className="flex h-9 items-center justify-end font-semibold">{formatCurrency(line.quantity * line.unitPrice, line.currency)}</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {tProducts("lineTotal")}
+          </span>
+          <span className="flex h-9 items-center justify-end font-semibold">
+            {formatCurrency(line.quantity * line.unitPrice, line.currency)}
+          </span>
         </div>
         <div className="flex h-9 items-center justify-end self-end">
           <Button
@@ -104,7 +131,9 @@ export function ProductLineCard({
             <AccordionContent className="grid gap-2 pb-0">
               {line.availability ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{tProducts("availability")}:</span>
+                  <span className="text-xs text-muted-foreground">
+                    {tProducts("availability")}:
+                  </span>
                   <Badge
                     variant={
                       line.availability === "limited"
@@ -119,7 +148,9 @@ export function ProductLineCard({
                 </div>
               ) : null}
               {line.manufacturer ? (
-                <span className="text-xs text-muted-foreground">{tProducts("brand")}: {line.manufacturer}</span>
+                <span className="text-xs text-muted-foreground">
+                  {tProducts("brand")}: {line.manufacturer}
+                </span>
               ) : null}
               {line.rationale ? (
                 <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">

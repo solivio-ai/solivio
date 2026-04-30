@@ -1,16 +1,17 @@
 "use client";
 
+import { PackageSearch, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { PackageSearch, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { ProductSearchDialog, type ProductSearchMatch } from "@/features/product-search";
+import type { ProductSearchMatch } from "@/features/product-search";
+import { ProductSearchDialog } from "@/features/product-search";
 
 export function QuickOfferSearch() {
-   const t = useTranslations("QuickSearch");
+  const t = useTranslations("QuickSearch");
   const [open, setOpen] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [isCreating, setIsCreating] = useState(false);
@@ -98,11 +99,10 @@ export function QuickOfferSearch() {
               )}
             </div>
             <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setOpen(false)}>{t("actions.cancel")}</Button>
-              <Button 
-                disabled={selectedCount === 0 || isCreating} 
-                onClick={handleCreateOffer}
-              >
+              <Button variant="ghost" onClick={() => setOpen(false)}>
+                {t("actions.cancel")}
+              </Button>
+              <Button disabled={selectedCount === 0 || isCreating} onClick={handleCreateOffer}>
                 {isCreating ? t("actions.creating") : t("actions.createDraft")}
               </Button>
             </div>

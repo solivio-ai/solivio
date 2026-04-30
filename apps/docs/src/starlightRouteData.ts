@@ -9,14 +9,20 @@ export const onRequest = defineRouteMiddleware((context) => {
   const pathname = context.url.pathname;
 
   if (pathname.startsWith(guidePathPrefix)) {
-    route.sidebar = route.sidebar.filter((entry) => entry.type === "group" && entry.label === "Guides");
+    route.sidebar = route.sidebar.filter(
+      (entry) => entry.type === "group" && entry.label === "Guides",
+    );
   }
 
   if (pathname.startsWith(devPathPrefix)) {
-    route.sidebar = route.sidebar.filter((entry) => entry.type === "group" && entry.label === "Development");
+    route.sidebar = route.sidebar.filter(
+      (entry) => entry.type === "group" && entry.label === "Development",
+    );
   }
 
   if (pathname.startsWith(apiPathPrefix)) {
-    route.sidebar = route.sidebar.filter((entry) => entry.type === "group" && entry.label === "API Reference");
+    route.sidebar = route.sidebar.filter(
+      (entry) => entry.type === "group" && entry.label === "API Reference",
+    );
   }
 });

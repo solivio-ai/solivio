@@ -1,7 +1,7 @@
-import { renderToBuffer } from "@react-pdf/renderer";
 import type { DocumentProps } from "@react-pdf/renderer";
-import type { ReactElement } from "react";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
+import type { ReactElement } from "react";
 
 import { OfferDocument, pdfOfferRequestSchema, sampleOffer } from "../../../../features/offer-pdf";
 
@@ -18,7 +18,7 @@ function toResponse(buffer: Buffer, filename: string) {
 
 export async function GET() {
   const buffer = await renderToBuffer(
-    <OfferDocument data={sampleOffer} /> as ReactElement<DocumentProps>
+    (<OfferDocument data={sampleOffer} />) as ReactElement<DocumentProps>,
   );
   return toResponse(buffer, `oferta-${sampleOffer.offer.number}.pdf`);
 }
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { error: { code: "INVALID_JSON", message: "Request body is not valid JSON." } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -44,12 +44,12 @@ export async function POST(request: Request) {
           issues: parsed.error.issues.map((i) => i.message),
         },
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const buffer = await renderToBuffer(
-    <OfferDocument data={parsed.data} /> as ReactElement<DocumentProps>
+    (<OfferDocument data={parsed.data} />) as ReactElement<DocumentProps>,
   );
   const filename = `oferta-${parsed.data.offer.number.replace(/\//g, "-")}.pdf`;
   return toResponse(buffer, filename);

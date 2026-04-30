@@ -1,19 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { AlertTriangle, Check, Info, Loader2, PackageSearch, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { PackageSearch, Info, AlertTriangle, Loader2, Trash2, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import type { Offer } from "@solivio/domain";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ProductLineCard } from "./ProductLineCard";
+
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
-import type { Offer } from "@solivio/domain";
+import { ProductLineCard } from "./ProductLineCard";
 
 type OfferProductsReviewProps = {
   commitQuantity: (productId: string) => void;
@@ -46,7 +59,7 @@ export function OfferProductsReview({
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
-   const tProducts = useTranslations("NewOffer.review.products");
+  const tProducts = useTranslations("NewOffer.review.products");
   const previousSignaturesRef = useRef<Map<string, string>>(new Map());
   const clearTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const [updatedLineIds, setUpdatedLineIds] = useState<Set<string>>(new Set());
@@ -159,7 +172,7 @@ export function OfferProductsReview({
                 key={line.productId}
                 className={cn(
                   "rounded-lg transition-colors duration-700",
-                  updatedLineIds.has(line.productId) ? "bg-primary/10" : "bg-transparent"
+                  updatedLineIds.has(line.productId) ? "bg-primary/10" : "bg-transparent",
                 )}
               >
                 <ProductLineCard
@@ -201,7 +214,7 @@ export function OfferProductsReview({
                     key={line.productId}
                     className={cn(
                       "transition-colors duration-700",
-                      updatedLineIds.has(line.productId) ? "bg-primary/10" : ""
+                      updatedLineIds.has(line.productId) ? "bg-primary/10" : "",
                     )}
                   >
                     <TableCell className="whitespace-normal py-3 pr-4">
@@ -210,7 +223,9 @@ export function OfferProductsReview({
                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                           <span className="text-sm font-semibold">{line.name}</span>
                           {line.sku ? (
-                            <span className="text-xs text-muted-foreground">{tProducts("sku")}: {line.sku}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {tProducts("sku")}: {line.sku}
+                            </span>
                           ) : null}
                         </div>
                         {line.requestItem ? (
@@ -223,7 +238,7 @@ export function OfferProductsReview({
                         ) : null}
 
                         {/* Collapsible details */}
-                        {(line.availability || line.manufacturer || line.rationale) ? (
+                        {line.availability || line.manufacturer || line.rationale ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
                               <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
@@ -232,7 +247,9 @@ export function OfferProductsReview({
                               <AccordionContent className="grid gap-2 pb-0">
                                 {line.availability ? (
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground">{tProducts("availability")}:</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {tProducts("availability")}:
+                                    </span>
                                     <Badge
                                       variant={
                                         line.availability === "limited"
@@ -247,7 +264,9 @@ export function OfferProductsReview({
                                   </div>
                                 ) : null}
                                 {line.manufacturer ? (
-                                  <span className="text-xs text-muted-foreground">{tProducts("brand")}: {line.manufacturer}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {tProducts("brand")}: {line.manufacturer}
+                                  </span>
                                 ) : null}
                                 {line.rationale ? (
                                   <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
@@ -269,7 +288,12 @@ export function OfferProductsReview({
                         max={10000}
                         type="number"
                         value={line.quantity}
-                        onChange={(event) => updateQuantity(line.productId, Math.min(10000, Math.max(1, Number(event.target.value) || 1)))}
+                        onChange={(event) =>
+                          updateQuantity(
+                            line.productId,
+                            Math.min(10000, Math.max(1, Number(event.target.value) || 1)),
+                          )
+                        }
                         onBlur={() => commitQuantity(line.productId)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
@@ -280,7 +304,9 @@ export function OfferProductsReview({
                       />
                     </TableCell>
                     <TableCell className="text-right align-top pt-4">
-                      <span className="text-sm">{formatCurrency(line.unitPrice, line.currency)}</span>
+                      <span className="text-sm">
+                        {formatCurrency(line.unitPrice, line.currency)}
+                      </span>
                     </TableCell>
                     <TableCell className="text-right text-sm font-semibold align-top pt-4">
                       {formatCurrency(line.quantity * line.unitPrice, line.currency)}

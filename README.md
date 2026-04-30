@@ -131,6 +131,7 @@ which applies committed migrations on startup.
 Useful commands:
 
 ```bash
+yarn check
 yarn typecheck
 yarn docs:dev
 yarn db:migrate

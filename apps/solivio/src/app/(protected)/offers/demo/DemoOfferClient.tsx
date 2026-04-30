@@ -1,14 +1,12 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  ProductSearchDialog,
-  type ProductSearchMatch,
-} from "@/features/product-search";
+import type { ProductSearchMatch } from "@/features/product-search";
+import { ProductSearchDialog } from "@/features/product-search";
 
 type OfferItem = { product: ProductSearchMatch; quantity: number };
 
@@ -30,7 +28,7 @@ export function DemoOfferClient() {
 
   const addedList = Object.values(items);
   const quantities = Object.fromEntries(
-    Object.entries(items).map(([id, item]) => [id, item.quantity])
+    Object.entries(items).map(([id, item]) => [id, item.quantity]),
   );
 
   return (
@@ -56,9 +54,7 @@ export function DemoOfferClient() {
             >
               <div>
                 <span className="text-sm font-medium">{item.product.name}</span>
-                <span className="ml-2 text-xs text-muted-foreground">
-                  {item.product.sku}
-                </span>
+                <span className="ml-2 text-xs text-muted-foreground">{item.product.sku}</span>
               </div>
               <span className="text-sm text-primary">{t("qty", { count: item.quantity })}</span>
             </div>

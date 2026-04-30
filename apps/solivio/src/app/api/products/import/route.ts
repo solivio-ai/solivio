@@ -1,9 +1,9 @@
-import type { ProductImportRow } from "@solivio/domain";
 import { NextResponse } from "next/server";
-import {
-  EMBEDDING_MODELS,
-  type EmbeddingModelId
-} from "../../../../server/products/embeddingModels";
+
+import type { ProductImportRow } from "@solivio/domain";
+
+import type { EmbeddingModelId } from "../../../../server/products/embeddingModels";
+import { EMBEDDING_MODELS } from "../../../../server/products/embeddingModels";
 import { importProductsWithEmbeddings } from "../../../../server/products/productEmbeddingService";
 
 export const runtime = "nodejs";
@@ -41,16 +41,16 @@ export async function POST(request: Request) {
     if (!rawList || rawList.length === 0) {
       return NextResponse.json(
         { error: "Body must include a non-empty 'products' array." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (rawList.length > MAX_ROWS_PER_REQUEST) {
       return NextResponse.json(
         {
-          error: `Too many products in one request (${rawList.length}). Send at most ${MAX_ROWS_PER_REQUEST} per request.`
+          error: `Too many products in one request (${rawList.length}). Send at most ${MAX_ROWS_PER_REQUEST} per request.`,
         },
-        { status: 413 }
+        { status: 413 },
       );
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     if (rawModel !== undefined && !VALID_MODEL_IDS.has(rawModel)) {
       return NextResponse.json(
         { error: `Unknown model '${rawModel}'. Valid: ${[...VALID_MODEL_IDS].join(", ")}.` },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const model = (rawModel ?? "text-embedding-3-small") as EmbeddingModelId;
@@ -70,9 +70,9 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             error:
-              "Each product needs sku, name, description, manufacturer, priceNet, priceGross, vatRate and currency."
+              "Each product needs sku, name, description, manufacturer, priceNet, priceGross, vatRate and currency.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       rows.push(row);
