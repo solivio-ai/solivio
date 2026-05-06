@@ -13,22 +13,17 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-const halfvec = customType<{ data: number[]; driverData: string; config: { dimensions: number } }>(
-  {
-    dataType(config) {
-      return `halfvec(${config?.dimensions ?? 0})`;
-    },
-    toDriver(value) {
-      return `[${value.join(",")}]`;
-    },
-    fromDriver(value) {
-      return value
-        .slice(1, -1)
-        .split(",")
-        .map(Number);
-    },
+const halfvec = customType<{ data: number[]; driverData: string; config: { dimensions: number } }>({
+  dataType(config) {
+    return `halfvec(${config?.dimensions ?? 0})`;
   },
-);
+  toDriver(value) {
+    return `[${value.join(",")}]`;
+  },
+  fromDriver(value) {
+    return value.slice(1, -1).split(",").map(Number);
+  },
+});
 
 import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
 

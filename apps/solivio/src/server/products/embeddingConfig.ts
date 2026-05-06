@@ -1,6 +1,7 @@
 import "server-only";
 
-import { EMBEDDING_MODELS, type EmbeddingModelId } from "./embeddingModels";
+import type { EmbeddingModelId } from "./embeddingModels";
+import { EMBEDDING_MODELS } from "./embeddingModels";
 
 const DEFAULT_EMBEDDING_MODEL: EmbeddingModelId = "text-embedding-3-large";
 
