@@ -542,7 +542,7 @@
     },
     "integrations": {
       "title": "Źródła danych",
-      "subtitle": "Połącz swoje systemy biznesowe, aby wzmocnić generowanie ofert.",
+      "subtitle": "Im więcej kontekstu dostarczysz - tym trafniejsza oferta. Połącz systemy, które już masz.",
       "badge": {
         "active": "Aktywna",
         "available": "Dostępna"
@@ -553,47 +553,43 @@
       "items": {
         "productCatalog": {
           "name": "Katalog produktów",
-          "description": "Wgraj i osadź bazę produktów. Zasila wyszukiwanie katalogu i dopasowywanie AI."
+          "description": "Tysiące SKU pod ręką, właściwe produkty dobrane do zapytania - bez ręcznego przeszukiwania katalogów."
         },
         "erp": {
           "name": "ERP",
-          "description": "Synchronizuj produkty, poziomy magazynowe i przyjęte zamówienia z systemem ERP."
+          "description": "Aktualna baza produktów, cenniki i historia zamówień prosto z ERP - Solivio zawsze pracuje na rzeczywistych danych."
         },
         "crm": {
           "name": "CRM",
-          "description": "Pobieraj profile klientów i historię transakcji, aby personalizować szkice ofert."
+          "description": "Pobieraj profile klientów i zacznij od spersonalizowanej oferty."
         },
         "priceRules": {
           "name": "Reguły cenowe",
-          "description": "Automatycznie stosuj cele marżowe, rabaty ilościowe i ceny według poziomu klienta."
+          "description": "Progi ilościowe, rabaty kontraktowe, marże na kategoriach - stosowane automatycznie, bez ręcznych wyliczeń."
         },
         "inventory": {
           "name": "Magazyn",
-          "description": "Wyświetlaj dostępność magazynową w czasie rzeczywistym na pozycjach oferty."
-        },
-        "emailDelivery": {
-          "name": "Wysyłka e-mail",
-          "description": "Wysyłaj zaakceptowane oferty bezpośrednio do klientów jako markowe e-maile PDF."
+          "description": "Zobacz dostępność każdej pozycji w momencie tworzenia oferty. Żadnych ofert na produkty, których nie ma na stanie."
         },
         "industryKnowledge": {
           "name": "Wiedza branżowa",
-          "description": "Dodaj kontekst o branży, segmentach klientów i specyfice sprzedaży, aby lepiej interpretować zapytania."
+          "description": "Uwzględnij specyfikę branży, segmentów - Solivio zinterpretuje zapytania w odpowiednim kontekście."
         },
         "documentation": {
           "name": "Dokumentacja",
-          "description": "Podłącz instrukcje, karty techniczne i materiały sprzedażowe jako źródło odpowiedzi oraz uzasadnień."
+          "description": "Karty techniczne, specyfikacje, materiały sprzedażowe - zostaną uwzględnione przy doborze i uzasadnianiu rekomendacji."
         },
         "historicalOrders": {
           "name": "Historyczne zamówienia",
-          "description": "Wykorzystuj wcześniejsze zamówienia do rozpoznawania powtarzalnych potrzeb i preferowanych produktów."
+          "description": "Klient często zamawia te same produkty? Solivio to rozpozna i uwzględni w kolejnej ofercie."
         },
         "rfqBenchmarks": {
           "name": "Benchmarki zapytań ofertowych",
-          "description": "Porównuj nowe zapytania z podobnymi przypadkami, aby szybciej dobrać zakres oferty i poziom cen."
+          "description": "Podobne zapytanie było już obsługiwane? Solivio uczy się z poprzednich ofert i przyspiesza kolejne."
         },
         "productReviews": {
           "name": "Opinie produktowe",
-          "description": "Uwzględniaj opinie klientów i sygnały jakościowe przy rekomendacjach oraz zamiennikach produktów."
+          "description": "Uwzględniaj opinie i preferencje klientów przy rekomendacjach oraz zamiennikach produktów."
         }
       }
     }

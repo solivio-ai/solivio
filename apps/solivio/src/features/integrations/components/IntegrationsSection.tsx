@@ -8,7 +8,6 @@ import {
   FileText,
   Gauge,
   History,
-  Mail,
   Package,
   Star,
   Users,
@@ -36,7 +35,6 @@ const INTEGRATIONS: IntegrationConfig[] = [
   { key: "erp", icon: Factory, active: false },
   { key: "inventory", icon: BarChart3, active: false },
   { key: "productReviews", icon: Star, active: false },
-  { key: "emailDelivery", icon: Mail, active: false },
 ];
 
 export async function IntegrationsSection() {

@@ -520,7 +520,7 @@
     },
     "integrations": {
       "title": "Data sources",
-      "subtitle": "Connect your business systems to power offer generation.",
+      "subtitle": "The more context you give Solivio, the sharper the offers. Connect the systems you already use.",
       "badge": {
         "active": "Active",
         "available": "Available"
@@ -531,47 +531,43 @@
       "items": {
         "productCatalog": {
           "name": "Product Catalog",
-          "description": "Upload and embed your product database. Powers catalog search and AI matching."
+          "description": "Thousands of SKUs at hand — the right products picked for each request without digging through catalogs."
         },
         "erp": {
           "name": "ERP",
-          "description": "Sync products, stock levels, and accepted orders with your ERP system."
+          "description": "Current products, pricing, and order history straight from your ERP — Solivio always works with real data."
         },
         "crm": {
           "name": "CRM",
-          "description": "Pull customer profiles and deal history to personalize offer drafts."
+          "description": "Pull customer profiles and start every quote already personalized."
         },
         "priceRules": {
           "name": "Price Rules",
-          "description": "Apply margin targets, volume discounts, and customer-tier pricing automatically."
+          "description": "Volume thresholds, contract discounts, category margins — applied automatically, no manual math."
         },
         "inventory": {
           "name": "Inventory",
-          "description": "Show real-time stock availability on offer line items before sending."
-        },
-        "emailDelivery": {
-          "name": "Email Delivery",
-          "description": "Send accepted offers directly to customers as branded PDF emails."
+          "description": "See real-time stock as you build the offer. No more quoting items that aren't on the shelf."
         },
         "industryKnowledge": {
           "name": "Industry Knowledge",
-          "description": "Add context about your industry, customer segments, and sales specifics to interpret requests more accurately."
+          "description": "Capture industry and segment specifics so Solivio reads each request in the right context."
         },
         "documentation": {
           "name": "Documentation",
-          "description": "Connect manuals, technical sheets, and sales materials as sources for answers and rationale."
+          "description": "Technical sheets, specs, and sales materials — used when picking products and explaining the choice."
         },
         "historicalOrders": {
           "name": "Historical Orders",
-          "description": "Use previous orders to recognize recurring needs and preferred products."
+          "description": "Customer keeps ordering the same items? Solivio recognizes the pattern and reuses it on the next offer."
         },
         "rfqBenchmarks": {
           "name": "RFQ Benchmarks",
-          "description": "Compare new requests with similar cases to choose offer scope and pricing levels faster."
+          "description": "Seen a similar request before? Solivio learns from past offers to speed up the next ones."
         },
         "productReviews": {
           "name": "Product Reviews",
-          "description": "Consider customer reviews and quality signals when recommending products and substitutes."
+          "description": "Factor customer feedback and preferences into recommendations and substitutes."
         }
       }
     }
