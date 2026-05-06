@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { ProductImportRow } from "@solivio/domain";
 
+import { getDefaultEmbeddingModel } from "../../../../server/products/embeddingConfig";
 import type { EmbeddingModelId } from "../../../../server/products/embeddingModels";
 import { EMBEDDING_MODELS } from "../../../../server/products/embeddingModels";
 import { importProductsWithEmbeddings } from "../../../../server/products/productEmbeddingService";
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    const model = (rawModel ?? "text-embedding-3-small") as EmbeddingModelId;
+    const model = (rawModel ?? getDefaultEmbeddingModel()) as EmbeddingModelId;
 
     const rows: ProductImportRow[] = [];
     for (const item of rawList) {

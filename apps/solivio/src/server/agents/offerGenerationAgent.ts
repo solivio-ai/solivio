@@ -58,16 +58,20 @@ Workflow:
 
 Rules:
 - For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise unmatched.
-- For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for technical terms in inflected languages — DO NOT trust the similarity number alone). YOU rerank by reading the product names:
-    * Pick the candidate whose NAME is the closest semantic match to the requestFragment (same product type, same category, manufacturer if mentioned).
+- For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for technical terms in inflected languages — DO NOT trust the similarity number alone). YOU rerank by reading BOTH the product name AND the product description:
+    * Pick the candidate whose name+description together form the closest semantic match to the requestFragment (same product type, same category, matching specs, manufacturer if mentioned).
+    * The catalog name may be terse or generic — the description often contains the discriminating details (variants, sizes, "for upper and lower", "set of N", supported standards, etc.). ALWAYS read the description before deciding.
+    * Example: requestFragment "łyżki plastikowe góra dół" — name "Łyżki wyciskowe plastikowe" lacks "góra/dół", but description "do wykonywania wycisku górnego oraz dolnego" confirms the match. ACCEPT it.
     * A request for "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.
     * Catalogs often use synonyms for the same concept ("leak detector" / "flood sensor", "torch" / "flashlight", "czujnik wycieku" / "czujnik zalania"). Match on concept, not lexeme.
-    * If NONE of the 10 candidates is plausibly the requested product (different category entirely), put requestFragment in "unmatched".
+    * If NONE of the 10 candidates is plausibly the requested product (different category entirely, even after reading descriptions), put requestFragment in "unmatched".
 - Never add multiple products for the same request fragment. Pick exactly ONE.
 - Use the "id" field (UUID) as productId — never use SKU as productId.
-- Each product id may appear in "items" AT MOST ONCE across all fragments. If best match for fragment B is already used by fragment A, add fragment B's requestFragment to "unmatched".
-- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs").
-- requestItem must be the exact phrase from the customer request (the requestFragment).
+- Each product id appears in "items" AT MOST ONCE. When multiple fragments map to the same product id, decide:
+    * MERGE — if the fragments express the SAME product intent (same product type AND the same identifying specs such as size, capacity, voltage, port count, model number, color, material), combine them into ONE item with quantity = SUM of all fragment quantities. This handles requests where the customer lists the same item under different sections, headings, or rooms (e.g., "Room 1: gauze x10, Room 2: gauze x10" → ONE item with quantity 20). Note the merge in rationale (e.g., "summed across 3 mentions in the request").
+    * SPLIT — if the fragments differ in identifying specs (e.g., "size XS" vs "size S", "5ml" vs "10ml", "24-port" vs "48-port", "M10" vs "M12") but only one catalog product matches both, keep ONE item for the first fragment and add the others to "unmatched". The salesperson must see that the catalog lacks the requested variant; do NOT silently sum quantities across distinct variants.
+- requestItem: for a single fragment, use the exact phrase from the request. For a merged item, use a canonical phrase that represents all merged fragments (the most specific common form).
+- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
@@ -127,6 +131,7 @@ export async function generateOfferWithAgent(
               id: z.string(),
               sku: z.string(),
               name: z.string(),
+              description: z.string(),
               similarity: z.number(),
             }),
           ),
@@ -143,11 +148,22 @@ export async function generateOfferWithAgent(
         searchProductsBatch(descQueries, { limit: 10, minSimilarity: 0 }),
       ]);
 
+      // Truncate description shown to LLM to keep prompt small while still giving rerank signal.
+      const truncate = (s: string) => (s.length > 240 ? `${s.slice(0, 240)}…` : s);
+
       const results = queries.map(({ query, kind }) => {
         if (kind === "sku") {
           const match = skuMap.get(query);
           const matches = match
-            ? [{ id: match.id, sku: match.sku, name: match.name, similarity: match.similarity }]
+            ? [
+                {
+                  id: match.id,
+                  sku: match.sku,
+                  name: match.name,
+                  description: truncate(match.description),
+                  similarity: match.similarity,
+                },
+              ]
             : [];
           return { query, kind, matches };
         }
@@ -155,6 +171,7 @@ export async function generateOfferWithAgent(
           id: m.id,
           sku: m.sku,
           name: m.name,
+          description: truncate(m.description),
           similarity: m.similarity,
         }));
         return { query, kind, matches };
