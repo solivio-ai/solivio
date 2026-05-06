@@ -98,7 +98,7 @@ export function OfferValidationDialog({
           <DialogDescription>{result.summary}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3 py-1">
+        <div className="grid gap-3 py-1 max-h-[50vh] overflow-y-auto">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">{t("statusLabel")}:</span>
             <Badge variant={config.badgeVariant}>{config.label}</Badge>

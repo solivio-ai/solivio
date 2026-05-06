@@ -21,41 +21,52 @@ function getRationaleLanguage(): string {
 }
 
 const OFFER_AGENT_INSTRUCTIONS = `
-You generate a structured offer from a customer request.
+You generate a structured offer from a customer request. The catalog can span any industry
+(electrical, plumbing, HVAC, IT/networking, fasteners and tools, office supplies, lab and
+medical, automotive parts, etc.). The same rules apply regardless of domain.
 
 Workflow:
 1. Extract each distinct product item from the request (exact phrase + quantity).
 2. Classify each fragment as "sku" or "description":
    - "sku": the fragment is a product code/identifier (alphanumeric with separators, no semantic meaning, e.g. "IV-071-07612", "WG-6256T", "AB12345"). Looks like a database key.
-   - "description": natural-language product reference (a name, category, or descriptive phrase, e.g. "szybkozłączki na 3 kable", "miernik napięcia", "WAGO 5-polowe").
+   - "description": a natural-language product reference — a name, category, or descriptive phrase from any industry, e.g.:
+       * medical: "strzykawka jednorazowa 5ml", "rękawiczki nitrylowe rozmiar M", "stetoskop kardiologiczny"
+       * plumbing: "kolanko miedziane 1/2 cala", "1/2 inch copper elbow"
+       * IT: "switch 24-portowy gigabit", "Cat6 patch cable 2m"
+       * fasteners: "śruba M10 nierdzewna", "M10 stainless steel bolt"
+       * office: "papier A4 80g", "ergonomiczne krzesło biurowe"
+       * electrical: "WAGO 5-polowe", "miernik napięcia"
 3. Build a query per fragment:
    - For "sku" fragments: query = the SKU itself, exactly as written (no translation).
    - For "description" fragments: query = bilingual product name only (original language + English translation).
      CRITICAL: DO NOT include quantity numbers, units, or count words in the query. Quantity goes to the separate "quantity" field, never to the query.
-       Wrong: "5 listw zaciskowych / 5 terminal strips"
-       Right: "listwa zaciskowa / terminal strip"
-       Wrong: "100 sztuk czujników ruchu"
-       Right: "czujnik ruchu / motion sensor"
-     Use the base nominative singular form of nouns (Polish: mianownik liczba pojedyncza) when possible. Embedding models handle base forms better than declensions.
-       Wrong: "listw zaciskowych" (genitive plural)
-       Right: "listwa zaciskowa" (nominative singular)
-     Keep technical specs (voltage, wattage, pole count, dimensions) — they ARE part of the product identity.
+       Wrong: "50 śrub M10 nierdzewnych / 50 stainless M10 bolts"
+       Right: "śruba M10 nierdzewna / M10 stainless steel bolt"
+       Wrong: "200 sztuk strzykawek jednorazowych 5ml / 200 pcs 5ml disposable syringes"
+       Right: "strzykawka jednorazowa 5ml / 5ml disposable syringe"
+     Use the base/dictionary form (lemma) of nouns and adjectives — singular, nominative, masculine where applicable. Embedding models handle lemmas more reliably than inflected forms. This matters most for morphologically rich languages (Polish, German, Russian, Czech, etc.).
+       Wrong: "strzykawek jednorazowych" (Polish, genitive plural)
+       Right: "strzykawka jednorazowa" (Polish, nominative singular)
+     Keep model-defining attributes — they ARE part of the product identity. These typically include size/dimensions, capacity, material, voltage, rating, version, model number, port count, color. Drop only generic adjectives ("good", "cheap", "small") that don't identify a specific product.
+       Right: "strzykawka jednorazowa 5ml / 5ml disposable syringe"
+       Right: "rękawiczki nitrylowe rozmiar M / size M nitrile gloves"
+       Right: "śruba M10 nierdzewna / M10 stainless steel bolt"
+       Right: "switch 24-portowy gigabit / 24-port gigabit switch"
        Right: "zasilacz LED 48V / LED power supply 48V"
-       Right: "złączka 3-bieg / 3-pole connector"
 4. Call the search_products tool ONCE with all fragments and their kinds in a single batch.
 5. Map results to the offer schema.
 
 Rules:
 - For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise unmatched.
-- For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for Polish technical terms — DO NOT trust the similarity number alone). YOU rerank by reading the product names:
+- For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for technical terms in inflected languages — DO NOT trust the similarity number alone). YOU rerank by reading the product names:
     * Pick the candidate whose NAME is the closest semantic match to the requestFragment (same product type, same category, manufacturer if mentioned).
-    * Polish "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.
-    * Polish "czujnik wycieku" should match "Czujnik zalania ..." (same concept) even with low similarity.
+    * A request for "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.
+    * Catalogs often use synonyms for the same concept ("leak detector" / "flood sensor", "torch" / "flashlight", "czujnik wycieku" / "czujnik zalania"). Match on concept, not lexeme.
     * If NONE of the 10 candidates is plausibly the requested product (different category entirely), put requestFragment in "unmatched".
 - Never add multiple products for the same request fragment. Pick exactly ONE.
 - Use the "id" field (UUID) as productId — never use SKU as productId.
 - Each product id may appear in "items" AT MOST ONCE across all fragments. If best match for fragment B is already used by fragment A, add fragment B's requestFragment to "unmatched".
-- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match: terminal block" or "same SKU").
+- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs").
 - requestItem must be the exact phrase from the customer request (the requestFragment).
 `.trim();
 
