@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  customType,
   index,
   integer,
   jsonb,
@@ -10,8 +11,19 @@ import {
   text,
   timestamp,
   uuid,
-  vector,
 } from "drizzle-orm/pg-core";
+
+const halfvec = customType<{ data: number[]; driverData: string; config: { dimensions: number } }>({
+  dataType(config) {
+    return `halfvec(${config?.dimensions ?? 0})`;
+  },
+  toDriver(value) {
+    return `[${value.join(",")}]`;
+  },
+  fromDriver(value) {
+    return value.slice(1, -1).split(",").map(Number);
+  },
+});
 
 import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
 
@@ -107,13 +119,13 @@ export const products = pgTable(
       .default(0),
     vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(0),
     currency: text("currency").notNull(),
-    combinedEmbedding: vector("combined_embedding", { dimensions: 1536 }).notNull(),
+    combinedEmbedding: halfvec("combined_embedding", { dimensions: 3072 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     index("products_combined_emb_idx").using(
       "hnsw",
-      table.combinedEmbedding.op("vector_cosine_ops"),
+      table.combinedEmbedding.op("halfvec_cosine_ops"),
     ),
   ],
 );

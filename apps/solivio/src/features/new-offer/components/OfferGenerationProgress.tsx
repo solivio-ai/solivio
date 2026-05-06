@@ -45,37 +45,26 @@ const generationSteps = [
   },
 ] as const;
 
-const stepStartsMs = [0, 1600, 4200, 7200, 10400, 13600] as const;
-const stepProgress = [12, 28, 44, 62, 78, 92] as const;
-
-function getActiveStepIndex(elapsedMs: number, state: OfferGenerationProgressProps["state"]) {
-  if (state === "complete") {
-    return generationSteps.length - 1;
-  }
-
-  let activeIndex = 0;
-  for (let index = 0; index < stepStartsMs.length; index += 1) {
-    if (elapsedMs >= stepStartsMs[index]) {
-      activeIndex = index;
-    }
-  }
-
-  return activeIndex;
-}
+// Expected median offer-generation duration (ms). Used as time constant for the
+// asymptotic progress curve — at this elapsed time the bar reaches ~86%, then
+// keeps moving smoothly toward 99% without ever stalling.
+const EXPECTED_DURATION_MS = 60000;
 
 function getEstimatedProgress(elapsedMs: number, state: OfferGenerationProgressProps["state"]) {
-  if (state === "complete") {
-    return 100;
-  }
+  if (state === "complete") return 100;
+  // 1 - e^(-2t/T): at t=T reaches ~86%, t=2T ~98%, asymptotes at 99%.
+  const ratio = elapsedMs / EXPECTED_DURATION_MS;
+  const progress = 99 * (1 - Math.exp(-2 * ratio));
+  return Math.min(99, Math.max(1, Math.round(progress)));
+}
 
-  const activeIndex = getActiveStepIndex(elapsedMs, state);
-  const startMs = stepStartsMs[activeIndex];
-  const endMs = stepStartsMs[activeIndex + 1] ?? 32000;
-  const startProgress = activeIndex === 0 ? 5 : stepProgress[activeIndex - 1];
-  const endProgress = stepProgress[activeIndex];
-  const ratio = Math.min(1, Math.max(0, (elapsedMs - startMs) / (endMs - startMs)));
-
-  return Math.min(94, Math.round(startProgress + (endProgress - startProgress) * ratio));
+function getActiveStepIndex(elapsedMs: number, state: OfferGenerationProgressProps["state"]) {
+  if (state === "complete") return generationSteps.length - 1;
+  // Derive step from progress so the indicator matches the bar even if generation
+  // takes much longer or shorter than expected.
+  const progress = getEstimatedProgress(elapsedMs, state);
+  const stepSize = 100 / generationSteps.length;
+  return Math.min(generationSteps.length - 1, Math.floor(progress / stepSize));
 }
 
 export function OfferGenerationProgress({ elapsedMs, state }: OfferGenerationProgressProps) {
@@ -114,7 +103,7 @@ export function OfferGenerationProgress({ elapsedMs, state }: OfferGenerationPro
             <Progress
               value={progress}
               aria-label={t("progressLabel")}
-              className="h-3 bg-background/80 shadow-inner"
+              className="h-3 bg-background/80 shadow-inner [&>[data-slot=progress-indicator]]:duration-700 [&>[data-slot=progress-indicator]]:ease-out"
             />
           </div>
           <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">

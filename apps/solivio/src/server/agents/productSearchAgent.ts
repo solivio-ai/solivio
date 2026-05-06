@@ -5,7 +5,7 @@ import { Output } from "ai";
 import { z } from "zod";
 
 import { searchProductsByPrompt } from "../products/productSearchService";
-import { getOpenAIModel } from "./modelConfig";
+import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
 const agentResponseSchema = z.object({
@@ -48,7 +48,7 @@ export async function searchProductsWithVoltAgent(prompt: string, limit = 5) {
       "Answer in the same language as the user's prompt.",
       "Keep the answer concise and practical for a salesperson.",
     ].join(" "),
-    model: getOpenAIModel(),
+    model: getModelFor("productSearch"),
     tools: [searchProductsTool],
     voltOpsClient,
   });

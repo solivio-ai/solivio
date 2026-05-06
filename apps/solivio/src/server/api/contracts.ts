@@ -518,7 +518,7 @@ export const offerPdfQuerySchema = z
   });
 
 export const embeddingModelIdSchema = z
-  .enum(["text-embedding-3-small", "text-embedding-ada-002"])
+  .enum(["text-embedding-3-large", "text-embedding-3-small"])
   .meta({ id: "EmbeddingModelId" });
 
 export const embeddingModelSchema = z

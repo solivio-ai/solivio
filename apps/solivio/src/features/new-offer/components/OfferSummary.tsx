@@ -6,34 +6,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { CommercialTotals } from "./CommercialTotals";
 import type { DraftLine } from "./offer-builder-types";
-import { ValidationRow } from "./ValidationRow";
 
 type OfferSummaryProps = {
   currency: DraftLine["currency"];
   discount: number;
   discountPercent: number;
-  limitedLineCount: number;
   notes: Offer["notes"];
   requestText: string;
   setDiscountPercent: (discountPercent: number) => void;
   status: Offer["status"];
   subtotal: number;
   total: number;
-  unpricedLineCount: number;
 };
 
 export function OfferSummary({
   currency,
   discount,
   discountPercent,
-  limitedLineCount,
   notes,
   requestText,
   setDiscountPercent,
   status,
   subtotal,
   total,
-  unpricedLineCount,
 }: OfferSummaryProps) {
   const tSummary = useTranslations("NewOffer.review.summary");
   return (
@@ -48,30 +43,8 @@ export function OfferSummary({
         <div className="grid min-w-0 content-start gap-4">
           <section className="grid gap-2">
             <h2 className="text-sm font-medium">{tSummary("customerRequest")}</h2>
-            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+            <div className="max-h-[14.5rem] overflow-y-auto whitespace-pre-wrap rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed text-muted-foreground">
               {requestText}
-            </div>
-          </section>
-
-          <section className="grid gap-3">
-            <h2 className="text-sm font-medium">{tSummary("reviewChecks")}</h2>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <ValidationRow
-                ok={unpricedLineCount === 0}
-                text={
-                  unpricedLineCount === 0
-                    ? tSummary("checks.allPriced")
-                    : tSummary("checks.missingPrice", { count: unpricedLineCount })
-                }
-              />
-              <ValidationRow
-                ok={limitedLineCount === 0}
-                text={
-                  limitedLineCount === 0
-                    ? tSummary("checks.availabilityConfirmed")
-                    : tSummary("checks.missingAvailability", { count: limitedLineCount })
-                }
-              />
             </div>
           </section>
 

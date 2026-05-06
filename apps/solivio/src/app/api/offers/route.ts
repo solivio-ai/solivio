@@ -9,6 +9,7 @@ import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer, toOfferDomain } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export async function GET() {
   const auth = await requireAuth();
@@ -32,19 +33,29 @@ export async function POST(request: Request) {
   }
 
   const { customerName, clientRequest } = parsed.data;
-  const [generated, offerName] = await Promise.all([
-    generateOfferWithAgent(clientRequest, customerName),
-    generateOfferName(clientRequest, customerName),
-  ]);
-  const offer = await createOffer(
-    customerName,
-    clientRequest,
-    generated,
-    auth.session.user.id,
-    offerName,
-  );
+  try {
+    const [generated, offerName] = await Promise.all([
+      generateOfferWithAgent(clientRequest, customerName),
+      generateOfferName(clientRequest, customerName),
+    ]);
+    const offer = await createOffer(
+      customerName,
+      clientRequest,
+      generated,
+      auth.session.user.id,
+      offerName,
+    );
 
-  saveOfferDraft(toOfferDomain(offer));
+    saveOfferDraft(toOfferDomain(offer));
 
-  return NextResponse.json({ offer }, { status: 201 });
+    return NextResponse.json({ offer }, { status: 201 });
+  } catch (error) {
+    console.error("[api/offers POST] generation failed", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const stack = error instanceof Error ? error.stack : undefined;
+    return NextResponse.json(
+      { error: { code: "OFFER_GENERATION_FAILED", message, stack } },
+      { status: 500 },
+    );
+  }
 }

@@ -57,7 +57,6 @@ services:
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      OPENAI_MODEL: ${OPENAI_MODEL:-openai/gpt-5.4-mini}
       AUTH_SIGNUP_ENABLED: "true"
       AUTH_CREDENTIALS_ENABLED: "true"
       AUTH_SSO_ENABLED: "false"

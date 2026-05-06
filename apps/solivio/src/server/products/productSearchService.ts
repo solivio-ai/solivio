@@ -7,6 +7,7 @@ import { desc, inArray, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { products } from "../database/schema";
+import { getDefaultEmbeddingModel } from "./embeddingConfig";
 import type { EmbeddingModelId } from "./embeddingModels";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -53,7 +54,7 @@ function toPostgresVector(embedding: number[]): string {
 // <=> is the pgvector cosine distance operator (0 = identical, 1 = opposite).
 // We subtract from 1 to turn distance into similarity (1 = identical, 0 = opposite).
 function cosineSimilarity(column: AnyColumn, vector: string) {
-  return sql<number>`1 - (${column} <=> ${vector}::vector)`;
+  return sql<number>`1 - (${column} <=> ${vector}::halfvec)`;
 }
 
 // ── Search ─────────────────────────────────────────────────────────────────────
@@ -65,7 +66,7 @@ export async function searchProductsByPrompt(
   if (prompt.trim().length === 0) return [];
 
   const { embedding } = await embed({
-    model: openai.embedding(options.model ?? "text-embedding-3-small"),
+    model: openai.embedding(options.model ?? getDefaultEmbeddingModel()),
     value: prompt.trim(),
   });
 
@@ -124,7 +125,7 @@ export async function searchProductsBatch(
   if (nonEmpty.length === 0) return new Map();
 
   const { embeddings } = await embedMany({
-    model: openai.embedding(options.model ?? "text-embedding-3-small"),
+    model: openai.embedding(options.model ?? getDefaultEmbeddingModel()),
     values: nonEmpty.map((p) => p.trim()),
   });
 

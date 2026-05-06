@@ -4,7 +4,7 @@ import { Agent } from "@voltagent/core";
 import { Output } from "ai";
 import { z } from "zod";
 
-import { getOpenAIModel } from "./modelConfig";
+import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
 const VALIDATION_INSTRUCTIONS = `
@@ -55,7 +55,7 @@ export async function validateOfferWithAgent(
   const agent = new Agent({
     name: "offer-validation-agent",
     instructions: VALIDATION_INSTRUCTIONS,
-    model: getOpenAIModel(),
+    model: getModelFor("offerValidation"),
     voltOpsClient,
   });
 

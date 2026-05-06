@@ -6,11 +6,12 @@ import type { ProductImportRow } from "@solivio/domain";
 
 import { db } from "../database/db";
 import { products } from "../database/schema";
+import { getDefaultEmbeddingModel } from "./embeddingConfig";
 import type { EmbeddingModelId } from "./embeddingModels";
 
 export async function importProductsWithEmbeddings(
   rows: ProductImportRow[],
-  model: EmbeddingModelId = "text-embedding-3-small",
+  model: EmbeddingModelId = getDefaultEmbeddingModel(),
 ): Promise<{ count: number }> {
   if (rows.length === 0) return { count: 0 };
 
