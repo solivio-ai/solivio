@@ -4,7 +4,7 @@ import { Agent } from "@voltagent/core";
 import { Output } from "ai";
 import { z } from "zod";
 
-import { getOpenAIModel } from "./modelConfig";
+import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
 const OFFER_NAME_INSTRUCTIONS = `
@@ -24,7 +24,7 @@ const offerNameOutputSchema = z.object({
 const offerNameAgent = new Agent({
   name: "offer-name-agent",
   instructions: OFFER_NAME_INSTRUCTIONS,
-  model: getOpenAIModel(),
+  model: getModelFor("offerName"),
   voltOpsClient,
 });
 

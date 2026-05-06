@@ -36,7 +36,6 @@ jobs:
           cat > apps/solivio/.env.local <<'EOF'
           DATABASE_URL=postgresql://solivio:solivio@localhost:5432/solivio
           OPENAI_API_KEY=
-          OPENAI_MODEL=openai/gpt-5.4-mini
           BETTER_AUTH_URL=http://localhost:3000
           BETTER_AUTH_SECRET=solivio-ci-better-auth-secret-solivio-ci
           AUTH_SIGNUP_ENABLED=true

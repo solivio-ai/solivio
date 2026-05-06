@@ -3,7 +3,7 @@ import "server-only";
 import { Agent } from "@voltagent/core";
 
 import { offerLineItemTools } from "../offers/offerLineItemTools";
-import { getOpenAIModel } from "./modelConfig";
+import { getModelFor } from "./modelConfig";
 
 export const chatAgent = new Agent({
   name: "chat-agent",
@@ -33,6 +33,6 @@ export const chatAgent = new Agent({
     "If no offer context is provided, answer as a general Solivio assistant.",
     "Keep answers concise, practical, and focused on helping a salesperson review the draft.",
   ].join(" "),
-  model: getOpenAIModel(),
+  model: getModelFor("chat"),
   tools: offerLineItemTools,
 });

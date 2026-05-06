@@ -5,7 +5,7 @@ import { Output } from "ai";
 import { z } from "zod";
 
 import { lookupProductsBySkus, searchProductsBatch } from "../products/productSearchService";
-import { getOpenAIModel } from "./modelConfig";
+import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
 const LOCALE_LANGUAGE_MAP: Record<string, string> = {
@@ -184,7 +184,7 @@ export async function generateOfferWithAgent(
   const agent = new Agent({
     name: "offer-generation-agent",
     instructions: OFFER_AGENT_INSTRUCTIONS,
-    model: getOpenAIModel(),
+    model: getModelFor("offerGeneration"),
     tools: [searchProductsTool],
     voltOpsClient,
   });
