@@ -157,7 +157,7 @@ export function OfferRevisionModal({
                     {snapshot.unmatched.map((item, i) => (
                       <div
                         key={i}
-                        className="flex gap-2 rounded-md border border-destructive/20 bg-destructive/5 px-2.5 py-2 text-xs text-destructive"
+                        className="flex gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-2.5 py-2 text-xs text-amber-600 dark:text-amber-400"
                       >
                         {item}
                       </div>

@@ -127,8 +127,8 @@ export function OfferProductsReview({
       </CardHeader>
       <CardContent className="grid min-w-0 gap-3">
         {unmatched && unmatched.length > 0 && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
-            <div className="flex items-center gap-2 text-destructive mb-1.5 font-medium">
+          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-1.5 font-medium">
               <AlertTriangle size={16} aria-hidden="true" />
               <span>{tProducts("unmatchedTitle")}</span>
             </div>
