@@ -47,12 +47,43 @@ export function ProductLineCard({
       </div>
 
       {/* Highlighted requested item */}
-      {line.requestItem ? (
-        <div className="mt-1.5 flex items-center gap-1.5 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
-          <span className="shrink-0 font-medium text-secondary">{tProducts("requested")}:</span>
-          <span className="italic text-foreground">{line.requestItem}</span>
-        </div>
-      ) : null}
+      {line.requestItem
+        ? (() => {
+            const fragments = line
+              .requestItem!.split(" + ")
+              .map((f) => f.trim())
+              .filter(Boolean);
+            const isMerged = fragments.length > 1;
+            return (
+              <div className="mt-1.5 grid gap-1 rounded-md border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="shrink-0 font-medium text-secondary">
+                    {tProducts("requested")}:
+                  </span>
+                  {isMerged ? (
+                    <Badge
+                      variant="outline"
+                      className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                    >
+                      {tProducts("mergedBadge", { count: fragments.length })}
+                    </Badge>
+                  ) : null}
+                </div>
+                {isMerged ? (
+                  <ul className="grid gap-0.5 pl-1">
+                    {fragments.map((f, i) => (
+                      <li key={i} className="italic text-foreground">
+                        • {f}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <span className="italic text-foreground">{line.requestItem}</span>
+                )}
+              </div>
+            );
+          })()
+        : null}
 
       {/* Quantity / unit price / line total / remove */}
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[minmax(8rem,1fr)_auto_auto_auto] sm:items-end">

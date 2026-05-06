@@ -120,8 +120,6 @@ export function OfferBuilder({
   );
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
-  const limitedLineCount = lines.filter((line) => line.availability === "limited").length;
-  const unpricedLineCount = lines.filter((line) => line.unitPrice <= 0).length;
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
   const generatedDate = offer.generatedAt.slice(0, 10);
 
@@ -455,14 +453,12 @@ export function OfferBuilder({
         currency={currency}
         discount={discount}
         discountPercent={discountPercent}
-        limitedLineCount={limitedLineCount}
         notes={offer.notes}
         requestText={requestText}
         setDiscountPercent={onDiscountPercentChange}
         status={status}
         subtotal={subtotal}
         total={total}
-        unpricedLineCount={unpricedLineCount}
       />
 
       <ProductSearchDialog

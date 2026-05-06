@@ -264,6 +264,7 @@
         "actions": "Actions",
         "sku": "SKU",
         "requested": "Requested",
+        "mergedBadge": "Summed from {count} requests",
         "details": "Details",
         "availability": "Availability",
         "brand": "Brand",

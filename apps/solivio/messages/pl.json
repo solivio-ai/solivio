@@ -266,6 +266,7 @@
         "actions": "Akcje",
         "sku": "SKU",
         "requested": "Zapytanie",
+        "mergedBadge": "Suma z {count} zapytań",
         "details": "Szczegóły",
         "availability": "Dostępność",
         "brand": "Marka",
