@@ -25,7 +25,7 @@
     "build": "yarn workspace @solivio/app build && yarn workspace @solivio/docs build",
     "check": "biome check .",
     "e2e": "playwright test",
-    "typecheck": "yarn workspace @solivio/sdk typecheck && yarn workspace @solivio/domain typecheck && yarn workspace @solivio/app typecheck",
+    "typecheck": "yarn workspaces foreach -Ap run typecheck",
     "start": "yarn workspace @solivio/app start",
     "setup": "yarn db:up && yarn db:wait && yarn db:migrate",
     "db:up": "docker compose up -d db",
