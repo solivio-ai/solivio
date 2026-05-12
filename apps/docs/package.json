@@ -11,13 +11,16 @@
     "openapi:generate": "tsx ../../scripts/generate-openapi.ts",
     "dev": "yarn openapi:generate && astro dev --port 4321",
     "build": "yarn openapi:generate && astro build",
-    "preview": "astro preview --port 4321"
+    "preview": "astro preview --port 4321",
+    "typecheck": "astro check"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/markdown-remark": "^7.1.1",
     "@astrojs/starlight": "^0.38.4",
     "@solivio/theme": "workspace:*",
     "astro": "^6.1.10",
-    "starlight-openapi": "^0.25.0"
+    "starlight-openapi": "^0.25.0",
+    "typescript": "^6.0.3"
   }
 }
