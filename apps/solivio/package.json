@@ -17,6 +17,7 @@
     "@ai-sdk/react": "^3.0.170",
     "@react-pdf/renderer": "^4.5.1",
     "@solivio/domain": "workspace:*",
+    "@solivio/sdk": "workspace:*",
     "@solivio/theme": "workspace:*",
     "@tailwindcss/postcss": "^4.2.4",
     "@voltagent/core": "^2.7.3",

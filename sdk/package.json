@@ -1,0 +1,28 @@
+{
+  "name": "@solivio/sdk",
+  "version": "0.1.0",
+  "description": "Types and helpers for building Solivio modules.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": ">=4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
