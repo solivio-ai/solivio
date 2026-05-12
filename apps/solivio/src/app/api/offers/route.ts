@@ -6,7 +6,7 @@ import { generateOfferName } from "@/server/agents/offerNameAgent";
 import { createOfferRequestSchema, offerResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
-import { createOffer, toOfferDomain } from "@/server/offers/offerService";
+import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       offerName,
     );
 
-    saveOfferDraft(toOfferDomain(offer));
+    saveOfferDraft(offer);
 
     return NextResponse.json({ offer }, { status: 201 });
   } catch (error) {

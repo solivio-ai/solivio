@@ -14,7 +14,6 @@ export type ProductTextSearchResult = {
   sku: string;
   name: string;
   description: string;
-  manufacturer: string;
 };
 
 export type ProductTextSearchPage = {
@@ -48,7 +47,6 @@ export async function searchProductsByText(
         sku: products.sku,
         name: products.name,
         description: products.description,
-        manufacturer: products.manufacturer,
       })
       .from(products)
       .where(where)

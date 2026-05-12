@@ -1,60 +1,32 @@
 import "server-only";
 
-import { and, eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 
-import type { Offer } from "@solivio/domain";
+import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
+import { upsertCustomerByName } from "../customers/customerRepository";
 import { db } from "../database/db";
-import { offerProducts, products } from "../database/schema";
-import type { OfferRow, UpdateOfferMetaInput } from "./offerRepository";
+import { products } from "../database/schema";
+import { findActivePricesForProducts } from "../products/productPriceRepository";
+import { insertRequest } from "../requests/requestRepository";
 import {
-  deleteOfferProduct,
+  deleteOfferItem,
   deleteOffer as deleteOfferRow,
   findOfferById,
   getRecentOffers,
   insertOffer,
-  insertOfferProduct,
-  insertOfferProducts,
+  insertOfferItem,
+  insertOfferItems,
+  offerRowToDomain,
+  touchOffer,
+  updateOfferItem,
   updateOfferMeta as persistOfferMeta,
-  setOfferUpdatedBy,
-  updateOfferProduct,
+  type InsertOfferItemData,
+  type OfferRow,
+  type UpdateOfferMetaInput,
 } from "./offerRepository";
 import { saveRevision } from "./offerRevisionService";
-
-// ── Types ──────────────────────────────────────────────────────────────────────
-
-export type OfferLineItem = {
-  offerProductId: string;
-  productId: string;
-  productName: string;
-  productSku: string;
-  productDescription: string;
-  productManufacturer: string;
-  requestItem: string;
-  quantity: number;
-  unitPriceNet: number;
-  currency: string;
-  rationale: string;
-};
-
-export type CreatedOffer = {
-  id: string;
-  name: string;
-  customerName: string | null;
-  clientRequest: string | null;
-  status: Offer["status"];
-  generatedAt: string;
-  updatedAt: string;
-  items: OfferLineItem[];
-  unmatched: string[];
-  notes: string[];
-  discountPercent: number;
-  createdBy: string | null;
-  createdByName: string | null;
-  updatedBy: string | null;
-  updatedByName: string | null;
-};
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -77,64 +49,18 @@ function deduplicateItems(generated: GeneratedOffer): {
   return { items, extraUnmatched };
 }
 
-function rowToCreatedOffer(row: OfferRow): CreatedOffer {
-  return {
-    id: row.id,
-    name: row.name,
-    customerName: row.customerName,
-    clientRequest: row.clientRequest,
-    status: row.status,
-    generatedAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    items: row.items,
-    unmatched: row.unmatched,
-    notes: row.notes,
-    discountPercent: row.discountPercent,
-    createdBy: row.createdBy,
-    createdByName: row.createdByName,
-    updatedBy: row.updatedBy,
-    updatedByName: row.updatedByName,
-  };
+function computeTotals(quantity: number, unitPriceNet: number, vatRate: number) {
+  const unitGrossPrice = round4(unitPriceNet * (1 + vatRate / 100));
+  const totalNet = round4(quantity * unitPriceNet);
+  const totalGross = round4(quantity * unitGrossPrice);
+  return { unitGrossPrice, totalNet, totalGross };
 }
 
-export function toOfferDomain(offer: CreatedOffer): Offer {
-  return {
-    id: offer.id,
-    requestId: offer.id,
-    name: offer.name,
-    customerName: offer.customerName ?? undefined,
-    clientRequest: offer.clientRequest ?? undefined,
-    status: offer.status as Offer["status"],
-    generatedAt: offer.generatedAt,
-    updatedAt: offer.updatedAt,
-    notes: offer.notes,
-    unmatched: offer.unmatched,
-    discountPercent: offer.discountPercent,
-    createdBy: offer.createdBy ? { id: offer.createdBy, name: offer.createdByName ?? "" } : null,
-    updatedBy: offer.updatedBy ? { id: offer.updatedBy, name: offer.updatedByName ?? "" } : null,
-    items: offer.items.map((item) => ({
-      offerProductId: item.offerProductId,
-      productId: item.productId,
-      quantity: item.quantity,
-      rationale: item.rationale,
-      requestItem: item.requestItem,
-      unitPriceNet: item.unitPriceNet,
-      currency: item.currency as Offer["items"][number]["currency"],
-      product: {
-        id: item.productId,
-        sku: item.productSku,
-        name: item.productName,
-        description: item.productDescription,
-        manufacturer: item.productManufacturer,
-        priceNet: item.unitPriceNet,
-        currency: item.currency as NonNullable<Offer["items"][number]["product"]>["currency"],
-        source: "semantic-search" as const,
-      },
-    })),
-  };
+function round4(n: number): number {
+  return Math.round(n * 10000) / 10000;
 }
 
-// ── Service ────────────────────────────────────────────────────────────────────
+// ── Public service ─────────────────────────────────────────────────────────────
 
 export async function createOffer(
   customerName: string | undefined,
@@ -142,70 +68,110 @@ export async function createOffer(
   generated: GeneratedOffer,
   userId?: string | null,
   name?: string,
-): Promise<CreatedOffer> {
+): Promise<Offer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
+  const offerCurrency = "PLN";
 
-  // Pre-validate product IDs outside transaction to build unmatched list.
+  // Validate products exist before we open a transaction.
   const productIds = items.map((i) => i.productId);
   const existingProducts =
     productIds.length > 0
       ? await db
-          .select({ id: products.id, priceNet: products.priceNet, currency: products.currency })
+          .select({ id: products.id, name: products.name, description: products.description })
           .from(products)
           .where(inArray(products.id, productIds))
       : [];
-  const priceMap = new Map(existingProducts.map((p) => [p.id, p]));
-  const validItems = items.filter((item) => priceMap.has(item.productId));
+  const productMap = new Map(existingProducts.map((p) => [p.id, p]));
+  const validItems = items.filter((item) => productMap.has(item.productId));
   const hallucinated = items
-    .filter((item) => !priceMap.has(item.productId))
+    .filter((item) => !productMap.has(item.productId))
     .map((item) => item.requestItem);
 
-  return db.transaction(async (tx) => {
-    const offer = await insertOffer(
+  const priceMap = await findActivePricesForProducts(
+    validItems.map((i) => i.productId),
+    offerCurrency,
+  );
+
+  const offerId = await db.transaction(async (tx) => {
+    const customer = customerName?.trim()
+      ? await upsertCustomerByName(customerName.trim(), "manual", tx)
+      : null;
+
+    const request = await insertRequest(
       {
-        name: name ?? "Draft",
-        customerName: customerName ?? null,
-        clientRequest,
-        status: "draft",
-        notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
-        createdBy: userId ?? null,
-        updatedBy: userId ?? null,
+        customerId: customer?.id ?? null,
+        rawText: clientRequest,
+        source: "manual",
       },
       tx,
     );
 
-    await insertOfferProducts(
-      validItems.map((item, index) => {
-        const catalog = priceMap.get(item.productId)!;
-        return {
-          offerId: offer.id,
-          productId: item.productId,
-          requestItem: item.requestItem,
-          quantity: item.quantity,
-          unitPriceNet: catalog.priceNet ?? 0,
-          currency: catalog.currency ?? "PLN",
-          rationale: item.rationale,
-          position: index,
-        };
-      }),
+    const offer = await insertOffer(
+      {
+        name: name ?? "Draft",
+        customerId: customer?.id ?? null,
+        requestId: request.id,
+        userId: userId ?? null,
+        status: "draft",
+        currency: offerCurrency,
+        notes: generated.notes,
+        unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
+      },
       tx,
     );
 
-    const row = await findOfferById(offer.id, tx);
-    return rowToCreatedOffer(row!);
+    const itemInserts: InsertOfferItemData[] = validItems.map((item, index) => {
+      const product = productMap.get(item.productId)!;
+      const price = priceMap.get(item.productId);
+      const unitPriceNet = price?.net ?? 0;
+      const vatRate = price?.vatRate ?? 23;
+      const { unitGrossPrice, totalNet, totalGross } = computeTotals(
+        item.quantity,
+        unitPriceNet,
+        vatRate,
+      );
+      const matchSource: MatchSource = item.matchSource ?? "semantic";
+      const matchScore = item.matchScore ?? null;
+      return {
+        offerId: offer.id,
+        productId: item.productId,
+        name: product.name,
+        description: product.description,
+        quantity: item.quantity,
+        unitPriceNet,
+        vatRate,
+        unitGrossPrice,
+        totalNet,
+        totalGross,
+        requestItem: item.requestItem,
+        rationale: item.rationale,
+        matchSource,
+        matchScore,
+        position: index,
+      };
+    });
+
+    await insertOfferItems(itemInserts, tx);
+
+    return offer.id;
   });
+
+  const created = await getOffer(offerId);
+  if (!created) {
+    throw new Error("Offer was created but could not be loaded");
+  }
+  return created;
 }
 
 export async function getOffer(id: string): Promise<Offer | null> {
   const row = await findOfferById(id);
   if (!row) return null;
-  return toOfferDomain(rowToCreatedOffer(row));
+  return offerRowToDomain(row);
 }
 
 export async function updateOfferStatusAndFetch(
   offerId: string,
-  status: Offer["status"],
+  status: OfferStatus,
   userId?: string | null,
 ): Promise<Offer | null> {
   return updateOfferMeta(offerId, { status }, userId);
@@ -220,7 +186,7 @@ export async function updateOfferMeta(
     const existing = await findOfferById(offerId, tx);
     if (!existing) return null;
 
-    // If the offer is accepted, only allow changing status back to draft (reopening)
+    // Locked offer can only be reopened to draft.
     if (existing.status === "accepted" && data.status !== "draft") {
       return null;
     }
@@ -228,26 +194,19 @@ export async function updateOfferMeta(
     const updated = await persistOfferMeta(offerId, data, tx);
     if (!updated) return null;
 
-    // If the offer was just accepted, sync prices from catalog and lock them by saving a final revision
+    if (userId !== undefined) {
+      await touchOffer(offerId, userId ?? null, tx);
+    }
+
     const hasContentChanges = Object.keys(data).some((key) => key !== "status");
     if (data.status === "accepted") {
-      // Sync current catalog prices to offer_products before locking
-      await tx
-        .update(offerProducts)
-        .set({
-          unitPriceNet: products.priceNet,
-          currency: products.currency,
-        })
-        .from(products)
-        .where(and(eq(offerProducts.offerId, offerId), eq(offerProducts.productId, products.id)));
-
       await saveRevision(offerId, userId ?? null, new Date(), tx);
     } else if (hasContentChanges) {
       await saveRevision(offerId, userId ?? null, undefined, tx);
     }
 
     const row = await findOfferById(offerId, tx);
-    return row ? toOfferDomain(rowToCreatedOffer(row)) : null;
+    return row ? offerRowToDomain(row) : null;
   });
 }
 
@@ -258,6 +217,8 @@ export async function deleteOffer(offerId: string): Promise<boolean> {
   return true;
 }
 
+// ── Line item operations ───────────────────────────────────────────────────────
+
 export async function addProductToOffer(
   offerId: string,
   productId: string,
@@ -265,87 +226,96 @@ export async function addProductToOffer(
   requestItem = "",
   userId?: string | null,
   rationale = "",
-): Promise<CreatedOffer | null | "duplicate" | "locked"> {
+): Promise<Offer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+  if (existing.status === "accepted") return "locked";
 
-  // Prevent adding products to an accepted offer
-  if (existing.status === "accepted") {
-    return "locked";
-  }
+  if (existing.items.some((i) => i.productId === productId)) return "duplicate";
 
-  const duplicate = existing.items.find((i) => i.productId === productId);
-  if (duplicate) return "duplicate";
-  const product = await db
-    .select({ priceNet: products.priceNet, currency: products.currency })
+  const [product] = await db
+    .select({ id: products.id, name: products.name, description: products.description })
     .from(products)
-    .where(eq(products.id, productId))
-    .then((rows) => rows[0]);
-
+    .where(inArray(products.id, [productId]));
   if (!product) return null;
 
-  await insertOfferProduct({
+  const priceMap = await findActivePricesForProducts([productId], existing.currency);
+  const price = priceMap.get(productId);
+  const unitPriceNet = price?.net ?? 0;
+  const vatRate = price?.vatRate ?? 23;
+  const { unitGrossPrice, totalNet, totalGross } = computeTotals(quantity, unitPriceNet, vatRate);
+
+  await insertOfferItem({
     offerId,
     productId,
-    requestItem,
+    name: product.name,
+    description: product.description,
     quantity,
-    unitPriceNet: product.priceNet ?? 0,
-    currency: product.currency ?? "PLN",
+    unitPriceNet,
+    vatRate,
+    unitGrossPrice,
+    totalNet,
+    totalGross,
+    requestItem,
     rationale,
+    matchSource: "manual",
+    matchScore: null,
     position: existing.items.length,
   });
-  await setOfferUpdatedBy(offerId, userId ?? null);
+  await touchOffer(offerId, userId ?? null);
   await saveRevision(offerId, userId ?? null);
-  const row = await findOfferById(offerId);
-  return rowToCreatedOffer(row!);
+  return getOffer(offerId);
 }
 
 export async function updateOfferLineItem(
-  offerProductId: string,
+  offerItemId: string,
   offerId: string,
   quantity: number,
   userId?: string | null,
-): Promise<CreatedOffer | null | "locked"> {
+): Promise<Offer | null | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
+  if (existing.status === "accepted") return "locked";
 
-  // Prevent editing line items in an accepted offer
-  if (existing.status === "accepted") {
-    return "locked";
-  }
-
-  const item = existing.items.find((i) => i.offerProductId === offerProductId);
+  const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return null;
-  await updateOfferProduct(offerProductId, offerId, { quantity });
-  await setOfferUpdatedBy(offerId, userId ?? null);
+
+  const { unitGrossPrice, totalNet, totalGross } = computeTotals(
+    quantity,
+    item.unitPriceNet,
+    item.vatRate,
+  );
+
+  await updateOfferItem(offerItemId, offerId, {
+    quantity,
+    unitGrossPrice,
+    totalNet,
+    totalGross,
+  });
+  await touchOffer(offerId, userId ?? null);
   await saveRevision(offerId, userId ?? null);
-  const row = await findOfferById(offerId);
-  return rowToCreatedOffer(row!);
+  return getOffer(offerId);
 }
 
 export async function removeOfferLineItem(
-  offerProductId: string,
+  offerItemId: string,
   offerId: string,
   userId?: string | null,
 ): Promise<boolean | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
+  if (existing.status === "accepted") return "locked";
 
-  // Prevent removing products from an accepted offer
-  if (existing.status === "accepted") {
-    return "locked";
-  }
-
-  const item = existing.items.find((i) => i.offerProductId === offerProductId);
+  const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return false;
-  await deleteOfferProduct(offerProductId, offerId);
-  await setOfferUpdatedBy(offerId, userId ?? null);
+  await deleteOfferItem(offerItemId, offerId);
+  await touchOffer(offerId, userId ?? null);
   await saveRevision(offerId, userId ?? null);
   return true;
 }
 
 export async function getOffers() {
-  return await getRecentOffers(100);
+  return getRecentOffers(100);
 }
 
 export { getRecentOffers };
@@ -395,3 +365,7 @@ export async function bulkAddProductsToOffer(
   const finalOffer = await getOffer(offerId);
   return { results, offer: finalOffer };
 }
+
+// ── Re-exports for callers expecting OfferRow shape ────────────────────────────
+
+export type { OfferRow };

@@ -21,18 +21,15 @@ type OfferAcceptedViewProps = {
 
 function toDraftLines(offer: Offer): DraftLine[] {
   return offer.items.map((item) => ({
-    offerProductId: item.offerProductId,
-    productId: item.productId,
+    offerProductId: item.id,
+    productId: item.productId ?? "",
     sku: item.product?.sku,
-    name: item.product?.name ?? item.productId,
-    description: item.product?.description,
-    manufacturer: item.product?.manufacturer,
-    availability: item.product?.availability,
-    source: item.product?.source,
+    name: item.name,
+    description: item.description,
     quantity: item.quantity,
     requestItem: item.requestItem,
-    unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-    currency: item.currency ?? item.product?.currency ?? "PLN",
+    unitPrice: item.unitPriceNet,
+    currency: offer.currency,
     rationale: item.rationale,
   }));
 }
@@ -96,7 +93,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
               {offer.createdBy?.name && (
                 <span
                   className="flex items-center gap-1.5"
-                  title={new Date(offer.generatedAt).toLocaleString("pl-PL")}
+                  title={new Date(offer.createdAt).toLocaleString("pl-PL")}
                 >
                   <User size={11} aria-hidden="true" />
                   {t("createdBy", { name: offer.createdBy.name })}

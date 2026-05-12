@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { CreatedOffer } from "@/server/offers/offerService";
+import type { Offer } from "@solivio/domain";
 
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
@@ -69,7 +69,7 @@ export function NewOfferForm() {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const json = (await response.json()) as { offer: CreatedOffer };
+      const json = (await response.json()) as { offer: Offer };
       setGenerationState("complete");
       setGenerationElapsedMs(Date.now() - startedAt);
       setNoticeKey("generated");

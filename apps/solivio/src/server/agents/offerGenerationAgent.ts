@@ -83,6 +83,20 @@ const offerItemSchema = z.object({
   requestItem: z.string().describe("Exact phrase from the customer request for this item"),
   quantity: z.number().int().positive().describe("Quantity the customer requested"),
   rationale: z.string().describe("Why this product matches the request"),
+  matchSource: z
+    .enum(["exact", "semantic", "manual"])
+    .nullable()
+    .describe(
+      "'exact' when the customer fragment was a SKU and matched 1:1; 'semantic' when retrieved via vector search and reranked. Use null when not applicable.",
+    ),
+  matchScore: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .describe(
+      "Similarity of the picked candidate (1.0 for exact SKU, cosine for semantic). Use null when not applicable.",
+    ),
 });
 
 const fragmentKindSchema = z

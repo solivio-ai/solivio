@@ -34,18 +34,15 @@ type FailedSaveAction =
 
 function toDraftLines(offer: Offer): DraftLine[] {
   return offer.items.map((item) => ({
-    offerProductId: item.offerProductId,
-    productId: item.productId,
+    offerProductId: item.id,
+    productId: item.productId ?? "",
     sku: item.product?.sku,
-    name: item.product?.name ?? item.productId,
-    description: item.product?.description,
-    manufacturer: item.product?.manufacturer,
-    availability: item.product?.availability,
-    source: item.product?.source,
+    name: item.name,
+    description: item.description,
     quantity: item.quantity,
     requestItem: item.requestItem,
-    unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-    currency: item.currency ?? item.product?.currency ?? "PLN",
+    unitPrice: item.unitPriceNet,
+    currency: offer.currency,
     rationale: item.rationale,
   }));
 }
@@ -56,15 +53,8 @@ function toUpdateItems(lines: DraftLine[]) {
     quantity: line.quantity,
     rationale: line.rationale,
     requestItem: line.requestItem,
-    product: {
-      id: line.productId,
-      sku: line.sku,
-      name: line.name,
-      description: line.description,
-      manufacturer: line.manufacturer,
-      availability: line.availability,
-      source: line.source ?? ("database" as const),
-    },
+    name: line.name,
+    description: line.description,
   }));
 }
 
@@ -121,7 +111,7 @@ export function OfferBuilder({
   const discount = subtotal * (discountPercent / 100);
   const total = subtotal - discount;
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
-  const generatedDate = offer.generatedAt.slice(0, 10);
+  const generatedDate = offer.createdAt.slice(0, 10);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -433,7 +423,7 @@ export function OfferBuilder({
         offerTitle={offerHeaderTitle}
         status={status}
         createdBy={offer.createdBy}
-        createdAt={offer.generatedAt}
+        createdAt={offer.createdAt}
         updatedBy={offer.updatedBy}
         updatedAt={offer.updatedAt}
       />

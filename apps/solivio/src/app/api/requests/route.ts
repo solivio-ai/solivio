@@ -41,34 +41,18 @@ export async function POST(request: NextRequest) {
   }
 
   const body = input.data;
-  const customerText = body.customerText?.trim() || demoRequest.text;
+  const rawText = body.customerText?.trim() || demoRequest.rawText;
 
   return NextResponse.json(
     customerRequestResponseSchema.parse({
       request: {
         ...demoRequest,
         id: `request-${Date.now()}`,
-        customerName: body.customerName?.trim() || demoRequest.customerName,
-        text: customerText,
-        requirements: extractMockRequirements(customerText),
+        customerId: demoRequest.customerId,
+        rawText,
+        source: "manual",
       },
     }),
     { status: 201 },
   );
-}
-
-function extractMockRequirements(text: string) {
-  const normalized = text.toLowerCase();
-  const requirements = [
-    normalized.includes("battery") || normalized.includes("storage")
-      ? "battery storage"
-      : undefined,
-    normalized.includes("monitor") ? "energy monitoring" : undefined,
-    normalized.includes("office") ? "small commercial installation" : undefined,
-    normalized.includes("solar") || normalized.includes("photovoltaic")
-      ? "photovoltaic panels"
-      : undefined,
-  ].filter((requirement): requirement is string => Boolean(requirement));
-
-  return requirements.length > 0 ? requirements : demoRequest.requirements;
 }

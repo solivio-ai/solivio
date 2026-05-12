@@ -9,7 +9,6 @@ const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
   sku: ["sku", "id", "kod", "index", "symbol"],
   name: ["name", "nazwa", "product", "produkt"],
   description: ["description", "opis", "summary"],
-  manufacturer: ["manufacturer", "marka", "brand", "producent", "vendor"],
   priceNet: ["price_net", "pricenet", "cena_netto", "net_price", "netto"],
   priceGross: ["price_gross", "pricegross", "cena_brutto", "gross_price", "brutto"],
   vatRate: ["vat_rate", "vatrate", "vat", "stawka_vat", "tax_rate"],
@@ -124,7 +123,6 @@ export function extractProductRows(
     !columnMap.sku ||
     !columnMap.name ||
     !columnMap.description ||
-    !columnMap.manufacturer ||
     !columnMap.priceNet ||
     !columnMap.priceGross ||
     !columnMap.vatRate ||
@@ -137,7 +135,6 @@ export function extractProductRows(
     const sku = row[columnMap.sku] ?? "";
     const name = row[columnMap.name] ?? "";
     const description = row[columnMap.description] ?? "";
-    const manufacturer = row[columnMap.manufacturer] ?? "";
     const currency = (row[columnMap.currency] ?? "").toUpperCase();
     const priceNet = parseDecimal(row[columnMap.priceNet] ?? "");
     const priceGross = parseDecimal(row[columnMap.priceGross] ?? "");
@@ -147,7 +144,6 @@ export function extractProductRows(
       sku &&
       name &&
       description &&
-      manufacturer &&
       currency &&
       priceNet !== null &&
       priceGross !== null &&
@@ -157,7 +153,6 @@ export function extractProductRows(
         sku,
         name,
         description,
-        manufacturer,
         priceNet,
         priceGross,
         vatRate,

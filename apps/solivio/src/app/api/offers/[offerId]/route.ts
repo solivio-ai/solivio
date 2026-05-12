@@ -8,6 +8,17 @@ import {
 import { requireAuth } from "@/server/auth/session";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 import { deleteOffer, getOffer, updateOfferMeta } from "@/server/offers/offerService";
+import type { z } from "zod";
+
+function asDraftPatch(data: z.infer<typeof updateOfferRequestSchema>) {
+  return {
+    status: data.status,
+    name: data.name,
+    unmatched: data.unmatched,
+    discountPercent: data.discountPercent,
+    discountAmount: data.discountAmount,
+  };
+}
 
 export const runtime = "nodejs";
 
@@ -69,10 +80,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   const hasPersistedPatch =
     input.data.status !== undefined ||
     input.data.name !== undefined ||
-    input.data.customerName !== undefined ||
-    input.data.clientRequest !== undefined ||
     input.data.discountPercent !== undefined ||
-    input.data.unmatched !== undefined;
+    input.data.discountAmount !== undefined ||
+    input.data.unmatched !== undefined ||
+    input.data.notes !== undefined ||
+    input.data.currency !== undefined;
 
   const offer =
     isUuid(offerId) && hasPersistedPatch
@@ -81,14 +93,15 @@ export async function PATCH(request: Request, context: RouteContext) {
           {
             status: input.data.status,
             name: input.data.name,
-            customerName: input.data.customerName,
-            clientRequest: input.data.clientRequest,
+            currency: input.data.currency,
             discountPercent: input.data.discountPercent,
+            discountAmount: input.data.discountAmount,
+            notes: input.data.notes,
             unmatched: input.data.unmatched,
           },
           auth.session.user.id,
-        )) ?? updateOfferDraft(offerId, input.data))
-      : updateOfferDraft(offerId, input.data);
+        )) ?? updateOfferDraft(offerId, asDraftPatch(input.data)))
+      : updateOfferDraft(offerId, asDraftPatch(input.data));
 
   if (!offer) {
     const existing = isUuid(offerId) ? await getOffer(offerId) : null;

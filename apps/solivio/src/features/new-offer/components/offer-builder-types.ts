@@ -1,5 +1,3 @@
-import type { Offer } from "@solivio/domain";
-
 export type DraftLine = {
   offerProductId?: string;
   productId: string;
@@ -7,18 +5,18 @@ export type DraftLine = {
   name: string;
   description?: string;
   manufacturer?: string;
-  availability?: NonNullable<Offer["items"][number]["product"]>["availability"];
-  source?: NonNullable<Offer["items"][number]["product"]>["source"];
+  availability?: string;
+  source?: string;
   quantity: number;
   requestItem?: string;
   unitPrice: number;
-  currency: "PLN" | "EUR";
+  currency: string;
   rationale: string;
 };
 
 export type SaveState = "idle" | "saving" | "saved" | "error";
 
-export const formatCurrency = (amount: number, currency: DraftLine["currency"]) =>
+export const formatCurrency = (amount: number, currency: string) =>
   new Intl.NumberFormat("pl-PL", {
     currency,
     minimumFractionDigits: 2,

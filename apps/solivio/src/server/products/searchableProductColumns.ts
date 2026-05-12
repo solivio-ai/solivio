@@ -4,5 +4,4 @@ export const FIELD_COLUMNS = {
   sku: products.sku,
   name: products.name,
   description: products.description,
-  manufacturer: products.manufacturer,
 };

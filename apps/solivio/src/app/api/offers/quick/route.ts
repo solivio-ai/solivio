@@ -41,6 +41,8 @@ export async function POST(request: Request) {
       quantity: i.quantity,
       requestItem: t("offer.requestItem"),
       rationale: t("offer.rationale"),
+      matchSource: "manual" as const,
+      matchScore: null,
     })),
   };
 

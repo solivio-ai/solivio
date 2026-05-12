@@ -70,18 +70,30 @@ export const availabilitySchema = z
 
 export const currencySchema = z.enum(["PLN", "EUR"]).meta({ id: "Currency" });
 
+export const productPriceSchema = z
+  .object({
+    id: z.string(),
+    productId: z.string(),
+    currency: z.string(),
+    net: z.number().nonnegative(),
+    gross: z.number().nonnegative(),
+    vatRate: z.number().nonnegative(),
+    source: z.string(),
+  })
+  .meta({
+    id: "ProductPrice",
+    description: "A price quote for a product in a specific currency.",
+  });
+
 export const productSchema = z
   .object({
     id: z.string().meta({ examples: ["solar-panel-430"] }),
+    sku: z.string(),
     name: z.string().meta({ examples: ["Solar Panel 430 W"] }),
-    category: z.string().meta({ examples: ["photovoltaics"] }),
-    availability: availabilitySchema,
-    priceNet: z.number().nonnegative(),
-    currency: currencySchema,
-    tags: z.array(z.string()),
-    summary: z.string(),
+    description: z.string(),
+    source: z.string(),
+    prices: z.array(productPriceSchema),
   })
-  .strict()
   .meta({
     id: "Product",
     description: "A product candidate that can be matched into an offer.",
@@ -117,9 +129,6 @@ export const productSearchMatchSchema = z
     sku: z.string(),
     name: z.string(),
     description: z.string(),
-    manufacturer: z.string(),
-    nameSimilarity: z.number().min(-1).max(1),
-    descriptionSimilarity: z.number().min(-1).max(1),
     similarity: z.number().min(-1).max(1),
   })
   .strict()
@@ -141,21 +150,20 @@ export const productSearchResponseSchema = z
   });
 
 export const customerRequestSourceSchema = z
-  .enum(["manual", "chat", "email"])
+  .string()
   .meta({ id: "CustomerRequestSource" });
 
 export const customerRequestSchema = z
   .object({
     id: z.string().meta({ examples: ["request-demo-001"] }),
-    customerName: z.string().meta({ examples: ["Demo customer"] }),
+    customerId: z.string().nullable(),
+    rawText: z.string(),
     source: customerRequestSourceSchema,
-    text: z.string(),
-    requirements: z.array(z.string()),
   })
   .strict()
   .meta({
     id: "CustomerRequest",
-    description: "Raw customer request text plus extracted requirements.",
+    description: "Raw customer request captured at intake.",
   });
 
 export const createCustomerRequestRequestSchema = z
@@ -176,7 +184,13 @@ export const customerRequestResponseSchema = z
   .strict()
   .meta({ id: "CustomerRequestResponse" });
 
-export const offerStatusSchema = z.enum(["draft", "accepted"]).meta({ id: "OfferStatus" });
+export const offerStatusSchema = z
+  .enum(["draft", "accepted", "rejected"])
+  .meta({ id: "OfferStatus" });
+
+export const matchSourceSchema = z
+  .enum(["exact", "semantic", "manual"])
+  .meta({ id: "MatchSource" });
 
 export const offerItemProductSchema = z
   .object({
@@ -184,12 +198,6 @@ export const offerItemProductSchema = z
     sku: z.string().optional(),
     name: z.string(),
     description: z.string().optional(),
-    manufacturer: z.string().optional(),
-    availability: availabilitySchema.optional(),
-    priceNet: z.number().nonnegative().optional(),
-    currency: currencySchema.optional(),
-    matchScore: z.number().min(-1).max(1).optional(),
-    source: z.enum(["demo", "database", "semantic-search"]),
   })
   .strict()
   .meta({
@@ -199,17 +207,23 @@ export const offerItemProductSchema = z
 
 export const offerItemSchema = z
   .object({
-    offerProductId: z.string().optional(),
-    productId: z.string(),
-    productName: z.string().optional(),
-    productSku: z.string().optional(),
-    quantity: z.number().int().positive(),
-    requestItem: z.string().optional(),
+    id: z.string().optional(),
+    offerId: z.string().optional(),
+    productId: z.string().nullable(),
+    name: z.string(),
+    description: z.string(),
+    quantity: z.number().positive(),
+    unitPriceNet: z.number().nonnegative(),
+    vatRate: z.number().nonnegative(),
+    unitGrossPrice: z.number().nonnegative(),
+    totalNet: z.number().nonnegative(),
+    totalGross: z.number().nonnegative(),
+    requestItem: z.string(),
     rationale: z.string(),
-    confidence: z.number().min(0).max(100).optional(),
-    unitPriceNet: z.number().nonnegative().optional(),
-    currency: currencySchema.optional(),
-    product: offerItemProductSchema.optional(),
+    matchSource: matchSourceSchema.nullable(),
+    matchScore: z.number().nullable(),
+    position: z.number().int().nonnegative(),
+    product: offerItemProductSchema.nullable().optional(),
   })
   .meta({
     id: "OfferItem",
@@ -252,17 +266,21 @@ export const updateOfferLineItemRequestSchema = z
 export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
-    requestId: z.string(),
-    name: z.string().optional(),
+    customerId: z.string().nullable(),
+    requestId: z.string().nullable(),
+    userId: z.string().nullable(),
+    name: z.string(),
+    status: offerStatusSchema,
+    currency: z.string(),
+    discountPercent: z.number().min(0).max(100),
+    discountAmount: z.number().nonnegative(),
+    notes: z.array(z.string()),
+    unmatched: z.array(z.string()),
+    items: z.array(offerItemSchema),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
     customerName: z.string().nullable().optional(),
     clientRequest: z.string().nullable().optional(),
-    status: offerStatusSchema,
-    generatedAt: z.string().datetime(),
-    updatedAt: z.string().datetime().optional(),
-    items: z.array(offerItemSchema),
-    notes: z.array(z.string()),
-    unmatched: z.array(z.string()).optional(),
-    discountPercent: z.number().min(0).max(100),
     createdBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
     updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
   })
@@ -278,33 +296,44 @@ export const offerResponseSchema = z
   .strict()
   .meta({ id: "OfferResponse" });
 
-export const offerRevisionSnapshotLineItemSchema = z
+export const offerRevisionSnapshotItemSchema = z
   .object({
-    productId: z.string(),
-    sku: z.string(),
+    productId: z.string().nullable(),
+    sku: z.string().nullable(),
     name: z.string(),
+    description: z.string(),
     requestItem: z.string(),
-    quantity: z.number().int().positive(),
+    quantity: z.number().positive(),
     unitPriceNet: z.number().nonnegative(),
-    currency: z.string(),
+    vatRate: z.number().nonnegative(),
+    unitGrossPrice: z.number().nonnegative(),
+    totalNet: z.number().nonnegative(),
+    totalGross: z.number().nonnegative(),
     rationale: z.string(),
+    matchSource: matchSourceSchema.nullable(),
+    matchScore: z.number().nullable(),
+    position: z.number().int().nonnegative(),
   })
   .strict()
   .meta({
-    id: "OfferRevisionSnapshotLineItem",
+    id: "OfferRevisionSnapshotItem",
     description: "Line item captured in an offer revision snapshot.",
   });
 
 export const offerRevisionSnapshotSchema = z
   .object({
     name: z.string(),
+    customerId: z.string().nullable(),
     customerName: z.string().nullable(),
+    requestId: z.string().nullable(),
     clientRequest: z.string().nullable(),
     status: offerStatusSchema,
+    currency: z.string(),
+    discountPercent: z.number().min(0).max(100).default(0),
+    discountAmount: z.number().nonnegative().default(0),
     notes: z.array(z.string()),
     unmatched: z.array(z.string()),
-    discountPercent: z.number().min(0).max(100).default(0),
-    lineItems: z.array(offerRevisionSnapshotLineItemSchema),
+    items: z.array(offerRevisionSnapshotItemSchema),
   })
   .strict()
   .meta({
@@ -328,6 +357,7 @@ export const offerRevisionSchema = z
     snapshot: offerRevisionSnapshotSchema.optional(),
     createdBy: offerRevisionUserSchema.nullable(),
     createdAt: z.string().datetime(),
+    acceptedAt: z.string().datetime().nullable().optional(),
   })
   .strict()
   .meta({
@@ -357,22 +387,17 @@ export const restoreOfferRevisionResponseSchema = z
   .strict()
   .meta({ id: "RestoreOfferRevisionResponse" });
 
-/** Product snapshot for update payloads — priceNet and currency are stripped to prevent price overwrites. */
-const updateOfferItemProductSchema = offerItemProductSchema
-  .omit({ priceNet: true, currency: true })
-  .meta({
-    id: "UpdateOfferItemProduct",
-    description: "Product snapshot without pricing fields. Prices are read-only from the catalog.",
-  });
-
 export const updateOfferItemRequestSchema = z
   .object({
-    productId: z.string(),
-    quantity: z.number().int().positive().optional(),
+    id: z.string().optional(),
+    productId: z.string().nullable().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    quantity: z.number().positive().optional(),
     requestItem: z.string().optional(),
     rationale: z.string().optional(),
-    confidence: z.number().min(0).max(100).optional(),
-    product: updateOfferItemProductSchema.optional(),
+    matchSource: matchSourceSchema.nullable().optional(),
+    matchScore: z.number().nullable().optional(),
   })
   .strict()
   .meta({
@@ -384,12 +409,13 @@ export const updateOfferItemRequestSchema = z
 export const updateOfferRequestSchema = z
   .object({
     name: z.string().min(1).optional(),
-    customerName: z.string().nullable().optional(),
-    clientRequest: z.string().nullable().optional(),
     status: offerStatusSchema.optional(),
+    currency: z.string().optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
     unmatched: z.array(z.string()).optional(),
+    notes: z.array(z.string()).optional(),
     discountPercent: z.number().min(0).max(100).optional(),
+    discountAmount: z.number().nonnegative().optional(),
   })
   .strict()
   .meta({
@@ -563,7 +589,6 @@ export const productTextSearchMatchSchema = z
     sku: z.string(),
     name: z.string(),
     description: z.string(),
-    manufacturer: z.string(),
   })
   .strict()
   .meta({
@@ -584,7 +609,6 @@ export const productImportRowSchema = z
     sku: z.string().min(1),
     name: z.string().min(1),
     description: z.string().min(1),
-    manufacturer: z.string().min(1),
     priceNet: z.number().nonnegative(),
     priceGross: z.number().nonnegative(),
     vatRate: z.number().min(0),
@@ -614,43 +638,15 @@ export const productImportResponseSchema = z
   .strict()
   .meta({ id: "ProductImportResponse" });
 
-export const createdOfferLineItemSchema = z
-  .object({
-    offerProductId: z.string(),
-    productId: z.string(),
-    productName: z.string(),
-    productSku: z.string(),
-    productDescription: z.string(),
-    productManufacturer: z.string(),
-    requestItem: z.string(),
-    quantity: z.number().int().positive(),
-    unitPriceNet: z.number().nonnegative(),
-    currency: z.string(),
-    rationale: z.string(),
-  })
-  .strict()
-  .meta({
-    id: "CreatedOfferLineItem",
-    description: "Persisted offer line returned immediately after offer creation.",
-  });
+export const createdOfferLineItemSchema = offerItemSchema.meta({
+  id: "CreatedOfferLineItem",
+  description: "Persisted offer line returned immediately after offer creation.",
+});
 
-export const createdOfferSchema = z
-  .object({
-    id: z.string(),
-    name: z.string(),
-    customerName: z.string().nullable(),
-    clientRequest: z.string().nullable(),
-    status: offerStatusSchema,
-    generatedAt: z.string().datetime(),
-    items: z.array(createdOfferLineItemSchema),
-    unmatched: z.array(z.string()),
-    notes: z.array(z.string()),
-  })
-  .strict()
-  .meta({
-    id: "CreatedOffer",
-    description: "Persisted offer shape returned by creation endpoints.",
-  });
+export const createdOfferSchema = offerSchema.meta({
+  id: "CreatedOffer",
+  description: "Persisted offer shape returned by creation endpoints.",
+});
 
 export const createdOfferResponseSchema = z
   .object({

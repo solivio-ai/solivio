@@ -37,7 +37,7 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   const items = offer.items.map((item) => ({
-    name: item.product?.name ?? item.productId,
+    name: item.name || item.productId || "Item",
     sku: item.product?.sku,
     quantity: item.quantity,
   }));

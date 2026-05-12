@@ -71,10 +71,14 @@ export function OfferRevisionModal({
   const snapshot = fullRevision?.snapshot;
 
   const subtotal =
-    snapshot?.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPriceNet, 0) ?? 0;
+    snapshot?.items.reduce(
+      (sum: number, item: { quantity: number; unitPriceNet: number }) =>
+        sum + item.quantity * item.unitPriceNet,
+      0,
+    ) ?? 0;
   const discount = subtotal * ((snapshot?.discountPercent ?? 0) / 100);
   const total = subtotal - discount;
-  const currency = snapshot?.lineItems[0]?.currency as "PLN" | "EUR" | undefined;
+  const currency = snapshot?.currency ?? "PLN";
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -86,9 +90,9 @@ export function OfferRevisionModal({
         <DialogHeader className="gap-1 border-b px-5 py-4">
           <div className="flex items-center gap-2 pr-6">
             <DialogTitle>{tModal("title", { number: revision?.revisionNumber ?? "" })}</DialogTitle>
-            {revision?.name && (
+            {revision?.snapshot?.name && (
               <span className="text-sm font-normal text-muted-foreground italic">
-                — {revision.name}
+                — {revision.snapshot.name}
               </span>
             )}
             {revision?.acceptedAt && (
@@ -169,7 +173,7 @@ export function OfferRevisionModal({
               {/* Line items */}
               <section className="grid gap-2">
                 <h3 className="text-sm font-medium">
-                  {tModal("lineItems", { count: snapshot.lineItems.length })}
+                  {tModal("lineItems", { count: snapshot.items.length })}
                 </h3>
                 <div className="rounded-lg border border-foreground/15 overflow-hidden">
                   <table className="w-full text-sm">
@@ -182,7 +186,7 @@ export function OfferRevisionModal({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-foreground/10">
-                      {snapshot.lineItems.map((item) => (
+                      {snapshot.items.map((item) => (
                         <tr key={item.productId} className="bg-background/60">
                           <td className="px-3 py-2.5">
                             <span className="font-medium">{item.name}</span>
@@ -197,13 +201,10 @@ export function OfferRevisionModal({
                           </td>
                           <td className="px-3 py-2.5 text-right">{item.quantity}</td>
                           <td className="px-3 py-2.5 text-right tabular-nums">
-                            {formatCurrency(item.unitPriceNet, item.currency as "PLN" | "EUR")}
+                            {formatCurrency(item.unitPriceNet, currency)}
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums font-medium">
-                            {formatCurrency(
-                              item.quantity * item.unitPriceNet,
-                              item.currency as "PLN" | "EUR",
-                            )}
+                            {formatCurrency(item.quantity * item.unitPriceNet, currency)}
                           </td>
                         </tr>
                       ))}

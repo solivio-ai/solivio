@@ -37,12 +37,12 @@ export function buildPdfOfferPayload(offer: Offer): PdfOfferRequest {
     },
     items: offer.items.map((item) => ({
       sku: item.product?.sku,
-      name: item.product?.name || item.productId,
-      description: item.product?.description,
+      name: item.name || item.productId || "Item",
+      description: item.description,
       quantity: item.quantity,
       unit: "szt.",
-      unitPriceNet: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-      vatRate: 0.23,
+      unitPriceNet: item.unitPriceNet,
+      vatRate: item.vatRate / 100,
     })),
     terms: {},
   };
