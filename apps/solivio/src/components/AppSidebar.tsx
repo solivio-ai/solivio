@@ -21,7 +21,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { UserMenu } from "@/features/request-workbench/components/UserMenu";
+import { UserMenu } from "@/features/auth/components/UserMenu";
 import { cn } from "@/lib/utils";
 
 const navItems = [

@@ -1,7 +1,6 @@
 import "server-only";
 
 import type { Offer, OfferItem } from "@solivio/domain";
-import { demoOffer } from "@solivio/domain";
 
 type OfferStore = Map<string, Offer>;
 
@@ -18,7 +17,7 @@ export function saveOfferDraft(offer: Offer) {
 }
 
 export function getOfferDraft(id: string) {
-  return offerDrafts.get(id) ?? (id === demoOffer.id ? demoOffer : null);
+  return offerDrafts.get(id) ?? null;
 }
 
 export function updateOfferDraft(

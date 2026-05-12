@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { demoOffer } from "@solivio/domain";
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
-import { createOfferRequestSchema, offerResponseSchema } from "@/server/api/contracts";
+import { createOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
-
-export async function GET() {
-  const auth = await requireAuth();
-  if (auth.response) return auth.response;
-
-  return NextResponse.json(offerResponseSchema.parse({ offer: demoOffer }));
-}
 
 export async function POST(request: Request) {
   const auth = await requireAuth();
