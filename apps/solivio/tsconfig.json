@@ -4,7 +4,8 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@solivio/sdk": ["../../sdk/src/index.ts"]
     },
     "plugins": [
       {
@@ -17,7 +18,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../../packages/domain/src/**/*.ts"
+    "../../packages/domain/src/**/*.ts",
+    "../../sdk/src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
