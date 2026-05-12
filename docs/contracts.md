@@ -16,7 +16,7 @@ This file describes the **contract between the Solivio core and modules**. Right
 | **Package name** | `@solivio/sdk` |
 | **Location** | [`sdk/`](../sdk/) at repo root |
 | **Entry** | Published/consumed as `./dist/index.js` + `./dist/index.d.ts`; source under [`sdk/src/`](../sdk/src/) |
-| **Runtime dependency** | [`zod`](https://github.com/colinhacks/zod) — required for `AgentTool` parameter and output schemas |
+| **Runtime dependency** | [`@standard-schema/spec`](https://github.com/standard-schema/standard-schema) — Standard Schema v1 typings for `AgentTool` **`parameters`** and **`outputSchema`** (use any library that conforms to that spec, e.g. recent Zod) |
 
 **Monorepo usage**
 
@@ -27,7 +27,7 @@ This file describes the **contract between the Solivio core and modules**. Right
 **Build / publish**
 
 - `yarn workspace @solivio/sdk build` runs `tsc -p tsconfig.build.json` and emits `sdk/dist/` (see [`sdk/package.json`](../sdk/package.json)).
-- External consumers install `@solivio/sdk` from npm once published; they must depend on a compatible Zod v4.
+- External consumers install `@solivio/sdk` from npm once published; for agent tools they supply **`StandardSchemaV1`**-compatible schemas (and their own schema library dependency as needed).
 
 ---
 
@@ -39,7 +39,7 @@ Authoritative list: [`sdk/src/index.ts`](../sdk/src/index.ts).
 | --- | --- | --- |
 | `createModule` | function | Wraps a manifest for a stable default export |
 | `ModuleManifest` | type | Root shape every module provides |
-| `AgentTool` | type | Zod-typed tool callable by agents |
+| `AgentTool` | type | Standard Schema–typed tool callable by agents |
 | `ImporterDefinition`, `ImportResult`, `ImportStatus` | types | Product CSV-style import surface |
 | `RendererDefinition` | type | Offer snapshot → binary artifact |
 | `ProductInput` | type | Write DTO for products produced by importers |
@@ -56,7 +56,7 @@ Convention (see stub [`apps/solivio/src/server/modules/registry.ts`](../apps/sol
 - One folder per module id, e.g. `apps/solivio/src/server/modules/csv-products/index.ts`.
 - **`export default createModule({ … })`** — the core will aggregate these once wiring exists.
 - Register each module in `registry.ts` (e.g. `import csvProducts from "./csv-products"` into `registeredModules`). At bootstrap, validate ids and unique tool names; `ModuleManifest` is TS-only in the SDK until you add a runtime schema.
-- Modules must not import each other; use `@solivio/sdk`, `zod`, `@solivio/domain`, and core-exposed helpers — not cross-module imports.
+- Modules must not import each other; use `@solivio/sdk`, a Standard Schema–compatible schema library if you define agent tools, `@solivio/domain`, and core-exposed helpers — not cross-module imports.
 
 Module loading / registration in the running app is **not implemented yet**; `registeredModules` is empty until the first module is wired.
 
@@ -93,7 +93,7 @@ export default createModule({
 
 ### Agent tools — [`sdk/src/agent-tool.ts`](../sdk/src/agent-tool.ts)
 
-Shape matches Voltagent-style tool options: **`name`**, **`description`**, **`parameters`** (Zod), **`outputSchema`** (Zod), **`execute`** (`z.infer<TParams>` → `Promise<z.infer<TOutput>>`). Tool names must stay unique across all registered tools in a deployment.
+Shape matches Voltagent-style tool options: **`name`**, **`description`**, **`parameters`** ([`StandardSchemaV1`](https://standardschema.dev)), **`outputSchema`** (`StandardSchemaV1`), **`execute`** (`StandardSchemaV1.InferOutput<TParams>` → `Promise<StandardSchemaV1.InferOutput<TOutput>>`). Tool names must stay unique across all registered tools in a deployment.
 
 ### Importers — [`sdk/src/importer.ts`](../sdk/src/importer.ts)
 
