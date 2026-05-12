@@ -6,22 +6,20 @@ import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
 
 import { db } from "../database/db";
 import { offerItems, offers } from "../database/schema";
-import {
-  findOfferById,
-  insertOfferItems,
-  type InsertOfferItemData,
-  touchOffer,
-} from "./offerRepository";
+import type { InsertOfferItemData } from "./offerRepository";
+import { findOfferById, insertOfferItems, touchOffer } from "./offerRepository";
+import type { RevisionRow } from "./offerRevisionRepository";
 import {
   findRevisionById,
   findRevisionsByOfferId,
   insertRevision,
-  type RevisionRow,
 } from "./offerRevisionRepository";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
-function rowToRevision(row: Omit<RevisionRow, "snapshot"> & { snapshot?: OfferRevisionSnapshot }): OfferRevision {
+function rowToRevision(
+  row: Omit<RevisionRow, "snapshot"> & { snapshot?: OfferRevisionSnapshot },
+): OfferRevision {
   return {
     id: row.id,
     offerId: row.offerId,

@@ -13,9 +13,7 @@ export const offerItems = pgTable(
     productId: uuid("product_id").references(() => products.id),
     name: text("name").notNull(),
     description: text("description").notNull().default(""),
-    quantity: numeric("quantity", { precision: 12, scale: 3, mode: "number" })
-      .notNull()
-      .default(1),
+    quantity: numeric("quantity", { precision: 12, scale: 3, mode: "number" }).notNull().default(1),
     unitPriceNet: numeric("unit_price_net", { precision: 12, scale: 2, mode: "number" })
       .notNull()
       .default(0),

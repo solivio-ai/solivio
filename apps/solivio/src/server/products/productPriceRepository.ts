@@ -55,9 +55,7 @@ export async function findActivePricesForProducts(
       source: productPrices.source,
     })
     .from(productPrices)
-    .where(
-      and(inArray(productPrices.productId, productIds), eq(productPrices.currency, currency)),
-    );
+    .where(and(inArray(productPrices.productId, productIds), eq(productPrices.currency, currency)));
   return new Map(rows.map((row) => [row.productId, row]));
 }
 

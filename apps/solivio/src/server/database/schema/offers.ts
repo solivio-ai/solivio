@@ -3,9 +3,9 @@ import { check, index, numeric, pgTable, text, timestamp, uuid } from "drizzle-o
 
 import type { Offer } from "@solivio/domain";
 
+import { users } from "./auth";
 import { customers } from "./customers";
 import { requests } from "./requests";
-import { users } from "./auth";
 
 export const offers = pgTable(
   "offers",

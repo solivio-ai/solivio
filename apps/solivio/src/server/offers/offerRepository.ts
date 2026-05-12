@@ -6,14 +6,7 @@ import { alias } from "drizzle-orm/pg-core";
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 
 import { db } from "../database/db";
-import {
-  customers,
-  offerItems,
-  offers,
-  products,
-  requests,
-  users,
-} from "../database/schema";
+import { customers, offerItems, offers, products, requests, users } from "../database/schema";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
@@ -143,10 +136,7 @@ export async function updateOfferMeta(offerId: string, data: UpdateOfferMetaInpu
 }
 
 export async function touchOffer(offerId: string, userId: string | null, tx: Tx = db) {
-  await tx
-    .update(offers)
-    .set({ userId, updatedAt: new Date() })
-    .where(eq(offers.id, offerId));
+  await tx.update(offers).set({ userId, updatedAt: new Date() }).where(eq(offers.id, offerId));
 }
 
 export async function deleteOffer(offerId: string, tx: Tx = db) {

@@ -72,10 +72,8 @@ export function updateOfferDraft(
     ...offer,
     status: update.status ?? offer.status,
     name: update.name ?? offer.name,
-    customerName:
-      update.customerName !== undefined ? update.customerName : offer.customerName,
-    clientRequest:
-      update.clientRequest !== undefined ? update.clientRequest : offer.clientRequest,
+    customerName: update.customerName !== undefined ? update.customerName : offer.customerName,
+    clientRequest: update.clientRequest !== undefined ? update.clientRequest : offer.clientRequest,
     unmatched: update.unmatched ?? offer.unmatched,
     discountPercent: update.discountPercent ?? offer.discountPercent,
     discountAmount: update.discountAmount ?? offer.discountAmount,

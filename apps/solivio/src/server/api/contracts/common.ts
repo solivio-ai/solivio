@@ -81,13 +81,10 @@ export const unauthorizedResponseSchema = z
     description: "Returned when no valid Better Auth session is present.",
   });
 
-export const plainErrorResponseSchema = z
-  .object({ error: z.string() })
-  .strict()
-  .meta({
-    id: "PlainErrorResponse",
-    description: "Plain error payload (single error string).",
-  });
+export const plainErrorResponseSchema = z.object({ error: z.string() }).strict().meta({
+  id: "PlainErrorResponse",
+  description: "Plain error payload (single error string).",
+});
 
 // ── Health ─────────────────────────────────────────────────────────────────────
 

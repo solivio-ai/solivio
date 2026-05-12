@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { z } from "zod";
 
 import {
   errorResponseSchema,
@@ -8,7 +9,6 @@ import {
 import { requireAuth } from "@/server/auth/session";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 import { deleteOffer, getOffer, updateOfferMeta } from "@/server/offers/offerService";
-import type { z } from "zod";
 
 function asDraftPatch(data: z.infer<typeof updateOfferRequestSchema>) {
   return {

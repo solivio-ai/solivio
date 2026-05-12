@@ -1,13 +1,18 @@
 import type { ApiContract, ApiResponseContract } from "./common";
-import { errorResponseSchema, healthResponseSchema, plainErrorResponseSchema, unauthorizedResponseSchema } from "./common";
 import {
-  customerRequestResponseSchema,
+  errorResponseSchema,
+  healthResponseSchema,
+  plainErrorResponseSchema,
+  unauthorizedResponseSchema,
+} from "./common";
+import {
   createCustomerRequestRequestSchema,
+  customerRequestResponseSchema,
 } from "./customer-request";
 import {
-  createOfferRequestSchema,
   addOfferProductRequestSchema,
   createdOfferResponseSchema,
+  createOfferRequestSchema,
   offerResponseSchema,
   quickOfferRequestSchema,
   updateOfferLineItemRequestSchema,
@@ -40,9 +45,9 @@ import {
   productImportResponseSchema,
   productSearchRequestSchema,
   productSearchResponseSchema,
+  productsResponseSchema,
   productTextSearchRequestSchema,
   productTextSearchResponseSchema,
-  productsResponseSchema,
 } from "./product";
 
 const authenticatedResponses = <T extends Record<number, ApiResponseContract>>(responses: T) => ({

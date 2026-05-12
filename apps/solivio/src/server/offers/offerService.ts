@@ -10,6 +10,7 @@ import { db } from "../database/db";
 import { products } from "../database/schema";
 import { findActivePricesForProducts } from "../products/productPriceRepository";
 import { insertRequest } from "../requests/requestRepository";
+import type { InsertOfferItemData, OfferRow, UpdateOfferMetaInput } from "./offerRepository";
 import {
   deleteOfferItem,
   deleteOffer as deleteOfferRow,
@@ -19,12 +20,9 @@ import {
   insertOfferItem,
   insertOfferItems,
   offerRowToDomain,
+  updateOfferMeta as persistOfferMeta,
   touchOffer,
   updateOfferItem,
-  updateOfferMeta as persistOfferMeta,
-  type InsertOfferItemData,
-  type OfferRow,
-  type UpdateOfferMetaInput,
 } from "./offerRepository";
 import { saveRevision } from "./offerRevisionService";
 
