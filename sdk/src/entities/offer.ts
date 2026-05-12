@@ -4,7 +4,7 @@ export interface OfferSnapshotLineItem {
   name: string;
   /** Product description, useful for detailed renderers. */
   description?: string;
-  requestItem: string;
+  requestItem: string | null;
   quantity: number;
   /** Unit of measure, e.g. "pcs", "szt.". */
   unit?: string;
