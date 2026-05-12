@@ -10,6 +10,7 @@ COPY apps/solivio/package.json ./apps/solivio/
 COPY apps/docs/package.json ./apps/docs/
 COPY packages/domain/package.json ./packages/domain/
 COPY packages/theme/package.json ./packages/theme/
+COPY sdk/package.json ./sdk/
 
 RUN yarn install --immutable
 
@@ -25,6 +26,7 @@ COPY --from=deps /app/.yarnrc.yml ./
 COPY package.json yarn.lock tsconfig.base.json ./
 COPY solivio-logo.png solivio-logo-dark.png favicon.png ./
 COPY packages ./packages
+COPY sdk ./sdk
 COPY apps/solivio ./apps/solivio
 
 RUN mkdir -p apps/solivio/public \
