@@ -41,7 +41,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
           variant="ghost"
           size="icon-sm"
           className={cn(
-            "text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
+            "cursor-pointer text-muted-foreground hover:text-foreground focus-visible:border-border focus-visible:ring-1 focus-visible:ring-border",
             className,
           )}
           aria-label={label}

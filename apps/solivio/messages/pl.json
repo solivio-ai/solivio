@@ -329,7 +329,7 @@
       "title": "Znajdź produkt",
       "description": "Draft oferty z wybranych produktów."
     },
-    "searchPlaceholder": "Szukaj produktów...",
+    "searchPlaceholder": "Szukaj produktów",
     "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
     "noItemsSelected": "Brak wybranych pozycji",
     "actions": {

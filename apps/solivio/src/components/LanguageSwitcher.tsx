@@ -41,7 +41,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
           <TooltipTrigger asChild>
             <SelectTrigger
               className={cn(
-                "w-full",
+                "w-full cursor-pointer",
                 "group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:px-0",
                 "group-data-[collapsible=icon]:[&>svg:last-child]:hidden",
               )}
