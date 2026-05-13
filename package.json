@@ -8,7 +8,8 @@
   "workspaces": [
     "sdk",
     "packages/*",
-    "apps/*"
+    "apps/*",
+    "modules/*"
   ],
   "resolutions": {
     "postcss": "8.5.12"
@@ -27,13 +28,16 @@
     "e2e": "playwright test",
     "typecheck": "yarn workspaces foreach -Ap run typecheck",
     "start": "yarn workspace @solivio/app start",
-    "setup": "yarn db:up && yarn db:wait && yarn db:migrate",
+    "sdk:build": "yarn workspace @solivio/sdk build",
+    "modules:build": "yarn sdk:build && yarn workspaces foreach -A --include '@solivio/module-*' run build",
+    "setup": "yarn db:up && yarn db:wait && yarn db:migrate && yarn modules:build",
     "db:up": "docker compose up -d db",
     "db:wait": "node --env-file=apps/solivio/.env.local scripts/db-wait.mjs",
     "db:down": "docker compose down",
     "db:generate": "yarn workspace @solivio/app db:generate",
     "db:migrate": "yarn workspace @solivio/app db:migrate",
     "db:studio": "yarn workspace @solivio/app db:studio",
+    "modules:sync": "node scripts/sync-modules.mjs",
     "volt": "volt"
   },
   "devDependencies": {
