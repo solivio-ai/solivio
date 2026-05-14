@@ -55,11 +55,7 @@ export function OfferSummary({
               <div className="grid gap-2">
                 {notes.map((note) => (
                   <Alert key={note}>
-                    <AlertTriangle
-                      size={15}
-                      aria-hidden="true"
-                      className="shrink-0 text-primary"
-                    />
+                    <AlertTriangle size={15} aria-hidden="true" className="shrink-0 text-primary" />
                     <AlertDescription className="text-sm leading-relaxed">{note}</AlertDescription>
                   </Alert>
                 ))}
