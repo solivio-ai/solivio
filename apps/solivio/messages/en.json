@@ -4,7 +4,9 @@
       "dashboard": "Dashboard",
       "offers": "Offers",
       "newOffer": "New Offer",
-      "catalogUpload": "Catalog Upload"
+      "catalogUpload": "Catalog Upload",
+      "users": "Users",
+      "adminGroup": "Admin"
     },
     "aria": {
       "closeNavigation": "Close navigation menu",
@@ -25,6 +27,47 @@
     "signedInAs": "Signed in as",
     "logOut": "Log out",
     "changePassword": "Change password"
+  },
+  "UsersTable": {
+    "empty": "No users found.",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined"
+    },
+    "roles": {
+      "admin": "Admin",
+      "user": "User"
+    },
+    "search": {
+      "placeholder": "Search by name or email…",
+      "label": "Search users"
+    },
+    "filters": {
+      "label": "Filter by role",
+      "all": "All roles",
+      "admin": "Admin",
+      "user": "User"
+    },
+    "sort": {
+      "label": "Sort",
+      "joinedDesc": "Newest first",
+      "joinedAsc": "Oldest first",
+      "nameAsc": "Name A→Z",
+      "nameDesc": "Name Z→A"
+    },
+    "matchingEmpty": {
+      "title": "No users match",
+      "description": "Try adjusting your search or filters."
+    },
+    "actions": {
+      "clearFilters": "Clear filters"
+    }
+  },
+  "AdminUsersPage": {
+    "title": "Users",
+    "userCount": "{count, plural, one {# user total} other {# users total}}"
   },
   "ChangePassword": {
     "title": "Change password",

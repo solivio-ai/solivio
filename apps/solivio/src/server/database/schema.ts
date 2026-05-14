@@ -63,6 +63,12 @@ export const user = pgTable("user", {
   displayUsername: text("display_username"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
+
+  // Better Auth Admin plugin
+  role: text("role"),
+  banned: boolean("banned"),
+  banReason: text("ban_reason"),
+  banExpires: timestamp("ban_expires", { precision: 6, withTimezone: true }),
 });
 
 export const session = pgTable("session", {

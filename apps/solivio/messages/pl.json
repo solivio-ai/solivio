@@ -4,7 +4,9 @@
       "dashboard": "Panel",
       "offers": "Oferty",
       "newOffer": "Nowa oferta",
-      "catalogUpload": "Import katalogu"
+      "catalogUpload": "Import katalogu",
+      "users": "Użytkownicy",
+      "adminGroup": "Admin"
     },
     "aria": {
       "closeNavigation": "Zamknij menu nawigacji",
@@ -25,6 +27,47 @@
     "signedInAs": "Zalogowano jako",
     "logOut": "Wyloguj",
     "changePassword": "Zmień hasło"
+  },
+  "UsersTable": {
+    "empty": "Brak użytkowników.",
+    "columns": {
+      "name": "Nazwa",
+      "email": "E-mail",
+      "role": "Rola",
+      "joined": "Data dołączenia"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "user": "Użytkownik"
+    },
+    "search": {
+      "placeholder": "Szukaj po nazwie lub e-mailu…",
+      "label": "Szukaj użytkowników"
+    },
+    "filters": {
+      "label": "Filtruj według roli",
+      "all": "Wszystkie role",
+      "admin": "Administrator",
+      "user": "Użytkownik"
+    },
+    "sort": {
+      "label": "Sortuj",
+      "joinedDesc": "Najnowsze",
+      "joinedAsc": "Najstarsze",
+      "nameAsc": "Nazwa A→Z",
+      "nameDesc": "Nazwa Z→A"
+    },
+    "matchingEmpty": {
+      "title": "Brak wyników",
+      "description": "Spróbuj zmienić wyszukiwanie lub filtry."
+    },
+    "actions": {
+      "clearFilters": "Wyczyść filtry"
+    }
+  },
+  "AdminUsersPage": {
+    "title": "Użytkownicy",
+    "userCount": "{count, plural, one {# użytkownik} few {# użytkowników} many {# użytkowników} other {# użytkowników}}"
   },
   "ChangePassword": {
     "title": "Zmień hasło",

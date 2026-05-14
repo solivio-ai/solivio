@@ -3,7 +3,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { username } from "better-auth/plugins";
+import { admin, username } from "better-auth/plugins";
 
 import { db } from "@/server/database/db";
 import { account, session, user, verification } from "@/server/database/schema";
@@ -49,7 +49,7 @@ export const auth = betterAuth({
     disableSignUp: !authFlags.signUpEnabled,
   },
   socialProviders,
-  plugins: [nextCookies(), username()],
+  plugins: [nextCookies(), username(), admin()],
 });
 
 export type Session = typeof auth.$Infer.Session;
