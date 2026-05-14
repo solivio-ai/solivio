@@ -318,7 +318,8 @@
         "totalNet": "Total net",
         "close": "Close",
         "restoring": "Restoring...",
-        "restoreAction": "Restore this revision"
+        "restoreAction": "Restore this revision",
+        "previewUnavailable": "Revision preview is unavailable."
       }
     }
   },

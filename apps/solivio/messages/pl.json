@@ -320,7 +320,8 @@
         "totalNet": "Razem netto",
         "close": "Zamknij",
         "restoring": "Przywracanie...",
-        "restoreAction": "Przywróć tę wersję"
+        "restoreAction": "Przywróć tę wersję",
+        "previewUnavailable": "Podgląd wersji jest niedostępny."
       }
     }
   },
