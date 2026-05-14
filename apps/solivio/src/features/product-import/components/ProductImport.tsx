@@ -106,7 +106,13 @@ export function ProductImport({ accept }: Props) {
 
           {rawContent ? (
             <div className="flex flex-col gap-2">
-              <Button type="button" size="sm" onClick={handleImport} disabled={isSaving} className="w-fit">
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleImport}
+                disabled={isSaving}
+                className="w-fit"
+              >
                 <Upload size={16} aria-hidden="true" />
                 {isSaving ? t("card.importAction.embedding") : t("card.importAction.import")}
               </Button>

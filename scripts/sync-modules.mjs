@@ -3,12 +3,12 @@
  * Validates that solivio.config.json is in sync with the modules/ directory.
  *
  * Usage:
- *   node scripts/sync-modules.mjs           — report drift
+ *   node scripts/sync-modules.mjs           — report drift (exits 1 if out of sync)
  *   node scripts/sync-modules.mjs --write   — auto-add missing packages to solivio.config.json
  *
- * Note: adding packages to solivio.config.json is only the first step.
- * You must also add a loader entry in registry.ts and an entry in
- * transpilePackages in next.config.mjs for each new module.
+ * Note: adding a package to solivio.config.json is all that is needed for the
+ * registry to pick it up at runtime — no manual changes to registry.ts or
+ * next.config.mjs are required.
  */
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -52,12 +52,6 @@ if (process.argv.includes("--write")) {
   const updated = { ...config, modules: [...configuredModules, ...missing] };
   writeFileSync(configPath, `${JSON.stringify(updated, null, 2)}\n`);
   console.log("\nsolivio.config.json updated.");
-  if (missing.length > 0) {
-    console.log(
-      "Also add loader entries in apps/solivio/src/server/modules/registry.ts",
-      "and transpilePackages entries in apps/solivio/next.config.mjs.",
-    );
-  }
 } else if (missing.length > 0) {
   console.log("\nRun with --write to auto-add missing packages to solivio.config.json.");
   process.exit(1);
