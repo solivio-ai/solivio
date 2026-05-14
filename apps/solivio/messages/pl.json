@@ -197,7 +197,11 @@
       "backToDraft": "Przywróć do szkicu",
       "manuallyAdded": "Dodano ręcznie",
       "noRequestText": "Do tego szkicu nie dołączono tekstu zapytania klienta.",
-      "done": "Gotowe"
+      "done": "Gotowe",
+      "confirmMatch": "Dodaj produkt",
+      "matchSelectPrompt": "Wybierz produkt do dopasowania",
+      "matchingItem": "Dopasowujesz: „{item}\"",
+      "matchSelectedProduct": "Zostanie dodany: {name} × {quantity}"
     },
     "review": {
       "pageTitle": "Przegląd oferty",
@@ -258,6 +262,7 @@
         "unmatchedDescription": "Następujące pozycje z zapytania klienta nie mogły zostać przypisane do żadnego produktu w katalogu:",
         "removeUnmatched": "Oznacz jako rozwiązane",
         "removeUnmatchedAria": "Usuń niedopasowaną pozycję: {item}",
+        "manuallyMatchProduct": "Dopasuj ręcznie",
         "empty": "Brak produktów w tej ofercie.",
         "match": "Dopasowanie produktu",
         "qty": "Ilość",

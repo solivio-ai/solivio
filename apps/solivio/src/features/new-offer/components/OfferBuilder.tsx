@@ -15,6 +15,7 @@ import { OfferSummary } from "./OfferSummary";
 import type { ValidationResult } from "./OfferValidationDialog";
 import { OfferValidationDialog } from "./OfferValidationDialog";
 import type { DraftLine, SaveState } from "./offer-builder-types";
+import { ProductMatchDialog } from "./ProductMatchDialog";
 
 type OfferBuilderProps = {
   assistantToggle?: ReactNode;
@@ -99,6 +100,7 @@ export function OfferBuilder({
   const [validateState, setValidateState] = useState<"idle" | "loading">("idle");
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [matchingUnmatchedItem, setMatchingUnmatchedItem] = useState<string | null>(null);
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
   const [unmatched, setUnmatched] = useState<string[]>(() => offer.unmatched ?? []);
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
@@ -208,7 +210,7 @@ export function OfferBuilder({
     syncOffer(nextOffer);
   }
 
-  async function persistQuantity(line: DraftLine, nextQuantity: number) {
+  async function persistQuantity(line: DraftLine, nextQuantity: number): Promise<boolean> {
     const quantity = Math.max(1, Math.trunc(nextQuantity || 1));
     const nextLines = lines.map((currentLine) =>
       currentLine.productId === line.productId ? { ...currentLine, quantity } : currentLine,
@@ -220,8 +222,7 @@ export function OfferBuilder({
 
     try {
       if (!line.offerProductId) {
-        await saveReview(status, nextLines);
-        return;
+        return await saveReview(status, nextLines);
       }
 
       const response = await fetch(`/api/offers/${offer.id}/products/${line.offerProductId}`, {
@@ -232,8 +233,10 @@ export function OfferBuilder({
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
       markSaved();
+      return true;
     } catch {
       markSaveError({ kind: "quantity", productId: line.productId });
+      return false;
     } finally {
       markPending(line.productId, false);
     }
@@ -352,7 +355,66 @@ export function OfferBuilder({
     }
   }
 
-  async function saveReview(nextStatus = status, nextLines = lines) {
+  function handleManuallyMatch(item: string) {
+    setMatchingUnmatchedItem(item);
+  }
+
+  async function handleConfirmMatch(product: ProductSearchMatch, quantity: number) {
+    const item = matchingUnmatchedItem;
+    if (!item) return;
+    setMatchingUnmatchedItem(null);
+
+    const existing = lines.find((line) => line.productId === product.id);
+
+    if (existing) {
+      const ok = await persistQuantity(existing, quantity);
+      if (ok) {
+        await removeUnmatched(item);
+      }
+      return;
+    }
+
+    const optimisticLine: DraftLine = {
+      productId: product.id,
+      sku: product.sku,
+      name: product.name,
+      description: product.description,
+      manufacturer: product.manufacturer,
+      quantity,
+      requestItem: item,
+      unitPrice: 0,
+      currency: "PLN",
+      rationale: item,
+      source: "database",
+    };
+
+    setLines((current) => [...current, optimisticLine]);
+    markPending(product.id, true);
+    markSaving();
+
+    try {
+      const response = await fetch(`/api/offers/${offer.id}/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product.id,
+          quantity,
+          requestItem: item,
+        }),
+      });
+      const nextOffer = await parseOfferResponse(response);
+      syncOffer(nextOffer);
+      markSaved();
+      await removeUnmatched(item);
+    } catch {
+      setLines((current) => current.filter((line) => line.productId !== product.id));
+      markSaveError({ kind: "add-product", product, quantity });
+    } finally {
+      markPending(product.id, false);
+    }
+  }
+
+  async function saveReview(nextStatus = status, nextLines = lines): Promise<boolean> {
     markSaving();
 
     try {
@@ -373,8 +435,10 @@ export function OfferBuilder({
       }
 
       markSaved();
+      return true;
     } catch {
       markSaveError({ kind: "save-review" });
+      return false;
     }
   }
 
@@ -445,6 +509,7 @@ export function OfferBuilder({
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
         removeUnmatched={(item) => void removeUnmatched(item)}
+        onManuallyMatch={handleManuallyMatch}
         updateQuantity={updateQuantity}
         status={status}
       />
@@ -471,6 +536,15 @@ export function OfferBuilder({
             <Button onClick={() => setSearchOpen(false)}>{tBuilder("done")}</Button>
           </div>
         }
+      />
+
+      <ProductMatchDialog
+        open={matchingUnmatchedItem !== null}
+        onOpenChange={(open) => {
+          if (!open) setMatchingUnmatchedItem(null);
+        }}
+        unmatchedItem={matchingUnmatchedItem ?? ""}
+        onConfirm={(product, qty) => void handleConfirmMatch(product, qty)}
       />
 
       {validationResult && (

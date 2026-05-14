@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Info, Loader2, PackageSearch, Trash2 } from "lucide-react";
+import { AlertTriangle, Info, Loader2, PackageSearch, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -21,12 +21,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 import { ProductLineCard } from "./ProductLineCard";
+import { UnmatchedItem } from "./UnmatchedItem";
 
 type OfferProductsReviewProps = {
   commitQuantity: (productId: string) => void;
@@ -34,7 +34,8 @@ type OfferProductsReviewProps = {
   unmatched: string[];
   pendingProductIds: Set<string>;
   removeProduct: (productId: string) => void;
-  removeUnmatched?: (item: string) => void;
+  removeUnmatched: (item: string) => void;
+  onManuallyMatch: (item: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
   status: Offer["status"];
 };
@@ -56,6 +57,7 @@ export function OfferProductsReview({
   pendingProductIds,
   removeProduct,
   removeUnmatched,
+  onManuallyMatch,
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
@@ -138,24 +140,12 @@ export function OfferProductsReview({
             <ul className="text-sm space-y-1">
               {unmatched.map((item, idx) => (
                 <li key={idx} className="flex items-center justify-between gap-2">
-                  <span className="text-foreground">{item}</span>
-                  {removeUnmatched && !isLocked && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          className="size-6 shrink-0 text-muted-foreground hover:text-green-600"
-                          onClick={() => removeUnmatched(item)}
-                          aria-label={tProducts("removeUnmatched")}
-                        >
-                          <Check size={12} aria-hidden="true" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{tProducts("removeUnmatched")}</TooltipContent>
-                    </Tooltip>
-                  )}
+                  <UnmatchedItem
+                    item={item}
+                    modifyEnabled={!isLocked}
+                    onDelete={removeUnmatched}
+                    onManuallyMatch={onManuallyMatch}
+                  />
                 </li>
               ))}
             </ul>
