@@ -517,29 +517,6 @@ export const offerPdfQuerySchema = z
     description: "Set download=1 to return the PDF as an attachment.",
   });
 
-export const embeddingModelIdSchema = z
-  .enum(["text-embedding-3-large", "text-embedding-3-small"])
-  .meta({ id: "EmbeddingModelId" });
-
-export const embeddingModelSchema = z
-  .object({
-    id: embeddingModelIdSchema,
-    label: z.string(),
-    dimensions: z.number().int().positive(),
-  })
-  .strict()
-  .meta({
-    id: "EmbeddingModel",
-    description: "Embedding model that can be selected for product import.",
-  });
-
-export const embeddingModelsResponseSchema = z
-  .object({
-    models: z.array(embeddingModelSchema),
-  })
-  .strict()
-  .meta({ id: "EmbeddingModelsResponse" });
-
 export const productTextSearchFieldSchema = z
   .enum(["sku", "name", "description", "manufacturer"])
   .meta({ id: "ProductTextSearchField" });
@@ -598,13 +575,12 @@ export const productImportRowSchema = z
 
 export const productImportRequestSchema = z
   .object({
-    products: z.array(productImportRowSchema).min(1),
-    model: embeddingModelIdSchema.optional(),
+    content: z.string().min(1),
   })
   .strict()
   .meta({
     id: "ProductImportRequest",
-    description: "Products to upsert and embed.",
+    description: "Raw file content to import via the configured importer.",
   });
 
 export const productImportResponseSchema = z
@@ -825,19 +801,6 @@ export const apiContracts = [
       200: {
         description: "The app is reachable and reports database readiness.",
         schema: healthResponseSchema,
-      },
-    },
-  },
-  {
-    method: "get",
-    path: "/api/embedding-models",
-    operationId: "listEmbeddingModels",
-    summary: "List embedding models",
-    tags: ["Products"],
-    responses: {
-      200: {
-        description: "Embedding models available for product import.",
-        schema: embeddingModelsResponseSchema,
       },
     },
   },

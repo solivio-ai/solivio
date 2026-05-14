@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { embedMany } from "ai";
 import { sql } from "drizzle-orm";
 
-import type { ProductImportRow } from "@solivio/domain";
+import type { ProductInput } from "@solivio/sdk";
 
 import { db } from "../database/db";
 import { products } from "../database/schema";
@@ -10,7 +10,7 @@ import { getDefaultEmbeddingModel } from "./embeddingConfig";
 import type { EmbeddingModelId } from "./embeddingModels";
 
 export async function importProductsWithEmbeddings(
-  rows: ProductImportRow[],
+  rows: ProductInput[],
   model: EmbeddingModelId = getDefaultEmbeddingModel(),
 ): Promise<{ count: number }> {
   if (rows.length === 0) return { count: 0 };
@@ -30,7 +30,7 @@ export async function importProductsWithEmbeddings(
         description: row.description,
         manufacturer: row.manufacturer,
         priceNet: row.priceNet,
-        priceGross: row.priceGross,
+        priceGross: row.priceGross ?? 0,
         vatRate: row.vatRate,
         currency: row.currency,
         combinedEmbedding: embeddings[i],

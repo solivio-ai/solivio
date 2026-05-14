@@ -5,6 +5,7 @@ import { extractProductRows, getMissingColumns, parseCsv, resolveColumnMap } fro
 export const csvProductImporter: ImporterDefinition = {
   name: "csv-products",
   description: "Imports products from a CSV file into the core product catalog.",
+  accept: [".csv", "text/csv"],
   run: async (payload: unknown): Promise<ImportResult> => {
     if (typeof payload !== "string") {
       return {

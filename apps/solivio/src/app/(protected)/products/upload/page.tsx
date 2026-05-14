@@ -11,9 +11,7 @@ export async function generateMetadata() {
 
 export default async function ProductUploadPage() {
   const t = await getTranslations("ProductImport.page");
-
   const importer = await getImporter();
-  console.log("[upload] importer loaded:", importer.name, "| run:", typeof importer.run);
 
   return (
     <AppPage>
@@ -25,7 +23,7 @@ export default async function ProductUploadPage() {
           </p>
         </div>
       </header>
-      <ProductImport />
+      <ProductImport accept={importer.accept} />
     </AppPage>
   );
 }
