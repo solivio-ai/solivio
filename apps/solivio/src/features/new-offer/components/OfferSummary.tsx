@@ -2,6 +2,7 @@ import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { CommercialTotals } from "./CommercialTotals";
@@ -53,17 +54,14 @@ export function OfferSummary({
               <h2 className="text-sm font-medium">{tSummary("notes")}</h2>
               <div className="grid gap-2">
                 {notes.map((note) => (
-                  <div
-                    key={note}
-                    className="flex gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm leading-relaxed"
-                  >
+                  <Alert key={note}>
                     <AlertTriangle
                       size={15}
                       aria-hidden="true"
-                      className="mt-0.5 shrink-0 text-primary"
+                      className="shrink-0 text-primary"
                     />
-                    <span>{note}</span>
-                  </div>
+                    <AlertDescription className="text-sm leading-relaxed">{note}</AlertDescription>
+                  </Alert>
                 ))}
               </div>
             </section>
