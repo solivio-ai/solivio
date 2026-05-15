@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { ProductImportRow } from "@solivio/domain";
 
+import { requireAdmin } from "../../../../server/auth/session";
 import { getDefaultEmbeddingModel } from "../../../../server/products/embeddingConfig";
 import type { EmbeddingModelId } from "../../../../server/products/embeddingModels";
 import { EMBEDDING_MODELS } from "../../../../server/products/embeddingModels";
@@ -35,6 +36,9 @@ function normalize(raw: unknown): ProductImportRow | null {
 }
 
 export async function POST(request: Request) {
+  const { response: authResponse } = await requireAdmin();
+  if (authResponse) return authResponse;
+
   try {
     const body = await request.json();
 

@@ -23,3 +23,11 @@ export async function requireAuth(): Promise<RequireAuthResult> {
   if (!session) return { response: unauthorized() };
   return { session };
 }
+
+export async function requireAdmin(): Promise<RequireAuthResult> {
+  const result = await requireAuth();
+  if (result.response) return result;
+  if (result.session.user.role !== "admin")
+    return { response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+  return { session: result.session };
+}
