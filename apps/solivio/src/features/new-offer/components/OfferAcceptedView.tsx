@@ -86,30 +86,17 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
           </div>
         </section>
 
-        {(offer.createdBy?.name || offer.updatedBy?.name) && (
+        {offer.userName && (
           <section className="rounded-lg border bg-card p-4">
             <h2 className="mb-2 text-sm font-semibold">{tAccepted("attribution")}</h2>
             <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
-              {offer.createdBy?.name && (
-                <span
-                  className="flex items-center gap-1.5"
-                  title={new Date(offer.createdAt).toLocaleString("pl-PL")}
-                >
-                  <User size={11} aria-hidden="true" />
-                  {t("createdBy", { name: offer.createdBy.name })}
-                </span>
-              )}
-              {offer.updatedBy?.name && (
-                <span
-                  className="flex items-center gap-1.5"
-                  title={
-                    offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined
-                  }
-                >
-                  <User size={11} aria-hidden="true" />
-                  {t("lastModifiedBy", { name: offer.updatedBy.name })}
-                </span>
-              )}
+              <span
+                className="flex items-center gap-1.5"
+                title={new Date(offer.createdAt).toLocaleString("pl-PL")}
+              >
+                <User size={11} aria-hidden="true" />
+                {t("createdBy", { name: offer.userName })}
+              </span>
             </div>
           </section>
         )}

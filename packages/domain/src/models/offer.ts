@@ -46,6 +46,6 @@ export type Offer = {
   customerName?: string | null;
   /** Resolved raw request text when available, for display purposes. */
   clientRequest?: string | null;
-  createdBy?: { id: string; name: string } | null;
-  updatedBy?: { id: string; name: string } | null;
+  /** Resolved display name of the user referenced by userId, when available. */
+  userName?: string | null;
 };

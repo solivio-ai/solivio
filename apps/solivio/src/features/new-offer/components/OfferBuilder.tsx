@@ -422,10 +422,8 @@ export function OfferBuilder({
         lineCount={lines.length}
         offerTitle={offerHeaderTitle}
         status={status}
-        createdBy={offer.createdBy}
+        userName={offer.userName}
         createdAt={offer.createdAt}
-        updatedBy={offer.updatedBy}
-        updatedAt={offer.updatedAt}
       />
 
       <OfferProductsReview

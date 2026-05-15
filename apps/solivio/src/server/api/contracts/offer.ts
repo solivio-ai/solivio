@@ -70,8 +70,7 @@ export const offerSchema = z
     updatedAt: z.string().datetime(),
     customerName: z.string().nullable().optional(),
     clientRequest: z.string().nullable().optional(),
-    createdBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
-    updatedBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
+    userName: z.string().nullable().optional(),
   })
   .meta({
     id: "Offer",

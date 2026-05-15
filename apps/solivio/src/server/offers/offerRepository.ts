@@ -318,8 +318,7 @@ export function offerRowToDomain(row: OfferRow): Offer {
     clientRequest: row.clientRequest,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-    createdBy: row.userId ? { id: row.userId, name: row.userName ?? "" } : null,
-    updatedBy: row.userId ? { id: row.userId, name: row.userName ?? "" } : null,
+    userName: row.userName,
     items: row.items.map((item) => ({
       id: item.id,
       productId: item.productId,
