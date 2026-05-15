@@ -1,6 +1,7 @@
-import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { index, jsonb, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { offers } from "./offers";
+import { timestamps } from "./timestamps";
 
 export const offerChatThreads = pgTable(
   "offer_chat_threads",
@@ -10,8 +11,7 @@ export const offerChatThreads = pgTable(
       .notNull()
       .references(() => offers.id, { onDelete: "cascade" }),
     title: text("title").notNull().default("New chat"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     index("offer_chat_threads_offer_id_idx").on(table.offerId),
@@ -28,8 +28,7 @@ export const offerChatMessages = pgTable(
       .references(() => offerChatThreads.id, { onDelete: "cascade" }),
     role: text("role").notNull(),
     parts: jsonb("parts").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     index("offer_chat_messages_thread_id_idx").on(table.threadId),

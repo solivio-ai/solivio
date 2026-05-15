@@ -1,6 +1,7 @@
-import { index, numeric, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { index, numeric, pgTable, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 import { products } from "./products";
+import { timestamps } from "./timestamps";
 
 export const productPrices = pgTable(
   "product_prices",
@@ -14,8 +15,7 @@ export const productPrices = pgTable(
     gross: numeric("gross", { precision: 14, scale: 4, mode: "number" }).notNull(),
     vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(23),
     source: text("source").notNull().default("manual"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     index("product_prices_product_id_idx").on(table.productId),

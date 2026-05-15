@@ -1,6 +1,7 @@
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { halfvec } from "./halfvec";
+import { timestamps } from "./timestamps";
 
 export const products = pgTable(
   "products",
@@ -11,8 +12,7 @@ export const products = pgTable(
     name: text("name").notNull(),
     description: text("description").notNull().default(""),
     embedding: halfvec("embedding", { dimensions: 3072 }),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     index("products_embedding_idx").using("hnsw", table.embedding.op("halfvec_cosine_ops")),

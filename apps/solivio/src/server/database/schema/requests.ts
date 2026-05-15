@@ -1,6 +1,7 @@
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { customers } from "./customers";
+import { timestamps } from "./timestamps";
 
 export const requests = pgTable(
   "requests",
@@ -9,8 +10,7 @@ export const requests = pgTable(
     customerId: uuid("customer_id").references(() => customers.id),
     rawText: text("raw_text").notNull(),
     source: text("source").notNull().default("manual"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [index("requests_customer_id_idx").on(table.customerId)],
 );

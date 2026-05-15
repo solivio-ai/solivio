@@ -3,6 +3,7 @@ import { index, integer, jsonb, pgTable, timestamp, uniqueIndex, uuid } from "dr
 import type { OfferRevisionSnapshot } from "@solivio/domain";
 
 import { offers } from "./offers";
+import { timestamps } from "./timestamps";
 
 export const offerRevisions = pgTable(
   "offer_revisions",
@@ -14,8 +15,7 @@ export const offerRevisions = pgTable(
     revisionNumber: integer("revision_number").notNull(),
     snapshot: jsonb("snapshot").$type<OfferRevisionSnapshot>().notNull(),
     acceptedAt: timestamp("accepted_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     index("offer_revisions_offer_id_idx").on(table.offerId),
