@@ -19,9 +19,23 @@ export async function POST(request: Request) {
   if (auth.response) return auth.response;
 
   const t = await getTranslations("QuickOffer");
-  const body = (await request.json().catch(() => ({}))) as { items?: unknown };
+  const body = (await request.json().catch(() => ({}))) as {
+    items?: unknown;
+    customerName?: unknown;
+  };
   const items = Array.isArray(body.items) ? body.items : [];
   const validItems = items.filter(isQuickOfferItemInput);
+  const customerName =
+    typeof body.customerName === "string" && body.customerName.trim()
+      ? body.customerName.trim()
+      : null;
+
+  if (!customerName) {
+    return NextResponse.json(
+      { error: { code: "VALIDATION_ERROR", message: t("errors.customerNameRequired") } },
+      { status: 400 },
+    );
+  }
 
   if (items.length === 0 || validItems.length !== items.length) {
     return NextResponse.json(
@@ -46,7 +60,7 @@ export async function POST(request: Request) {
     })),
   };
 
-  const offer = await createOffer(t("offer.title"), t("offer.description"), generated);
+  const offer = await createOffer(customerName, t("offer.description"), generated);
 
   return NextResponse.json({ offer }, { status: 201 });
 }

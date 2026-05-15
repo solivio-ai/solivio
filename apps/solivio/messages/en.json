@@ -329,6 +329,10 @@
       "description": "Draft an offer from selected products."
     },
     "searchPlaceholder": "Search products...",
+    "customerName": {
+      "label": "Customer name",
+      "placeholder": "ACME Ltd."
+    },
     "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
     "noItemsSelected": "No items selected",
     "actions": {
@@ -574,7 +578,8 @@
   },
   "QuickOffer": {
     "errors": {
-      "itemsRequired": "items are required"
+      "itemsRequired": "items are required",
+      "customerNameRequired": "customer name is required"
     },
     "offer": {
       "title": "Quick Offer",

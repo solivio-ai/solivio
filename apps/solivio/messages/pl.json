@@ -331,6 +331,10 @@
       "description": "Draft oferty z wybranych produktów."
     },
     "searchPlaceholder": "Szukaj produktów...",
+    "customerName": {
+      "label": "Nazwa klienta",
+      "placeholder": "ACME Sp. z o.o."
+    },
     "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
     "noItemsSelected": "Brak wybranych pozycji",
     "actions": {
@@ -516,7 +520,8 @@
   },
   "QuickOffer": {
     "errors": {
-      "itemsRequired": "pozycje są wymagane"
+      "itemsRequired": "pozycje są wymagane",
+      "customerNameRequired": "nazwa klienta jest wymagana"
     },
     "offer": {
       "title": "Szybka oferta",
