@@ -146,9 +146,9 @@ export async function restoreRevision(
         updatedAt: new Date(),
       })
       .where(eq(offers.id, offerId));
-  });
 
-  await saveRevision(offerId, userId);
+    await saveRevision(offerId, userId, null, tx);
+  });
 
   const revisions = await findRevisionsByOfferId(offerId);
   return revisions.length > 0 ? rowToRevision(revisions[0]) : null;
