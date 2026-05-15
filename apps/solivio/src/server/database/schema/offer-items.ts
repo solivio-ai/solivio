@@ -1,7 +1,8 @@
-import { index, integer, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { index, integer, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { offers } from "./offers";
 import { products } from "./products";
+import { timestamps } from "./timestamps";
 
 export const offerItems = pgTable(
   "offer_items",
@@ -32,8 +33,7 @@ export const offerItems = pgTable(
     matchSource: text("match_source"),
     matchScore: numeric("match_score", { precision: 6, scale: 4, mode: "number" }),
     position: integer("position").notNull().default(0),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [index("offer_items_offer_id_idx").on(table.offerId)],
 );

@@ -1,11 +1,12 @@
 import { sql } from "drizzle-orm";
-import { check, index, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { check, index, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import type { Offer } from "@solivio/domain";
 
 import { users } from "./auth";
 import { customers } from "./customers";
 import { requests } from "./requests";
+import { timestamps } from "./timestamps";
 
 export const offers = pgTable(
   "offers",
@@ -16,7 +17,7 @@ export const offers = pgTable(
     userId: text("user_id").references(() => users.id),
     name: text("name").notNull().default("Draft"),
     status: text("status").$type<Offer["status"]>().notNull().default("draft"),
-    currency: text("currency").notNull(),
+    currency: text("currency").notNull().default("PLN"),
     discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
       .notNull()
       .default(0),
@@ -25,8 +26,7 @@ export const offers = pgTable(
       .default(0),
     notes: text("notes").array().notNull().default([]),
     unmatched: text("unmatched").array().notNull().default([]),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
   },
   (table) => [
     check("offers_discount_percent_range", sql`${table.discountPercent} BETWEEN 0 AND 100`),

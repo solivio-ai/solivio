@@ -1,5 +1,7 @@
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
+import { authTimestamps } from "./timestamps";
+
 // Better Auth tables. Renamed to plural to match the domain naming convention;
 // the Better Auth Drizzle adapter is wired with the legacy singular keys in `auth.ts`.
 
@@ -11,16 +13,14 @@ export const users = pgTable("users", {
   image: text("image"),
   username: text("username").unique(),
   displayUsername: text("display_username"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  ...authTimestamps,
 });
 
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  ...authTimestamps,
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   userId: text("user_id")
@@ -42,8 +42,7 @@ export const accounts = pgTable("accounts", {
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
   password: text("password"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  ...authTimestamps,
 });
 
 export const verifications = pgTable("verifications", {
@@ -51,6 +50,5 @@ export const verifications = pgTable("verifications", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at"),
-  updatedAt: timestamp("updated_at"),
+  ...authTimestamps,
 });

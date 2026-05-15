@@ -31,6 +31,9 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
+      - name: Check database schema drift
+        run: yarn db:check
+
       - name: Prepare app environment
         run: |
           cat > apps/solivio/.env.local <<'EOF'
