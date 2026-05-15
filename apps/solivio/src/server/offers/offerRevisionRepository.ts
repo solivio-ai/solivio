@@ -5,7 +5,7 @@ import { and, desc, eq, max, sql } from "drizzle-orm";
 import type { OfferRevisionSnapshot } from "@solivio/domain";
 
 import { db } from "../database/db";
-import { offerRevisions } from "../database/schema";
+import { offerRevisions, offers } from "../database/schema";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
@@ -27,32 +27,41 @@ export type RevisionRow = {
 };
 
 export async function insertRevision(data: InsertRevisionData, tx: Tx = db): Promise<RevisionRow> {
-  const [maxRow] = await tx
-    .select({ max: max(offerRevisions.revisionNumber) })
-    .from(offerRevisions)
-    .where(eq(offerRevisions.offerId, data.offerId));
+  const run = async (t: Tx): Promise<RevisionRow> => {
+    // Lock the parent offer row so concurrent revision inserts for the same
+    // offer are serialized. The second caller will block here until the first
+    // transaction commits, guaranteeing it reads the updated MAX afterward.
+    await t.select({ id: offers.id }).from(offers).where(eq(offers.id, data.offerId)).for("update");
 
-  const nextNumber = (maxRow?.max ?? 0) + 1;
+    const [maxRow] = await t
+      .select({ max: max(offerRevisions.revisionNumber) })
+      .from(offerRevisions)
+      .where(eq(offerRevisions.offerId, data.offerId));
 
-  const [revision] = await tx
-    .insert(offerRevisions)
-    .values({
-      offerId: data.offerId,
-      revisionNumber: nextNumber,
-      snapshot: data.snapshot,
-      acceptedAt: data.acceptedAt ?? null,
-    })
-    .returning();
+    const [revision] = await t
+      .insert(offerRevisions)
+      .values({
+        offerId: data.offerId,
+        revisionNumber: (maxRow?.max ?? 0) + 1,
+        snapshot: data.snapshot,
+        acceptedAt: data.acceptedAt ?? null,
+      })
+      .returning();
 
-  return {
-    id: revision.id,
-    offerId: revision.offerId,
-    revisionNumber: revision.revisionNumber,
-    snapshot: revision.snapshot,
-    name: revision.snapshot.name,
-    createdAt: revision.createdAt,
-    acceptedAt: revision.acceptedAt,
+    return {
+      id: revision.id,
+      offerId: revision.offerId,
+      revisionNumber: revision.revisionNumber,
+      snapshot: revision.snapshot,
+      name: revision.snapshot.name,
+      createdAt: revision.createdAt,
+      acceptedAt: revision.acceptedAt,
+    };
   };
+
+  // FOR UPDATE only serializes if the lock is held across the read and write.
+  // Open a transaction when the caller didn't provide one.
+  return tx === db ? db.transaction((t) => run(t)) : run(tx);
 }
 
 export async function findRevisionsByOfferId(
