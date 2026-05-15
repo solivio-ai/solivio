@@ -1,6 +1,6 @@
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-import { authTimestamps } from "./timestamps";
+import { authTimestamps, verificationTimestamps } from "./timestamps";
 
 // Better Auth tables. Renamed to plural to match the domain naming convention;
 // the Better Auth Drizzle adapter is wired with the legacy singular keys in `auth.ts`.
@@ -50,5 +50,5 @@ export const verifications = pgTable("verifications", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  ...authTimestamps,
+  ...verificationTimestamps,
 });
