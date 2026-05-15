@@ -7,7 +7,7 @@ import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
 import { db } from "../database/db";
 import { offerItems, offers } from "../database/schema";
 import type { InsertOfferItemData } from "./offerRepository";
-import { findOfferById, insertOfferItems, touchOffer } from "./offerRepository";
+import { findOfferById, insertOfferItems, lockOfferForUpdate, touchOffer } from "./offerRepository";
 import type { RevisionRow } from "./offerRevisionRepository";
 import {
   findRevisionById,
@@ -101,12 +101,14 @@ export async function restoreRevision(
 
   const { snapshot } = revisionRow;
 
-  const currentOffer = await findOfferById(offerId);
-  if (currentOffer?.status === "accepted") {
-    return null;
-  }
-
+  let blocked = false;
   await db.transaction(async (tx) => {
+    const locked = await lockOfferForUpdate(offerId, tx);
+    if (!locked || locked.status === "accepted") {
+      blocked = true;
+      return;
+    }
+
     await tx.delete(offerItems).where(eq(offerItems.offerId, offerId));
 
     if (snapshot.items.length > 0) {
@@ -149,6 +151,8 @@ export async function restoreRevision(
 
     await saveRevision(offerId, userId, null, tx);
   });
+
+  if (blocked) return null;
 
   const revisions = await findRevisionsByOfferId(offerId);
   return revisions.length > 0 ? rowToRevision(revisions[0]) : null;

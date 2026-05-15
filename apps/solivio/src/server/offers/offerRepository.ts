@@ -139,6 +139,18 @@ export async function touchOffer(offerId: string, userId: string | null, tx: Tx 
   await tx.update(offers).set({ userId, updatedAt: new Date() }).where(eq(offers.id, offerId));
 }
 
+export async function lockOfferForUpdate(
+  id: string,
+  tx: Tx,
+): Promise<{ id: string; status: OfferStatus } | null> {
+  const rows = await tx
+    .select({ id: offers.id, status: offers.status })
+    .from(offers)
+    .where(eq(offers.id, id))
+    .for("update");
+  return rows[0] ?? null;
+}
+
 export async function deleteOffer(offerId: string, tx: Tx = db) {
   const [row] = await tx.delete(offers).where(eq(offers.id, offerId)).returning({ id: offers.id });
   return row ?? null;
