@@ -4,7 +4,7 @@ export const offerMetaSchema = z.object({
   number: z.string(),
   issueDate: z.string().date(),
   validUntil: z.string().date(),
-  currency: z.enum(["PLN", "EUR"]).default("PLN"),
+  currency: z.string().min(1),
   discountPercent: z.number().min(0).max(100).default(0),
 });
 

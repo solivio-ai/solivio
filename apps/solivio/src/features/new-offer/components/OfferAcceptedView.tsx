@@ -50,7 +50,7 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const tAccepted = useTranslations("NewOffer.review.acceptedView");
   const tCommercial = useTranslations("NewOffer.review.commercial");
   const lines = toDraftLines(offer);
-  const currency = lines[0]?.currency ?? "PLN";
+  const currency = lines[0]?.currency ?? offer.currency;
   const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
   const discountPercent = offer.discountPercent;
   const discountAmount = subtotal * (discountPercent / 100);

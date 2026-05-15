@@ -5,6 +5,7 @@ import { inArray } from "drizzle-orm";
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
+import { appConfig } from "../config/appConfig";
 import { upsertCustomerByName } from "../customers/customerRepository";
 import { db } from "../database/db";
 import { products } from "../database/schema";
@@ -68,7 +69,7 @@ export async function createOffer(
   name?: string,
 ): Promise<Offer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
-  const offerCurrency = "PLN";
+  const offerCurrency = appConfig.defaultCurrency;
 
   // Validate products exist before we open a transaction.
   const productIds = items.map((i) => i.productId);

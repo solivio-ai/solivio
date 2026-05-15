@@ -102,7 +102,7 @@ export function OfferBuilder({
     setUnmatched(offer.unmatched ?? []);
   }, [offer]);
 
-  const currency = lines[0]?.currency ?? "PLN";
+  const currency = lines[0]?.currency ?? offer.currency;
   const searchQuantities = Object.fromEntries(lines.map((line) => [line.productId, line.quantity]));
   const subtotal = useMemo(
     () => lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0),
@@ -293,7 +293,7 @@ export function OfferBuilder({
       quantity,
       requestItem: tBuilder("manuallyAdded"),
       unitPrice: 0,
-      currency: "PLN",
+      currency: offer.currency,
       rationale: tBuilder("manuallyAdded"),
       source: "database",
     };

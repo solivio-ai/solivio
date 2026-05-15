@@ -94,7 +94,7 @@ type OfferRow = {
   unmatched?: string[];
   notes?: string[];
   totalPrice?: number;
-  currency?: string | null;
+  currency: string;
 };
 
 type NormalizedOfferRow = {
@@ -166,7 +166,7 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
     unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
     totalPrice: typeof offer.totalPrice === "number" ? offer.totalPrice : null,
-    currency: offer.currency || "PLN",
+    currency: offer.currency,
   };
 }
 

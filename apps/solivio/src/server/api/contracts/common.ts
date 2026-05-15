@@ -51,7 +51,7 @@ export const availabilitySchema = z
   .enum(["available", "limited", "unavailable"])
   .meta({ id: "Availability" });
 
-export const currencySchema = z.enum(["PLN", "EUR"]).meta({ id: "Currency" });
+export const currencySchema = z.string().min(1).meta({ id: "Currency" });
 
 // ── Error envelopes ────────────────────────────────────────────────────────────
 

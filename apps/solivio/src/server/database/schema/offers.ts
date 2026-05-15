@@ -16,7 +16,7 @@ export const offers = pgTable(
     userId: text("user_id").references(() => users.id),
     name: text("name").notNull().default("Draft"),
     status: text("status").$type<Offer["status"]>().notNull().default("draft"),
-    currency: text("currency").notNull().default("PLN"),
+    currency: text("currency").notNull(),
     discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
       .notNull()
       .default(0),
