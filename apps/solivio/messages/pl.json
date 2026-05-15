@@ -34,7 +34,8 @@
       "name": "Nazwa",
       "email": "E-mail",
       "role": "Rola",
-      "joined": "Data dołączenia"
+      "joined": "Data dołączenia",
+      "actions": "Akcje"
     },
     "roles": {
       "admin": "Administrator",
@@ -62,8 +63,65 @@
       "description": "Spróbuj zmienić wyszukiwanie lub filtry."
     },
     "actions": {
-      "clearFilters": "Wyczyść filtry"
+      "clearFilters": "Wyczyść filtry",
+      "newUser": "Nowy użytkownik",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "deleteConfirmTitle": "Usunąć użytkownika?",
+      "deleteConfirmDescription": "Trwale usunie \"{name}\" z systemu. Tej operacji nie można cofnąć.",
+      "deleteConfirm": "Usuń",
+      "cancel": "Anuluj"
     }
+  },
+  "CreateUserDialog": {
+    "title": "Utwórz użytkownika",
+    "fields": {
+      "name": "Nazwa",
+      "email": "E-mail",
+      "password": "Hasło",
+      "role": "Rola"
+    },
+    "roles": {
+      "user": "Użytkownik",
+      "admin": "Administrator"
+    },
+    "actions": {
+      "cancel": "Anuluj",
+      "submit": "Utwórz użytkownika",
+      "submitting": "Tworzenie..."
+    },
+    "errors": {
+      "emailTaken": "Użytkownik z tym adresem e-mail już istnieje.",
+      "generic": "Nie udało się utworzyć użytkownika."
+    }
+  },
+  "EditUserSheet": {
+    "title": "Edytuj użytkownika",
+    "sections": {
+      "info": "Podstawowe dane",
+      "password": "Resetuj hasło"
+    },
+    "fields": {
+      "name": "Nazwa",
+      "role": "Rola",
+      "newPassword": "Nowe hasło"
+    },
+    "roles": {
+      "user": "Użytkownik",
+      "admin": "Administrator"
+    },
+    "actions": {
+      "cancel": "Anuluj",
+      "save": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "resetPassword": "Ustaw hasło",
+      "settingPassword": "Ustawianie..."
+    },
+    "errors": {
+      "generic": "Nie udało się zapisać zmian.",
+      "passwordGeneric": "Nie udało się ustawić hasła."
+    },
+    "passwordSuccess": "Hasło zostało zaktualizowane."
   },
   "AdminUsersPage": {
     "title": "Użytkownicy",

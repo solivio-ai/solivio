@@ -34,7 +34,8 @@
       "name": "Name",
       "email": "Email",
       "role": "Role",
-      "joined": "Joined"
+      "joined": "Joined",
+      "actions": "Actions"
     },
     "roles": {
       "admin": "Admin",
@@ -62,8 +63,65 @@
       "description": "Try adjusting your search or filters."
     },
     "actions": {
-      "clearFilters": "Clear filters"
+      "clearFilters": "Clear filters",
+      "newUser": "New user",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete user?",
+      "deleteConfirmDescription": "This will permanently remove \"{name}\" from the system. This cannot be undone.",
+      "deleteConfirm": "Delete",
+      "cancel": "Cancel"
     }
+  },
+  "CreateUserDialog": {
+    "title": "Create user",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "submit": "Create user",
+      "submitting": "Creating..."
+    },
+    "errors": {
+      "emailTaken": "A user with this email already exists.",
+      "generic": "Could not create user."
+    }
+  },
+  "EditUserSheet": {
+    "title": "Edit user",
+    "sections": {
+      "info": "Basic info",
+      "password": "Reset password"
+    },
+    "fields": {
+      "name": "Name",
+      "role": "Role",
+      "newPassword": "New password"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "resetPassword": "Set password",
+      "settingPassword": "Setting..."
+    },
+    "errors": {
+      "generic": "Could not save changes.",
+      "passwordGeneric": "Could not set password."
+    },
+    "passwordSuccess": "Password updated."
   },
   "AdminUsersPage": {
     "title": "Users",

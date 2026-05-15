@@ -1,11 +1,29 @@
 "use client";
 
-import { ArrowUpDown, ListFilter, Search } from "lucide-react";
+import { ArrowUpDown, ListFilter, MoreHorizontal, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyContent,
@@ -30,6 +48,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { authClient } from "@/lib/auth-client";
+
+import { CreateUserDialog } from "./CreateUserDialog";
+import type { EditableUser } from "./EditUserSheet";
+import { EditUserSheet } from "./EditUserSheet";
 
 type User = {
   id: string;
@@ -41,6 +64,7 @@ type User = {
 
 type UsersTableProps = {
   users: User[];
+  currentUserId: string;
 };
 
 type RoleFilter = "all" | "admin" | "user";
@@ -73,12 +97,21 @@ function matchesRoleFilter(user: User, roleFilter: RoleFilter): boolean {
   return !isAdmin;
 }
 
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users, currentUserId }: UsersTableProps) {
   const t = useTranslations("UsersTable");
   const locale = useLocale();
+  const router = useRouter();
+
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [sortKey, setSortKey] = useState<SortKey>("joinedDesc");
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<EditableUser | null>(null);
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+
+  const [deletingUser, setDeletingUser] = useState<User | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   const visibleUsers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -109,8 +142,38 @@ export function UsersTable({ users }: UsersTableProps) {
     return sorted;
   }, [users, query, roleFilter, sortKey, locale]);
 
+  function openEdit(user: User) {
+    setEditingUser({ id: user.id, name: user.name, email: user.email, role: user.role });
+    setEditSheetOpen(true);
+  }
+
+  function confirmDelete(user: User) {
+    setDeletingUser(user);
+  }
+
+  function handleDelete() {
+    if (!deletingUser) return;
+    const userId = deletingUser.id;
+    startDeleteTransition(async () => {
+      await authClient.admin.removeUser({ userId });
+      setDeletingUser(null);
+      router.refresh();
+    });
+  }
+
   if (users.length === 0) {
-    return <p className="py-8 text-center text-sm text-muted-foreground">{t("empty")}</p>;
+    return (
+      <>
+        <div className="flex justify-end">
+          <Button type="button" onClick={() => setCreateOpen(true)}>
+            <Plus size={16} />
+            {t("actions.newUser")}
+          </Button>
+        </div>
+        <p className="py-8 text-center text-sm text-muted-foreground">{t("empty")}</p>
+        <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} />
+      </>
+    );
   }
 
   return (
@@ -159,6 +222,11 @@ export function UsersTable({ users }: UsersTableProps) {
             </SelectContent>
           </Select>
         </div>
+
+        <Button type="button" className="w-full sm:w-auto" onClick={() => setCreateOpen(true)}>
+          <Plus size={16} />
+          {t("actions.newUser")}
+        </Button>
       </div>
 
       {visibleUsers.length === 0 ? (
@@ -191,6 +259,7 @@ export function UsersTable({ users }: UsersTableProps) {
               <TableHead>{t("columns.email")}</TableHead>
               <TableHead>{t("columns.role")}</TableHead>
               <TableHead>{t("columns.joined")}</TableHead>
+              <TableHead>{t("columns.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -206,11 +275,62 @@ export function UsersTable({ users }: UsersTableProps) {
                 <TableCell className="text-muted-foreground">
                   {formatDate(user.createdAt, locale)}
                 </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon-sm" aria-label={user.name}>
+                        <MoreHorizontal size={16} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => openEdit(user)}>
+                        {t("actions.edit")}
+                      </DropdownMenuItem>
+                      {user.id !== currentUserId && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => confirmDelete(user)}
+                          >
+                            {t("actions.delete")}
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
+
+      <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} />
+
+      <EditUserSheet user={editingUser} open={editSheetOpen} onOpenChange={setEditSheetOpen} />
+
+      <AlertDialog
+        open={!!deletingUser}
+        onOpenChange={(open) => {
+          if (!open) setDeletingUser(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("actions.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("actions.deleteConfirmDescription", { name: deletingUser?.name ?? "" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {t("actions.deleteConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -31,7 +31,7 @@ export default async function UsersPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("userCount", { count: users.length })}</p>
       </div>
-      <UsersTable users={users} />
+      <UsersTable users={users} currentUserId={session.user.id} />
     </div>
   );
 }
