@@ -47,6 +47,18 @@ export async function upsertCustomerByName(
 ): Promise<CustomerRow> {
   const existing = await findCustomerByName(name, tx);
   if (existing) return existing;
+
+  // Customer not found — acquire an advisory lock before inserting so that
+  // two concurrent transactions that both passed the check above don't both
+  // insert a duplicate. The lock is advisory (no schema constraint) and
+  // releases automatically when the surrounding transaction ends.
+  await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(lower(${name})))`);
+
+  // Re-check: another transaction may have inserted between our first read
+  // and lock acquisition.
+  const existingAfterLock = await findCustomerByName(name, tx);
+  if (existingAfterLock) return existingAfterLock;
+
   return insertCustomer({ name, source }, tx);
 }
 
