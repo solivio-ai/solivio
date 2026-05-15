@@ -59,7 +59,7 @@ Workflow:
 Rules:
 - For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise unmatched.
 - For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for technical terms in inflected languages — DO NOT trust the similarity number alone). YOU rerank by reading BOTH the product name AND the product description:
-    * Pick the candidate whose name+description together form the closest semantic match to the requestFragment (same product type, same category, matching specs, manufacturer if mentioned).
+    * Pick the candidate whose name+description together form the closest semantic match to the requestFragment (same product type, same category, matching specs).
     * The catalog name may be terse or generic — the description often contains the discriminating details (variants, sizes, "for upper and lower", "set of N", supported standards, etc.). ALWAYS read the description before deciding.
     * Example: requestFragment "łyżki plastikowe góra dół" — name "Łyżki wyciskowe plastikowe" lacks "góra/dół", but description "do wykonywania wycisku górnego oraz dolnego" confirms the match. ACCEPT it.
     * A request for "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.

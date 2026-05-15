@@ -291,7 +291,6 @@ export function OfferBuilder({
       sku: product.sku,
       name: product.name,
       description: product.description,
-      manufacturer: product.manufacturer,
       quantity,
       requestItem: tBuilder("manuallyAdded"),
       unitPrice: 0,

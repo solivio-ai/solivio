@@ -351,8 +351,7 @@
     "fields": {
       "sku": "SKU",
       "name": "Name",
-      "description": "Description",
-      "manufacturer": "Manufacturer"
+      "description": "Description"
     }
   },
   "OfferChat": {
@@ -484,7 +483,7 @@
     },
     "uploadCard": {
       "title": "Catalog upload",
-      "description": "Pick a CSV file with columns: sku, name, description, manufacturer, price_net, price_gross, vat_rate, and currency. Comma, semicolon, and tab separators are supported; prices may use either . or , as the decimal mark.",
+      "description": "Pick a CSV file with columns: sku, name, description, price_net, price_gross, vat_rate, and currency. Comma, semicolon, and tab separators are supported; prices may use either . or , as the decimal mark.",
       "chooseFile": "Choose a CSV file",
       "pickAnother": "Click to pick another file",
       "dropOne": "or drop one onto this field",

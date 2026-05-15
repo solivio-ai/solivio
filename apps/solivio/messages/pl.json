@@ -353,8 +353,7 @@
     "fields": {
       "sku": "SKU",
       "name": "Nazwa",
-      "description": "Opis",
-      "manufacturer": "Producent"
+      "description": "Opis"
     }
   },
   "OfferChat": {
@@ -486,7 +485,7 @@
     },
     "uploadCard": {
       "title": "Import katalogu",
-      "description": "Wybierz plik CSV z kolumnami: sku, name, description, manufacturer, price_net, price_gross, vat_rate oraz currency. Obsługiwane są separatory: przecinek, średnik i tabulator; ceny mogą używać kropki . lub przecinka , jako separatora dziesiętnego.",
+      "description": "Wybierz plik CSV z kolumnami: sku, name, description, price_net, price_gross, vat_rate oraz currency. Obsługiwane są separatory: przecinek, średnik i tabulator; ceny mogą używać kropki . lub przecinka , jako separatora dziesiętnego.",
       "chooseFile": "Wybierz plik CSV",
       "pickAnother": "Kliknij, aby wybrać inny plik",
       "dropOne": "lub przeciągnij plik tutaj",

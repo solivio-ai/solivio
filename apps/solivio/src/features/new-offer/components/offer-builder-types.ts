@@ -4,7 +4,6 @@ export type DraftLine = {
   sku?: string;
   name: string;
   description?: string;
-  manufacturer?: string;
   availability?: string;
   source?: string;
   quantity: number;
