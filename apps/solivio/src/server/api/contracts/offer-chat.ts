@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+import { routeGroup, sseResponse } from "./common";
+import { offerPathParamsSchema } from "./offer";
+
+export const offerChatMessagesPathParamsSchema = z
+  .object({
+    offerId: z.string(),
+    threadId: z.string(),
+  })
+  .strict()
+  .meta({ id: "OfferChatMessagesPathParams" });
+
 export const offerChatThreadSchema = z
   .object({
     id: z.string(),
@@ -71,3 +82,71 @@ export const chatRequestSchema = z
     description:
       "AI SDK chat request. offerId and threadId must be provided together when persisting messages.",
   });
+
+export const chatRoutes = [
+  ...routeGroup({ tag: "Chat", requiresAuth: true }, [
+    {
+      method: "post",
+      path: "/api/chat",
+      operationId: "streamChat",
+      summary: "Stream assistant chat",
+      requestBody: {
+        description: "AI SDK messages plus optional persistent offer chat identifiers.",
+        required: true,
+        schema: chatRequestSchema,
+      },
+      responses: {
+        200: sseResponse("Server-sent event stream of AI SDK UI message chunks."),
+        400: "Only one of offerId or threadId was provided.",
+        404: "The persistent chat thread was not found.",
+      },
+    },
+    {
+      method: "get",
+      path: "/api/offers/{offerId}/chat/threads",
+      operationId: "listOfferChatThreads",
+      summary: "List offer chat threads",
+      requestParams: offerPathParamsSchema,
+      responses: {
+        200: {
+          description: "Chat threads attached to the offer.",
+          schema: offerChatThreadsResponseSchema,
+        },
+        404: "The offer was not found.",
+      },
+    },
+    {
+      method: "post",
+      path: "/api/offers/{offerId}/chat/threads",
+      operationId: "createOfferChatThread",
+      summary: "Create an offer chat thread",
+      requestParams: offerPathParamsSchema,
+      requestBody: {
+        description: "Optional chat thread title.",
+        required: false,
+        schema: createOfferChatThreadRequestSchema,
+      },
+      responses: {
+        201: {
+          description: "The created chat thread.",
+          schema: offerChatThreadResponseSchema,
+        },
+        404: "The offer was not found.",
+      },
+    },
+    {
+      method: "get",
+      path: "/api/offers/{offerId}/chat/threads/{threadId}/messages",
+      operationId: "listOfferChatMessages",
+      summary: "List offer chat messages",
+      requestParams: offerChatMessagesPathParamsSchema,
+      responses: {
+        200: {
+          description: "Messages in the offer chat thread.",
+          schema: offerChatMessagesResponseSchema,
+        },
+        404: "The chat thread was not found for the offer.",
+      },
+    },
+  ]),
+] as const satisfies readonly import("./common").ApiContract[];

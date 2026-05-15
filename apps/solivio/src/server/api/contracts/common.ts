@@ -120,3 +120,85 @@ export const healthResponseSchema = z
   })
   .strict()
   .meta({ id: "HealthResponse" });
+
+// ── Route catalog helpers ─────────────────────────────────────────────────────
+
+const defaultErrorSchemas: Partial<Record<number, ZodType>> = {
+  400: errorResponseSchema,
+  401: unauthorizedResponseSchema,
+  404: errorResponseSchema,
+  409: errorResponseSchema,
+  500: errorResponseSchema,
+};
+
+export type ApiRouteTag = (typeof apiTags)[number]["name"];
+
+export type ApiRawResponseContract = ApiResponseContract | string;
+
+export type RawRouteInput = Omit<ApiContract, "requiresAuth" | "responses" | "tags"> & {
+  responses: Record<number, ApiRawResponseContract>;
+};
+
+export type RouteGroupOptions = {
+  requiresAuth?: boolean;
+  tag: ApiRouteTag;
+};
+
+function normalizeResponses(
+  responses: Record<number, ApiRawResponseContract>,
+): Record<number, ApiResponseContract> {
+  return Object.fromEntries(
+    Object.entries(responses).map(([codeStr, raw]) => {
+      const code = Number(codeStr);
+      if (typeof raw === "string") {
+        const inferred = defaultErrorSchemas[code];
+        return [
+          codeStr,
+          inferred ? { description: raw, schema: inferred } : { description: raw },
+        ] as const;
+      }
+      return [codeStr, raw] as const;
+    }),
+  );
+}
+
+/** Apply shared tag/metadata to a batch of routes; merges 401 after responses so overrides win. */
+export function routeGroup(options: RouteGroupOptions, routes: RawRouteInput[]): ApiContract[] {
+  return routes.map((route) => {
+    const normalizedResponses = normalizeResponses(route.responses);
+    const responses =
+      options.requiresAuth === true
+        ? ({
+            ...normalizedResponses,
+            401: {
+              description: "No valid Better Auth session was present.",
+              schema: unauthorizedResponseSchema,
+            },
+          } satisfies Record<number, ApiResponseContract>)
+        : normalizedResponses;
+    return {
+      ...route,
+      tags: [options.tag],
+      responses,
+      ...(options.requiresAuth === true && { requiresAuth: true }),
+    };
+  });
+}
+
+export function pdfResponse(description: string): ApiResponseContract {
+  return {
+    description,
+    content: {
+      "application/pdf": {},
+    },
+  };
+}
+
+export function sseResponse(description: string): ApiResponseContract {
+  return {
+    description,
+    content: {
+      "text/event-stream": {},
+    },
+  };
+}

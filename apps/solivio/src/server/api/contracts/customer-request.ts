@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { routeGroup } from "./common";
+
 export const customerRequestSourceSchema = z.string().meta({ id: "CustomerRequestSource" });
 
 export const customerRequestSchema = z
@@ -32,3 +34,38 @@ export const customerRequestResponseSchema = z
   })
   .strict()
   .meta({ id: "CustomerRequestResponse" });
+
+export const requestRoutes = [
+  ...routeGroup({ tag: "Requests", requiresAuth: true }, [
+    {
+      method: "get",
+      path: "/api/requests",
+      operationId: "getDemoRequest",
+      summary: "Get the demo customer request",
+      responses: {
+        200: {
+          description: "The current mocked request and extracted requirements.",
+          schema: customerRequestResponseSchema,
+        },
+      },
+    },
+    {
+      method: "post",
+      path: "/api/requests",
+      operationId: "createCustomerRequest",
+      summary: "Create a draft customer request",
+      requestBody: {
+        description: "Raw customer request text for mocked requirement extraction.",
+        required: false,
+        schema: createCustomerRequestRequestSchema,
+      },
+      responses: {
+        201: {
+          description: "A mocked request object with extracted requirements.",
+          schema: customerRequestResponseSchema,
+        },
+        400: "The request body could not be parsed or validated.",
+      },
+    },
+  ]),
+] as const satisfies readonly import("./common").ApiContract[];
