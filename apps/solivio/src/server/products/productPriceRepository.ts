@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "../database/db";
 import { productPrices } from "../database/schema";
@@ -57,6 +57,42 @@ export async function findActivePricesForProducts(
     .from(productPrices)
     .where(and(inArray(productPrices.productId, productIds), eq(productPrices.currency, currency)));
   return new Map(rows.map((row) => [row.productId, row]));
+}
+
+export type UpsertPriceRow = {
+  productId: string;
+  currency: string;
+  net: number;
+  gross: number;
+  vatRate: number;
+  source?: string;
+};
+
+export async function upsertPricesBatch(rows: UpsertPriceRow[], tx: Tx = db): Promise<void> {
+  if (rows.length === 0) return;
+
+  await tx
+    .insert(productPrices)
+    .values(
+      rows.map((row) => ({
+        productId: row.productId,
+        currency: row.currency,
+        net: row.net,
+        gross: row.gross,
+        vatRate: row.vatRate,
+        source: row.source ?? "manual",
+      })),
+    )
+    .onConflictDoUpdate({
+      target: [productPrices.productId, productPrices.currency],
+      set: {
+        net: sql`excluded.net`,
+        gross: sql`excluded.gross`,
+        vatRate: sql`excluded.vat_rate`,
+        source: sql`excluded.source`,
+        updatedAt: new Date(),
+      },
+    });
 }
 
 export async function upsertPrice(
