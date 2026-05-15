@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import { formatCurrency } from "./offer-builder-types";
 
@@ -70,15 +71,9 @@ export function OfferRevisionModal({
 
   const snapshot = fullRevision?.snapshot;
 
-  const subtotal = snapshot
-    ? snapshot.items.reduce(
-        (sum: number, item: { quantity: number; unitPriceNet: number }) =>
-          sum + item.quantity * item.unitPriceNet,
-        0,
-      )
-    : 0;
+  const subtotal = snapshot ? calculateSubtotalNet(snapshot.items) : 0;
   const discount = snapshot ? subtotal * (snapshot.discountPercent / 100) : 0;
-  const total = subtotal - discount;
+  const total = snapshot ? calculateNetTotal(subtotal, snapshot.discountPercent) : 0;
   const isSnapshotReady = !loading && Boolean(snapshot);
 
   return (

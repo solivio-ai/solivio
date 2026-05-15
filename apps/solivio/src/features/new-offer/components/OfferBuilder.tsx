@@ -8,6 +8,7 @@ import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import type { ProductSearchMatch } from "@/features/product-search";
 import { ProductSearchDialog } from "@/features/product-search";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import { OfferBuilderActionBar, OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
@@ -105,11 +106,12 @@ export function OfferBuilder({
   const currency = lines[0]?.currency ?? offer.currency;
   const searchQuantities = Object.fromEntries(lines.map((line) => [line.productId, line.quantity]));
   const subtotal = useMemo(
-    () => lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0),
+    () =>
+      calculateSubtotalNet(lines.map((l) => ({ quantity: l.quantity, unitPriceNet: l.unitPrice }))),
     [lines],
   );
   const discount = subtotal * (discountPercent / 100);
-  const total = subtotal - discount;
+  const total = calculateNetTotal(subtotal, discountPercent);
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
   const generatedDate = offer.createdAt.slice(0, 10);
 

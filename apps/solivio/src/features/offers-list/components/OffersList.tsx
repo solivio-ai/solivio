@@ -74,6 +74,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { calculateNetTotal } from "@/lib/offerTotals";
 
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
@@ -93,7 +94,8 @@ type OfferRow = {
   notesCount?: number;
   unmatched?: string[];
   notes?: string[];
-  totalPrice?: number;
+  totalNet?: number;
+  discountPercent?: number;
   currency: string;
 };
 
@@ -165,7 +167,10 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
     productCount: offer.productCount ?? 0,
     unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
-    totalPrice: typeof offer.totalPrice === "number" ? offer.totalPrice : null,
+    totalPrice:
+      typeof offer.totalNet === "number"
+        ? calculateNetTotal(offer.totalNet, offer.discountPercent ?? 0)
+        : null,
     currency: offer.currency,
   };
 }

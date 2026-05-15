@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import type { DraftLine } from "./offer-builder-types";
 
@@ -51,10 +52,12 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const tCommercial = useTranslations("NewOffer.review.commercial");
   const lines = toDraftLines(offer);
   const currency = lines[0]?.currency ?? offer.currency;
-  const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
+  const subtotal = calculateSubtotalNet(
+    lines.map((l) => ({ quantity: l.quantity, unitPriceNet: l.unitPrice })),
+  );
   const discountPercent = offer.discountPercent;
   const discountAmount = subtotal * (discountPercent / 100);
-  const total = subtotal - discountAmount;
+  const total = calculateNetTotal(subtotal, discountPercent);
 
   return (
     <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
