@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { AppPage } from "@/components/AppPage";
 import { ProductImport } from "@/features/product-import";
+import { getImporter } from "@/server/modules/registry";
 
 export async function generateMetadata() {
   const t = await getTranslations("ProductImport.page");
@@ -10,6 +11,7 @@ export async function generateMetadata() {
 
 export default async function ProductUploadPage() {
   const t = await getTranslations("ProductImport.page");
+  const importer = await getImporter();
 
   return (
     <AppPage>
@@ -21,7 +23,7 @@ export default async function ProductUploadPage() {
           </p>
         </div>
       </header>
-      <ProductImport />
+      <ProductImport accept={importer.accept} />
     </AppPage>
   );
 }

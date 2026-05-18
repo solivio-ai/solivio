@@ -10,14 +10,3 @@ export type Product = {
   source: ProductSource;
   prices: ProductPrice[];
 };
-
-/** CSV / API import row shape. Drives the catalog upsert. */
-export type ProductImportRow = {
-  sku: string;
-  name: string;
-  description: string;
-  priceNet: number;
-  priceGross: number;
-  vatRate: number;
-  currency: string;
-};
