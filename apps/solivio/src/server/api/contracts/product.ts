@@ -137,9 +137,19 @@ export const productImportRequestSchema = z
     description: "CSV file contents for product import.",
   });
 
+export const productImportRowErrorSchema = z
+  .object({
+    index: z.number().int().nonnegative().optional(),
+    sku: z.string().optional(),
+    message: z.string(),
+  })
+  .strict()
+  .meta({ id: "ProductImportRowError" });
+
 export const productImportResponseSchema = z
   .object({
     count: z.number().int().nonnegative(),
+    errors: z.array(productImportRowErrorSchema),
   })
   .strict()
   .meta({ id: "ProductImportResponse" });
