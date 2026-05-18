@@ -13,7 +13,6 @@ export interface ProductInput {
   sku: string;
   name: string;
   description: string;
-  manufacturer: string;
   priceNet: number;
   /** Gross price. If omitted the core derives it from priceNet + vatRate. */
   priceGross?: number;

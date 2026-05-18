@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const VALID_MODEL_IDS = new Set<string>(EMBEDDING_MODELS.map((m) => m.id));
-const STRING_FIELDS = ["sku", "name", "description", "manufacturer", "currency"] as const;
+const STRING_FIELDS = ["sku", "name", "description", "currency"] as const;
 const NUMBER_FIELDS = ["priceNet", "priceGross", "vatRate"] as const;
 /** Per-request cap. Aligns with the client chunk size; clients must split larger catalogs. */
 const MAX_ROWS_PER_REQUEST = 1000;
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             error:
-              "Each product needs sku, name, description, manufacturer, priceNet, priceGross, vatRate and currency.",
+              "Each product needs sku, name, description, priceNet, priceGross, vatRate and currency.",
           },
           { status: 400 },
         );

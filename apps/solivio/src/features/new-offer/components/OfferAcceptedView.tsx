@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import type { DraftLine } from "./offer-builder-types";
 
@@ -21,18 +22,15 @@ type OfferAcceptedViewProps = {
 
 function toDraftLines(offer: Offer): DraftLine[] {
   return offer.items.map((item) => ({
-    offerProductId: item.offerProductId,
-    productId: item.productId,
+    offerProductId: item.id,
+    productId: item.productId ?? "",
     sku: item.product?.sku,
-    name: item.product?.name ?? item.productId,
-    description: item.product?.description,
-    manufacturer: item.product?.manufacturer,
-    availability: item.product?.availability,
-    source: item.product?.source,
+    name: item.name,
+    description: item.description,
     quantity: item.quantity,
     requestItem: item.requestItem,
-    unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-    currency: item.currency ?? item.product?.currency ?? "PLN",
+    unitPrice: item.unitPriceNet,
+    currency: offer.currency,
     rationale: item.rationale,
   }));
 }
@@ -53,11 +51,13 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const tAccepted = useTranslations("NewOffer.review.acceptedView");
   const tCommercial = useTranslations("NewOffer.review.commercial");
   const lines = toDraftLines(offer);
-  const currency = lines[0]?.currency ?? "PLN";
-  const subtotal = lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);
+  const currency = lines[0]?.currency ?? offer.currency;
+  const subtotal = calculateSubtotalNet(
+    lines.map((l) => ({ quantity: l.quantity, unitPriceNet: l.unitPrice })),
+  );
   const discountPercent = offer.discountPercent;
   const discountAmount = subtotal * (discountPercent / 100);
-  const total = subtotal - discountAmount;
+  const total = calculateNetTotal(subtotal, discountPercent);
 
   return (
     <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
@@ -89,30 +89,17 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
           </div>
         </section>
 
-        {(offer.createdBy?.name || offer.updatedBy?.name) && (
+        {offer.userName && (
           <section className="rounded-lg border bg-card p-4">
             <h2 className="mb-2 text-sm font-semibold">{tAccepted("attribution")}</h2>
             <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
-              {offer.createdBy?.name && (
-                <span
-                  className="flex items-center gap-1.5"
-                  title={new Date(offer.generatedAt).toLocaleString("pl-PL")}
-                >
-                  <User size={11} aria-hidden="true" />
-                  {t("createdBy", { name: offer.createdBy.name })}
-                </span>
-              )}
-              {offer.updatedBy?.name && (
-                <span
-                  className="flex items-center gap-1.5"
-                  title={
-                    offer.updatedAt ? new Date(offer.updatedAt).toLocaleString("pl-PL") : undefined
-                  }
-                >
-                  <User size={11} aria-hidden="true" />
-                  {t("lastModifiedBy", { name: offer.updatedBy.name })}
-                </span>
-              )}
+              <span
+                className="flex items-center gap-1.5"
+                title={new Date(offer.createdAt).toLocaleString("pl-PL")}
+              >
+                <User size={11} aria-hidden="true" />
+                {t("createdBy", { name: offer.userName })}
+              </span>
             </div>
           </section>
         )}

@@ -6,11 +6,7 @@ import {
   updateOfferLineItemRequestSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import {
-  removeOfferLineItem,
-  toOfferDomain,
-  updateOfferLineItem,
-} from "@/server/offers/offerService";
+import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -69,7 +65,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
-  return NextResponse.json(offerResponseSchema.parse({ offer: toOfferDomain(offer) }));
+  return NextResponse.json(offerResponseSchema.parse({ offer }));
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {

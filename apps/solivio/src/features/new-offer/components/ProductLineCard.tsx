@@ -32,7 +32,7 @@ export function ProductLineCard({
   updateQuantity,
 }: ProductLineCardProps) {
   const tProducts = useTranslations("NewOffer.review.products");
-  const hasDetails = line.availability || line.manufacturer || line.rationale || line.description;
+  const hasDetails = line.availability || line.rationale || line.description;
 
   return (
     <div className="rounded-lg border border-foreground/15 bg-background/60 p-3">
@@ -177,11 +177,6 @@ export function ProductLineCard({
                     {line.availability}
                   </Badge>
                 </div>
-              ) : null}
-              {line.manufacturer ? (
-                <span className="text-xs text-muted-foreground">
-                  {tProducts("brand")}: {line.manufacturer}
-                </span>
               ) : null}
               {line.rationale ? (
                 <div className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">

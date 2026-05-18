@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, username } from "better-auth/plugins";
 
 import { db } from "@/server/database/db";
-import { account, session, user, verification } from "@/server/database/schema";
+import { accounts, sessions, users, verifications } from "@/server/database/schema";
 
 const flag = (name: string, fallback: boolean) => {
   const value = process.env[name];
@@ -43,7 +43,12 @@ if (authFlags.microsoftEnabled) {
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema: { user, session, account, verification },
+    schema: {
+      user: users,
+      session: sessions,
+      account: accounts,
+      verification: verifications,
+    },
   }),
   emailAndPassword: {
     enabled: authFlags.credentialsEnabled,

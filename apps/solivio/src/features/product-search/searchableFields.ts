@@ -1,4 +1,4 @@
-export const ALL_SEARCHABLE_FIELDS = ["sku", "name", "description", "manufacturer"] as const;
+export const ALL_SEARCHABLE_FIELDS = ["sku", "name", "description"] as const;
 
 export type SearchableField = (typeof ALL_SEARCHABLE_FIELDS)[number];
 

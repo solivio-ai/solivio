@@ -5,127 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1777375646288,
-      "tag": "0000_dry_gravity",
+      "when": 1778590025784,
+      "tag": "0000_init",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1777377616457,
-      "tag": "0001_bizarre_quentin_quire",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1777378647523,
-      "tag": "0002_strong_fixer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1777384867077,
-      "tag": "0003_nervous_sentry",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1777385644345,
-      "tag": "0004_far_moondragon",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1777385829456,
-      "tag": "0005_skinny_layla_miller",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1777452745672,
-      "tag": "0006_rainy_liz_osborn",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1777456722095,
-      "tag": "0007_polite_blue_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1777460000000,
-      "tag": "0008_combined_embedding",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1777463750459,
-      "tag": "0009_price_columns",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1777463860000,
-      "tag": "0010_offer_products_unit_price_numeric",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1777550000000,
-      "tag": "0011_audit_columns_and_revisions",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "7",
-      "when": 1777551000000,
-      "tag": "0012_offer_products_position",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "7",
-      "when": 1777552000000,
-      "tag": "0013_remove_offer_debug_fragments",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1777553000000,
-      "tag": "0014_offers_discount_percent",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "7",
-      "when": 1777554000000,
-      "tag": "0015_reconcile_migration_state",
-      "breakpoints": true
-    },
-    {
-      "idx": 16,
-      "version": "7",
-      "when": 1778077534965,
-      "tag": "0016_cultured_frightful_four",
-      "breakpoints": true
-    },
-    {
-      "idx": 17,
-      "version": "7",
-      "when": 1778761604909,
-      "tag": "0017_shocking_klaw",
+      "when": 1779095872580,
+      "tag": "0001_faithful_molly_hayes",
       "breakpoints": true
     }
   ]

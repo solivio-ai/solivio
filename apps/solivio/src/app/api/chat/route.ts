@@ -28,35 +28,28 @@ function getLatestUserMessage(messages: UIMessage[]) {
 
 function formatOfferContext(offer: Offer) {
   const discountPercent = offer.discountPercent;
-  const currency = offer.items[0]?.currency ?? offer.items[0]?.product?.currency ?? "PLN";
-  const subtotal = offer.items.reduce((sum, item) => {
-    const unitPrice = item.unitPriceNet ?? item.product?.priceNet ?? 0;
-    return sum + item.quantity * unitPrice;
-  }, 0);
-  const discount = subtotal * (discountPercent / 100);
-  const total = subtotal - discount;
-  const limitedLineCount = offer.items.filter(
-    (item) => item.product?.availability === "limited",
-  ).length;
-  const unpricedLineCount = offer.items.filter(
-    (item) => (item.unitPriceNet ?? item.product?.priceNet ?? 0) <= 0,
-  ).length;
+  const discountAmount = offer.discountAmount;
+  const currency = offer.currency;
+  const subtotal = offer.items.reduce((sum, item) => sum + item.totalNet, 0);
+  const discountFromPercent = subtotal * (discountPercent / 100);
+  const effectiveDiscount = discountAmount > 0 ? discountAmount : discountFromPercent;
+  const total = Math.max(0, subtotal - effectiveDiscount);
+  const unpricedLineCount = offer.items.filter((item) => item.unitPriceNet <= 0).length;
   const lines = [
     "Current offer context:",
     `Offer ID: ${offer.id}`,
     `Status: ${offer.status}`,
     `Customer: ${offer.customerName ?? "Unknown"}`,
-    `Generated at: ${offer.generatedAt}`,
+    `Created at: ${offer.createdAt}`,
     "",
     "Original client message:",
     offer.clientRequest?.trim() || "No original client message is attached.",
     "",
     "Commercial summary:",
     `Subtotal: ${subtotal} ${currency}`,
-    `Discount: ${discountPercent}% (${discount} ${currency})`,
+    `Discount: ${discountPercent}% (${effectiveDiscount} ${currency})`,
     `Total net: ${total} ${currency}`,
     `Pricing check: ${unpricedLineCount === 0 ? "all lines have prices" : `${unpricedLineCount} line(s) need a unit price`}`,
-    `Availability check: ${limitedLineCount === 0 ? "availability confirmed" : `${limitedLineCount} line(s) need availability confirmation`}`,
     `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,
     "",
     "Products:",
@@ -66,29 +59,18 @@ function formatOfferContext(offer: Offer) {
     lines.push("- No products are included in this offer.");
   } else {
     offer.items.forEach((item, index) => {
-      const itemSnapshot = item as Offer["items"][number] & {
-        productName?: string;
-        productSku?: string;
-      };
-      const product = item.product;
-      const price =
-        item.unitPriceNet !== undefined
-          ? `${item.unitPriceNet} ${item.currency ?? product?.currency ?? ""}`.trim()
-          : product?.priceNet !== undefined
-            ? `${product.priceNet} ${product.currency ?? ""}`.trim()
-            : "not provided";
-
       lines.push(
         [
-          `${index + 1}. ${product?.name ?? itemSnapshot.productName ?? item.productId}`,
-          `   Line item ID: ${item.offerProductId ?? "not available"}`,
-          `   Product ID: ${item.productId}`,
-          `   SKU: ${product?.sku ?? itemSnapshot.productSku ?? "not provided"}`,
-          `   Manufacturer: ${product?.manufacturer ?? "not provided"}`,
-          `   Description: ${product?.description ?? "not provided"}`,
+          `${index + 1}. ${item.name}`,
+          `   Line item ID: ${item.id ?? "not available"}`,
+          `   Product ID: ${item.productId ?? "custom item"}`,
+          `   SKU: ${item.product?.sku ?? "not provided"}`,
+          `   Description: ${item.description || "not provided"}`,
           `   Quantity: ${item.quantity}`,
-          `   Unit price net: ${price}`,
-          `   Confidence: ${item.confidence ?? product?.matchScore ?? "not provided"}`,
+          `   Unit price net: ${item.unitPriceNet} ${currency}`,
+          `   VAT: ${item.vatRate}%`,
+          `   Line total net: ${item.totalNet} ${currency}`,
+          `   Match: ${item.matchSource ?? "n/a"} (${item.matchScore ?? "n/a"})`,
           `   Rationale: ${item.rationale}`,
         ].join("\n"),
       );

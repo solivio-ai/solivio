@@ -8,7 +8,6 @@ import {
   addProductToOffer,
   bulkAddProductsToOffer,
   removeOfferLineItem,
-  toOfferDomain,
   updateOfferLineItem,
 } from "./offerService";
 
@@ -68,7 +67,7 @@ export const offerLineItemTools = [
       if (offer === null) return { error: "not_found" };
       if (offer === "duplicate") return { error: "duplicate_product" };
       if (offer === "locked") return { error: "offer_locked" };
-      return { offer: toOfferDomain(offer) };
+      return { offer };
     },
   }),
 
@@ -85,7 +84,7 @@ export const offerLineItemTools = [
       const offer = await updateOfferLineItem(input.offerProductId, input.offerId, input.quantity);
       if (offer === "locked") return { error: "offer_locked" };
       if (offer === null) return { error: "not_found" };
-      return { offer: toOfferDomain(offer) };
+      return { offer };
     },
   }),
 

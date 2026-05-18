@@ -6,7 +6,7 @@ import {
   offerResponseSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { addProductToOffer, toOfferDomain } from "@/server/offers/offerService";
+import { addProductToOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -80,7 +80,7 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  return NextResponse.json(offerResponseSchema.parse({ offer: toOfferDomain(offer) }), {
+  return NextResponse.json(offerResponseSchema.parse({ offer }), {
     status: 201,
   });
 }

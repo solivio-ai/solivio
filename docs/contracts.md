@@ -101,7 +101,7 @@ Shape matches Voltagent-style tool options: **`name`**, **`description`**, **`pa
 - **`ImportResult`**: **`status`** (`success` | `partial` | `failed`), **`records`**: **`ProductInput[]`**, **`errors`**: `{ index?, sku?, message }[]`.
 - Importers do **not** write the database; they return rows for the core to persist.
 
-**`ProductInput`** — [`sdk/src/entities/product.ts`](../sdk/src/entities/product.ts): `sku`, `name`, `description`, `manufacturer`, `priceNet`, optional `priceGross` / `vatRate`, `currency`. Omits DB-generated fields (`id`, `createdAt`, embeddings).
+**`ProductInput`** — [`sdk/src/entities/product.ts`](../sdk/src/entities/product.ts): `sku`, `name`, `description`, `priceNet`, optional `priceGross` / `vatRate`, `currency`. Omits DB-generated fields (`id`, `createdAt`, embeddings).
 
 ### Renderers — [`sdk/src/renderer.ts`](../sdk/src/renderer.ts)
 

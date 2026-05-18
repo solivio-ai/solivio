@@ -1,7 +1,6 @@
 import "server-only";
 
-import type { Offer } from "@solivio/domain";
-import { demoOffer } from "@solivio/domain";
+import type { Offer, OfferItem } from "@solivio/domain";
 
 type OfferStore = Map<string, Offer>;
 
@@ -18,7 +17,7 @@ export function saveOfferDraft(offer: Offer) {
 }
 
 export function getOfferDraft(id: string) {
-  return offerDrafts.get(id) ?? (id === demoOffer.id ? demoOffer : null);
+  return offerDrafts.get(id) ?? null;
 }
 
 export function updateOfferDraft(
@@ -28,44 +27,43 @@ export function updateOfferDraft(
     name?: string;
     customerName?: string | null;
     clientRequest?: string | null;
-    items?: Array<{
-      productId: string;
-      quantity?: number;
-      rationale?: string;
-      requestItem?: string;
-      confidence?: number;
-      product?: Offer["items"][number]["product"];
-    }>;
+    items?: Array<Partial<OfferItem> & { productId: string | null; name: string }>;
     unmatched?: string[];
     discountPercent?: number;
+    discountAmount?: number;
   },
 ) {
   const offer = getOfferDraft(id);
   if (!offer) return null;
 
-  const existingItems = new Map(offer.items.map((item) => [item.productId, item]));
-  const nextItems: Offer["items"] = update.items
-    ? update.items.map((itemUpdate) => {
-        const existingItem = existingItems.get(itemUpdate.productId);
+  const existingItems = new Map(
+    offer.items.filter((i) => i.productId).map((item) => [item.productId!, item]),
+  );
 
-        if (!existingItem) {
-          return {
-            productId: itemUpdate.productId,
-            quantity: itemUpdate.quantity ?? 1,
-            rationale: itemUpdate.rationale ?? "Manually added",
-            requestItem: itemUpdate.requestItem,
-            confidence: itemUpdate.confidence,
-            product: itemUpdate.product,
-          };
-        }
-
+  const nextItems: OfferItem[] = update.items
+    ? update.items.map((itemUpdate, index) => {
+        const existing = itemUpdate.productId ? existingItems.get(itemUpdate.productId) : undefined;
+        const base: OfferItem = existing ?? {
+          productId: itemUpdate.productId,
+          name: itemUpdate.name,
+          description: itemUpdate.description ?? "",
+          quantity: itemUpdate.quantity ?? 1,
+          unitPriceNet: itemUpdate.unitPriceNet ?? 0,
+          vatRate: itemUpdate.vatRate ?? 23,
+          unitGrossPrice: itemUpdate.unitGrossPrice ?? 0,
+          totalNet: itemUpdate.totalNet ?? 0,
+          totalGross: itemUpdate.totalGross ?? 0,
+          requestItem: itemUpdate.requestItem ?? "",
+          rationale: itemUpdate.rationale ?? "Manually added",
+          matchSource: itemUpdate.matchSource ?? "manual",
+          matchScore: itemUpdate.matchScore ?? null,
+          position: index,
+          product: itemUpdate.product,
+        };
         return {
-          ...existingItem,
-          quantity: itemUpdate.quantity ?? existingItem.quantity,
-          rationale: itemUpdate.rationale ?? existingItem.rationale,
-          requestItem: itemUpdate.requestItem ?? existingItem.requestItem,
-          confidence: itemUpdate.confidence ?? existingItem.confidence,
-          product: itemUpdate.product ?? existingItem.product,
+          ...base,
+          ...itemUpdate,
+          position: index,
         };
       })
     : offer.items;
@@ -74,14 +72,11 @@ export function updateOfferDraft(
     ...offer,
     status: update.status ?? offer.status,
     name: update.name ?? offer.name,
-    customerName:
-      update.customerName !== undefined ? (update.customerName ?? undefined) : offer.customerName,
-    clientRequest:
-      update.clientRequest !== undefined
-        ? (update.clientRequest ?? undefined)
-        : offer.clientRequest,
+    customerName: update.customerName !== undefined ? update.customerName : offer.customerName,
+    clientRequest: update.clientRequest !== undefined ? update.clientRequest : offer.clientRequest,
     unmatched: update.unmatched ?? offer.unmatched,
     discountPercent: update.discountPercent ?? offer.discountPercent,
+    discountAmount: update.discountAmount ?? offer.discountAmount,
     items: nextItems,
   };
 

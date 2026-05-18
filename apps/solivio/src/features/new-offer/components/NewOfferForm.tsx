@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -17,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { CreatedOffer } from "@/server/offers/offerService";
 
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
@@ -69,7 +69,7 @@ export function NewOfferForm() {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const json = (await response.json()) as { offer: CreatedOffer };
+      const json = (await response.json()) as { offer: Offer };
       setGenerationState("complete");
       setGenerationElapsedMs(Date.now() - startedAt);
       setNoticeKey("generated");
