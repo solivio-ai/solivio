@@ -4,6 +4,7 @@ import { ArrowUpDown, ListFilter, MoreHorizontal, Plus, Search } from "lucide-re
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -155,9 +156,13 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
     if (!deletingUser) return;
     const userId = deletingUser.id;
     startDeleteTransition(async () => {
-      await authClient.admin.removeUser({ userId });
-      setDeletingUser(null);
-      router.refresh();
+      try {
+        await authClient.admin.removeUser({ userId });
+        setDeletingUser(null);
+        router.refresh();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to delete user");
+      }
     });
   }
 
