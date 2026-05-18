@@ -5,7 +5,7 @@ export const sampleOffer: PdfOfferRequest = {
     number: "OF/2026/04/001",
     issueDate: "2026-04-28",
     validUntil: "2026-05-28",
-    currency: "PLN",
+    currency: "EUR",
     discountPercent: 5,
   },
   seller: {
@@ -61,6 +61,6 @@ export const sampleOffer: PdfOfferRequest = {
   terms: {
     delivery: "14 dni roboczych od potwierdzenia zamówienia",
     payment: "Przelew 14 dni od daty wystawienia faktury VAT",
-    notes: "Dostępność towaru potwierdzona na dzień wystawienia oferty. Ceny netto, waluta PLN.",
+    notes: "Dostępność towaru potwierdzona na dzień wystawienia oferty. Ceny netto.",
   },
 };

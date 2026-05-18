@@ -33,9 +33,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Import failed.", errors: result.errors }, { status: 400 });
     }
 
-    await importProductsWithEmbeddings(result.records, model);
+    const { count } = await importProductsWithEmbeddings(result.records, model);
 
-    return NextResponse.json({ imported: result.records.length, errors: result.errors });
+    return NextResponse.json({ count, errors: result.errors });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

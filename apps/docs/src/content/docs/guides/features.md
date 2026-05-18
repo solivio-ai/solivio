@@ -22,7 +22,7 @@ Open **Catalog Upload** at `/products/upload`.
 Upload a CSV file with these columns:
 
 ```text
-sku,name,description,manufacturer
+sku,name,description
 ```
 
 Comma, semicolon, and tab-separated files are accepted. The importer previews

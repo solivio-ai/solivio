@@ -1,15 +1,14 @@
-import type { ProductImportRow } from "@solivio/domain";
+import type { ProductInput } from "@solivio/sdk";
 
 export type CsvParseResult = {
   headers: string[];
   rows: Record<string, string>[];
 };
 
-const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
+const COLUMN_ALIASES: Record<keyof ProductInput, string[]> = {
   sku: ["sku", "id", "kod", "index", "symbol"],
   name: ["name", "nazwa", "product", "produkt"],
   description: ["description", "opis", "summary"],
-  manufacturer: ["manufacturer", "marka", "brand", "producent", "vendor"],
   priceNet: ["price_net", "pricenet", "cena_netto", "net_price", "netto"],
   priceGross: ["price_gross", "pricegross", "cena_brutto", "gross_price", "brutto"],
   vatRate: ["vat_rate", "vatrate", "vat", "stawka_vat", "tax_rate"],
@@ -104,12 +103,10 @@ export function parseCsv(text: string): CsvParseResult {
   return { headers, rows };
 }
 
-export function resolveColumnMap(
-  headers: string[],
-): Partial<Record<keyof ProductImportRow, string>> {
+export function resolveColumnMap(headers: string[]): Partial<Record<keyof ProductInput, string>> {
   const lower = headers.map((h) => h.toLowerCase());
-  const map: Partial<Record<keyof ProductImportRow, string>> = {};
-  for (const field of Object.keys(COLUMN_ALIASES) as (keyof ProductImportRow)[]) {
+  const map: Partial<Record<keyof ProductInput, string>> = {};
+  for (const field of Object.keys(COLUMN_ALIASES) as (keyof ProductInput)[]) {
     const idx = lower.findIndex((h) => COLUMN_ALIASES[field].includes(h));
     if (idx >= 0) map[field] = headers[idx];
   }
@@ -125,15 +122,14 @@ export type ProductRowImportError = {
 
 export function extractProductRows(
   rows: Record<string, string>[],
-  columnMap: Partial<Record<keyof ProductImportRow, string>>,
-): { records: ProductImportRow[]; rowErrors: ProductRowImportError[] } {
+  columnMap: Partial<Record<keyof ProductInput, string>>,
+): { records: ProductInput[]; rowErrors: ProductRowImportError[] } {
   const rowErrors: ProductRowImportError[] = [];
 
   if (
     !columnMap.sku ||
     !columnMap.name ||
     !columnMap.description ||
-    !columnMap.manufacturer ||
     !columnMap.priceNet ||
     !columnMap.priceGross ||
     !columnMap.vatRate ||
@@ -142,13 +138,12 @@ export function extractProductRows(
     return { records: [], rowErrors: [] };
   }
 
-  const result: ProductImportRow[] = [];
+  const result: ProductInput[] = [];
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const sku = row[columnMap.sku] ?? "";
     const name = row[columnMap.name] ?? "";
     const description = row[columnMap.description] ?? "";
-    const manufacturer = row[columnMap.manufacturer] ?? "";
     const currency = (row[columnMap.currency] ?? "").toUpperCase();
     const priceNet = parseDecimal(row[columnMap.priceNet] ?? "");
     const priceGross = parseDecimal(row[columnMap.priceGross] ?? "");
@@ -158,7 +153,6 @@ export function extractProductRows(
       sku &&
       name &&
       description &&
-      manufacturer &&
       currency &&
       priceNet !== null &&
       priceGross !== null &&
@@ -168,7 +162,6 @@ export function extractProductRows(
         sku,
         name,
         description,
-        manufacturer,
         priceNet,
         priceGross,
         vatRate,
@@ -181,7 +174,6 @@ export function extractProductRows(
     if (!sku) missing.push("sku");
     if (!name) missing.push("name");
     if (!description) missing.push("description");
-    if (!manufacturer) missing.push("manufacturer");
     if (!currency) missing.push("currency");
     if (priceNet === null) missing.push("priceNet");
     if (priceGross === null) missing.push("priceGross");
@@ -201,9 +193,9 @@ export function extractProductRows(
 }
 
 export function getMissingColumns(
-  columnMap: Partial<Record<keyof ProductImportRow, string>>,
+  columnMap: Partial<Record<keyof ProductInput, string>>,
 ): string[] {
-  return (Object.keys(COLUMN_ALIASES) as (keyof ProductImportRow)[]).filter(
+  return (Object.keys(COLUMN_ALIASES) as (keyof ProductInput)[]).filter(
     (field) => !columnMap[field],
   );
 }

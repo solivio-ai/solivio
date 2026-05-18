@@ -5,8 +5,10 @@ import { eq } from "drizzle-orm";
 import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
 
 import { db } from "../database/db";
-import { offerProducts, offers } from "../database/schema";
-import { findOfferById, insertOfferProducts, setOfferUpdatedBy } from "./offerRepository";
+import { offerItems, offers } from "../database/schema";
+import type { InsertOfferItemData } from "./offerRepository";
+import { findOfferById, insertOfferItems, lockOfferForUpdate, touchOffer } from "./offerRepository";
+import type { RevisionRow } from "./offerRevisionRepository";
 import {
   findRevisionById,
   findRevisionsByOfferId,
@@ -16,25 +18,14 @@ import {
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
 function rowToRevision(
-  row: {
-    id: string;
-    offerId: string;
-    revisionNumber: number;
-    name?: string | null;
-    createdById: string | null;
-    createdByName: string | null;
-    createdAt: Date;
-    acceptedAt?: Date | null;
-    snapshot?: OfferRevisionSnapshot;
-  } & ({ snapshot: OfferRevisionSnapshot } | { snapshot?: never }),
+  row: Omit<RevisionRow, "snapshot"> & { snapshot?: OfferRevisionSnapshot },
 ): OfferRevision {
   return {
     id: row.id,
     offerId: row.offerId,
     revisionNumber: row.revisionNumber,
-    name: row.name ?? undefined,
     snapshot: row.snapshot,
-    createdBy: row.createdById ? { id: row.createdById, name: row.createdByName ?? "" } : null,
+    createdBy: null,
     createdAt: row.createdAt.toISOString(),
     acceptedAt: row.acceptedAt?.toISOString() ?? null,
   };
@@ -51,27 +42,37 @@ export async function saveRevision(
 
   const snapshot: OfferRevisionSnapshot = {
     name: row.name,
+    customerId: row.customerId,
     customerName: row.customerName,
+    requestId: row.requestId,
     clientRequest: row.clientRequest,
     status: row.status,
+    currency: row.currency,
+    discountPercent: row.discountPercent,
+    discountAmount: row.discountAmount,
     notes: row.notes,
     unmatched: row.unmatched,
-    discountPercent: row.discountPercent,
-    lineItems: row.items.map((item, index) => ({
+    items: row.items.map((item, index) => ({
       productId: item.productId,
       sku: item.productSku,
-      name: item.productName,
+      name: item.name,
+      description: item.description,
       requestItem: item.requestItem,
       quantity: item.quantity,
       unitPriceNet: item.unitPriceNet,
-      currency: item.currency,
+      vatRate: item.vatRate,
+      unitGrossPrice: item.unitGrossPrice,
+      totalNet: item.totalNet,
+      totalGross: item.totalGross,
       rationale: item.rationale,
+      matchSource: item.matchSource,
+      matchScore: item.matchScore,
       position: index,
     })),
   };
 
-  const revision = await insertRevision({ offerId, snapshot, createdBy: userId, acceptedAt }, tx);
-  await setOfferUpdatedBy(offerId, userId, tx);
+  const revision = await insertRevision({ offerId, snapshot, acceptedAt }, tx);
+  await touchOffer(offerId, userId, tx);
 
   return rowToRevision(revision);
 }
@@ -100,49 +101,58 @@ export async function restoreRevision(
 
   const { snapshot } = revisionRow;
 
-  // Check if current offer is locked
-  const currentOffer = await findOfferById(offerId);
-  if (currentOffer?.status === "accepted") {
-    return null;
-  }
-
+  let blocked = false;
   await db.transaction(async (tx) => {
-    await tx.delete(offerProducts).where(eq(offerProducts.offerId, offerId));
+    const locked = await lockOfferForUpdate(offerId, tx);
+    if (!locked || locked.status === "accepted") {
+      blocked = true;
+      return;
+    }
 
-    if (snapshot.lineItems.length > 0) {
-      await insertOfferProducts(
-        snapshot.lineItems.map((item) => ({
-          offerId,
-          productId: item.productId,
-          requestItem: item.requestItem,
-          quantity: item.quantity,
-          unitPriceNet: item.unitPriceNet,
-          currency: item.currency,
-          rationale: item.rationale,
-          position: item.position,
-        })),
-        tx,
-      );
+    await tx.delete(offerItems).where(eq(offerItems.offerId, offerId));
+
+    if (snapshot.items.length > 0) {
+      const items: InsertOfferItemData[] = snapshot.items.map((item) => ({
+        offerId,
+        productId: item.productId,
+        name: item.name,
+        description: item.description,
+        quantity: item.quantity,
+        unitPriceNet: item.unitPriceNet,
+        vatRate: item.vatRate,
+        unitGrossPrice: item.unitGrossPrice,
+        totalNet: item.totalNet,
+        totalGross: item.totalGross,
+        requestItem: item.requestItem,
+        rationale: item.rationale,
+        matchSource: item.matchSource,
+        matchScore: item.matchScore,
+        position: item.position,
+      }));
+      await insertOfferItems(items, tx);
     }
 
     await tx
       .update(offers)
       .set({
         name: snapshot.name,
-        customerName: snapshot.customerName,
-        clientRequest: snapshot.clientRequest,
+        customerId: snapshot.customerId,
+        requestId: snapshot.requestId,
+        currency: snapshot.currency,
         notes: snapshot.notes,
         unmatched: snapshot.unmatched,
         discountPercent: snapshot.discountPercent ?? 0,
+        discountAmount: snapshot.discountAmount ?? 0,
         status: "draft",
-        updatedBy: userId,
+        userId,
         updatedAt: new Date(),
       })
       .where(eq(offers.id, offerId));
+
+    await saveRevision(offerId, userId, null, tx);
   });
 
-  // The restore action itself becomes a new revision
-  await saveRevision(offerId, userId);
+  if (blocked) return null;
 
   const revisions = await findRevisionsByOfferId(offerId);
   return revisions.length > 0 ? rowToRevision(revisions[0]) : null;

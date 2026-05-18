@@ -60,7 +60,7 @@ export function ProductImport({ accept }: Props) {
         });
         return;
       }
-      setStatus({ kind: "done", count: payload.imported, errors: payload.errors ?? [] });
+      setStatus({ kind: "done", count: payload.count, errors: payload.errors ?? [] });
     } catch (err) {
       setStatus({
         kind: "error",

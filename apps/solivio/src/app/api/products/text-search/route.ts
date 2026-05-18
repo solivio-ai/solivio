@@ -28,7 +28,6 @@ const responseSchema = z
         sku: z.string(),
         name: z.string(),
         description: z.string(),
-        manufacturer: z.string(),
       }),
     ),
     totalCount: z.number().int().nonnegative(),
