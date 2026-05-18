@@ -72,9 +72,17 @@ jobs:
             exit 1
           fi
           printf '%s' "\$GHCR_TOKEN" | docker login ghcr.io -u "\$GHCR_USER" --password-stdin
+          # Persist IMAGE_TAG into .env so compose interpolation picks it up
+          # (project-dir .env wins over shell env for \${VAR} interpolation in compose v2).
+          if grep -q '^IMAGE_TAG=' .env; then
+            sed -i "s|^IMAGE_TAG=.*|IMAGE_TAG=\$IMAGE_TAG|" .env
+          else
+            printf '\nIMAGE_TAG=%s\n' "\$IMAGE_TAG" >> .env
+          fi
           export IMAGE_TAG
-          docker compose -f docker-compose.prod.yml pull --quiet
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans --quiet-pull
+          echo "Deploying IMAGE_TAG=\$IMAGE_TAG"
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
           docker image prune -f
           EOF
 
