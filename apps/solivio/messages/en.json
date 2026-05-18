@@ -71,6 +71,10 @@
       "deleteConfirmDescription": "This will permanently remove \"{name}\" from the system. This cannot be undone.",
       "deleteConfirm": "Delete",
       "cancel": "Cancel"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "CreateUserDialog": {

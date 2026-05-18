@@ -71,6 +71,10 @@
       "deleteConfirmDescription": "Trwale usunie \"{name}\" z systemu. Tej operacji nie można cofnąć.",
       "deleteConfirm": "Usuń",
       "cancel": "Anuluj"
+    },
+    "pagination": {
+      "previous": "Poprzednia",
+      "next": "Następna"
     }
   },
   "CreateUserDialog": {

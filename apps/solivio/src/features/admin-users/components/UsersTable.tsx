@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowUpDown, ListFilter, MoreHorizontal, Plus, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
@@ -35,6 +35,15 @@ import {
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -65,16 +74,14 @@ type User = {
 
 type UsersTableProps = {
   users: User[];
+  total: number;
+  limit: number;
+  offset: number;
   currentUserId: string;
 };
 
 type RoleFilter = "all" | "admin" | "user";
 type SortKey = "joinedDesc" | "joinedAsc" | "nameAsc" | "nameDesc";
-
-function toJoinedMs(value: Date | string): number {
-  const t = new Date(value).getTime();
-  return Number.isNaN(t) ? 0 : t;
-}
 
 function formatDate(value: Date | string, locale: string): string {
   return new Date(value).toLocaleDateString(locale, {
@@ -91,57 +98,83 @@ function roleLabel(role: string | null | undefined, t: (key: string) => string):
   return key;
 }
 
-function matchesRoleFilter(user: User, roleFilter: RoleFilter): boolean {
-  if (roleFilter === "all") return true;
-  const isAdmin = user.role === "admin";
-  if (roleFilter === "admin") return isAdmin;
-  return !isAdmin;
+function buildPageHref(
+  searchParams: URLSearchParams,
+  page: number,
+  extraParams?: Record<string, string>,
+): string {
+  const next = new URLSearchParams(searchParams.toString());
+  next.set("page", String(page));
+  if (extraParams) {
+    for (const [key, value] of Object.entries(extraParams)) {
+      if (value) {
+        next.set(key, value);
+      } else {
+        next.delete(key);
+      }
+    }
+  }
+  return `?${next.toString()}`;
 }
 
-export function UsersTable({ users, currentUserId }: UsersTableProps) {
+function getPageNumbers(currentPage: number, totalPages: number): (number | "ellipsis")[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const pages: (number | "ellipsis")[] = [1];
+  if (currentPage > 3) pages.push("ellipsis");
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (currentPage < totalPages - 2) pages.push("ellipsis");
+  pages.push(totalPages);
+  return pages;
+}
+
+export function UsersTable({ users, total, limit, offset, currentUserId }: UsersTableProps) {
   const t = useTranslations("UsersTable");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [query, setQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
-  const [sortKey, setSortKey] = useState<SortKey>("joinedDesc");
+  const currentPage = Math.floor(offset / limit) + 1;
+  const totalPages = Math.ceil(total / limit);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<EditableUser | null>(null);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
-
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isDeleting, startDeleteTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
-  const visibleUsers = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const searchValue = searchParams.get("search") ?? "";
+  const [searchInput, setSearchInput] = useState(searchValue);
+  const roleFilter = (searchParams.get("role") ?? "all") as RoleFilter;
+  const sortKey = (searchParams.get("sort") ?? "joinedDesc") as SortKey;
 
-    const filtered = users.filter((user) => {
-      if (!matchesRoleFilter(user, roleFilter)) return false;
-      if (!normalizedQuery) return true;
-
-      const name = user.name.toLowerCase();
-      const email = user.email.toLowerCase();
-      return name.includes(normalizedQuery) || email.includes(normalizedQuery);
-    });
-
-    const sorted = [...filtered];
-    sorted.sort((a, b) => {
-      switch (sortKey) {
-        case "joinedAsc":
-          return toJoinedMs(a.createdAt) - toJoinedMs(b.createdAt);
-        case "nameAsc":
-          return a.name.localeCompare(b.name, locale, { sensitivity: "base" });
-        case "nameDesc":
-          return b.name.localeCompare(a.name, locale, { sensitivity: "base" });
-        default:
-          return toJoinedMs(b.createdAt) - toJoinedMs(a.createdAt);
+  const pushParams = useCallback(
+    (updates: Record<string, string>) => {
+      const next = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        if (value && value !== "all" && value !== "joinedDesc") {
+          next.set(key, value);
+        } else {
+          next.delete(key);
+        }
       }
-    });
+      next.delete("page");
+      startTransition(() => {
+        router.push(`?${next.toString()}`);
+      });
+    },
+    [router, searchParams],
+  );
 
-    return sorted;
-  }, [users, query, roleFilter, sortKey, locale]);
+  useEffect(() => {
+    if (searchInput === searchValue) return;
+    const timer = setTimeout(() => pushParams({ search: searchInput }), 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, searchValue, pushParams]);
 
   function openEdit(user: User) {
     setEditingUser({ id: user.id, name: user.name, email: user.email, role: user.role });
@@ -166,7 +199,16 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
     });
   }
 
-  if (users.length === 0) {
+  function clearFilters() {
+    setSearchInput("");
+    startTransition(() => {
+      router.push("?");
+    });
+  }
+
+  const hasActiveFilters = searchValue !== "" || roleFilter !== "all";
+
+  if (total === 0 && !hasActiveFilters) {
     return (
       <>
         <div className="flex justify-end">
@@ -181,6 +223,8 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
     );
   }
 
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
+
   return (
     <div className="grid gap-4">
       <div className="flex flex-col gap-2 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
@@ -191,17 +235,22 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
           />
           <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             placeholder={t("search.placeholder")}
             className="pl-8"
             aria-label={t("search.label")}
+            disabled={isPending}
           />
         </div>
 
         <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
           <ListFilter size={16} aria-hidden="true" className="text-muted-foreground" />
-          <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleFilter)}>
+          <Select
+            value={roleFilter}
+            onValueChange={(value) => pushParams({ role: value })}
+            disabled={isPending}
+          >
             <SelectTrigger className="w-full sm:w-44" aria-label={t("filters.label")}>
               <SelectValue />
             </SelectTrigger>
@@ -215,7 +264,11 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
 
         <div className="flex w-full items-center gap-2 sm:w-auto">
           <ArrowUpDown size={16} aria-hidden="true" className="text-muted-foreground" />
-          <Select value={sortKey} onValueChange={(value) => setSortKey(value as SortKey)}>
+          <Select
+            value={sortKey}
+            onValueChange={(value) => pushParams({ sort: value })}
+            disabled={isPending}
+          >
             <SelectTrigger className="w-full sm:w-52" aria-label={t("sort.label")}>
               <SelectValue />
             </SelectTrigger>
@@ -228,13 +281,18 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
           </Select>
         </div>
 
-        <Button type="button" className="w-full sm:w-auto" onClick={() => setCreateOpen(true)}>
+        <Button
+          type="button"
+          className="w-full sm:w-auto"
+          onClick={() => setCreateOpen(true)}
+          disabled={isPending}
+        >
           <Plus size={16} />
           {t("actions.newUser")}
         </Button>
       </div>
 
-      {visibleUsers.length === 0 ? (
+      {users.length === 0 ? (
         <Empty className="rounded-lg border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -244,71 +302,109 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
             <EmptyDescription>{t("matchingEmpty.description")}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setQuery("");
-                setRoleFilter("all");
-              }}
-            >
+            <Button type="button" variant="outline" onClick={clearFilters}>
               {t("actions.clearFilters")}
             </Button>
           </EmptyContent>
         </Empty>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("columns.name")}</TableHead>
-              <TableHead>{t("columns.email")}</TableHead>
-              <TableHead>{t("columns.role")}</TableHead>
-              <TableHead>{t("columns.joined")}</TableHead>
-              <TableHead>{t("columns.actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visibleUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                <TableCell>
-                  <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                    {roleLabel(user.role, t)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(user.createdAt, locale)}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" aria-label={user.name}>
-                        <MoreHorizontal size={16} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => openEdit(user)}>
-                        {t("actions.edit")}
-                      </DropdownMenuItem>
-                      {user.id !== currentUserId && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onClick={() => confirmDelete(user)}
-                          >
-                            {t("actions.delete")}
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead>{t("columns.email")}</TableHead>
+                <TableHead>{t("columns.role")}</TableHead>
+                <TableHead>{t("columns.joined")}</TableHead>
+                <TableHead>{t("columns.actions")}</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                  <TableCell>
+                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                      {roleLabel(user.role, t)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(user.createdAt, locale)}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon-sm" aria-label={user.name}>
+                          <MoreHorizontal size={16} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openEdit(user)}>
+                          {t("actions.edit")}
+                        </DropdownMenuItem>
+                        {user.id !== currentUserId && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onClick={() => confirmDelete(user)}
+                            >
+                              {t("actions.delete")}
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href={buildPageHref(searchParams, currentPage - 1)}
+                    aria-disabled={currentPage <= 1}
+                    tabIndex={currentPage <= 1 ? -1 : undefined}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                    text={t("pagination.previous")}
+                  />
+                </PaginationItem>
+
+                {pageNumbers.map((page, i) =>
+                  page === "ellipsis" ? (
+                    <PaginationItem key={`ellipsis-${i}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href={buildPageHref(searchParams, page)}
+                        isActive={page === currentPage}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href={buildPageHref(searchParams, currentPage + 1)}
+                    aria-disabled={currentPage >= totalPages}
+                    tabIndex={currentPage >= totalPages ? -1 : undefined}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                    text={t("pagination.next")}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </>
       )}
 
       <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} />
