@@ -55,4 +55,7 @@ if (process.argv.includes("--write")) {
 } else if (missing.length > 0) {
   console.log("\nRun with --write to auto-add missing packages to solivio.config.json.");
   process.exit(1);
+} else if (extra.length > 0) {
+  console.log("\nRemove ghost entries from solivio.config.json or restore the missing modules.");
+  process.exit(1);
 }
