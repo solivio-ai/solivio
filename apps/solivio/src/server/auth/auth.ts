@@ -18,7 +18,7 @@ export const authFlags = {
   credentialsEnabled: flag("AUTH_CREDENTIALS_ENABLED", true),
   ssoEnabled: flag("AUTH_SSO_ENABLED", true),
   signUpEnabled: flag("AUTH_SIGNUP_ENABLED", true),
-  signUpDefaultRole: process.env.AUTH_SIGNUP_DEFAULT_ROLE ?? "admin",
+  signUpDefaultRole: process.env.AUTH_SIGNUP_DEFAULT_ROLE ?? "user",
   googleEnabled: flag("AUTH_SSO_ENABLED", true) && !!process.env.AUTH_GOOGLE_CLIENT_ID,
   microsoftEnabled: flag("AUTH_SSO_ENABLED", true) && !!process.env.AUTH_MICROSOFT_CLIENT_ID,
 } as const;
