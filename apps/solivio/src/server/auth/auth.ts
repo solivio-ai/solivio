@@ -3,7 +3,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { username } from "better-auth/plugins";
+import { admin, username } from "better-auth/plugins";
 
 import { db } from "@/server/database/db";
 import { accounts, sessions, users, verifications } from "@/server/database/schema";
@@ -18,6 +18,7 @@ export const authFlags = {
   credentialsEnabled: flag("AUTH_CREDENTIALS_ENABLED", true),
   ssoEnabled: flag("AUTH_SSO_ENABLED", true),
   signUpEnabled: flag("AUTH_SIGNUP_ENABLED", true),
+  signUpDefaultRole: process.env.AUTH_SIGNUP_DEFAULT_ROLE ?? "user",
   googleEnabled: flag("AUTH_SSO_ENABLED", true) && !!process.env.AUTH_GOOGLE_CLIENT_ID,
   microsoftEnabled: flag("AUTH_SSO_ENABLED", true) && !!process.env.AUTH_MICROSOFT_CLIENT_ID,
 } as const;
@@ -54,7 +55,13 @@ export const auth = betterAuth({
     disableSignUp: !authFlags.signUpEnabled,
   },
   socialProviders,
-  plugins: [nextCookies(), username()],
+  plugins: [
+    nextCookies(),
+    username(),
+    admin({
+      defaultRole: authFlags.signUpDefaultRole,
+    }),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;
