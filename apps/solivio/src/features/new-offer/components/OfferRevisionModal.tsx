@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import { formatCurrency } from "./offer-builder-types";
 
@@ -70,11 +71,10 @@ export function OfferRevisionModal({
 
   const snapshot = fullRevision?.snapshot;
 
-  const subtotal =
-    snapshot?.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPriceNet, 0) ?? 0;
-  const discount = subtotal * ((snapshot?.discountPercent ?? 0) / 100);
-  const total = subtotal - discount;
-  const currency = snapshot?.lineItems[0]?.currency as "PLN" | "EUR" | undefined;
+  const subtotal = snapshot ? calculateSubtotalNet(snapshot.items) : 0;
+  const discount = snapshot ? subtotal * (snapshot.discountPercent / 100) : 0;
+  const total = snapshot ? calculateNetTotal(subtotal, snapshot.discountPercent) : 0;
+  const isSnapshotReady = !loading && Boolean(snapshot);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -86,9 +86,9 @@ export function OfferRevisionModal({
         <DialogHeader className="gap-1 border-b px-5 py-4">
           <div className="flex items-center gap-2 pr-6">
             <DialogTitle>{tModal("title", { number: revision?.revisionNumber ?? "" })}</DialogTitle>
-            {revision?.name && (
+            {revision?.snapshot?.name && (
               <span className="text-sm font-normal text-muted-foreground italic">
-                — {revision.name}
+                — {revision.snapshot.name}
               </span>
             )}
             {revision?.acceptedAt && (
@@ -111,7 +111,7 @@ export function OfferRevisionModal({
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {loading ? (
             <LoadingSkeleton />
-          ) : !snapshot ? null : (
+          ) : snapshot ? (
             <div className="flex flex-col gap-4">
               {/* Metadata */}
               <section className="grid gap-2 rounded-lg border border-foreground/15 bg-background/60 p-3 text-sm">
@@ -169,7 +169,7 @@ export function OfferRevisionModal({
               {/* Line items */}
               <section className="grid gap-2">
                 <h3 className="text-sm font-medium">
-                  {tModal("lineItems", { count: snapshot.lineItems.length })}
+                  {tModal("lineItems", { count: snapshot.items.length })}
                 </h3>
                 <div className="rounded-lg border border-foreground/15 overflow-hidden">
                   <table className="w-full text-sm">
@@ -182,7 +182,7 @@ export function OfferRevisionModal({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-foreground/10">
-                      {snapshot.lineItems.map((item) => (
+                      {snapshot.items.map((item) => (
                         <tr key={item.productId} className="bg-background/60">
                           <td className="px-3 py-2.5">
                             <span className="font-medium">{item.name}</span>
@@ -197,50 +197,49 @@ export function OfferRevisionModal({
                           </td>
                           <td className="px-3 py-2.5 text-right">{item.quantity}</td>
                           <td className="px-3 py-2.5 text-right tabular-nums">
-                            {formatCurrency(item.unitPriceNet, item.currency as "PLN" | "EUR")}
+                            {formatCurrency(item.unitPriceNet, snapshot.currency)}
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums font-medium">
-                            {formatCurrency(
-                              item.quantity * item.unitPriceNet,
-                              item.currency as "PLN" | "EUR",
-                            )}
+                            {formatCurrency(item.quantity * item.unitPriceNet, snapshot.currency)}
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                    {currency && (
-                      <tfoot className="border-t border-foreground/15 bg-muted/40 text-sm">
+                    <tfoot className="border-t border-foreground/15 bg-muted/40 text-sm">
+                      <tr>
+                        <td colSpan={3} className="px-3 py-2 text-right text-muted-foreground">
+                          {tModal("subtotal")}
+                        </td>
+                        <td className="px-3 py-2 text-right tabular-nums font-medium">
+                          {formatCurrency(subtotal, snapshot.currency)}
+                        </td>
+                      </tr>
+                      {snapshot.discountPercent > 0 && (
                         <tr>
-                          <td colSpan={3} className="px-3 py-2 text-right text-muted-foreground">
-                            {tModal("subtotal")}
+                          <td colSpan={3} className="px-3 py-1 text-right text-muted-foreground">
+                            {tModal("discount")} ({snapshot.discountPercent}%)
                           </td>
-                          <td className="px-3 py-2 text-right tabular-nums font-medium">
-                            {formatCurrency(subtotal, currency)}
-                          </td>
-                        </tr>
-                        {(snapshot.discountPercent ?? 0) > 0 && (
-                          <tr>
-                            <td colSpan={3} className="px-3 py-1 text-right text-muted-foreground">
-                              {tModal("discount")} ({snapshot.discountPercent}%)
-                            </td>
-                            <td className="px-3 py-1 text-right tabular-nums text-muted-foreground">
-                              -{formatCurrency(discount, currency)}
-                            </td>
-                          </tr>
-                        )}
-                        <tr className="border-t border-foreground/15">
-                          <td colSpan={3} className="px-3 py-2 text-right font-medium">
-                            {tModal("totalNet")}
-                          </td>
-                          <td className="px-3 py-2 text-right tabular-nums text-base font-semibold">
-                            {formatCurrency(total, currency)}
+                          <td className="px-3 py-1 text-right tabular-nums text-muted-foreground">
+                            -{formatCurrency(discount, snapshot.currency)}
                           </td>
                         </tr>
-                      </tfoot>
-                    )}
+                      )}
+                      <tr className="border-t border-foreground/15">
+                        <td colSpan={3} className="px-3 py-2 text-right font-medium">
+                          {tModal("totalNet")}
+                        </td>
+                        <td className="px-3 py-2 text-right tabular-nums text-base font-semibold">
+                          {formatCurrency(total, snapshot.currency)}
+                        </td>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
               </section>
+            </div>
+          ) : (
+            <div className="flex min-h-24 items-center justify-center text-sm text-muted-foreground">
+              {tModal("previewUnavailable")}
             </div>
           )}
         </div>
@@ -250,7 +249,7 @@ export function OfferRevisionModal({
           <Button variant="outline" onClick={onClose} disabled={restoring}>
             {tModal("close")}
           </Button>
-          <Button onClick={handleRestore} disabled={restoring || loading}>
+          <Button onClick={handleRestore} disabled={restoring || !isSnapshotReady}>
             {restoring ? (
               <>
                 <Loader2 size={14} className="animate-spin" />

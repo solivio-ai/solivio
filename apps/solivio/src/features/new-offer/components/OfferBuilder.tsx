@@ -8,6 +8,7 @@ import type { Offer } from "@solivio/domain";
 import { Button } from "@/components/ui/button";
 import type { ProductSearchMatch } from "@/features/product-search";
 import { ProductSearchDialog } from "@/features/product-search";
+import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import { OfferBuilderActionBar, OfferBuilderHeader } from "./OfferBuilderHeader";
 import { OfferProductsReview } from "./OfferProductsReview";
@@ -34,18 +35,15 @@ type FailedSaveAction =
 
 function toDraftLines(offer: Offer): DraftLine[] {
   return offer.items.map((item) => ({
-    offerProductId: item.offerProductId,
-    productId: item.productId,
+    offerProductId: item.id,
+    productId: item.productId ?? "",
     sku: item.product?.sku,
-    name: item.product?.name ?? item.productId,
-    description: item.product?.description,
-    manufacturer: item.product?.manufacturer,
-    availability: item.product?.availability,
-    source: item.product?.source,
+    name: item.name,
+    description: item.description,
     quantity: item.quantity,
     requestItem: item.requestItem,
-    unitPrice: item.unitPriceNet ?? item.product?.priceNet ?? 0,
-    currency: item.currency ?? item.product?.currency ?? "PLN",
+    unitPrice: item.unitPriceNet,
+    currency: offer.currency,
     rationale: item.rationale,
   }));
 }
@@ -56,15 +54,8 @@ function toUpdateItems(lines: DraftLine[]) {
     quantity: line.quantity,
     rationale: line.rationale,
     requestItem: line.requestItem,
-    product: {
-      id: line.productId,
-      sku: line.sku,
-      name: line.name,
-      description: line.description,
-      manufacturer: line.manufacturer,
-      availability: line.availability,
-      source: line.source ?? ("database" as const),
-    },
+    name: line.name,
+    description: line.description,
   }));
 }
 
@@ -112,16 +103,17 @@ export function OfferBuilder({
     setUnmatched(offer.unmatched ?? []);
   }, [offer]);
 
-  const currency = lines[0]?.currency ?? "PLN";
+  const currency = lines[0]?.currency ?? offer.currency;
   const searchQuantities = Object.fromEntries(lines.map((line) => [line.productId, line.quantity]));
   const subtotal = useMemo(
-    () => lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0),
+    () =>
+      calculateSubtotalNet(lines.map((l) => ({ quantity: l.quantity, unitPriceNet: l.unitPrice }))),
     [lines],
   );
   const discount = subtotal * (discountPercent / 100);
-  const total = subtotal - discount;
+  const total = calculateNetTotal(subtotal, discountPercent);
   const requestText = offer.clientRequest?.trim() || tBuilder("noRequestText");
-  const generatedDate = offer.generatedAt.slice(0, 10);
+  const generatedDate = offer.createdAt.slice(0, 10);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -299,11 +291,10 @@ export function OfferBuilder({
       sku: product.sku,
       name: product.name,
       description: product.description,
-      manufacturer: product.manufacturer,
       quantity,
       requestItem: tBuilder("manuallyAdded"),
       unitPrice: 0,
-      currency: "PLN",
+      currency: offer.currency,
       rationale: tBuilder("manuallyAdded"),
       source: "database",
     };
@@ -432,10 +423,8 @@ export function OfferBuilder({
         lineCount={lines.length}
         offerTitle={offerHeaderTitle}
         status={status}
-        createdBy={offer.createdBy}
-        createdAt={offer.generatedAt}
-        updatedBy={offer.updatedBy}
-        updatedAt={offer.updatedAt}
+        userName={offer.userName}
+        createdAt={offer.createdAt}
       />
 
       <OfferProductsReview

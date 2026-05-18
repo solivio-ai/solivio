@@ -131,13 +131,17 @@ which applies committed migrations on startup.
 Useful commands:
 
 ```bash
-yarn check
+yarn check                       # Biome lint + format check
+yarn biome check --write .       # auto-fix lint + format (run after every change)
 yarn typecheck
 yarn e2e
 yarn docs:dev
 yarn db:migrate
 yarn db:down
 ```
+
+Run `yarn biome check --write .` before committing — it sorts imports, normalises
+formatting, and applies safe lint fixes so `yarn check` stays green in CI.
 
 ## 🧪 End-to-End Tests
 

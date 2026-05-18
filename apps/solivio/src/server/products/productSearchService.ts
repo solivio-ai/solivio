@@ -17,9 +17,6 @@ export type ProductSearchMatch = {
   sku: string;
   name: string;
   description: string;
-  manufacturer: string;
-  priceNet: number | null;
-  currency: string | null;
   similarity: number;
 };
 
@@ -46,13 +43,10 @@ function roundScore(value: number): number {
   return Number(Math.min(1, Math.max(-1, value)).toFixed(4));
 }
 
-// pgvector expects the vector as a string literal: '[0.1, 0.2, ...]'
 function toPostgresVector(embedding: number[]): string {
   return `[${embedding.join(",")}]`;
 }
 
-// <=> is the pgvector cosine distance operator (0 = identical, 1 = opposite).
-// We subtract from 1 to turn distance into similarity (1 = identical, 0 = opposite).
 function cosineSimilarity(column: AnyColumn, vector: string) {
   return sql<number>`1 - (${column} <=> ${vector}::halfvec)`;
 }
@@ -71,7 +65,7 @@ export async function searchProductsByPrompt(
   });
 
   const pgVector = toPostgresVector(embedding);
-  const similarity = cosineSimilarity(products.combinedEmbedding, pgVector);
+  const similarity = cosineSimilarity(products.embedding, pgVector);
   const minSimilarity = options.minSimilarity ?? DEFAULT_MIN_SIMILARITY;
 
   const rows = await db
@@ -80,9 +74,6 @@ export async function searchProductsByPrompt(
       sku: products.sku,
       name: products.name,
       description: products.description,
-      manufacturer: products.manufacturer,
-      priceNet: products.priceNet,
-      currency: products.currency,
       similarity,
     })
     .from(products)
@@ -94,7 +85,6 @@ export async function searchProductsByPrompt(
     .filter((row) => row.similarity >= minSimilarity);
 }
 
-// Exact SKU lookup. Identifiers belong in B-tree, not in vector space.
 export async function lookupProductsBySkus(
   skus: string[],
 ): Promise<Map<string, ProductSearchMatch>> {
@@ -107,9 +97,6 @@ export async function lookupProductsBySkus(
       sku: products.sku,
       name: products.name,
       description: products.description,
-      manufacturer: products.manufacturer,
-      priceNet: products.priceNet,
-      currency: products.currency,
     })
     .from(products)
     .where(inArray(products.sku, trimmed));
@@ -135,7 +122,7 @@ export async function searchProductsBatch(
   const entries = await Promise.all(
     embeddings.map(async (embedding, i) => {
       const pgVector = toPostgresVector(embedding);
-      const similarity = cosineSimilarity(products.combinedEmbedding, pgVector);
+      const similarity = cosineSimilarity(products.embedding, pgVector);
 
       const rows = await db
         .select({
@@ -143,9 +130,6 @@ export async function searchProductsBatch(
           sku: products.sku,
           name: products.name,
           description: products.description,
-          manufacturer: products.manufacturer,
-          priceNet: products.priceNet,
-          currency: products.currency,
           similarity,
         })
         .from(products)

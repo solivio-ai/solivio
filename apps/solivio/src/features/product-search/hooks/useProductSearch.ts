@@ -9,7 +9,6 @@ export type ProductSearchMatch = {
   sku: string;
   name: string;
   description: string;
-  manufacturer: string;
 };
 
 export type { SearchableField } from "../searchableFields";

@@ -59,10 +59,8 @@ type OfferBuilderHeaderProps = {
   lineCount: number;
   offerTitle: string;
   status: Offer["status"];
-  createdBy?: { id: string; name: string } | null;
+  userName?: string | null;
   createdAt?: string;
-  updatedBy?: { id: string; name: string } | null;
-  updatedAt?: string;
 };
 
 type OfferBuilderActionBarProps = {
@@ -88,10 +86,8 @@ export function OfferBuilderHeader({
   lineCount,
   offerTitle,
   status,
-  createdBy,
+  userName,
   createdAt,
-  updatedBy,
-  updatedAt,
 }: OfferBuilderHeaderProps) {
   const t = useTranslations("NewOffer.builder");
 
@@ -106,26 +102,15 @@ export function OfferBuilderHeader({
           <Badge variant="secondary">{t("productCount", { count: lineCount })}</Badge>
           <Badge variant="outline">{t("generated", { date: generatedDate })}</Badge>
         </div>
-        {(createdBy?.name || updatedBy?.name) && (
+        {userName && (
           <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            {createdBy?.name && (
-              <span
-                className="flex items-center gap-1"
-                title={createdAt ? new Date(createdAt).toLocaleString("pl-PL") : undefined}
-              >
-                <User size={11} aria-hidden="true" />
-                {t("createdBy", { name: createdBy.name })}
-              </span>
-            )}
-            {updatedBy?.name && (
-              <span
-                className="flex items-center gap-1"
-                title={updatedAt ? new Date(updatedAt).toLocaleString("pl-PL") : undefined}
-              >
-                <User size={11} aria-hidden="true" />
-                {t("lastModifiedBy", { name: updatedBy.name })}
-              </span>
-            )}
+            <span
+              className="flex items-center gap-1"
+              title={createdAt ? new Date(createdAt).toLocaleString("pl-PL") : undefined}
+            >
+              <User size={11} aria-hidden="true" />
+              {t("createdBy", { name: userName })}
+            </span>
           </div>
         )}
       </div>

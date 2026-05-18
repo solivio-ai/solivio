@@ -63,9 +63,9 @@ export function OfferRevisionTimeline({
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium">
                 {tTimeline("revisionLabel", { number: revision.revisionNumber })}
-                {revision.name && (
+                {revision.snapshot?.name && (
                   <span className="ml-2 font-normal text-muted-foreground italic">
-                    — {revision.name}
+                    — {revision.snapshot.name}
                   </span>
                 )}
                 {index === 0 ? (
