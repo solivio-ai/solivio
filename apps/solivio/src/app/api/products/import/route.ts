@@ -9,9 +9,20 @@ export const runtime = "nodejs";
 /** Headroom for slow OpenAI embedding round-trips on large catalogs. */
 export const maxDuration = 300;
 
+/** ~25 MB — fits large catalogs while blocking runaway payloads. */
+const MAX_BODY_BYTES = 25 * 1024 * 1024;
+
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
+
+  const contentLength = request.headers.get("content-length");
+  if (contentLength !== null && Number(contentLength) > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { error: `Request body must not exceed ${MAX_BODY_BYTES / 1024 / 1024} MB.` },
+      { status: 413 },
+    );
+  }
 
   try {
     const body = await request.json();
@@ -21,6 +32,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Body must include a non-empty 'content' string." },
         { status: 400 },
+      );
+    }
+
+    if (Buffer.byteLength(content, "utf8") > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { error: `Content must not exceed ${MAX_BODY_BYTES / 1024 / 1024} MB.` },
+        { status: 413 },
       );
     }
 
