@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Info, Loader2, PackageSearch, Trash2 } from "lucide-react";
+import { AlertTriangle, Info, Loader2, PackageSearch, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,12 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";
 import { ProductLineCard } from "./ProductLineCard";
+import { UnmatchedItem } from "./UnmatchedItem";
 
 type OfferProductsReviewProps = {
   commitQuantity: (productId: string) => void;
@@ -34,7 +35,8 @@ type OfferProductsReviewProps = {
   unmatched: string[];
   pendingProductIds: Set<string>;
   removeProduct: (productId: string) => void;
-  removeUnmatched?: (item: string) => void;
+  removeUnmatched: (item: string) => void;
+  onManuallyMatch: (item: string) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
   status: Offer["status"];
 };
@@ -56,6 +58,7 @@ export function OfferProductsReview({
   pendingProductIds,
   removeProduct,
   removeUnmatched,
+  onManuallyMatch,
   updateQuantity,
   status,
 }: OfferProductsReviewProps) {
@@ -127,39 +130,25 @@ export function OfferProductsReview({
       </CardHeader>
       <CardContent className="grid min-w-0 gap-3">
         {unmatched && unmatched.length > 0 && (
-          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-1.5 font-medium">
-              <AlertTriangle size={16} aria-hidden="true" />
-              <span>{tProducts("unmatchedTitle")}</span>
-            </div>
-            <p className="text-sm text-muted-foreground mb-2">
-              {tProducts("unmatchedDescription")}
-            </p>
-            <ul className="text-sm space-y-1">
-              {unmatched.map((item, idx) => (
-                <li key={idx} className="flex items-center justify-between gap-2">
-                  <span className="text-foreground">{item}</span>
-                  {removeUnmatched && !isLocked && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          className="size-6 shrink-0 text-muted-foreground hover:text-green-600"
-                          onClick={() => removeUnmatched(item)}
-                          aria-label={tProducts("removeUnmatched")}
-                        >
-                          <Check size={12} aria-hidden="true" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{tProducts("removeUnmatched")}</TooltipContent>
-                    </Tooltip>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Alert variant="warning">
+            <AlertTriangle size={16} aria-hidden="true" />
+            <AlertTitle>{tProducts("unmatchedTitle")}</AlertTitle>
+            <AlertDescription className="mt-0 space-y-2">
+              <p>{tProducts("unmatchedDescription")}</p>
+              <ul className="text-sm space-y-1 list-none p-0 m-0">
+                {unmatched.map((item, idx) => (
+                  <li key={idx} className="flex items-center justify-between gap-2 text-foreground">
+                    <UnmatchedItem
+                      item={item}
+                      modifyEnabled={!isLocked}
+                      onDelete={removeUnmatched}
+                      onManuallyMatch={onManuallyMatch}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
         )}
         <div className="grid gap-3 md:hidden">
           {lines.length === 0 ? (

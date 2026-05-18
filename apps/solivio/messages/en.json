@@ -197,7 +197,11 @@
       "backToDraft": "Back to draft",
       "manuallyAdded": "Manually added",
       "noRequestText": "No customer request text was attached to this draft.",
-      "done": "Done"
+      "done": "Done",
+      "confirmMatch": "Add product",
+      "matchSelectPrompt": "Select a product to match",
+      "matchingItem": "Matching: \"{item}\"",
+      "matchSelectedProduct": "Will add: {name} × {quantity}"
     },
     "review": {
       "pageTitle": "Offer review",
@@ -256,6 +260,9 @@
         "description": "Review the matched products, quantities, and pricing first.",
         "unmatchedTitle": "Unmatched Request Items",
         "unmatchedDescription": "The following items from the customer's request could not be mapped to any products in our catalog:",
+        "removeUnmatched": "Mark as resolved",
+        "removeUnmatchedAria": "Remove unmatched request item: {item}",
+        "manuallyMatchProduct": "Match manually",
         "empty": "No products in this offer yet.",
         "match": "Product Match",
         "qty": "Qty",
