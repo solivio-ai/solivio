@@ -11,7 +11,8 @@ const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: workspaceRoot,
   transpilePackages: ["@solivio/domain", "@solivio/theme"],
-  serverExternalPackages: ["@voltagent/core", "@ai-sdk/openai"],
+  // @solivio/module-* are compiled packages loaded at Node.js runtime — keep them external.
+  serverExternalPackages: ["@voltagent/core", "@ai-sdk/openai", "@solivio/module-*"],
   turbopack: {
     root: workspaceRoot,
   },

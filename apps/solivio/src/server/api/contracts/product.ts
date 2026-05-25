@@ -125,63 +125,31 @@ export const productTextSearchResponseSchema = z
   .strict()
   .meta({ id: "ProductTextSearchResponse" });
 
-// ── Embedding models ───────────────────────────────────────────────────────────
-
-export const embeddingModelIdSchema = z
-  .enum(["text-embedding-3-large", "text-embedding-3-small"])
-  .meta({ id: "EmbeddingModelId" });
-
-export const embeddingModelSchema = z
-  .object({
-    id: embeddingModelIdSchema,
-    label: z.string(),
-    dimensions: z.number().int().positive(),
-  })
-  .strict()
-  .meta({
-    id: "EmbeddingModel",
-    description: "Embedding model that can be selected for product import.",
-  });
-
-export const embeddingModelsResponseSchema = z
-  .object({
-    models: z.array(embeddingModelSchema),
-  })
-  .strict()
-  .meta({ id: "EmbeddingModelsResponse" });
-
 // ── Import ─────────────────────────────────────────────────────────────────────
-
-export const productImportRowSchema = z
-  .object({
-    sku: z.string().min(1),
-    name: z.string().min(1),
-    description: z.string().min(1),
-    priceNet: z.number().nonnegative(),
-    priceGross: z.number().nonnegative(),
-    vatRate: z.number().min(0),
-    currency: z.string().min(1),
-  })
-  .strict()
-  .meta({
-    id: "ProductImportRow",
-    description: "Catalog product row accepted by the import endpoint.",
-  });
 
 export const productImportRequestSchema = z
   .object({
-    products: z.array(productImportRowSchema).min(1),
-    model: embeddingModelIdSchema.optional(),
+    content: z.string().min(1),
   })
   .strict()
   .meta({
     id: "ProductImportRequest",
-    description: "Products to upsert and embed.",
+    description: "CSV file contents for product import.",
   });
+
+export const productImportRowErrorSchema = z
+  .object({
+    index: z.number().int().nonnegative().optional(),
+    sku: z.string().optional(),
+    message: z.string(),
+  })
+  .strict()
+  .meta({ id: "ProductImportRowError" });
 
 export const productImportResponseSchema = z
   .object({
     count: z.number().int().nonnegative(),
+    errors: z.array(productImportRowErrorSchema),
   })
   .strict()
   .meta({ id: "ProductImportResponse" });
@@ -189,20 +157,6 @@ export const productImportResponseSchema = z
 // ── HTTP catalog ───────────────────────────────────────────────────────────────
 
 export const productRoutes = [
-  ...routeGroup({ tag: "Products" }, [
-    {
-      method: "get",
-      path: "/api/embedding-models",
-      operationId: "listEmbeddingModels",
-      summary: "List embedding models",
-      responses: {
-        200: {
-          description: "Embedding models available for product import.",
-          schema: embeddingModelsResponseSchema,
-        },
-      },
-    },
-  ]),
   ...routeGroup({ tag: "Products", requiresAuth: true }, [
     {
       method: "get",
@@ -262,7 +216,7 @@ export const productRoutes = [
       operationId: "importProducts",
       summary: "Import products with embeddings",
       requestBody: {
-        description: "Catalog rows to upsert and embed.",
+        description: "CSV file contents to parse, embed, and upsert.",
         required: true,
         schema: productImportRequestSchema,
       },

@@ -1,11 +1,11 @@
-import type { ProductImportRow } from "@solivio/domain";
+import type { ProductInput } from "@solivio/sdk";
 
 export type CsvParseResult = {
   headers: string[];
   rows: Record<string, string>[];
 };
 
-const COLUMN_ALIASES: Record<keyof ProductImportRow, string[]> = {
+const COLUMN_ALIASES: Record<keyof ProductInput, string[]> = {
   sku: ["sku", "id", "kod", "index", "symbol"],
   name: ["name", "nazwa", "product", "produkt"],
   description: ["description", "opis", "summary"],
@@ -103,22 +103,29 @@ export function parseCsv(text: string): CsvParseResult {
   return { headers, rows };
 }
 
-export function resolveColumnMap(
-  headers: string[],
-): Partial<Record<keyof ProductImportRow, string>> {
+export function resolveColumnMap(headers: string[]): Partial<Record<keyof ProductInput, string>> {
   const lower = headers.map((h) => h.toLowerCase());
-  const map: Partial<Record<keyof ProductImportRow, string>> = {};
-  for (const field of Object.keys(COLUMN_ALIASES) as (keyof ProductImportRow)[]) {
+  const map: Partial<Record<keyof ProductInput, string>> = {};
+  for (const field of Object.keys(COLUMN_ALIASES) as (keyof ProductInput)[]) {
     const idx = lower.findIndex((h) => COLUMN_ALIASES[field].includes(h));
     if (idx >= 0) map[field] = headers[idx];
   }
   return map;
 }
 
+/** 0-based index into the data row array (excluding the header). */
+export type ProductRowImportError = {
+  index: number;
+  sku?: string;
+  message: string;
+};
+
 export function extractProductRows(
   rows: Record<string, string>[],
-  columnMap: Partial<Record<keyof ProductImportRow, string>>,
-): ProductImportRow[] {
+  columnMap: Partial<Record<keyof ProductInput, string>>,
+): { records: ProductInput[]; rowErrors: ProductRowImportError[] } {
+  const rowErrors: ProductRowImportError[] = [];
+
   if (
     !columnMap.sku ||
     !columnMap.name ||
@@ -128,10 +135,12 @@ export function extractProductRows(
     !columnMap.vatRate ||
     !columnMap.currency
   ) {
-    return [];
+    return { records: [], rowErrors: [] };
   }
-  const result: ProductImportRow[] = [];
-  for (const row of rows) {
+
+  const result: ProductInput[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
     const sku = row[columnMap.sku] ?? "";
     const name = row[columnMap.name] ?? "";
     const description = row[columnMap.description] ?? "";
@@ -158,15 +167,35 @@ export function extractProductRows(
         vatRate,
         currency,
       });
+      continue;
     }
+
+    const missing: string[] = [];
+    if (!sku) missing.push("sku");
+    if (!name) missing.push("name");
+    if (!description) missing.push("description");
+    if (!currency) missing.push("currency");
+    if (priceNet === null) missing.push("priceNet");
+    if (priceGross === null) missing.push("priceGross");
+    if (vatRate === null) missing.push("vatRate");
+
+    rowErrors.push({
+      index: i,
+      ...(sku ? { sku } : {}),
+      message:
+        missing.length > 0
+          ? `Missing or invalid field(s): ${missing.join(", ")}`
+          : "Row failed validation",
+    });
   }
-  return result;
+
+  return { records: result, rowErrors };
 }
 
 export function getMissingColumns(
-  columnMap: Partial<Record<keyof ProductImportRow, string>>,
+  columnMap: Partial<Record<keyof ProductInput, string>>,
 ): string[] {
-  return (Object.keys(COLUMN_ALIASES) as (keyof ProductImportRow)[]).filter(
+  return (Object.keys(COLUMN_ALIASES) as (keyof ProductInput)[]).filter(
     (field) => !columnMap[field],
   );
 }

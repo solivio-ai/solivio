@@ -23,5 +23,8 @@ export interface ImporterDefinition<TPayload = unknown> {
   /** Unique name for this importer, e.g. "csv-products". */
   name: string;
   description: string;
+  /** File types this importer accepts — passed directly to the HTML <input accept> attribute.
+   *  e.g. [".csv", "text/csv"] */
+  accept: string[];
   run: (payload: TPayload) => Promise<ImportResult>;
 }
