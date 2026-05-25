@@ -58,9 +58,6 @@ services:
       AUTH_SIGNUP_ENABLED: ${AUTH_SIGNUP_ENABLED:-true}
       AUTH_CREDENTIALS_ENABLED: ${AUTH_CREDENTIALS_ENABLED:-true}
       AUTH_SSO_ENABLED: ${AUTH_SSO_ENABLED:-false}
-      SOLIVIO_CONFIG_PATH: /run/solivio.config.json
-    volumes:
-      - ./solivio.config.json:/run/solivio.config.json:ro
     labels:
       - traefik.enable=true
       - traefik.http.routers.app.rule=Host(`${APP_HOST:-demo.solivio.ai}`)

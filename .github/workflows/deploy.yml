@@ -50,11 +50,10 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
 
-      - name: Upload compose file and config
+      - name: Upload compose file
         run: |
           ssh deploy-target "mkdir -p $(printf '%q' "$REMOTE_PATH")"
           scp docker-compose.prod.yml "deploy-target:$REMOTE_PATH/docker-compose.prod.yml"
-          scp solivio.config.json "deploy-target:$REMOTE_PATH/solivio.config.json"
 
       - name: Pull images and restart stack
         env:

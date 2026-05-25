@@ -24,7 +24,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/.yarn ./.yarn
 COPY --from=deps /app/.yarnrc.yml ./
 
-COPY package.json yarn.lock tsconfig.base.json ./
+COPY package.json yarn.lock tsconfig.base.json solivio.config.json ./
 COPY solivio-logo.png solivio-logo-dark.png favicon.png ./
 COPY packages ./packages
 COPY sdk ./sdk
@@ -35,6 +35,8 @@ RUN mkdir -p apps/solivio/public \
  && cp -RL apps/solivio/public apps/solivio/public.deref \
  && rm -rf apps/solivio/public \
  && mv apps/solivio/public.deref apps/solivio/public \
+ && yarn sdk:build \
+ && yarn workspaces foreach -A --include '@solivio/module-*' run build \
  && yarn workspace @solivio/app build
 
 FROM node:24-alpine AS runner
@@ -53,6 +55,11 @@ COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/public ./apps/solivio/
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/drizzle ./apps/solivio/drizzle
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/scripts/migrate.mjs ./apps/solivio/scripts/migrate.mjs
 COPY --from=build --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
+COPY --from=build --chown=nextjs:nodejs /app/solivio.config.json ./solivio.config.json
+COPY --from=build --chown=nextjs:nodejs /app/sdk/dist ./node_modules/@solivio/sdk/dist
+COPY --from=build --chown=nextjs:nodejs /app/sdk/package.json ./node_modules/@solivio/sdk/package.json
+COPY --from=build --chown=nextjs:nodejs /app/modules/csv-products-importer/dist ./node_modules/@solivio/module-csv-products/dist
+COPY --from=build --chown=nextjs:nodejs /app/modules/csv-products-importer/package.json ./node_modules/@solivio/module-csv-products/package.json
 
 USER nextjs
 EXPOSE 3000
