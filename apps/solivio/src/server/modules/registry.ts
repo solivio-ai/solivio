@@ -42,7 +42,7 @@ type SolivioConfig = z.infer<typeof solivioConfigSchema>;
 let _modules: ModuleManifest[] | null = null;
 let _config: SolivioConfig | null = null;
 // Promise singleton so concurrent callers await the same in-flight load.
-let _loadPromise: Promise<void> | null = null;
+let _loadPromise: Promise<ModuleManifest[]> | null = null;
 
 // ── Config reader ─────────────────────────────────────────────────────────────
 
@@ -94,8 +94,8 @@ function assertValidManifest(raw: unknown, pkg: string): ModuleManifest {
  * so that hot reloads (which reset module-level singletons) self-heal without a
  * full server restart.
  */
-export async function loadModules(): Promise<void> {
-  if (_modules !== null) return;
+export async function loadModules(): Promise<ModuleManifest[]> {
+  if (_modules !== null) return _modules;
   if (_loadPromise) return _loadPromise;
   _loadPromise = doLoad().finally(() => {
     _loadPromise = null;
@@ -103,7 +103,7 @@ export async function loadModules(): Promise<void> {
   return _loadPromise;
 }
 
-async function doLoad(): Promise<void> {
+async function doLoad(): Promise<ModuleManifest[]> {
   const config = readConfig();
   const loaded: ModuleManifest[] = [];
 
@@ -127,18 +127,17 @@ async function doLoad(): Promise<void> {
   }
 
   _modules = loaded;
+  return loaded;
 }
 
 /** Returns all loaded module manifests. */
 export async function getModules(): Promise<ModuleManifest[]> {
-  await loadModules();
-  return [...(_modules as ModuleManifest[])];
+  return [...(await loadModules())];
 }
 
 /** Returns all importers contributed by loaded modules. */
 export async function getImporters(): Promise<ImporterDefinition[]> {
-  await loadModules();
-  return (_modules as ModuleManifest[]).flatMap((m) => m.importers ?? []);
+  return (await loadModules()).flatMap((m) => m.importers ?? []);
 }
 
 /**
@@ -167,12 +166,10 @@ export async function getImporter(): Promise<ImporterDefinition> {
 
 /** Returns all agent tools contributed by loaded modules. */
 export async function getAgentTools(): Promise<AgentTool[]> {
-  await loadModules();
-  return (_modules as ModuleManifest[]).flatMap((m) => m.agentTools ?? []);
+  return (await loadModules()).flatMap((m) => m.agentTools ?? []);
 }
 
 /** Returns all renderers contributed by loaded modules. */
 export async function getRenderers(): Promise<RendererDefinition[]> {
-  await loadModules();
-  return (_modules as ModuleManifest[]).flatMap((m) => m.renderers ?? []);
+  return (await loadModules()).flatMap((m) => m.renderers ?? []);
 }
