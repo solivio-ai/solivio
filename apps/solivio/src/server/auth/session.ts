@@ -1,6 +1,7 @@
 import "server-only";
 
 import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 import type { Session } from "./auth";
@@ -30,4 +31,12 @@ export async function requireAdmin(): Promise<RequireAuthResult> {
   if (result.session.user.role !== "admin")
     return { response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   return { session: result.session };
+}
+
+/** For use in Server Component layouts and pages — throws a redirect instead of returning a response. */
+export async function requireAdminPage(): Promise<Session> {
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
+  if (session.user.role !== "admin") notFound();
+  return session;
 }
