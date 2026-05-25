@@ -11,7 +11,7 @@ COPY apps/docs/package.json ./apps/docs/
 COPY packages/domain/package.json ./packages/domain/
 COPY packages/theme/package.json ./packages/theme/
 COPY sdk/package.json ./sdk/
-COPY modules/*/package.json ./modules/
+COPY modules ./modules
 
 RUN yarn install --immutable
 
