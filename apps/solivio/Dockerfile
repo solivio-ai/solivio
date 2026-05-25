@@ -27,8 +27,8 @@ COPY package.json yarn.lock tsconfig.base.json ./
 COPY sdk ./sdk
 COPY modules ./modules
 
-RUN yarn sdk:build \
- && yarn workspaces foreach -A --include '@solivio/module-*' run build
+ENV PATH="/app/node_modules/.bin:${PATH}"
+RUN yarn modules:build
 
 FROM node:24-alpine AS build
 WORKDIR /app
