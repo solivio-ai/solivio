@@ -7,11 +7,13 @@ This repository is intended to stay easy to launch for contributors evaluating t
 ```bash
 yarn install
 cp apps/solivio/.env.example apps/solivio/.env.local   # set BETTER_AUTH_SECRET via `openssl rand -base64 32`
-yarn setup                                              # docker compose up db, wait for it, run migrations
+yarn setup                                              # docker compose up db, wait for it, run migrations, build sdk + modules
 yarn dev                                                # Next.js on :3000
 ```
 
 `yarn setup` must run on a fresh checkout before `yarn dev`, and again whenever new Drizzle migrations are added. `yarn db:migrate` applies pending migrations without restarting the database.
+
+`yarn modules:build` compiles the SDK and all packages under `modules/`. Re-run after changing module source files. It is included in `yarn setup` so a fresh checkout needs no separate step.
 
 ## Code Quality
 
@@ -56,6 +58,15 @@ docker compose -f docker-compose.prod.yml up -d
 
 Full deployment guide (host setup, GHCR auth, rollback, troubleshooting): `apps/docs/src/content/docs/guides/deployment.md`.
 
+## Modules
+
+First-party modules live under `modules/`. Each module is a compiled package that the core loads at server startup.
+
+To add a module:
+1. Create `modules/<name>/` with `src/index.ts` (default export: `createModule({...})`), `package.json`, `tsconfig.json`, and `tsconfig.build.json` — mirror `modules/csv-products-importer/` as a template.
+2. Add the package name to `solivio.config.json` under `modules` (and `capabilities` if it provides a named capability).
+3. Run `yarn modules:build` to build it, then restart `yarn dev`.
+
 ## Architecture
 
 - `apps/solivio` owns the single Next.js app.
@@ -63,6 +74,8 @@ Full deployment guide (host setup, GHCR auth, rollback, troubleshooting): `apps/
 - `apps/solivio/src/features` owns user-facing feature UI.
 - `apps/solivio/src/server` owns server-only service integrations.
 - `packages/domain` owns shared types, workflow constants, and mock fixtures.
+- `modules/` owns first-party Solivio modules (compiled packages).
+- `sdk/` owns the module SDK (`@solivio/sdk`) — types and helpers for building modules.
 - `infra/postgres` owns local database bootstrap files.
 
 ## Current Product Shape

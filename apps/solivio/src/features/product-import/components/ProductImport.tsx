@@ -1,352 +1,159 @@
 "use client";
 
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Database,
-  FileSpreadsheet,
-  RotateCcw,
-  Upload,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ChangeEvent, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
-import type { ProductImportRow } from "@solivio/domain";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-import type { CsvParseResult } from "../lib/parseProductCsv";
-import {
-  extractProductRows,
-  getMissingColumns,
-  parseCsv,
-  resolveColumnMap,
-} from "../lib/parseProductCsv";
-
-type EmbeddingModel = {
-  id: string;
-  label: string;
-  dimensions: number;
-};
+type RowError = { index?: number; sku?: string; message: string };
 
 type ImportStatus =
   | { kind: "idle" }
-  | { kind: "saving"; processed: number; total: number }
-  | { kind: "done"; count: number }
-  | { kind: "error"; message: string; processed: number; total: number };
+  | { kind: "saving" }
+  | { kind: "done"; count: number; errors: RowError[] }
+  | { kind: "error"; message: string; errors: RowError[] };
 
-/** Rows per POST. Stays well under the server cap and keeps each request short enough to avoid
- * proxy timeouts while still amortizing the OpenAI round-trip across many rows. */
-const CHUNK_SIZE = 500;
+type Props = { accept: string[] };
 
-export function ProductImport() {
+export function ProductImport({ accept }: Props) {
   const t = useTranslations("ProductImport");
   const [fileName, setFileName] = useState<string | null>(null);
-  const [parseResult, setParseResult] = useState<CsvParseResult | null>(null);
-  const [parseError, setParseError] = useState<string | null>(null);
-  const [models, setModels] = useState<EmbeddingModel[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>("");
+  const [rawContent, setRawContent] = useState<string | null>(null);
   const [status, setStatus] = useState<ImportStatus>({ kind: "idle" });
-
-  useEffect(() => {
-    fetch("/api/embedding-models")
-      .then((res) => res.json())
-      .then((data: { models: EmbeddingModel[] }) => {
-        const list = data.models ?? [];
-        setModels(list);
-        if (list.length > 0) setSelectedModel(list[0].id);
-      })
-      .catch(() => {});
-  }, []);
-
-  const columnMap = useMemo(
-    () => (parseResult ? resolveColumnMap(parseResult.headers) : {}),
-    [parseResult],
-  );
-
-  const productRows: ProductImportRow[] = useMemo(
-    () => (parseResult ? extractProductRows(parseResult.rows, columnMap) : []),
-    [parseResult, columnMap],
-  );
-
-  const missingColumns = useMemo(() => getMissingColumns(columnMap), [columnMap]);
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setFileName(file.name);
-    setParseError(null);
-    setParseResult(null);
+    setRawContent(null);
     setStatus({ kind: "idle" });
 
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const result = parseCsv(String(reader.result ?? ""));
-        if (result.headers.length === 0) {
-          setParseError(t("uploadCard.emptyError"));
-          return;
-        }
-        setParseResult(result);
-      } catch {
-        setParseError(t("uploadCard.parseError"));
-      }
+      setRawContent(String(reader.result ?? ""));
     };
-    reader.onerror = () => setParseError(t("uploadCard.readError"));
+    reader.onerror = () => setStatus({ kind: "error", message: t("card.readError"), errors: [] });
     reader.readAsText(file);
   }
 
-  function handleReset() {
-    setFileName(null);
-    setParseResult(null);
-    setParseError(null);
-    setStatus({ kind: "idle" });
-  }
-
   async function handleImport() {
-    if (productRows.length === 0 || !selectedModel) return;
-    const total = productRows.length;
-    setStatus({ kind: "saving", processed: 0, total });
+    if (!rawContent) return;
+    setStatus({ kind: "saving" });
 
-    let processed = 0;
-    for (let offset = 0; offset < total; offset += CHUNK_SIZE) {
-      const chunk = productRows.slice(offset, offset + CHUNK_SIZE);
-
-      try {
-        const response = await fetch("/api/products/import", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ products: chunk, model: selectedModel }),
-        });
-        const payload = await response.json().catch(() => null);
-        if (!response.ok) {
-          throw new Error(payload?.error ?? `Request failed (${response.status})`);
-        }
-      } catch (err) {
+    try {
+      const response = await fetch("/api/products/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: rawContent }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
         setStatus({
           kind: "error",
-          message: err instanceof Error ? err.message : t("previewCard.importError"),
-          processed,
-          total,
+          message: payload?.error ?? `Request failed (${response.status})`,
+          errors: payload?.errors ?? [],
         });
         return;
       }
-
-      processed += chunk.length;
-      setStatus({ kind: "saving", processed, total });
+      setStatus({ kind: "done", count: payload.count, errors: payload.errors ?? [] });
+    } catch (err) {
+      setStatus({
+        kind: "error",
+        message: err instanceof Error ? err.message : t("card.importError"),
+        errors: [],
+      });
     }
-
-    setStatus({ kind: "done", count: processed });
   }
+
+  const isSaving = status.kind === "saving";
 
   return (
     <section className="grid gap-3">
       <Card size="sm">
         <CardHeader className="flex flex-row items-center gap-2 pb-1">
           <Upload size={18} aria-hidden="true" className="text-primary" />
-          <CardTitle className="text-base">{t("uploadCard.title")}</CardTitle>
+          <CardTitle className="text-base">{t("card.title")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3">
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {t("uploadCard.description")}
+            {t("card.description")}
           </p>
+
           <div className="grid gap-2">
             <Label
-              htmlFor="csv-input"
+              htmlFor="file-input"
               className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-background/60 px-4 py-4 text-center transition-colors hover:bg-muted/40"
             >
-              <FileSpreadsheet size={24} aria-hidden="true" className="text-primary" />
-              <span className="text-base font-semibold">
-                {fileName ?? t("uploadCard.chooseFile")}
-              </span>
+              <Upload size={24} aria-hidden="true" className="text-primary" />
+              <span className="text-base font-semibold">{fileName ?? t("card.chooseFile")}</span>
               <span className="text-sm text-muted-foreground">
-                {fileName ? t("uploadCard.pickAnother") : t("uploadCard.dropOne")}
+                {fileName ? t("card.pickAnother") : t("card.dropOne")}
               </span>
             </Label>
             <input
-              id="csv-input"
+              id="file-input"
               type="file"
-              accept=".csv,text/csv"
+              accept={accept.join(",")}
               className="sr-only"
               onChange={handleFileChange}
             />
           </div>
-          {parseError ? (
-            <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-              {parseError}
-            </StatusNotice>
-          ) : null}
-        </CardContent>
-      </Card>
 
-      {parseResult && parseResult.rows.length > 0 ? (
-        <Card size="sm">
-          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <Database size={18} aria-hidden="true" className="text-primary" />
-              <CardTitle className="text-base">{t("previewCard.title")}</CardTitle>
-              <Badge variant="outline">
-                {t("previewCard.rowCount", { count: parseResult.rows.length })}
-              </Badge>
-            </div>
-            <Button variant="ghost" type="button" onClick={handleReset}>
-              <RotateCcw size={16} aria-hidden="true" />
-              {t("previewCard.clear")}
-            </Button>
-          </CardHeader>
+          {rawContent ? (
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleImport}
+                disabled={isSaving}
+                className="w-fit"
+              >
+                <Upload size={16} aria-hidden="true" />
+                {isSaving ? t("card.importAction.embedding") : t("card.importAction.import")}
+              </Button>
 
-          <CardContent className="grid gap-3">
-            {missingColumns.length > 0 ? (
-              <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
-                {t("previewCard.missingColumns", {
-                  count: missingColumns.length,
-                  columns: missingColumns.join(", "),
-                })}
-              </StatusNotice>
-            ) : (
-              <>
-                <div className="flex flex-col gap-2 rounded-lg border bg-background/60 p-2.5 sm:flex-row sm:items-center">
-                  {models.length > 0 ? (
-                    <Select
-                      value={selectedModel}
-                      onValueChange={(value) => {
-                        setSelectedModel(value);
-                        setStatus({ kind: "idle" });
-                      }}
-                      disabled={status.kind === "saving"}
-                    >
-                      <SelectTrigger
-                        className="w-full sm:w-[280px]"
-                        aria-label={t("previewCard.modelLabel")}
-                      >
-                        <SelectValue placeholder={t("previewCard.modelPlaceholder")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {models.map((model) => (
-                          <SelectItem key={model.id} value={model.id}>
-                            {model.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="outline">{t("previewCard.modelsUnavailable")}</Badge>
-                  )}
-
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleImport}
-                    disabled={
-                      status.kind === "saving" || productRows.length === 0 || !selectedModel
-                    }
-                  >
-                    <Upload size={16} aria-hidden="true" />
-                    {status.kind === "saving"
-                      ? t("previewCard.importAction.embeddingProgress", {
-                          processed: status.processed,
-                          total: status.total,
-                        })
-                      : t("previewCard.importAction.saveCount", { count: productRows.length })}
-                  </Button>
-
-                  {status.kind === "done" ? (
-                    <StatusNotice
-                      tone="success"
-                      icon={<CheckCircle2 size={16} aria-hidden="true" />}
-                    >
-                      {t("previewCard.importDone", { count: status.count })}
-                    </StatusNotice>
-                  ) : null}
-                  {status.kind === "error" ? (
+              {status.kind === "done" ? (
+                <>
+                  <StatusNotice tone="success" icon={<CheckCircle2 size={16} aria-hidden="true" />}>
+                    {t("card.importDone", { count: status.count })}
+                  </StatusNotice>
+                  {status.errors.length > 0 ? (
                     <StatusNotice
                       tone="error"
                       icon={<AlertTriangle size={16} aria-hidden="true" />}
                     >
-                      {status.processed > 0
-                        ? t("previewCard.importPartialError", {
-                            processed: status.processed,
-                            total: status.total,
-                            message: status.message,
-                          })
-                        : status.message}
+                      {t("card.importRowErrors", { count: status.errors.length })}
                     </StatusNotice>
                   ) : null}
+                </>
+              ) : null}
+
+              {status.kind === "error" ? (
+                <div className="flex flex-col gap-1">
+                  <StatusNotice tone="error" icon={<AlertTriangle size={16} aria-hidden="true" />}>
+                    {status.message}
+                  </StatusNotice>
+                  {status.errors.map((e, i) => (
+                    <StatusNotice
+                      key={i}
+                      tone="error"
+                      icon={<AlertTriangle size={16} aria-hidden="true" />}
+                    >
+                      {e.sku ? `[${e.sku}] ` : ""}
+                      {e.message}
+                    </StatusNotice>
+                  ))}
                 </div>
-
-                {status.kind === "saving" ? (
-                  <div className="grid gap-1.5">
-                    <Progress
-                      value={status.total > 0 ? (status.processed / status.total) * 100 : 0}
-                      aria-label={t("previewCard.progressLabel")}
-                    />
-                    <p className="text-xs text-muted-foreground" role="status" aria-live="polite">
-                      {t("previewCard.progressText", {
-                        processed: status.processed,
-                        total: status.total,
-                      })}
-                    </p>
-                  </div>
-                ) : null}
-              </>
-            )}
-
-            <div className="overflow-hidden rounded-lg border bg-background/60">
-              <div className="max-h-[420px] overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {parseResult.headers.map((header) => (
-                        <TableHead key={header}>{header}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {parseResult.rows.slice(0, 50).map((row, i) => (
-                      <TableRow key={i}>
-                        {parseResult.headers.map((header) => (
-                          <TableCell
-                            key={header}
-                            className="max-w-[320px] whitespace-normal text-muted-foreground"
-                          >
-                            {row[header]}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              ) : null}
             </div>
-
-            {parseResult.rows.length > 50 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("previewCard.showingFirst", { count: parseResult.rows.length })}
-              </p>
-            ) : null}
-          </CardContent>
-        </Card>
-      ) : null}
+          ) : null}
+        </CardContent>
+      </Card>
     </section>
   );
 }

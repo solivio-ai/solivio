@@ -1,0 +1,25 @@
+{
+  "name": "@solivio/module-csv-products",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CSV products importer module for Solivio.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@solivio/sdk": "workspace:*"
+  }
+}

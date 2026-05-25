@@ -1,7 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { embedMany } from "ai";
 
-import type { ProductImportRow } from "@solivio/domain";
+import type { ProductInput } from "@solivio/sdk";
 
 import { db } from "../database/db";
 import { getDefaultEmbeddingModel } from "./embeddingConfig";
@@ -10,7 +10,7 @@ import { upsertPricesBatch } from "./productPriceRepository";
 import { findIdsBySku, upsertMany } from "./productRepository";
 
 export async function importProductsWithEmbeddings(
-  rows: ProductImportRow[],
+  rows: ProductInput[],
   model: EmbeddingModelId = getDefaultEmbeddingModel(),
 ): Promise<{ count: number }> {
   if (rows.length === 0) return { count: 0 };

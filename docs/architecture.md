@@ -2,7 +2,7 @@
 
 Status: high-level architecture
 Audience: contributors, integrators, operators
-Last updated: 2026-05-07
+Last updated: 2026-05-13
 
 Solivio turns an unstructured customer request into an accepted, dispatched offer. The product is the **pipeline that connects request to offer to customer**, with a salesperson in the loop.
 
@@ -43,6 +43,8 @@ The core is small, stable, and irreplaceable. It owns:
 The core does not know about specific external systems, file formats, transport protocols, or specific AI prompts. It speaks in canonical entities, named transitions, named agents, and the surfaces / tools / rules modules expose.
 
 ### 3.2 Modules
+
+A module is a compiled package (`dist/index.js`) that the core loads at server startup via `solivio.config.json`. Modules are authored in TypeScript under `modules/<name>/src/` and built with `yarn modules:build` before the app starts. The core never bundles module code — it loads the compiled output at Node.js runtime.
 
 A module is a unit of replaceable behavior. It can:
 

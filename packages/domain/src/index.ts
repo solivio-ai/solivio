@@ -7,7 +7,7 @@ export type {
   OfferRevisionSnapshot,
   OfferRevisionSnapshotItem,
 } from "./models/offer-revision";
-export type { Product, ProductImportRow, ProductSource } from "./models/product";
+export type { Product, ProductSource } from "./models/product";
 export type { ProductPrice } from "./models/product-price";
 export type { CustomerRequest, RequestSource } from "./models/request";
 export type { WorkflowStatus, WorkflowStep } from "./models/workflow";

@@ -5547,6 +5547,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-csv-products@workspace:modules/csv-products-importer":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-csv-products@workspace:modules/csv-products-importer"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/sdk@workspace:*, @solivio/sdk@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@solivio/sdk@workspace:sdk"

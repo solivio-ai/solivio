@@ -588,37 +588,22 @@
   "ProductImport": {
     "page": {
       "title": "Import products",
-      "description": "Upload a CSV catalog, preview parsed rows, then save embeddings behind the server API."
+      "description": "Upload a catalog file to import products."
     },
-    "uploadCard": {
+    "card": {
       "title": "Catalog upload",
-      "description": "Pick a CSV file with columns: sku, name, description, price_net, price_gross, vat_rate, and currency. Comma, semicolon, and tab separators are supported; prices may use either . or , as the decimal mark.",
-      "chooseFile": "Choose a CSV file",
+      "description": "Pick a file and import it into the product catalog. The importer runs server-side.",
+      "chooseFile": "Choose a file",
       "pickAnother": "Click to pick another file",
       "dropOne": "or drop one onto this field",
-      "emptyError": "The CSV file appears to be empty.",
-      "parseError": "Failed to parse CSV.",
-      "readError": "Failed to read the file."
-    },
-    "previewCard": {
-      "title": "Preview",
-      "rowCount": "{count, plural, one {# row} other {# rows}}",
-      "clear": "Clear",
-      "missingColumns": "Missing required {count, plural, one {column} other {columns}}: {columns}.",
-      "modelLabel": "Embedding model",
-      "modelPlaceholder": "Embedding model",
-      "modelsUnavailable": "Embedding models unavailable",
+      "readError": "Failed to read the file.",
       "importAction": {
-        "embedding": "Embedding...",
-        "embeddingProgress": "Embedding {processed} / {total}...",
-        "saveCount": "Embed and save {count, plural, one {# product} other {# products}}"
+        "embedding": "Importing...",
+        "import": "Import"
       },
       "importDone": "Saved {count, plural, one {# product} other {# products}}.",
-      "importError": "Import failed.",
-      "importPartialError": "Import stopped after saving {processed} of {total} rows: {message}. Re-running is safe — already-imported rows will be updated.",
-      "progressLabel": "Import progress",
-      "progressText": "Imported {processed} of {total} rows.",
-      "showingFirst": "Showing the first 50 of {count} rows."
+      "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
+      "importError": "Import failed."
     }
   },
   "Dashboard": {
