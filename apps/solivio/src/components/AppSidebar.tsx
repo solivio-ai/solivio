@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { AdminSidebarSection } from "@/components/AdminSidebarSection";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SolivioLogo } from "@/components/SolivioLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,6 +14,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -22,7 +25,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { UserMenu } from "@/features/auth/components/UserMenu";
-import { cn } from "@/lib/utils";
+import { isAdmin } from "@/lib/auth";
+import { useSession } from "@/lib/auth-client";
 
 const navItems = [
   { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
@@ -34,6 +38,9 @@ export function AppSidebar() {
   const pathname = usePathname();
   const t = useTranslations("AppSidebar");
   const { isMobile, setOpenMobile } = useSidebar();
+  const { data: session } = useSession();
+
+  const userIsAdmin = isAdmin(session?.user);
 
   function closeMobileSidebar() {
     if (isMobile) setOpenMobile(false);
@@ -75,33 +82,29 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-3 py-3 group-data-[collapsible=icon]:px-2">
-        <SidebarMenu className="gap-1">
-          {navItems.map(({ labelKey, href, icon: Icon }) => {
-            const active = pathname === href;
-            const label = t(`nav.${labelKey}`);
+        <SidebarGroup className="p-0">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-1">
+              {navItems.map(({ labelKey, href, icon: Icon }) => {
+                const active = pathname === href;
+                const label = t(`nav.${labelKey}`);
 
-            return (
-              <SidebarMenuItem key={href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={active}
-                  tooltip={label}
-                  className={cn(
-                    "h-10 rounded-lg !bg-transparent px-3 text-[15px] font-medium text-sidebar-foreground/65 hover:!bg-background/70 hover:text-sidebar-foreground",
-                    "data-[active=true]:!bg-background data-[active=true]:text-secondary data-[active=true]:shadow-[inset_3px_0_0_hsl(var(--primary)),0_1px_2px_hsl(var(--border)/0.7)] dark:data-[active=true]:!bg-primary/12 dark:data-[active=true]:text-sidebar-foreground",
-                    "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&>span]:hidden",
-                    "group-data-[collapsible=icon]:data-[active=true]:!bg-primary/15 group-data-[collapsible=icon]:data-[active=true]:text-sidebar-foreground group-data-[collapsible=icon]:data-[active=true]:shadow-none group-data-[collapsible=icon]:data-[active=true]:ring-1 group-data-[collapsible=icon]:data-[active=true]:ring-primary/45 dark:group-data-[collapsible=icon]:data-[active=true]:!bg-primary/20",
-                  )}
-                >
-                  <Link href={href} onClick={closeMobileSidebar}>
-                    <Icon size={16} aria-hidden="true" />
-                    <span className="group-data-[collapsible=icon]:hidden">{label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton asChild isActive={active} tooltip={label}>
+                      <Link href={href} onClick={closeMobileSidebar}>
+                        <Icon size={16} aria-hidden="true" />
+                        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {userIsAdmin && <AdminSidebarSection pathname={pathname} onNavigate={closeMobileSidebar} />}
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">

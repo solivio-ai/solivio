@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { requireAuth } from "@/server/auth/session";
 import { getImporter } from "@/server/modules/registry";
 import { getDefaultEmbeddingModel } from "@/server/products/embeddingConfig";
 import { importProductsWithEmbeddings } from "@/server/products/productEmbeddingService";
+
+import { requireAdmin } from "../../../../server/auth/session";
 
 export const runtime = "nodejs";
 /** Headroom for slow OpenAI embedding round-trips on large catalogs. */
@@ -13,8 +14,8 @@ export const maxDuration = 300;
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
 
 export async function POST(request: Request) {
-  const auth = await requireAuth();
-  if (auth.response) return auth.response;
+  const { response: authResponse } = await requireAdmin();
+  if (authResponse) return authResponse;
 
   const contentLength = request.headers.get("content-length");
   if (contentLength !== null && Number(contentLength) > MAX_BODY_BYTES) {

@@ -13,6 +13,13 @@ export const users = pgTable("users", {
   image: text("image"),
   username: text("username").unique(),
   displayUsername: text("display_username"),
+
+  // Better Auth Admin plugin
+  role: text("role"),
+  banned: boolean("banned"),
+  banReason: text("ban_reason"),
+  banExpires: timestamp("ban_expires", { precision: 6, withTimezone: true }),
+
   ...authTimestamps,
 });
 
