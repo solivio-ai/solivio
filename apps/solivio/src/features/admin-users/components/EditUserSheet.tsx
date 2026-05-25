@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { isAdmin } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -50,7 +51,7 @@ export function EditUserSheet({ user, open, onOpenChange }: Props) {
   useEffect(() => {
     if (user) {
       setName(user.name);
-      setRole(user.role === "admin" ? "admin" : "user");
+      setRole(isAdmin(user) ? "admin" : "user");
       setSaveError(null);
       setPasswordError(null);
       setPasswordSuccess(null);
@@ -66,7 +67,7 @@ export function EditUserSheet({ user, open, onOpenChange }: Props) {
     startSaveTransition(async () => {
       const trimmedName = name.trim();
       const nameChanged = trimmedName !== user.name;
-      const currentRole = user.role === "admin" ? "admin" : "user";
+      const currentRole = isAdmin(user) ? "admin" : "user";
       const roleChanged = role !== currentRole;
 
       const ops: Promise<{ error?: unknown }>[] = [];

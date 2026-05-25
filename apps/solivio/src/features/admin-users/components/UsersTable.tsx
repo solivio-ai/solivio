@@ -58,6 +58,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { isAdmin } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
 import { CreateUserDialog } from "./CreateUserDialog";
@@ -325,7 +326,7 @@ export function UsersTable({ users, total, limit, offset, currentUserId }: Users
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell className="text-muted-foreground">{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                    <Badge variant={isAdmin(user) ? "default" : "secondary"}>
                       {roleLabel(user.role, t)}
                     </Badge>
                   </TableCell>

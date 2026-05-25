@@ -25,6 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { UserMenu } from "@/features/auth/components/UserMenu";
+import { isAdmin } from "@/lib/auth";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,7 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar();
   const { data: session } = useSession();
 
-  const isAdmin = session?.user?.role === "admin";
+  const userIsAdmin = isAdmin(session?.user);
 
   function closeMobileSidebar() {
     if (isMobile) setOpenMobile(false);
@@ -114,7 +115,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {isAdmin && <AdminSidebarSection pathname={pathname} onNavigate={closeMobileSidebar} />}
+        {userIsAdmin && <AdminSidebarSection pathname={pathname} onNavigate={closeMobileSidebar} />}
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">

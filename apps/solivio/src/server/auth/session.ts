@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
+import { isAdmin } from "@/lib/auth";
+
 import type { Session } from "./auth";
 import { auth } from "./auth";
 
@@ -28,7 +30,7 @@ export async function requireAuth(): Promise<RequireAuthResult> {
 export async function requireAdmin(): Promise<RequireAuthResult> {
   const result = await requireAuth();
   if (result.response) return result;
-  if (result.session.user.role !== "admin")
+  if (!isAdmin(result.session.user))
     return { response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   return { session: result.session };
 }
@@ -37,6 +39,6 @@ export async function requireAdmin(): Promise<RequireAuthResult> {
 export async function requireAdminPage(): Promise<Session> {
   const session = await getCurrentSession();
   if (!session) redirect("/login");
-  if (session.user.role !== "admin") notFound();
+  if (!isAdmin(session.user)) notFound();
   return session;
 }
