@@ -370,7 +370,6 @@ export function OfferBuilder({
       sku: product.sku,
       name: product.name,
       description: product.description,
-      manufacturer: product.manufacturer,
       quantity,
       requestItem: item,
       unitPrice: 0,
