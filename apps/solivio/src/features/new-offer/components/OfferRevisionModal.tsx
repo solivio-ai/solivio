@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import type { OfferRevision } from "@solivio/domain";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -137,17 +138,16 @@ export function OfferRevisionModal({
                   <div className="grid gap-1.5 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("notes")}</span>
                     {snapshot.notes.map((note, i) => (
-                      <div
-                        key={i}
-                        className="flex gap-2 rounded-md border border-foreground/10 bg-muted/40 px-2.5 py-2 text-xs"
-                      >
+                      <Alert key={i} className="text-xs py-2 px-2.5">
                         <AlertTriangle
                           size={13}
-                          className="mt-0.5 shrink-0 text-amber-500"
+                          className="shrink-0 text-amber-500"
                           aria-hidden="true"
                         />
-                        <span>{note}</span>
-                      </div>
+                        <AlertDescription className="text-xs text-foreground">
+                          {note}
+                        </AlertDescription>
+                      </Alert>
                     ))}
                   </div>
                 )}
@@ -155,12 +155,10 @@ export function OfferRevisionModal({
                   <div className="grid gap-1.5 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("unmatched")}</span>
                     {snapshot.unmatched.map((item, i) => (
-                      <div
-                        key={i}
-                        className="flex gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-2.5 py-2 text-xs text-amber-600 dark:text-amber-400"
-                      >
-                        {item}
-                      </div>
+                      <Alert key={i} variant="warning" className="text-xs py-2 px-2.5">
+                        <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                        <AlertDescription>{item}</AlertDescription>
+                      </Alert>
                     ))}
                   </div>
                 )}

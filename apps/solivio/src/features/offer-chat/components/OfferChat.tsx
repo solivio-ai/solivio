@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
-import { ArrowUp, Plus, Sparkles, User } from "lucide-react";
+import { AlertCircle, ArrowUp, Plus, Sparkles, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { KeyboardEvent, ReactNode } from "react";
 import {
@@ -18,6 +18,7 @@ import {
 } from "react";
 
 import type { Offer } from "@solivio/domain";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -454,9 +455,10 @@ export const OfferChat = forwardRef<OfferChatHandle, OfferChatProps>(function Of
         className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 [scrollbar-gutter:stable] [scrollbar-width:thin]"
       >
         {threadError ? (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-            {threadError}
-          </div>
+          <Alert variant="destructive" className="text-xs py-2 px-3">
+            <AlertCircle size={16} aria-hidden="true" />
+            <AlertDescription>{threadError}</AlertDescription>
+          </Alert>
         ) : null}
 
         {messages.length === 0 && (

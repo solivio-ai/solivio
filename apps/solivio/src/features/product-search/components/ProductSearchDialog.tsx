@@ -124,7 +124,7 @@ export function ProductSearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100svh-1rem)] overflow-hidden max-sm:inset-x-2 max-sm:translate-x-0 max-sm:rounded-xl sm:max-w-[min(920px,calc(100vw-2rem))]">
+      <DialogContent className="max-h-[calc(100svh-1rem)] overflow-hidden max-sm:inset-x-2 max-sm:translate-x-0 max-sm:rounded-xl sm:max-w-[min(920px,calc(100vw-2rem))] mx-auto">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
