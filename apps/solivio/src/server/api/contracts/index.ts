@@ -2,6 +2,7 @@
 // Per-entity schemas live in sibling files; route catalog in `./routes`.
 
 export * from "./common";
+export * from "./customer";
 export * from "./customer-request";
 export * from "./offer";
 export * from "./offer-chat";

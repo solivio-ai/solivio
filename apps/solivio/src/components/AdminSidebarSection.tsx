@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Package, Users } from "lucide-react";
+import { Building2, ChevronRight, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -22,6 +22,7 @@ interface AdminSidebarSectionProps {
 const adminItems = [
   { labelKey: "users", href: "/admin/users", icon: Users },
   { labelKey: "catalogUpload", href: "/admin/products/upload", icon: Package },
+  { labelKey: "customerUpload", href: "/admin/customers/upload", icon: Building2 },
 ] as const;
 
 export function AdminSidebarSection({ pathname, onNavigate }: AdminSidebarSectionProps) {

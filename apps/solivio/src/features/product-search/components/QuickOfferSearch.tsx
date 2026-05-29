@@ -7,8 +7,9 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { CustomerSelection } from "@/features/customers";
+import { CustomerCombobox } from "@/features/customers";
 import type { ProductSearchMatch } from "@/features/product-search";
 import { ProductSearchDialog } from "@/features/product-search";
 
@@ -16,7 +17,7 @@ export function QuickOfferSearch() {
   const t = useTranslations("QuickSearch");
   const [open, setOpen] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [customerName, setCustomerName] = useState("");
+  const [customer, setCustomer] = useState<CustomerSelection>({ id: null, name: "" });
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
 
@@ -44,7 +45,7 @@ export function QuickOfferSearch() {
       const response = await fetch("/api/offers/quick", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, customerName }),
+        body: JSON.stringify({ items, customerId: customer.id, customerName: customer.name }),
       });
 
       if (response.ok) {
@@ -96,12 +97,11 @@ export function QuickOfferSearch() {
           <div className="flex flex-col gap-3 pt-4 border-t w-full mt-auto">
             <div className="grid gap-2">
               <Label htmlFor="quick-offer-customer-name">{t("customerName.label")}</Label>
-              <Input
+              <CustomerCombobox
                 id="quick-offer-customer-name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                value={customer}
+                onChange={setCustomer}
                 placeholder={t("customerName.placeholder")}
-                className="bg-background/60"
                 disabled={isCreating}
               />
             </div>
@@ -120,7 +120,7 @@ export function QuickOfferSearch() {
                   {t("actions.cancel")}
                 </Button>
                 <Button
-                  disabled={selectedCount === 0 || isCreating || !customerName.trim()}
+                  disabled={selectedCount === 0 || isCreating || !customer.name.trim()}
                   onClick={handleCreateOffer}
                 >
                   {isCreating ? t("actions.creating") : t("actions.createDraft")}

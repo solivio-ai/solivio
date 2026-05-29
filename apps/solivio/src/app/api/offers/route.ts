@@ -4,11 +4,49 @@ import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
 import { createOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
+import {
+  CustomerSelectionError,
+  customerNamesMatch,
+  findCustomerById,
+  normalizeCustomerName,
+} from "@/server/customers/customerRepository";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
+
+async function resolveCustomerNameForGeneration(
+  customerId?: string | null,
+  customerName?: string | null,
+) {
+  const normalizedName = customerName ? normalizeCustomerName(customerName) : undefined;
+  if (!customerId) return normalizedName;
+
+  const customer = await findCustomerById(customerId);
+  if (!customer) {
+    throw new CustomerSelectionError("customer_not_found", "Selected customer was not found.");
+  }
+  if (normalizedName && !customerNamesMatch(customer.name, normalizedName)) {
+    throw new CustomerSelectionError(
+      "customer_mismatch",
+      "Selected customer does not match the provided customer name.",
+    );
+  }
+  return customer.name;
+}
+
+function customerSelectionResponse(error: CustomerSelectionError) {
+  return NextResponse.json(
+    {
+      error: {
+        code: error.code,
+        message: error.message,
+      },
+    },
+    { status: 400 },
+  );
+}
 
 export async function POST(request: Request) {
   const auth = await requireAuth();
@@ -24,24 +62,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const { customerName, clientRequest } = parsed.data;
+  const { customerId, customerName, clientRequest } = parsed.data;
   try {
+    const resolvedCustomerName = await resolveCustomerNameForGeneration(customerId, customerName);
     const [generated, offerName] = await Promise.all([
-      generateOfferWithAgent(clientRequest, customerName),
-      generateOfferName(clientRequest, customerName),
+      generateOfferWithAgent(clientRequest, resolvedCustomerName),
+      generateOfferName(clientRequest, resolvedCustomerName),
     ]);
     const offer = await createOffer(
-      customerName,
+      resolvedCustomerName,
       clientRequest,
       generated,
       auth.session.user.id,
       offerName,
+      customerId,
     );
 
     saveOfferDraft(offer);
 
     return NextResponse.json({ offer }, { status: 201 });
   } catch (error) {
+    if (error instanceof CustomerSelectionError) {
+      return customerSelectionResponse(error);
+    }
+
     console.error("[api/offers POST] generation failed", error);
     const message = error instanceof Error ? error.message : "Unknown error";
     const stack = error instanceof Error ? error.stack : undefined;

@@ -44,6 +44,7 @@ pnpm-debug.log*
 
 # editors
 .idea/
+.claude/
 
 # docker volumes / local data
 .volumes/

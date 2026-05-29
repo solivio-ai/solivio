@@ -2,7 +2,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import type { AgentTool } from "./agent-tool.js";
 import type { EventSubscriber } from "./event-subscriber.js";
-import type { ImporterDefinition } from "./importer.js";
+import type { AnyImporterDefinition } from "./importer.js";
 import type { ModuleContext } from "./module-context.js";
 import type { RendererDefinition } from "./renderer.js";
 
@@ -13,7 +13,7 @@ import type { RendererDefinition } from "./renderer.js";
  */
 export interface ModuleContributions {
   agentTools?: AgentTool[];
-  importers?: ImporterDefinition[];
+  importers?: AnyImporterDefinition[];
   /** Reserved — not yet wired into the pipeline. */
   renderers?: RendererDefinition[];
   /** Reserved — not yet wired into the pipeline. */
