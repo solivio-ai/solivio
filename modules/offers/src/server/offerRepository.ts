@@ -290,6 +290,15 @@ export async function deleteOfferItem(offerItemId: string, offerId: string, tx: 
 // ── Reads ──────────────────────────────────────────────────────────────────────
 
 export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow | null> {
+  // Reads the offer, its items, and its unmatched rows in separate queries —
+  // run them under one repeatable-read transaction so they see a consistent
+  // snapshot when no caller-provided tx is in play.
+  if (tx === db) {
+    return db.transaction((innerTx) => findOfferById(id, innerTx), {
+      isolationLevel: "repeatable read",
+    });
+  }
+
   const [offer] = await tx.select().from(offers).where(eq(offers.id, id)).limit(1);
   if (!offer) return null;
 
