@@ -205,45 +205,48 @@ export async function updateOfferMeta(
     resolvedCustomerId = customer?.id ?? null;
   }
 
-  return db.transaction(async (tx) => {
-    const existing = await findOfferById(offerId, tx);
-    if (!existing) return null;
+  return db.transaction(
+    async (tx) => {
+      const existing = await findOfferById(offerId, tx);
+      if (!existing) return null;
 
-    // Imported offers are fully read-only.
-    if (existing.status === OFFER_STATUS.IMPORTED) return null;
-    // Accepted offer can only be reopened to draft.
-    if (existing.status === OFFER_STATUS.ACCEPTED && data.status !== OFFER_STATUS.DRAFT) {
-      return null;
-    }
+      // Imported offers are fully read-only.
+      if (existing.status === OFFER_STATUS.IMPORTED) return null;
+      // Accepted offer can only be reopened to draft.
+      if (existing.status === OFFER_STATUS.ACCEPTED && data.status !== OFFER_STATUS.DRAFT) {
+        return null;
+      }
 
-    const patch: UpdateOfferMetaInput = { ...rest };
-    if (resolvedCustomerId !== undefined) {
-      patch.customerId = resolvedCustomerId;
-    }
-    // When customerId is explicitly null and no name is given, `patch` already
-    // carries `customerId: null` from the `...rest` spread, so no branch is needed.
+      const patch: UpdateOfferMetaInput = { ...rest };
+      if (resolvedCustomerId !== undefined) {
+        patch.customerId = resolvedCustomerId;
+      }
+      // When customerId is explicitly null and no name is given, `patch` already
+      // carries `customerId: null` from the `...rest` spread, so no branch is needed.
 
-    const definedPatch = Object.fromEntries(
-      Object.entries(patch).filter(([, value]) => value !== undefined),
-    ) as UpdateOfferMetaInput;
+      const definedPatch = Object.fromEntries(
+        Object.entries(patch).filter(([, value]) => value !== undefined),
+      ) as UpdateOfferMetaInput;
 
-    const updated = await persistOfferMeta(offerId, definedPatch, tx);
-    if (!updated) return null;
+      const updated = await persistOfferMeta(offerId, definedPatch, tx);
+      if (!updated) return null;
 
-    if (userId !== undefined) {
-      await touchOffer(offerId, userId ?? null, tx);
-    }
+      if (userId !== undefined) {
+        await touchOffer(offerId, userId ?? null, tx);
+      }
 
-    const hasContentChanges = Object.keys(definedPatch).some((key) => key !== "status");
-    if (data.status === OFFER_STATUS.ACCEPTED) {
-      await saveRevision(offerId, userId ?? null, new Date(), tx);
-    } else if (hasContentChanges) {
-      await saveRevision(offerId, userId ?? null, undefined, tx);
-    }
+      const hasContentChanges = Object.keys(definedPatch).some((key) => key !== "status");
+      if (data.status === OFFER_STATUS.ACCEPTED) {
+        await saveRevision(offerId, userId ?? null, new Date(), tx);
+      } else if (hasContentChanges) {
+        await saveRevision(offerId, userId ?? null, undefined, tx);
+      }
 
-    const row = await findOfferById(offerId, tx);
-    return row ? offerRowToDomain(row) : null;
-  }, { isolationLevel: "repeatable read" });
+      const row = await findOfferById(offerId, tx);
+      return row ? offerRowToDomain(row) : null;
+    },
+    { isolationLevel: "repeatable read" },
+  );
 }
 
 export async function deleteOffer(offerId: string): Promise<boolean> {
