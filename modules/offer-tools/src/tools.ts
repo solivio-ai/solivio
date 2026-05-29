@@ -1,18 +1,17 @@
-import "server-only";
-
-import { createTool } from "@voltagent/core";
 import { z } from "zod";
 
-import { searchProductsBatch, searchProductsByPrompt } from "../products/productSearchService";
-import {
-  addProductToOffer,
-  bulkAddProductsToOffer,
-  removeOfferLineItem,
-  updateOfferLineItem,
-} from "./offerService";
+import type { AgentTool, CoreServices } from "@solivio/sdk";
+import { defineAgentTool } from "@solivio/sdk";
 
-export const offerLineItemTools = [
-  createTool({
+/**
+ * The salesperson copilot's offer-editing + catalog tools. Each closes over the
+ * injected {@link CoreServices} and depends only on the SDK; the core adapts
+ * them to its agent-flow framework at wiring time.
+ */
+export function createOfferTools(services: CoreServices): AgentTool[] {
+  const { products, offers } = services;
+
+  const searchProducts = defineAgentTool({
     name: "search_products",
     description:
       "Search the product catalog using a natural-language query and return the best semantic matches. Use this to discover product IDs before adding them to an offer.",
@@ -30,15 +29,15 @@ export const offerLineItemTools = [
         .describe("Maximum number of results to return (default 5, max 20)"),
     }),
     execute: async (input) => {
-      const matches = await searchProductsByPrompt(input.query, {
+      const matches = await products.search(input.query, {
         limit: input.limit ?? 10,
         minSimilarity: 0.2,
       });
-      return { products: matches ?? [] };
+      return { products: matches };
     },
-  }),
+  });
 
-  createTool({
+  const addProduct = defineAgentTool({
     name: "add_product_to_offer",
     description:
       "Add a product to an offer by its exact UUID. Only call this after you have resolved the product ID — use search_products first if the user gave a name or description instead of an ID.",
@@ -56,22 +55,26 @@ export const offerLineItemTools = [
         .describe("Brief explanation of why this product matches the requirement"),
     }),
     execute: async (input) => {
-      const offer = await addProductToOffer(
-        input.offerId,
-        input.productId,
-        input.quantity,
-        input.requestItem,
-        undefined,
-        input.rationale,
-      );
-      if (offer === null) return { error: "not_found" };
-      if (offer === "duplicate") return { error: "duplicate_product" };
-      if (offer === "locked") return { error: "offer_locked" };
-      return { offer };
+      const result = await offers.addProduct(input.offerId, {
+        productId: input.productId,
+        quantity: input.quantity,
+        requestItem: input.requestItem,
+        rationale: input.rationale,
+      });
+      switch (result.status) {
+        case "ok":
+          return { offer: result.offer };
+        case "duplicate":
+          return { error: "duplicate_product" };
+        case "locked":
+          return { error: "offer_locked" };
+        default:
+          return { error: "not_found" };
+      }
     },
-  }),
+  });
 
-  createTool({
+  const updateLineItem = defineAgentTool({
     name: "update_offer_line_item",
     description:
       "Update the quantity of a specific line item in an offer. Use this when the user asks to change how many units of a product are in the offer.",
@@ -81,14 +84,23 @@ export const offerLineItemTools = [
       quantity: z.number().int().positive().describe("New quantity for the line item"),
     }),
     execute: async (input) => {
-      const offer = await updateOfferLineItem(input.offerProductId, input.offerId, input.quantity);
-      if (offer === "locked") return { error: "offer_locked" };
-      if (offer === null) return { error: "not_found" };
-      return { offer };
+      const result = await offers.updateLineItem(
+        input.offerId,
+        input.offerProductId,
+        input.quantity,
+      );
+      switch (result.status) {
+        case "ok":
+          return { offer: result.offer };
+        case "locked":
+          return { error: "offer_locked" };
+        default:
+          return { error: "not_found" };
+      }
     },
-  }),
+  });
 
-  createTool({
+  const removeLineItem = defineAgentTool({
     name: "remove_offer_line_item",
     description:
       "Remove a product line item from an offer. Use this when the user asks to remove or delete a product from the offer.",
@@ -97,14 +109,19 @@ export const offerLineItemTools = [
       offerProductId: z.string().uuid().describe("ID of the line item to remove"),
     }),
     execute: async (input) => {
-      const removed = await removeOfferLineItem(input.offerProductId, input.offerId);
-      if (removed === "locked") return { error: "offer_locked" };
-      if (!removed) return { error: "not_found" };
-      return { success: true };
+      const result = await offers.removeLineItem(input.offerId, input.offerProductId);
+      switch (result.status) {
+        case "ok":
+          return { success: true };
+        case "locked":
+          return { error: "offer_locked" };
+        default:
+          return { error: "not_found" };
+      }
     },
-  }),
+  });
 
-  createTool({
+  const proposeProducts = defineAgentTool({
     name: "propose_products_for_requirements",
     description:
       "Given a list of natural-language product requirements, search the catalog for the best match for each one and return a structured proposal. Use this when the user describes multiple product needs at once, or when the user asks you to suggest or propose products without immediately adding them. Present the results to the user before adding anything.",
@@ -122,23 +139,20 @@ export const offerLineItemTools = [
         .describe("Maximum number of catalog matches to return per requirement (default 3, max 5)"),
     }),
     execute: async (input) => {
-      const resultsMap = await searchProductsBatch(input.requirements, {
+      const resultsMap = await products.searchBatch(input.requirements, {
         limit: input.limit ?? 3,
         minSimilarity: 0.6,
       });
-
       const proposals = input.requirements.map((requirement) => {
-        const matches = resultsMap.get(requirement) ?? [];
+        const matches = resultsMap[requirement] ?? [];
         return { requirement, matches, hasMatch: matches.length > 0 };
       });
-
       const unmatchedRequirements = proposals.filter((p) => !p.hasMatch).map((p) => p.requirement);
-
       return { proposals, unmatchedRequirements };
     },
-  }),
+  });
 
-  createTool({
+  const bulkAdd = defineAgentTool({
     name: "bulk_add_products",
     description:
       "Add multiple products to an offer in a single call. Use this after propose_products_for_requirements when the user confirms which products to add, or when adding several products at once from resolved product UUIDs.",
@@ -162,9 +176,8 @@ export const offerLineItemTools = [
         .min(1)
         .describe("List of products to add"),
     }),
-    execute: async (input) => {
-      const result = await bulkAddProductsToOffer(input.offerId, input.items);
-      return result;
-    },
-  }),
-];
+    execute: async (input) => offers.bulkAddProducts(input.offerId, input.items),
+  });
+
+  return [searchProducts, addProduct, updateLineItem, removeLineItem, proposeProducts, bulkAdd];
+}

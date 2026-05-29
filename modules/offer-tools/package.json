@@ -1,8 +1,8 @@
 {
-  "name": "@solivio/module-csv-products",
+  "name": "@solivio/module-offer-tools",
   "version": "0.1.0",
   "private": true,
-  "description": "CSV products importer module for Solivio.",
+  "description": "Salesperson copilot offer-editing and catalog agent tools for Solivio.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,8 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@solivio/sdk": "workspace:*"
+    "@solivio/sdk": "workspace:*",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

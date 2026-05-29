@@ -1,100 +1,73 @@
-/**
- * Module registry — loads compiled module packages listed in solivio.config.json.
- *
- * All core code interacts only via ModuleManifest from @solivio/sdk.
- *
- * To add a module to a deployment:
- *   1. List its package name in solivio.config.json — that's all.
- *      Modules are compiled packages (dist/) loaded at Node.js runtime.
- *
- * Convention:
- *   - Module id must be kebab-case and unique across the deployment.
- *   - Module tables must be prefixed with `mod_<id>_`.
- *   - Modules may not import from each other.
- */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import "server-only";
 
-import { z } from "zod";
+/**
+ * Module registry — loads pre-built module bundles at startup.
+ *
+ * Each module listed in solivio.config.json is resolved to a self-contained
+ * ESM bundle (`<modulesRoot>/<package>/index.mjs`), imported by file URL, and
+ * registered by calling its factory's register(ctx, options). Modules are
+ * provided by the operator (or the baked starter pack) and loaded WITHOUT
+ * rebuilding the app — so the import is intentionally external to the bundler
+ * (turbopackIgnore / webpackIgnore). A malformed module fails the boot loudly.
+ */
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import type {
   AgentTool,
   ImporterDefinition,
-  ModuleManifest,
+  ModuleContributions,
+  ModuleFactory,
   RendererDefinition,
 } from "@solivio/sdk";
 
-// ── Config schema ─────────────────────────────────────────────────────────────
+import type { SolivioConfig } from "./config";
+import { modulesRoot, readConfig } from "./config";
+import { buildModuleContext } from "./context";
 
-const solivioConfigSchema = z.object({
-  modules: z.array(z.string()),
-  capabilities: z
-    .object({
-      productImporter: z.string(),
-    })
-    .optional(),
-});
+interface LoadedModule {
+  id: string;
+  name: string;
+  version: string;
+  importers: ImporterDefinition[];
+  agentTools: AgentTool[];
+  renderers: RendererDefinition[];
+}
 
-type SolivioConfig = z.infer<typeof solivioConfigSchema>;
+let _modules: LoadedModule[] | null = null;
+let _loadPromise: Promise<LoadedModule[]> | null = null;
 
-// ── Singleton state ───────────────────────────────────────────────────────────
+// ── Bundle import ───────────────────────────────────────────────────────────
 
-let _modules: ModuleManifest[] | null = null;
-let _config: SolivioConfig | null = null;
-// Promise singleton so concurrent callers await the same in-flight load.
-let _loadPromise: Promise<ModuleManifest[]> | null = null;
-
-// ── Config reader ─────────────────────────────────────────────────────────────
-
-function readConfig(): SolivioConfig {
-  if (_config) return _config;
-  // process.cwd() is the Next.js app root (apps/solivio) during dev and production start.
-  // For standalone deployments, set SOLIVIO_CONFIG_PATH to the absolute config location.
-  const configPath =
-    process.env.SOLIVIO_CONFIG_PATH ?? path.join(process.cwd(), "../../solivio.config.json");
+async function importFactory(pkg: string): Promise<ModuleFactory> {
+  const entry = path.join(modulesRoot(), pkg, "index.mjs");
+  const url = pathToFileURL(entry).href;
+  let mod: { default?: unknown };
   try {
-    _config = solivioConfigSchema.parse(JSON.parse(readFileSync(configPath, "utf-8")));
-    return _config;
+    mod = (await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ url)) as {
+      default?: unknown;
+    };
   } catch (cause) {
-    throw new Error(`Failed to load solivio.config.json from ${configPath}`, { cause });
+    throw new Error(`Failed to load module bundle "${pkg}" from ${entry}`, { cause });
   }
+  const factory = mod.default;
+  assertValidFactory(factory, pkg);
+  return factory;
 }
 
-// ── Manifest validation ───────────────────────────────────────────────────────
-
-const KEBAB_CASE = /^[a-z][a-z0-9-]*$/;
-
-function assertValidManifest(raw: unknown, pkg: string): ModuleManifest {
+function assertValidFactory(raw: unknown, pkg: string): asserts raw is ModuleFactory {
   if (typeof raw !== "object" || raw === null) {
-    throw new Error(`Module "${pkg}" default export is not an object`);
+    throw new Error(`Module "${pkg}" default export is not a module factory.`);
   }
-  const m = raw as Record<string, unknown>;
-  if (typeof m.id !== "string" || !KEBAB_CASE.test(m.id)) {
-    throw new Error(
-      `Module "${pkg}" id "${String(m.id)}" is invalid — must be kebab-case (e.g. "csv-products")`,
-    );
+  const f = raw as Record<string, unknown>;
+  if (typeof f.id !== "string" || typeof f.register !== "function") {
+    throw new Error(`Module "${pkg}" default export is not a valid defineModule() factory.`);
   }
-  if (typeof m.name !== "string") {
-    throw new Error(`Module "${pkg}" is missing required field "name"`);
-  }
-  if (typeof m.version !== "string") {
-    throw new Error(`Module "${pkg}" is missing required field "version"`);
-  }
-  return raw as ModuleManifest;
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// ── Load ────────────────────────────────────────────────────────────────────
 
-/**
- * Loads all modules listed in solivio.config.json, validates their manifests,
- * and populates the registry singleton. Idempotent — safe to call multiple times.
- * Concurrent callers share the same in-flight promise.
- *
- * Called eagerly at startup via instrumentation.ts, and lazily by every accessor
- * so that hot reloads (which reset module-level singletons) self-heal without a
- * full server restart.
- */
-export async function loadModules(): Promise<ModuleManifest[]> {
+export async function loadModules(): Promise<LoadedModule[]> {
   if (_modules !== null) return _modules;
   if (_loadPromise) return _loadPromise;
   _loadPromise = doLoad().finally(() => {
@@ -103,73 +76,95 @@ export async function loadModules(): Promise<ModuleManifest[]> {
   return _loadPromise;
 }
 
-async function doLoad(): Promise<ModuleManifest[]> {
+async function doLoad(): Promise<LoadedModule[]> {
   const config = readConfig();
-  const loaded: ModuleManifest[] = [];
+  const loaded: LoadedModule[] = [];
 
-  for (const pkg of config.modules) {
-    // Modules are compiled packages (dist/index.js) loaded at Node.js runtime.
-    // turbopackIgnore prevents the bundler from attempting to inline them.
-    const mod = (await import(/* turbopackIgnore: true */ pkg)) as { default: ModuleManifest };
-    loaded.push(assertValidManifest(mod.default, pkg));
+  for (const entry of config.modules) {
+    const factory = await importFactory(entry.package);
+    const ctx = buildModuleContext(factory.id);
+    const options = factory.parseOptions(entry.options ?? {});
+    const contributions: ModuleContributions = await factory.register(ctx, options);
+    loaded.push({
+      id: factory.id,
+      name: factory.name,
+      version: factory.version,
+      importers: contributions.importers ?? [],
+      agentTools: contributions.agentTools ?? [],
+      renderers: contributions.renderers ?? [],
+    });
   }
 
-  const ids = loaded.map((m) => m.id);
-  const duplicateIds = ids.filter((id, i) => ids.indexOf(id) !== i);
-  if (duplicateIds.length > 0) {
-    throw new Error(`Duplicate module ids detected: ${duplicateIds.join(", ")}`);
-  }
-
-  const toolNames = loaded.flatMap((m) => (m.agentTools ?? []).map((t) => t.name));
-  const duplicateTools = toolNames.filter((n, i) => toolNames.indexOf(n) !== i);
-  if (duplicateTools.length > 0) {
-    throw new Error(`Duplicate agent tool names across modules: ${duplicateTools.join(", ")}`);
-  }
+  assertUnique(
+    loaded.map((m) => m.id),
+    "module ids",
+  );
+  assertUnique(
+    loaded.flatMap((m) => m.agentTools.map((t) => t.name)),
+    "agent tool names",
+  );
+  assertUnique(
+    loaded.flatMap((m) => m.importers.map((i) => i.name)),
+    "importer names",
+  );
 
   _modules = loaded;
   return loaded;
 }
 
-/** Returns all loaded module manifests. */
-export async function getModules(): Promise<ModuleManifest[]> {
+function assertUnique(values: string[], label: string): void {
+  const dupes = values.filter((v, i) => values.indexOf(v) !== i);
+  if (dupes.length > 0) {
+    throw new Error(`Duplicate ${label} across modules: ${[...new Set(dupes)].join(", ")}`);
+  }
+}
+
+// ── Accessors ─────────────────────────────────────────────────────────────────
+
+export async function getModules(): Promise<LoadedModule[]> {
   return [...(await loadModules())];
 }
 
-/** Returns all importers contributed by loaded modules. */
+export async function getAgentTools(): Promise<AgentTool[]> {
+  return (await loadModules()).flatMap((m) => m.agentTools);
+}
+
 export async function getImporters(): Promise<ImporterDefinition[]> {
-  return (await loadModules()).flatMap((m) => m.importers ?? []);
+  return (await loadModules()).flatMap((m) => m.importers);
+}
+
+export async function getRenderers(): Promise<RendererDefinition[]> {
+  return (await loadModules()).flatMap((m) => m.renderers);
 }
 
 /**
- * Returns the product importer designated in solivio.config.json under
- * `capabilities.productImporter`. Throws if the slot is not configured
- * or no loaded module provides an importer with that name.
+ * Resolves the importer bound to the `product.importer` slot. The slot value is
+ * "<moduleId>/<importerName>"; if unset and exactly one importer is loaded, that
+ * one is the implicit default.
  */
 export async function getImporter(): Promise<ImporterDefinition> {
-  const importers = await getImporters();
-  const config = readConfig();
-  const importerName = config.capabilities?.productImporter;
-  if (!importerName) {
-    throw new Error(
-      "No product importer configured. Set capabilities.productImporter in solivio.config.json.",
-    );
-  }
-  const found = importers.find((imp) => imp.name === importerName);
-  if (!found) {
-    throw new Error(
-      `Importer "${importerName}" not found among loaded modules. ` +
-        "Ensure the module providing it is listed in solivio.config.json.",
-    );
-  }
-  return found;
-}
+  const modules = await loadModules();
+  const config: SolivioConfig = readConfig();
+  const binding = config.slots?.["product.importer"];
 
-/** Returns all agent tools contributed by loaded modules. */
-export async function getAgentTools(): Promise<AgentTool[]> {
-  return (await loadModules()).flatMap((m) => m.agentTools ?? []);
-}
+  if (binding) {
+    const [moduleId, importerName] = binding.split("/");
+    const mod = modules.find((m) => m.id === moduleId);
+    const found = mod?.importers.find((i) => i.name === importerName);
+    if (!found) {
+      throw new Error(
+        `Slot "product.importer" is bound to "${binding}", but no loaded module provides it. ` +
+          "Check solivio.config.json against the loaded modules.",
+      );
+    }
+    return found;
+  }
 
-/** Returns all renderers contributed by loaded modules. */
-export async function getRenderers(): Promise<RendererDefinition[]> {
-  return (await loadModules()).flatMap((m) => m.renderers ?? []);
+  const all = modules.flatMap((m) => m.importers);
+  if (all.length === 1) return all[0];
+  throw new Error(
+    all.length === 0
+      ? "No product importer is loaded. Add a module that provides one."
+      : 'Multiple importers are loaded; set slots["product.importer"] in solivio.config.json.',
+  );
 }
