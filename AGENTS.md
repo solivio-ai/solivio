@@ -2,6 +2,67 @@
 
 This repository is intended to stay easy to launch for contributors evaluating the idea.
 
+The sections below are the quick reference. They summarize the boundaries; the detailed sections later in this file (Development, Modules, Database, UI, Implementation Rules) and the docs in `docs/` remain authoritative.
+
+## Always
+
+- Match the task to the **Task Router** below and read the relevant `docs/` guide before researching or coding. A task can match multiple rows — read all of them.
+- Run `yarn check` before handing work back; add `yarn typecheck` whenever TypeScript, API contracts, server code, or React behavior changes. Auto-fix formatting first with `yarn biome check --write .`.
+- Preserve the API / frontend / server separation inside `apps/solivio`; reach the database and AI behind server helpers and API routes, never directly from components.
+- Keep modules depending only on `@solivio/sdk`, and run `yarn modules:build` after changing module source.
+- Change the database schema only through committed Drizzle migrations (`yarn db:generate` → review SQL → `yarn db:migrate`).
+- Build UI from shadcn/ui primitives and Tailwind utilities; check https://ui.shadcn.com/docs/components before writing a new component.
+- After a correction, record a rule in `docs/lessons.md` (see **Self-improvement**) so the same mistake cannot recur.
+
+## Ask First
+
+- Before changing architecture, the public `@solivio/sdk` contract surface, or the module/SDK boundary (`docs/contracts.md`).
+- Before adding a required external service to the default demo path, or adding a production dependency.
+- Before applying migrations in any shared or non-local environment.
+- Before reducing scope or changing behavior the user or a doc did not explicitly ask to change.
+
+## Never
+
+- Never import the Drizzle client (`apps/solivio/src/server/database/db.ts`) outside `apps/solivio/src/server/` or `apps/solivio/src/app/api/`.
+- Never make a module import `@/server/*` or another module — modules depend only on `@solivio/sdk`.
+- Never write custom CSS classes or add rules to `globals.css` beyond the allowed blocks, and never hard-code theme colors — use the theme tokens.
+- Never add required external services to the default demo path.
+
+## Validation Commands
+
+Choose the smallest relevant set for the change:
+
+```bash
+yarn biome check --write .   # format, sort imports, apply safe lint fixes
+yarn check                   # Biome quality gate (the single gate CI runs)
+yarn typecheck               # when TS, API contracts, server code, or React behavior changes
+yarn e2e                     # Playwright against http://localhost:3000 (yarn setup first)
+```
+
+## Task Router — Where to Find Detailed Guidance
+
+Before research or coding, match the task to a row and read the linked guide. A single task often matches multiple rows — read all of them.
+
+| Task | Guide |
+|------|-------|
+| Building or changing a module, the module SDK, capabilities (`importers`, `agentTools`), or the bundle build/runtime loader | `docs/module-system.md` + this file → **Modules** |
+| What the public SDK/module contract surface is — what is stable and what modules may import | `docs/contracts.md` |
+| AI agents — the named-agent registry (pipeline / review / utility agents) and how modules extend them | `docs/agents.md` |
+| Overall architecture, layering, and module boundaries | `docs/architecture.md` |
+| Database schema, migrations, or the entity-relationship model | `docs/database.md` + `docs/erd.md` |
+| HTTP API routes and their conventions | `docs/api.md` |
+| Building/publishing images, deployment | `docs/publishing.md` + this file → **Build** / **Deploy** |
+| Product scope and what the MVP includes | `docs/mvp-scope.md` |
+| Why a load-bearing technical decision was made | `docs/adr/` |
+
+## Working with Subagents
+
+Offload research and parallel analysis to subagents to keep the main context clean. Give each subagent a single, focused task. Prefer subagents for broad searches across many files where you only need the conclusion.
+
+## Self-improvement
+
+After the user corrects you, append a dated entry to `docs/lessons.md`. If the lesson is a durable rule, also fold it into the relevant **Always** / **Never** list above or the matching `docs/` guide, written so the same mistake cannot repeat.
+
 ## Development
 
 ```bash
