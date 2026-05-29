@@ -9,8 +9,10 @@ import { db } from "@solivio/sdk/runtime";
 import { offerItems, offers } from "../data/schema.ts";
 import type { InsertOfferItemData } from "./offerRepository.ts";
 import {
+  deleteOfferUnmatchedByOfferId,
   findOfferById,
   insertOfferItems,
+  insertOfferUnmatchedItems,
   lockOfferForUpdate,
   touchOffer,
 } from "./offerRepository.ts";
@@ -57,7 +59,7 @@ export async function saveRevision(
     discountPercent: row.discountPercent,
     discountAmount: row.discountAmount,
     notes: row.notes,
-    unmatched: row.unmatched,
+    unmatched: row.unmatched.map(({ item, reason }) => ({ item, reason })),
     items: row.items.map((item, index) => ({
       productId: item.productId,
       sku: item.productSku,
@@ -120,6 +122,7 @@ export async function restoreRevision(
     }
 
     await tx.delete(offerItems).where(eq(offerItems.offerId, offerId));
+    await deleteOfferUnmatchedByOfferId(offerId, tx);
 
     if (snapshot.items.length > 0) {
       const items: InsertOfferItemData[] = snapshot.items.map((item) => ({
@@ -142,6 +145,18 @@ export async function restoreRevision(
       await insertOfferItems(items, tx);
     }
 
+    if (snapshot.unmatched.length > 0) {
+      await insertOfferUnmatchedItems(
+        snapshot.unmatched.map((entry, index) => ({
+          offerId,
+          item: entry.item,
+          reason: entry.reason,
+          position: index,
+        })),
+        tx,
+      );
+    }
+
     await tx
       .update(offers)
       .set({
@@ -150,7 +165,6 @@ export async function restoreRevision(
         requestId: snapshot.requestId,
         currency: snapshot.currency,
         notes: snapshot.notes,
-        unmatched: snapshot.unmatched,
         discountPercent: snapshot.discountPercent ?? 0,
         discountAmount: snapshot.discountAmount ?? 0,
         status: OFFER_STATUS.DRAFT,

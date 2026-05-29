@@ -95,7 +95,6 @@ export async function importOffers(records: unknown[]): Promise<{
           status: "imported",
           currency: order.currency ?? appConfig.defaultCurrency,
           notes: [],
-          unmatched: [],
           ...(createdAt ? { createdAt } : {}),
         },
         tx,

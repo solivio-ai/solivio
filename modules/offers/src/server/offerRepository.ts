@@ -1,12 +1,18 @@
 import "server-only";
 
-import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, ne, sql } from "drizzle-orm";
 
-import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import type {
+  MatchSource,
+  Offer,
+  OfferStatus,
+  OfferUnmatchedItem,
+  OfferUnmatchedItemInput,
+} from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
 import { db, getService } from "@solivio/sdk/runtime";
 
-import { offerItems, offers } from "../data/schema.ts";
+import { offerItems, offers, offerUnmatchedItems } from "../data/schema.ts";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 
@@ -20,7 +26,6 @@ export type InsertOfferData = {
   status: OfferStatus;
   currency: string;
   notes: string[];
-  unmatched: string[];
   discountPercent?: number;
   discountAmount?: number;
   createdAt?: Date;
@@ -44,6 +49,13 @@ export type InsertOfferItemData = {
   position: number;
 };
 
+export type InsertOfferUnmatchedItemData = {
+  offerId: string;
+  item: string;
+  reason: string;
+  position: number;
+};
+
 // ── Row shapes ─────────────────────────────────────────────────────────────────
 
 export type OfferRow = {
@@ -58,7 +70,7 @@ export type OfferRow = {
   status: OfferStatus;
   currency: string;
   notes: string[];
-  unmatched: string[];
+  unmatched: OfferUnmatchedItem[];
   discountPercent: number;
   discountAmount: number;
   createdAt: Date;
@@ -85,6 +97,26 @@ export type OfferItemRow = {
   position: number;
 };
 
+export type RecentOfferRow = {
+  id: string;
+  name: string;
+  status: OfferStatus;
+  currency: string;
+  customerId: string | null;
+  customerName: string | null;
+  requestId: string | null;
+  clientRequest: string | null;
+  notes: string[];
+  discountPercent: number;
+  discountAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  itemCount: number;
+  unmatchedCount: number;
+  totalNet: number;
+  totalGross: number;
+};
+
 // ── Inserts ────────────────────────────────────────────────────────────────────
 
 export async function insertOffer(data: InsertOfferData, tx: Tx = db) {
@@ -102,6 +134,65 @@ export async function insertOfferItem(data: InsertOfferItemData, tx: Tx = db) {
   return item;
 }
 
+export async function insertOfferUnmatchedItems(
+  items: InsertOfferUnmatchedItemData[],
+  tx: Tx = db,
+) {
+  if (items.length === 0) return [];
+  return await tx.insert(offerUnmatchedItems).values(items).returning();
+}
+
+export async function deleteOfferUnmatchedByOfferId(offerId: string, tx: Tx = db) {
+  await tx.delete(offerUnmatchedItems).where(eq(offerUnmatchedItems.offerId, offerId));
+}
+
+export async function replaceOfferUnmatched(
+  offerId: string,
+  items: OfferUnmatchedItemInput[],
+  tx: Tx = db,
+) {
+  await deleteOfferUnmatchedByOfferId(offerId, tx);
+  if (items.length === 0) return [];
+  return await insertOfferUnmatchedItems(
+    items.map((entry, index) => ({
+      offerId,
+      item: entry.item,
+      reason: entry.reason,
+      position: index,
+    })),
+    tx,
+  );
+}
+
+// ── Reads (unmatched) ──────────────────────────────────────────────────────────
+
+export async function findUnmatchedByOfferId(
+  offerId: string,
+  tx: Tx = db,
+): Promise<OfferUnmatchedItem[]> {
+  const rows = await tx
+    .select({
+      id: offerUnmatchedItems.id,
+      item: offerUnmatchedItems.item,
+      reason: offerUnmatchedItems.reason,
+      position: offerUnmatchedItems.position,
+    })
+    .from(offerUnmatchedItems)
+    .where(eq(offerUnmatchedItems.offerId, offerId))
+    .orderBy(
+      asc(offerUnmatchedItems.position),
+      asc(offerUnmatchedItems.createdAt),
+      asc(offerUnmatchedItems.id),
+    );
+
+  return rows.map((row) => ({
+    id: row.id,
+    item: row.item,
+    reason: row.reason,
+    position: row.position,
+  }));
+}
+
 // ── Updates ────────────────────────────────────────────────────────────────────
 
 export type UpdateOfferMetaInput = {
@@ -113,7 +204,7 @@ export type UpdateOfferMetaInput = {
   discountPercent?: number;
   discountAmount?: number;
   notes?: string[];
-  unmatched?: string[];
+  unmatched?: OfferUnmatchedItemInput[];
 };
 
 export async function updateOfferMeta(offerId: string, data: UpdateOfferMetaInput, tx: Tx = db) {
@@ -126,14 +217,20 @@ export async function updateOfferMeta(offerId: string, data: UpdateOfferMetaInpu
   if (data.discountPercent !== undefined) patch.discountPercent = data.discountPercent;
   if (data.discountAmount !== undefined) patch.discountAmount = data.discountAmount;
   if (data.notes !== undefined) patch.notes = data.notes;
-  if (data.unmatched !== undefined) patch.unmatched = data.unmatched;
 
   const [offer] = await tx
     .update(offers)
     .set(patch)
     .where(eq(offers.id, offerId))
     .returning({ id: offers.id });
-  return offer ?? null;
+
+  if (!offer) return null;
+
+  if (data.unmatched !== undefined) {
+    await replaceOfferUnmatched(offerId, data.unmatched, tx);
+  }
+
+  return offer;
 }
 
 export async function touchOffer(offerId: string, userId: string | null, tx: Tx = db) {
@@ -214,6 +311,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     productIds.length > 0 ? getService("catalog").getProductsByIds(productIds) : [],
   ]);
   const skuByProductId = new Map(productRows.map((product) => [product.id, product.sku]));
+  const unmatched = await findUnmatchedByOfferId(id, tx);
 
   return {
     id: offer.id,
@@ -227,7 +325,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     status: offer.status,
     currency: offer.currency,
     notes: offer.notes,
-    unmatched: offer.unmatched,
+    unmatched,
     discountPercent: offer.discountPercent,
     discountAmount: offer.discountAmount,
     createdAt: offer.createdAt,
@@ -263,17 +361,18 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
       customerId: offers.customerId,
       requestId: offers.requestId,
       notes: offers.notes,
-      unmatched: offers.unmatched,
       discountPercent: offers.discountPercent,
       discountAmount: offers.discountAmount,
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
-      itemCount: sql<number>`COUNT(${offerItems.id})`.mapWith(Number),
+      itemCount: sql<number>`COUNT(DISTINCT ${offerItems.id})`.mapWith(Number),
+      unmatchedCount: sql<number>`COUNT(DISTINCT ${offerUnmatchedItems.id})`.mapWith(Number),
       totalNet: sql<number>`COALESCE(SUM(${offerItems.totalNet}), 0)`.mapWith(Number),
       totalGross: sql<number>`COALESCE(SUM(${offerItems.totalGross}), 0)`.mapWith(Number),
     })
     .from(offers)
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .leftJoin(offerUnmatchedItems, eq(offerUnmatchedItems.offerId, offers.id))
     .where(ne(offers.status, OFFER_STATUS.IMPORTED))
     .groupBy(offers.id)
     .orderBy(desc(offers.createdAt))
@@ -322,6 +421,22 @@ export async function findRecentOffersByCustomer(
     .where(inArray(offerItems.offerId, ids))
     .orderBy(offerItems.position, offerItems.createdAt, offerItems.id);
 
+  const unmatchedRows = await tx
+    .select()
+    .from(offerUnmatchedItems)
+    .where(inArray(offerUnmatchedItems.offerId, ids))
+    .orderBy(
+      asc(offerUnmatchedItems.position),
+      asc(offerUnmatchedItems.createdAt),
+      asc(offerUnmatchedItems.id),
+    );
+  const unmatchedByOfferId = new Map<string, OfferUnmatchedItem[]>();
+  for (const row of unmatchedRows) {
+    const list = unmatchedByOfferId.get(row.offerId) ?? [];
+    list.push({ id: row.id, item: row.item, reason: row.reason, position: row.position });
+    unmatchedByOfferId.set(row.offerId, list);
+  }
+
   // Cross-module references are id-only: enrich display data through the
   // owning modules' services instead of SQL joins.
   const requestIds = [
@@ -351,7 +466,7 @@ export async function findRecentOffersByCustomer(
     status: offer.status,
     currency: offer.currency,
     notes: offer.notes,
-    unmatched: offer.unmatched,
+    unmatched: unmatchedByOfferId.get(offer.id) ?? [],
     discountPercent: offer.discountPercent,
     discountAmount: offer.discountAmount,
     createdAt: offer.createdAt,

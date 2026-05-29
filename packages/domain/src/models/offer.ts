@@ -45,7 +45,7 @@ export type Offer = {
   discountPercent: number;
   discountAmount: number;
   notes: string[];
-  unmatched: string[];
+  unmatched: OfferUnmatchedItem[];
   items: OfferItem[];
   createdAt: string;
   updatedAt: string;
@@ -55,4 +55,17 @@ export type Offer = {
   clientRequest?: string | null;
   /** Resolved display name of the user referenced by userId, when available. */
   userName?: string | null;
+};
+
+export type OfferUnmatchedItem = {
+  id: string;
+  item: string;
+  reason: string;
+  position?: number;
+};
+
+/** Input shape before persistence (agent / server post-processing). */
+export type OfferUnmatchedItemInput = {
+  item: string;
+  reason: string;
 };

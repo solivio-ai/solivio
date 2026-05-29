@@ -2,7 +2,7 @@ import { AlertTriangle, Info, Loader2, PackageSearch, Trash2 } from "lucide-reac
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import type { Offer } from "@solivio/domain";
+import type { Offer, OfferUnmatchedItem } from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
 import {
   Accordion,
@@ -39,11 +39,11 @@ import { UnmatchedItem } from "./UnmatchedItem";
 type OfferProductsReviewProps = {
   commitQuantity: (productId: string) => void;
   lines: DraftLine[];
-  unmatched: string[];
+  unmatched: OfferUnmatchedItem[];
   pendingProductIds: Set<string>;
   removeProduct: (productId: string) => void;
-  removeUnmatched: (item: string) => void;
-  onManuallyMatch: (item: string) => void;
+  removeUnmatched: (id: string) => void;
+  onManuallyMatch: (entry: OfferUnmatchedItem) => void;
   updateQuantity: (productId: string, nextQuantity: number) => void;
   status: Offer["status"];
 };
@@ -142,11 +142,11 @@ export function OfferProductsReview({
             <AlertTitle>{tProducts("unmatchedTitle")}</AlertTitle>
             <AlertDescription className="mt-0 space-y-2">
               <p>{tProducts("unmatchedDescription")}</p>
-              <ul className="text-sm space-y-1 list-none p-0 m-0">
-                {unmatched.map((item, idx) => (
-                  <li key={idx} className="flex items-center justify-between gap-2 text-foreground">
+              <ul className="text-sm space-y-2 list-none p-0 m-0">
+                {unmatched.map((entry) => (
+                  <li key={entry.id} className="text-foreground">
                     <UnmatchedItem
-                      item={item}
+                      entry={entry}
                       modifyEnabled={!isLocked}
                       onDelete={removeUnmatched}
                       onManuallyMatch={onManuallyMatch}
@@ -268,9 +268,11 @@ export function OfferProductsReview({
                         {line.availability || line.rationale ? (
                           <Accordion type="single" collapsible>
                             <AccordionItem value="details" className="border-none">
-                              <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
-                                {tProducts("details")}
-                              </AccordionTrigger>
+                              <div className="w-fit">
+                                <AccordionTrigger className="py-1.5 text-xs gap-2 text-muted-foreground hover:no-underline">
+                                  {tProducts("details")}
+                                </AccordionTrigger>
+                              </div>
                               <AccordionContent className="grid gap-2 pb-0">
                                 {line.availability ? (
                                   <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import type { MatchSource, Offer, OfferStatus, OfferUnmatchedItemInput } from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
 import { db, emitEvent, getService } from "@solivio/sdk/runtime";
 
@@ -8,6 +8,7 @@ import type { GeneratedOffer } from "../ai/agents/offerGenerationAgent.ts";
 // Type-side: this module's own event declarations.
 import type {} from "../events.ts";
 import { appConfig } from "./appConfig.ts";
+import { duplicateUnmatchedReason, hallucinatedUnmatchedReason } from "./appLocale.ts";
 import type { InsertOfferItemData, OfferRow, UpdateOfferMetaInput } from "./offerRepository.ts";
 import {
   deleteOfferItem,
@@ -17,6 +18,7 @@ import {
   insertOffer,
   insertOfferItem,
   insertOfferItems,
+  insertOfferUnmatchedItems,
   offerRowToDomain,
   updateOfferMeta as persistOfferMeta,
   touchOffer,
@@ -28,14 +30,15 @@ import { saveRevision } from "./offerRevisionService.ts";
 
 function deduplicateItems(generated: GeneratedOffer): {
   items: GeneratedOffer["items"];
-  extraUnmatched: string[];
+  extraUnmatched: OfferUnmatchedItemInput[];
 } {
   const seen = new Set<string>();
-  const extraUnmatched: string[] = [];
+  const extraUnmatched: OfferUnmatchedItemInput[] = [];
+  const duplicateReason = duplicateUnmatchedReason();
 
   const items = generated.items.filter((item) => {
     if (seen.has(item.productId)) {
-      extraUnmatched.push(item.requestItem);
+      extraUnmatched.push({ item: item.requestItem, reason: duplicateReason });
       return false;
     }
     seen.add(item.productId);
@@ -75,9 +78,10 @@ export async function createOffer(
   const existingProducts = await catalog.getProductsByIds(productIds);
   const productMap = new Map(existingProducts.map((p) => [p.id, p]));
   const validItems = items.filter((item) => productMap.has(item.productId));
-  const hallucinated = items
+  const hallucinatedReason = hallucinatedUnmatchedReason();
+  const hallucinated: OfferUnmatchedItemInput[] = items
     .filter((item) => !productMap.has(item.productId))
-    .map((item) => item.requestItem);
+    .map((item) => ({ item: item.requestItem, reason: hallucinatedReason }));
 
   const priceMap = await catalog.getActivePricesForProducts(
     validItems.map((i) => i.productId),
@@ -105,10 +109,22 @@ export async function createOffer(
         status: OFFER_STATUS.DRAFT,
         currency: offerCurrency,
         notes: generated.notes,
-        unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
       },
       tx,
     );
+
+    const unmatchedToInsert = [...generated.unmatched, ...extraUnmatched, ...hallucinated];
+    if (unmatchedToInsert.length > 0) {
+      await insertOfferUnmatchedItems(
+        unmatchedToInsert.map((entry, index) => ({
+          offerId: offer.id,
+          item: entry.item,
+          reason: entry.reason,
+          position: index,
+        })),
+        tx,
+      );
+    }
 
     const itemInserts: InsertOfferItemData[] = validItems.map((item, index) => {
       const product = productMap.get(item.productId)!;

@@ -168,7 +168,9 @@ export function buildMarkdownReport(report: JsonReport): string {
       }
       if (run.generated.unmatched.length > 0) {
         lines.push("");
-        lines.push(`Agent reported unmatched: ${run.generated.unmatched.join("; ")}`);
+        lines.push(
+          `Agent reported unmatched: ${run.generated.unmatched.map((u) => u.item).join("; ")}`,
+        );
       }
       lines.push("");
     }
