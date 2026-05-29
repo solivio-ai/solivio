@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX "customers_name_normalized_unique" ON "customers" USING btree (lower("name"));
