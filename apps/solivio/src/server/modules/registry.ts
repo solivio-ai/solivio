@@ -15,9 +15,13 @@ import { pathToFileURL } from "node:url";
 
 import type {
   AgentTool,
+  AnyImporterDefinition,
+  CustomerInput,
   ImporterDefinition,
+  ImportTarget,
   ModuleContributions,
   ModuleFactory,
+  ProductInput,
   RendererDefinition,
 } from "@solivio/sdk";
 
@@ -29,7 +33,7 @@ interface LoadedModule {
   id: string;
   name: string;
   version: string;
-  importers: ImporterDefinition[];
+  importers: AnyImporterDefinition[];
   agentTools: AgentTool[];
   renderers: RendererDefinition[];
 }
@@ -129,7 +133,7 @@ export async function getAgentTools(): Promise<AgentTool[]> {
   return (await loadModules()).flatMap((m) => m.agentTools);
 }
 
-export async function getImporters(): Promise<ImporterDefinition[]> {
+export async function getImporters(): Promise<AnyImporterDefinition[]> {
   return (await loadModules()).flatMap((m) => m.importers);
 }
 
@@ -138,14 +142,24 @@ export async function getRenderers(): Promise<RendererDefinition[]> {
 }
 
 /**
- * Resolves the importer bound to the `product.importer` slot. The slot value is
- * "<moduleId>/<importerName>"; if unset and exactly one importer is loaded, that
- * one is the implicit default.
+ * Resolves the importer bound to the `${target}.importer` slot. The slot value is
+ * "<moduleId>/<importerName>"; if unset and exactly one importer for the target
+ * is loaded, that one is the implicit default.
  */
-export async function getImporter(): Promise<ImporterDefinition> {
+export async function getImporter(): Promise<ImporterDefinition<unknown, ProductInput>>;
+export async function getImporter(
+  target: "product",
+): Promise<ImporterDefinition<unknown, ProductInput>>;
+export async function getImporter(
+  target: "customer",
+): Promise<ImporterDefinition<unknown, CustomerInput>>;
+export async function getImporter(
+  target: ImportTarget = "product",
+): Promise<AnyImporterDefinition> {
   const modules = await loadModules();
   const config: SolivioConfig = readConfig();
-  const binding = config.slots?.["product.importer"];
+  const slotName = `${target}.importer`;
+  const binding = config.slots?.[slotName];
 
   if (binding) {
     const [moduleId, importerName] = binding.split("/");
@@ -153,18 +167,23 @@ export async function getImporter(): Promise<ImporterDefinition> {
     const found = mod?.importers.find((i) => i.name === importerName);
     if (!found) {
       throw new Error(
-        `Slot "product.importer" is bound to "${binding}", but no loaded module provides it. ` +
+        `Slot "${slotName}" is bound to "${binding}", but no loaded module provides it. ` +
           "Check solivio.config.json against the loaded modules.",
+      );
+    }
+    if (found.target !== target) {
+      throw new Error(
+        `Slot "${slotName}" is bound to "${binding}", but that importer targets "${found.target}".`,
       );
     }
     return found;
   }
 
-  const all = modules.flatMap((m) => m.importers);
+  const all = modules.flatMap((m) => m.importers).filter((i) => i.target === target);
   if (all.length === 1) return all[0];
   throw new Error(
     all.length === 0
-      ? "No product importer is loaded. Add a module that provides one."
-      : 'Multiple importers are loaded; set slots["product.importer"] in solivio.config.json.',
+      ? `No ${target} importer is loaded. Add a module that provides one.`
+      : `Multiple ${target} importers are loaded; set slots["${slotName}"] in solivio.config.json.`,
   );
 }

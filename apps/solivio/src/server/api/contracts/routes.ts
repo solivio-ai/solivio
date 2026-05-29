@@ -1,4 +1,5 @@
 import type { ApiContract } from "./common";
+import { customerRoutes } from "./customer";
 import { requestRoutes } from "./customer-request";
 import { offerRoutesAfterRevisions, offerRoutesBeforeRevisions } from "./offer";
 import { chatRoutes } from "./offer-chat";
@@ -9,6 +10,7 @@ import { systemRoutes } from "./system";
 
 export const apiContracts = [
   ...systemRoutes,
+  ...customerRoutes,
   ...productRoutes,
   ...requestRoutes,
   ...offerRoutesBeforeRevisions,

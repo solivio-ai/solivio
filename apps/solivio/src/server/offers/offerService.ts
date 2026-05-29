@@ -6,7 +6,13 @@ import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import { appConfig } from "../config/appConfig";
-import { upsertCustomerByName } from "../customers/customerRepository";
+import {
+  CustomerSelectionError,
+  customerNamesMatch,
+  findCustomerById,
+  normalizeCustomerName,
+  upsertCustomerByName,
+} from "../customers/customerRepository";
 import { db } from "../database/db";
 import { products } from "../database/schema";
 import { findActivePricesForProducts } from "../products/productPriceRepository";
@@ -59,6 +65,35 @@ function round4(n: number): number {
   return Math.round(n * 10000) / 10000;
 }
 
+async function resolveOfferCustomer(
+  input: { customerId?: string | null; customerName?: string | null },
+  source: string,
+  tx: typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0],
+) {
+  const customerId = input.customerId?.trim() || null;
+  const customerName = input.customerName ? normalizeCustomerName(input.customerName) : "";
+
+  if (customerId) {
+    const customer = await findCustomerById(customerId, tx);
+    if (!customer) {
+      throw new CustomerSelectionError("customer_not_found", "Selected customer was not found.");
+    }
+    if (customerName && !customerNamesMatch(customer.name, customerName)) {
+      throw new CustomerSelectionError(
+        "customer_mismatch",
+        "Selected customer does not match the provided customer name.",
+      );
+    }
+    return customer;
+  }
+
+  if (customerName) {
+    return upsertCustomerByName(customerName, source, tx);
+  }
+
+  return null;
+}
+
 // ── Public service ─────────────────────────────────────────────────────────────
 
 export async function createOffer(
@@ -67,6 +102,7 @@ export async function createOffer(
   generated: GeneratedOffer,
   userId?: string | null,
   name?: string,
+  customerId?: string | null,
 ): Promise<Offer> {
   const { items, extraUnmatched } = deduplicateItems(generated);
   const offerCurrency = appConfig.defaultCurrency;
@@ -92,9 +128,7 @@ export async function createOffer(
   );
 
   const offerId = await db.transaction(async (tx) => {
-    const customer = customerName?.trim()
-      ? await upsertCustomerByName(customerName.trim(), "manual", tx)
-      : null;
+    const customer = await resolveOfferCustomer({ customerId, customerName }, "manual", tx);
 
     const request = await insertRequest(
       {
@@ -178,7 +212,7 @@ export async function updateOfferStatusAndFetch(
 
 export async function updateOfferMeta(
   offerId: string,
-  data: UpdateOfferMetaInput,
+  data: UpdateOfferMetaInput & { customerName?: string | null },
   userId?: string | null,
 ): Promise<Offer | null> {
   return db.transaction(async (tx) => {
@@ -190,14 +224,34 @@ export async function updateOfferMeta(
       return null;
     }
 
-    const updated = await persistOfferMeta(offerId, data, tx);
+    const { customerName, ...rest } = data;
+    const patch: UpdateOfferMetaInput = { ...rest };
+    if (data.customerId) {
+      const customer = await resolveOfferCustomer(
+        { customerId: data.customerId, customerName },
+        "manual",
+        tx,
+      );
+      patch.customerId = customer?.id ?? null;
+    } else if (customerName !== undefined) {
+      const customer = await resolveOfferCustomer({ customerName }, "manual", tx);
+      patch.customerId = customer?.id ?? null;
+    } else if (data.customerId === null) {
+      patch.customerId = null;
+    }
+
+    const definedPatch = Object.fromEntries(
+      Object.entries(patch).filter(([, value]) => value !== undefined),
+    ) as UpdateOfferMetaInput;
+
+    const updated = await persistOfferMeta(offerId, definedPatch, tx);
     if (!updated) return null;
 
     if (userId !== undefined) {
       await touchOffer(offerId, userId ?? null, tx);
     }
 
-    const hasContentChanges = Object.keys(data).some((key) => key !== "status");
+    const hasContentChanges = Object.keys(definedPatch).some((key) => key !== "status");
     if (data.status === "accepted") {
       await saveRevision(offerId, userId ?? null, new Date(), tx);
     } else if (hasContentChanges) {

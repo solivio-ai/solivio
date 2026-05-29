@@ -2,44 +2,32 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import type { GeneratedOffer } from "@/server/agents/offerGenerationAgent";
+import { quickOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
+import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
-
-type QuickOfferItemInput = {
-  productId: string;
-  productName?: unknown;
-  productSku?: unknown;
-  quantity: number;
-};
 
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
 
   const t = await getTranslations("QuickOffer");
-  const body = (await request.json().catch(() => ({}))) as {
-    items?: unknown;
-    customerName?: unknown;
-  };
-  const items = Array.isArray(body.items) ? body.items : [];
-  const validItems = items.filter(isQuickOfferItemInput);
-  const customerName =
-    typeof body.customerName === "string" && body.customerName.trim()
-      ? body.customerName.trim()
-      : null;
+  const parsed = quickOfferRequestSchema.safeParse(await request.json().catch(() => ({})));
 
-  if (!customerName) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: t("errors.customerNameRequired") } },
+      { error: { code: "VALIDATION_ERROR", message: t("errors.itemsRequired") } },
       { status: 400 },
     );
   }
 
-  if (items.length === 0 || validItems.length !== items.length) {
+  const { customerId, customerName, items } = parsed.data;
+
+  if (!customerId && !customerName?.trim()) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: t("errors.itemsRequired") } },
+      { error: { code: "VALIDATION_ERROR", message: t("errors.customerNameRequired") } },
       { status: 400 },
     );
   }
@@ -47,7 +35,7 @@ export async function POST(request: Request) {
   const generated: GeneratedOffer = {
     notes: [t("offer.note")],
     unmatched: [],
-    items: validItems.map((i) => ({
+    items: items.map((i) => ({
       productId: i.productId,
       productName:
         typeof i.productName === "string" ? i.productName : t("offer.productNameFallback"),
@@ -60,13 +48,24 @@ export async function POST(request: Request) {
     })),
   };
 
-  const offer = await createOffer(customerName, t("offer.description"), generated);
+  try {
+    const offer = await createOffer(
+      customerName?.trim(),
+      t("offer.description"),
+      generated,
+      auth.session.user.id,
+      undefined,
+      customerId,
+    );
 
-  return NextResponse.json({ offer }, { status: 201 });
-}
-
-function isQuickOfferItemInput(item: unknown): item is QuickOfferItemInput {
-  if (!item || typeof item !== "object") return false;
-  const value = item as Record<string, unknown>;
-  return typeof value.productId === "string" && typeof value.quantity === "number";
+    return NextResponse.json({ offer }, { status: 201 });
+  } catch (error) {
+    if (error instanceof CustomerSelectionError) {
+      return NextResponse.json(
+        { error: { code: error.code, message: error.message } },
+        { status: 400 },
+      );
+    }
+    throw error;
+  }
 }
