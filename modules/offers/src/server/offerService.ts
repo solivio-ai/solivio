@@ -243,7 +243,7 @@ export async function updateOfferMeta(
 
     const row = await findOfferById(offerId, tx);
     return row ? offerRowToDomain(row) : null;
-  });
+  }, { isolationLevel: "repeatable read" });
 }
 
 export async function deleteOffer(offerId: string): Promise<boolean> {

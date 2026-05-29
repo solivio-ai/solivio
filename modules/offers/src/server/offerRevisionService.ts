@@ -174,7 +174,7 @@ export async function restoreRevision(
       .where(eq(offers.id, offerId));
 
     await saveRevision(offerId, userId, null, tx);
-  });
+  }, { isolationLevel: "repeatable read" });
 
   if (blocked) return null;
 
