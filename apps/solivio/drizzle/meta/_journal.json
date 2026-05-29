@@ -15,13 +15,6 @@
       "when": 1779095872580,
       "tag": "0001_faithful_molly_hayes",
       "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1780079318321,
-      "tag": "0002_medical_ares",
-      "breakpoints": true
     }
   ]
 }
