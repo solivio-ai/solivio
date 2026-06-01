@@ -40,6 +40,14 @@ let _loadPromise: Promise<LoadedModule[]> | null = null;
 // ── Bundle import ───────────────────────────────────────────────────────────
 
 async function importFactory(pkg: string): Promise<ModuleFactory> {
+  // The package name comes from solivio.config.json and is joined into a file
+  // path. Reject traversal / absolute values so a stray config entry can't
+  // resolve a bundle outside the modules root.
+  if (pkg.includes("..") || path.isAbsolute(pkg)) {
+    throw new Error(
+      `Module package "${pkg}" must be a bundle name without ".." or an absolute path.`,
+    );
+  }
   const entry = path.join(modulesRoot(), pkg, "index.mjs");
   const url = pathToFileURL(entry).href;
   let mod: { default?: unknown };
@@ -60,7 +68,11 @@ function assertValidFactory(raw: unknown, pkg: string): asserts raw is ModuleFac
     throw new Error(`Module "${pkg}" default export is not a module factory.`);
   }
   const f = raw as Record<string, unknown>;
-  if (typeof f.id !== "string" || typeof f.register !== "function") {
+  if (
+    typeof f.id !== "string" ||
+    typeof f.register !== "function" ||
+    typeof f.parseOptions !== "function"
+  ) {
     throw new Error(`Module "${pkg}" default export is not a valid defineModule() factory.`);
   }
 }

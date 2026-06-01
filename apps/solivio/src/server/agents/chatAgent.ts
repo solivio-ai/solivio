@@ -50,6 +50,9 @@ const INSTRUCTIONS = [
 ].join(" ");
 
 let _chatAgent: Agent | null = null;
+// Promise singleton so concurrent first callers share one construction and
+// receive the same Agent instance (mirrors loadModules()).
+let _chatAgentPromise: Promise<Agent> | null = null;
 
 /**
  * The salesperson copilot. Its tools are contributed by modules (resolved from
@@ -57,12 +60,18 @@ let _chatAgent: Agent | null = null;
  */
 export async function getChatAgent(): Promise<Agent> {
   if (_chatAgent) return _chatAgent;
-  const tools = (await getAgentTools()).map(toVoltagentTool);
-  _chatAgent = new Agent({
-    name: "chat-agent",
-    instructions: INSTRUCTIONS,
-    model: getModelFor("chat"),
-    tools,
+  if (_chatAgentPromise) return _chatAgentPromise;
+  _chatAgentPromise = (async () => {
+    const tools = (await getAgentTools()).map(toVoltagentTool);
+    _chatAgent = new Agent({
+      name: "chat-agent",
+      instructions: INSTRUCTIONS,
+      model: getModelFor("chat"),
+      tools,
+    });
+    return _chatAgent;
+  })().finally(() => {
+    _chatAgentPromise = null;
   });
-  return _chatAgent;
+  return _chatAgentPromise;
 }
