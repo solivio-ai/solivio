@@ -149,6 +149,7 @@ services:
 To start from the shipped set, copy it out of a container first:
 
 ```bash
+docker rm -f solivio-tmp 2>/dev/null || true   # in case a previous run left it
 docker create --name solivio-tmp ghcr.io/solivio-ai/solivio-app:latest
 docker cp solivio-tmp:/app/modules-dist ./modules
 docker cp solivio-tmp:/app/solivio.config.json ./solivio.config.json
@@ -173,9 +174,10 @@ messages:
 | Message | Cause |
 | --- | --- |
 | `Failed to load module bundle "<pkg>" from <path>` | The package isn't present under `SOLIVIO_MODULES_DIR`, or the path is wrong. |
-| `Duplicate module ids` / `agent tool names` / `importer names` | Two enabled modules collide; remove or replace one. |
+| `Duplicate module ids across modules: …` (also `agent tool names …`, `importer names …`) | Two enabled modules collide on the same id/tool/importer name; remove or replace one. |
 | `Slot "product.importer" is bound to "…", but no loaded module provides it` | The slot value doesn't match a loaded module/importer; fix the binding or enable the module. |
-| `Multiple product importers are loaded; set slots["product.importer"]` | More than one provider; pick one in `slots`. |
+| `No product importer is loaded. Add a module that provides one.` | No enabled module contributes a product importer; add one to `modules[]`. |
+| `Multiple importers are loaded; set slots["product.importer"] in solivio.config.json.` | More than one provider; pick one in `slots`. |
 
 ## Where module bundles come from
 
