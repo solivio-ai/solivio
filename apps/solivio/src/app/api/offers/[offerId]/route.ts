@@ -16,6 +16,7 @@ function asDraftPatch(data: z.infer<typeof updateOfferRequestSchema>) {
   return {
     status: data.status,
     name: data.name,
+    customerId: data.customerId,
     customerName: data.customerName,
     unmatched: data.unmatched,
     discountPercent: data.discountPercent,

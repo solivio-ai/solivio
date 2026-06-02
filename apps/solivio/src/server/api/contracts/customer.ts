@@ -107,6 +107,7 @@ export const customerRoutes = [
       path: "/api/customers/import",
       operationId: "importCustomers",
       summary: "Import customers",
+      description: "Admin only. Requires an authenticated session with the admin role.",
       requestBody: {
         description: "CSV file contents to parse and upsert.",
         required: true,

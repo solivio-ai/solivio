@@ -29,6 +29,15 @@ export function normalizeCustomerName(name: string): string {
   return name.trim().replace(/\s+/g, " ");
 }
 
+/**
+ * Escape LIKE/ILIKE wildcards so user input is matched literally. Without this,
+ * `%` and `_` in a query become active wildcards (e.g. searching `_` matches
+ * every row). Relies on Postgres' default backslash escape character.
+ */
+function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
 export function customerNamesMatch(left: string, right: string): boolean {
   return normalizeCustomerName(left).toLowerCase() === normalizeCustomerName(right).toLowerCase();
 }
@@ -64,20 +73,26 @@ export async function insertCustomer(
   return row;
 }
 
-export async function upsertCustomerByName(
+/**
+ * Find-or-create a customer by name, reporting whether a new row was inserted.
+ * Callers that only need the row can use {@link upsertCustomerByName}.
+ */
+export async function upsertCustomerByNameDetailed(
   name: string,
   source: string = "manual",
   tx?: Tx,
-): Promise<CustomerRow> {
+): Promise<{ customer: CustomerRow; created: boolean }> {
   const normalized = normalizeCustomerName(name);
   if (!normalized) throw new Error("Customer name is required");
 
   if (!tx) {
-    return db.transaction((transaction) => upsertCustomerByName(normalized, source, transaction));
+    return db.transaction((transaction) =>
+      upsertCustomerByNameDetailed(normalized, source, transaction),
+    );
   }
 
   const existing = await findCustomerByName(normalized, tx);
-  if (existing) return existing;
+  if (existing) return { customer: existing, created: false };
 
   // Customer not found — acquire an advisory lock before inserting so that
   // two concurrent transactions that both passed the check above don't both
@@ -88,9 +103,18 @@ export async function upsertCustomerByName(
   // Re-check: another transaction may have inserted between our first read
   // and lock acquisition.
   const existingAfterLock = await findCustomerByName(normalized, tx);
-  if (existingAfterLock) return existingAfterLock;
+  if (existingAfterLock) return { customer: existingAfterLock, created: false };
 
-  return insertCustomer({ name: normalized, source }, tx);
+  return { customer: await insertCustomer({ name: normalized, source }, tx), created: true };
+}
+
+export async function upsertCustomerByName(
+  name: string,
+  source: string = "manual",
+  tx?: Tx,
+): Promise<CustomerRow> {
+  const { customer } = await upsertCustomerByNameDetailed(name, source, tx);
+  return customer;
 }
 
 export async function listCustomers(limit: number = 100, tx: Tx = db) {
@@ -98,7 +122,7 @@ export async function listCustomers(limit: number = 100, tx: Tx = db) {
 }
 
 export async function searchCustomers(query: string = "", limit: number = 20, tx: Tx = db) {
-  const safeLimit = Math.min(Math.max(Math.trunc(limit) || 20, 1), 50);
+  const safeLimit = Math.min(Math.max(Math.trunc(limit) || 20, 1), 100);
   const normalized = normalizeCustomerName(query);
 
   if (!normalized) {
@@ -108,7 +132,7 @@ export async function searchCustomers(query: string = "", limit: number = 20, tx
   return await tx
     .select()
     .from(customers)
-    .where(ilike(customers.name, `%${normalized}%`))
+    .where(ilike(customers.name, `%${escapeLikePattern(normalized)}%`))
     .orderBy(asc(customers.name))
     .limit(safeLimit);
 }

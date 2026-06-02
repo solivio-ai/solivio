@@ -236,9 +236,9 @@ export async function updateOfferMeta(
     } else if (customerName !== undefined) {
       const customer = await resolveOfferCustomer({ customerName }, "manual", tx);
       patch.customerId = customer?.id ?? null;
-    } else if (data.customerId === null) {
-      patch.customerId = null;
     }
+    // When customerId is explicitly null and no name is given, `patch` already
+    // carries `customerId: null` from the `...rest` spread, so no branch is needed.
 
     const definedPatch = Object.fromEntries(
       Object.entries(patch).filter(([, value]) => value !== undefined),

@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { CustomerInput, ImportRowError } from "@solivio/sdk";
 
 import { db } from "../database/db";
-import { normalizeCustomerName, upsertCustomerByName } from "./customerRepository";
+import { normalizeCustomerName, upsertCustomerByNameDetailed } from "./customerRepository";
 
 const customerImportRecordSchema = z
   .object({
@@ -43,11 +43,19 @@ export async function importCustomers(records: unknown[]): Promise<{
 
   if (valid.length === 0) return { count: 0, errors };
 
+  let created = 0;
   await db.transaction(async (tx) => {
     for (const customer of valid) {
-      await upsertCustomerByName(customer.name, customer.source ?? "import", tx);
+      const result = await upsertCustomerByNameDetailed(
+        customer.name,
+        customer.source ?? "import",
+        tx,
+      );
+      if (result.created) created += 1;
     }
   });
 
-  return { count: valid.length, errors };
+  // Report newly inserted customers, not rows attempted: re-importing an
+  // unchanged file reports 0 rather than overstating the additions.
+  return { count: created, errors };
 }
