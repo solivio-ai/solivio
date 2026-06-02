@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { validateOfferWithAgent } from "@/server/agents/offerValidationAgent";
+import { errorResponseSchema, offerValidationResponseSchema } from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
-
-import { errorResponseSchema, offerValidationResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -12,6 +11,17 @@ type RouteContext = {
   params: Promise<{ offerId: string }>;
 };
 
+/**
+ * Validate an offer against its source request
+ * @operationId validateOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 200:offerValidationResponseSchema:AI validation result for the offer.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @add 422:ErrorResponse:The offer has no customer request to validate against.
+ * @openapi
+ */
 export async function POST(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
+import {
+  createdOfferResponseSchema,
+  createOfferRequestSchema,
+  errorResponseSchema,
+} from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import {
   CustomerSelectionError,
@@ -11,12 +16,6 @@ import {
 } from "@/server/customers/customerRepository";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer } from "@/server/offers/offerService";
-
-import {
-  createdOfferResponseSchema,
-  createOfferRequestSchema,
-  errorResponseSchema,
-} from "./openapi";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -53,6 +52,19 @@ function customerSelectionResponse(error: CustomerSelectionError) {
   );
 }
 
+/**
+ * Generate a draft offer
+ * @operationId generateOffer
+ * @description AI-assisted offer generation backed by the products table.
+ * @tag Offers
+ * @auth sessionCookie
+ * @bodyDescription Customer name and request text for the new offer.
+ * @body createOfferRequestSchema
+ * @response 201:createdOfferResponseSchema:A newly persisted draft offer.
+ * @add 400:ErrorResponse:The request body was invalid or customer selection failed.
+ * @add 500:ErrorResponse:Offer generation failed.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

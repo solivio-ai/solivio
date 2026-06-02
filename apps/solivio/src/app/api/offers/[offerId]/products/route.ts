@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
+import {
+  addOfferProductRequestSchema,
+  errorResponseSchema,
+  offerResponseSchema,
+} from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import { addProductToOffer } from "@/server/offers/offerService";
-
-import { addOfferProductRequestSchema, errorResponseSchema, offerResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -11,6 +14,21 @@ type RouteContext = {
   params: Promise<{ offerId: string }>;
 };
 
+/**
+ * Add a product to an offer
+ * @operationId addOfferProduct
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @bodyDescription Product and quantity to add as an offer line.
+ * @body addOfferProductRequestSchema
+ * @response 201:offerResponseSchema:The offer after adding the line item.
+ * @add 400:ErrorResponse:The request body was invalid.
+ * @add 403:ErrorResponse:The offer is locked.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @add 409:ErrorResponse:The product is already in the offer.
+ * @openapi
+ */
 export async function POST(request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

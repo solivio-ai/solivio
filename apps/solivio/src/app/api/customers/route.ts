@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { requireAuth } from "@/server/auth/session";
-import { searchCustomers, upsertCustomerByName } from "@/server/customers/customerRepository";
-
 import {
   createCustomerRequestSchema,
   customerResponseSchema,
   customerSearchQuerySchema,
   customersResponseSchema,
   errorResponseSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
+import { searchCustomers, upsertCustomerByName } from "@/server/customers/customerRepository";
 
 export const runtime = "nodejs";
 
@@ -17,6 +16,16 @@ function customerDto(customer: { id: string; name: string; source: string }) {
   return { id: customer.id, name: customer.name, source: customer.source };
 }
 
+/**
+ * Search customers
+ * @operationId searchCustomers
+ * @tag Customers
+ * @auth sessionCookie
+ * @queryParams customerSearchQuerySchema
+ * @response 200:customersResponseSchema:Customers matching the query.
+ * @add 400:ErrorResponse:The customer search query was invalid.
+ * @openapi
+ */
 export async function GET(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -51,6 +60,17 @@ export async function GET(request: Request) {
   );
 }
 
+/**
+ * Create or reuse a customer
+ * @operationId createCustomer
+ * @tag Customers
+ * @auth sessionCookie
+ * @bodyDescription Customer display name.
+ * @body createCustomerRequestSchema
+ * @response 201:customerResponseSchema:The created or existing customer.
+ * @add 400:ErrorResponse:The request body could not be parsed or validated.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

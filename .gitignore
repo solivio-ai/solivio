@@ -15,6 +15,7 @@ apps/solivio/next-env.d.ts
 apps/docs/.astro/
 apps/docs/dist/
 apps/docs/public/openapi/solivio.json
+.openapi-gen/
 
 # production
 dist/

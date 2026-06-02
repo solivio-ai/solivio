@@ -9,24 +9,24 @@ a separate route catalog.
 ## Source of truth
 
 API endpoints live in `apps/solivio/src/app/api/**/route.ts` or `route.tsx`.
-Each route directory has a sibling `openapi.ts` file that declares operation
-metadata and the Zod request/response schemas for the HTTP methods exported by
-that route handler.
+Exported route handlers carry `next-openapi-gen` JSDoc metadata for the HTTP
+methods they implement. Runtime validation uses the same Zod schemas imported
+directly into the handler.
 
 The generator derives:
 
 - HTTP path from the route directory.
 - HTTP methods from exported `GET`, `POST`, `PATCH`, and `DELETE` handlers.
 - Operation ID, summary, tags, auth, request schemas, and response schemas from
-  the sibling `openapi.ts`.
+  route-handler JSDoc tags.
 
-Generation fails when route exports and metadata do not match. If a handler
-exports `PATCH`, metadata for `PUT` is rejected, and missing `PATCH` metadata is
-also rejected.
+Generation fails when exported route methods and generated OpenAPI operations do
+not match. If a handler exports `PATCH` but is missing `@openapi` metadata,
+generation fails before the docs build can publish a stale contract.
 
 Reusable payload schemas live in `apps/solivio/src/server/api/schemas/`. Route
-handlers import schemas from their local `./openapi` module so runtime
-validation and documentation share the same objects.
+handlers import those schemas directly so runtime validation and documentation
+share the same objects.
 
 ## Generate the schema
 
@@ -34,8 +34,7 @@ validation and documentation share the same objects.
 yarn openapi:generate
 ```
 
-This runs `scripts/generate-openapi.ts`, registers discovered route operations
-with `@asteasolutions/zod-to-openapi`, and writes:
+This runs `next-openapi-gen` with `openapi-gen.config.ts` and writes:
 
 ```text
 apps/docs/public/openapi/solivio.json
@@ -86,5 +85,6 @@ code.
 ## Validation policy
 
 Route handlers validate request and response boundaries with the Zod schemas
-exported from their sibling `openapi.ts` module. Add or change response schemas
-in that local file at the same time as runtime behavior changes.
+exported from `apps/solivio/src/server/api/schemas/` or another directory listed
+in `schemaDir`. Add or change route JSDoc and runtime schemas together when
+handler behavior changes.

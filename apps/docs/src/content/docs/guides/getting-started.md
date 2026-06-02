@@ -157,7 +157,7 @@ Open the docs site at `http://localhost:4321`.
 
 The docs workspace generates `apps/docs/public/openapi/solivio.json` before
 starting the dev server, so the API reference always follows the route
-handlers and their sibling OpenAPI metadata.
+handlers and their route-local OpenAPI annotations.
 
 ## Local database notes
 

@@ -31,6 +31,18 @@ export const customerResponseSchema = z
   .strict()
   .meta({ id: "CustomerResponse" });
 
+export const customerSearchQuerySchema = z
+  .object({
+    limit: z.coerce.number().int().positive().max(50).optional(),
+    q: z.string().optional(),
+    query: z.string().optional(),
+  })
+  .strict()
+  .meta({
+    id: "CustomerSearchQuery",
+    description: "Optional customer search query and result limit.",
+  });
+
 export const customerImportRequestSchema = z
   .object({
     content: z.string().min(1),

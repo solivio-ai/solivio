@@ -1,18 +1,27 @@
 import { NextResponse } from "next/server";
 
-import { requireAuth } from "@/server/auth/session";
-import { listRevisions, saveRevision } from "@/server/offers/offerRevisionService";
-
 import {
   errorResponseSchema,
   offerRevisionResponseSchema,
   offerRevisionsResponseSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
+import { listRevisions, saveRevision } from "@/server/offers/offerRevisionService";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ offerId: string }> };
 
+/**
+ * Save an offer revision
+ * @operationId saveOfferRevision
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 201:offerRevisionResponseSchema:The saved offer revision.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function POST(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -32,6 +41,15 @@ export async function POST(_request: Request, context: RouteContext) {
   return NextResponse.json(offerRevisionResponseSchema.parse({ revision }), { status: 201 });
 }
 
+/**
+ * List offer revisions
+ * @operationId listOfferRevisions
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 200:offerRevisionsResponseSchema:Revision history for the offer.
+ * @openapi
+ */
 export async function GET(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

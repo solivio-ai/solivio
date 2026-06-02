@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { requireAuth } from "@/server/auth/session";
-import { createOfferChatThread, listOfferChatThreads } from "@/server/offer-chat/offerChatService";
-import { getOffer } from "@/server/offers/offerService";
-
 import {
   createOfferChatThreadRequestSchema,
   errorResponseSchema,
   offerChatThreadResponseSchema,
   offerChatThreadsResponseSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
+import { createOfferChatThread, listOfferChatThreads } from "@/server/offer-chat/offerChatService";
+import { getOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -34,6 +33,16 @@ async function requireOffer(offerId: string) {
   );
 }
 
+/**
+ * List offer chat threads
+ * @operationId listOfferChatThreads
+ * @tag Chat
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 200:offerChatThreadsResponseSchema:Chat threads attached to the offer.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function GET(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -46,6 +55,19 @@ export async function GET(_request: Request, context: RouteContext) {
   return NextResponse.json(offerChatThreadsResponseSchema.parse({ threads }));
 }
 
+/**
+ * Create an offer chat thread
+ * @operationId createOfferChatThread
+ * @tag Chat
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @bodyDescription Optional chat thread title.
+ * @body createOfferChatThreadRequestSchema
+ * @response 201:offerChatThreadResponseSchema:The created chat thread.
+ * @add 400:ErrorResponse:The request body was invalid.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function POST(request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

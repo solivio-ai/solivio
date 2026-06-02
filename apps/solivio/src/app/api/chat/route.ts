@@ -4,12 +4,11 @@ import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
 import { getChatAgent } from "@/server/agents/chatAgent";
+import { chatRequestSchema, errorResponseSchema } from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import { appendOfferChatMessage, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 import { getOfferDraft } from "@/server/offers/offerDraftStore";
 import { getOffer } from "@/server/offers/offerService";
-
-import { chatRequestSchema, errorResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -90,6 +89,19 @@ function formatOfferContext(offer: Offer) {
   return lines.join("\n");
 }
 
+/**
+ * Stream assistant chat
+ * @operationId streamChat
+ * @tag Chat
+ * @auth sessionCookie
+ * @bodyDescription AI SDK messages plus optional persistent offer chat identifiers.
+ * @body chatRequestSchema
+ * @responseContentType text/event-stream
+ * @response 200:string:Server-sent event stream of AI SDK UI message chunks.
+ * @add 400:ErrorResponse:Only one of offerId or threadId was provided.
+ * @add 404:ErrorResponse:The persistent chat thread was not found.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { requireAuth } from "@/server/auth/session";
-import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
-
 import {
   errorResponseSchema,
   offerResponseSchema,
   updateOfferLineItemRequestSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
+import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
@@ -15,6 +14,20 @@ type RouteContext = {
   params: Promise<{ offerId: string; offerProductId: string }>;
 };
 
+/**
+ * Update an offer line item
+ * @operationId updateOfferProduct
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerProductPathParamsSchema
+ * @bodyDescription New quantity for the offer line item.
+ * @body updateOfferLineItemRequestSchema
+ * @response 200:offerResponseSchema:The offer after updating the line item.
+ * @add 400:ErrorResponse:The request body was invalid.
+ * @add 403:ErrorResponse:The offer is locked.
+ * @add 404:ErrorResponse:The offer or line item was not found.
+ * @openapi
+ */
 export async function PATCH(request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -69,6 +82,18 @@ export async function PATCH(request: Request, context: RouteContext) {
   return NextResponse.json(offerResponseSchema.parse({ offer }));
 }
 
+/**
+ * Remove an offer line item
+ * @operationId deleteOfferProduct
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerProductPathParamsSchema
+ * @response 204
+ * @responseDescription The line item was removed.
+ * @add 403:ErrorResponse:The offer is locked.
+ * @add 404:ErrorResponse:The offer or line item was not found.
+ * @openapi
+ */
 export async function DELETE(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

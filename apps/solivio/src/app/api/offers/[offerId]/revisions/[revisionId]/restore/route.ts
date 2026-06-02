@@ -1,15 +1,24 @@
 import { NextResponse } from "next/server";
 
+import { errorResponseSchema, restoreOfferRevisionResponseSchema } from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import { restoreRevision } from "@/server/offers/offerRevisionService";
 import { getOffer } from "@/server/offers/offerService";
-
-import { errorResponseSchema, restoreOfferRevisionResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ offerId: string; revisionId: string }> };
 
+/**
+ * Restore an offer revision
+ * @operationId restoreOfferRevision
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerRevisionPathParamsSchema
+ * @response 200:restoreOfferRevisionResponseSchema:The restored offer and the revision created by the restore action.
+ * @add 404:ErrorResponse:The revision was not found.
+ * @openapi
+ */
 export async function POST(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

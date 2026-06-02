@@ -2,18 +2,28 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import type { GeneratedOffer } from "@/server/agents/offerGenerationAgent";
-import { requireAuth } from "@/server/auth/session";
-import { CustomerSelectionError } from "@/server/customers/customerRepository";
-import { createOffer } from "@/server/offers/offerService";
-
 import {
   createdOfferResponseSchema,
   errorResponseSchema,
   quickOfferRequestSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
+import { CustomerSelectionError } from "@/server/customers/customerRepository";
+import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
+/**
+ * Create a quick offer
+ * @operationId createQuickOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @bodyDescription Manual product selections to turn into a draft offer.
+ * @body quickOfferRequestSchema
+ * @response 201:createdOfferResponseSchema:A newly persisted manual offer.
+ * @add 400:ErrorResponse:The request body was invalid or customer selection failed.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

@@ -7,18 +7,18 @@ Review -> Send.
 The publishable API contract is generated OpenAPI 3.1:
 
 - Route source: `apps/solivio/src/app/api/**/route.ts`
-- Route metadata: sibling `openapi.ts` files beside each route handler
+- Route metadata: `next-openapi-gen` JSDoc on exported route handlers
 - Reusable schemas: `apps/solivio/src/server/api/schemas/`
-- Generator: `scripts/generate-openapi.ts`
+- Generator: `openapi-gen.config.ts` with `next-openapi-gen`
 - Generated schema: `apps/docs/public/openapi/solivio.json`
 - Docs reference route: `http://localhost:4321/api`
 - Guide route for API contract notes: `http://localhost:4321/guides/api-contract`
 
-The generator discovers actual Next.js route files, derives each path from the
-route folder, reads exported HTTP methods from `route.ts` / `route.tsx`, and
-fails if the sibling `openapi.ts` metadata has missing or extra methods. Keep new
-endpoints self-described beside their handler, and import the same Zod schemas
-from that local metadata file for request/response validation.
+The generator reads the actual Next.js route files and only includes exported
+handlers marked with `@openapi`. The config keeps a route coverage guard that
+fails generation when exported HTTP methods and generated operations diverge.
+Keep endpoint metadata on the exported handler, and import validation schemas
+directly from the reusable schema barrel.
 
 ## Endpoints
 

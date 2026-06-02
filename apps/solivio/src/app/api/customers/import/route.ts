@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/server/auth/session";
-import { importCustomers } from "@/server/customers/customerImportService";
-import { getImporter } from "@/server/modules/registry";
-
 import {
   customerImportErrorResponseSchema,
   customerImportRequestSchema,
   customerImportResponseSchema,
   plainErrorResponseSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAdmin } from "@/server/auth/session";
+import { importCustomers } from "@/server/customers/customerImportService";
+import { getImporter } from "@/server/modules/registry";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -17,6 +16,21 @@ export const maxDuration = 300;
 /** ~10 MB — enough for large customer lists while blocking runaway payloads. */
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 
+/**
+ * Import customers
+ * @operationId importCustomers
+ * @description Admin only. Requires an authenticated session with the admin role.
+ * @tag Customers
+ * @auth sessionCookie
+ * @bodyDescription CSV file contents to parse and upsert.
+ * @body customerImportRequestSchema
+ * @response 201:customerImportResponseSchema:Number of customers imported.
+ * @add 400:customerImportErrorResponseSchema:The import body was invalid.
+ * @add 403:PlainErrorResponse:The current session is not allowed to import customers.
+ * @add 413:PlainErrorResponse:The import payload exceeded the allowed size.
+ * @add 500:customerImportErrorResponseSchema:The import failed while writing customers.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const { response: authResponse } = await requireAdmin();
   if (authResponse) return authResponse;

@@ -4,10 +4,9 @@ import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
 import { buildPdfOfferPayload, OfferDocument } from "@/features/offer-pdf";
+import { errorResponseSchema, offerPdfQuerySchema } from "@/server/api/schemas";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
-
-import { errorResponseSchema, offerPdfQuerySchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -26,6 +25,19 @@ function toPdfResponse(buffer: Buffer, filename: string, asAttachment = false) {
   });
 }
 
+/**
+ * Render persisted offer PDF
+ * @operationId getOfferPdf
+ * @tag Documents
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @queryParams offerPdfQuerySchema
+ * @responseContentType application/pdf
+ * @response 200:string:The rendered PDF for the persisted offer.
+ * @add 400:ErrorResponse:The PDF query parameters were invalid.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function GET(request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

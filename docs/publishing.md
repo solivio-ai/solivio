@@ -69,10 +69,11 @@ For any other static host:
 ## API Contract
 
 Use the Next.js route tree under `apps/solivio/src/app/api` as the source of
-truth. Each route directory has a sibling `openapi.ts` metadata file, and the
-generator validates that metadata against the exported HTTP methods. The
-generated schema is written to `apps/docs/public/openapi/solivio.json` during
-the docs build and is consumed by the Starlight OpenAPI plugin.
+truth. Exported route handlers carry `next-openapi-gen` JSDoc metadata, and
+`openapi-gen.config.ts` validates generated operations against the exported HTTP
+methods. The generated schema is written to
+`apps/docs/public/openapi/solivio.json` during the docs build and is consumed by
+the Starlight OpenAPI plugin.
 
 Before a public release, lint the generated file on a Node 24.15+ CI image:
 

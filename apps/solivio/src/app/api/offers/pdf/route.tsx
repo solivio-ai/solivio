@@ -3,8 +3,9 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
+import { errorResponseSchema, offerPdfRequestSchema } from "@/server/api/schemas";
+
 import { OfferDocument, sampleOffer } from "../../../../features/offer-pdf";
-import { errorResponseSchema, offerPdfRequestSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,14 @@ function toResponse(buffer: Buffer, filename: string) {
   });
 }
 
+/**
+ * Render sample offer PDF
+ * @operationId getSampleOfferPdf
+ * @tag Documents
+ * @responseContentType application/pdf
+ * @response 200:string:A sample offer PDF.
+ * @openapi
+ */
 export async function GET() {
   const buffer = await renderToBuffer(
     (<OfferDocument data={sampleOffer} />) as ReactElement<DocumentProps>,
@@ -24,6 +33,17 @@ export async function GET() {
   return toResponse(buffer, `oferta-${sampleOffer.offer.number}.pdf`);
 }
 
+/**
+ * Render offer PDF from payload
+ * @operationId renderOfferPdf
+ * @tag Documents
+ * @bodyDescription Offer document payload to render.
+ * @body offerPdfRequestSchema
+ * @responseContentType application/pdf
+ * @response 200:string:The rendered offer PDF.
+ * @add 400:ErrorResponse:The PDF payload was invalid.
+ * @openapi
+ */
 export async function POST(request: Request) {
   let body: unknown;
   try {

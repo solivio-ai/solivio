@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
 
 import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
-import { requireAuth } from "@/server/auth/session";
-
 import {
   errorResponseSchema,
   productSearchRequestSchema,
   productSearchResponseSchema,
-} from "./openapi";
+} from "@/server/api/schemas";
+import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
 
+/**
+ * Search products from a prompt
+ * @operationId searchProducts
+ * @tag Products
+ * @auth sessionCookie
+ * @bodyDescription Prompt used for semantic product matching against embedded products.
+ * @body productSearchRequestSchema
+ * @response 200:productSearchResponseSchema:Semantic matches from the products table with an AI summary.
+ * @add 400:ErrorResponse:The product search request was invalid.
+ * @add 500:ErrorResponse:The product search failed.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
