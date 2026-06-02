@@ -67,6 +67,7 @@ export default defineConfig({
             { label: "Overview", link: "/guides/" },
             { label: "Getting started", link: "/guides/getting-started/" },
             { label: "Deployment", link: "/guides/deployment/" },
+            { label: "Modules", link: "/guides/modules/" },
             { label: "Feature walkthrough", link: "/guides/features/" },
           ],
         },
