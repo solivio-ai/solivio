@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 
+import { requireAuth } from "@/server/auth/session";
+import { searchCustomers, upsertCustomerByName } from "@/server/customers/customerRepository";
+
 import {
   createCustomerRequestSchema,
   customerResponseSchema,
+  customerSearchQuerySchema,
   customersResponseSchema,
   errorResponseSchema,
-} from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
-import { searchCustomers, upsertCustomerByName } from "@/server/customers/customerRepository";
+} from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -20,8 +22,26 @@ export async function GET(request: Request) {
   if (auth.response) return auth.response;
 
   const url = new URL(request.url);
-  const query = url.searchParams.get("query") ?? url.searchParams.get("q") ?? "";
-  const limit = Number(url.searchParams.get("limit") ?? 20);
+  const search = customerSearchQuerySchema.safeParse({
+    limit: url.searchParams.get("limit") ?? undefined,
+    q: url.searchParams.get("q") ?? undefined,
+    query: url.searchParams.get("query") ?? undefined,
+  });
+  if (!search.success) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "invalid_query",
+          message: "Customer search query is invalid.",
+          issues: search.error.issues.map((issue) => issue.message),
+        },
+      }),
+      { status: 400 },
+    );
+  }
+
+  const query = search.data.query ?? search.data.q ?? "";
+  const limit = search.data.limit ?? 20;
   const customers = await searchCustomers(query, limit);
 
   return NextResponse.json(

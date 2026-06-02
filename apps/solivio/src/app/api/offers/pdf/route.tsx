@@ -3,7 +3,8 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
-import { OfferDocument, pdfOfferRequestSchema, sampleOffer } from "../../../../features/offer-pdf";
+import { OfferDocument, sampleOffer } from "../../../../features/offer-pdf";
+import { errorResponseSchema, offerPdfRequestSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -29,21 +30,23 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: { code: "INVALID_JSON", message: "Request body is not valid JSON." } },
+      errorResponseSchema.parse({
+        error: { code: "INVALID_JSON", message: "Request body is not valid JSON." },
+      }),
       { status: 400 },
     );
   }
 
-  const parsed = pdfOfferRequestSchema.safeParse(body);
+  const parsed = offerPdfRequestSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      {
+      errorResponseSchema.parse({
         error: {
           code: "VALIDATION_ERROR",
           message: "Invalid offer data.",
           issues: parsed.error.issues.map((i) => i.message),
         },
-      },
+      }),
       { status: 400 },
     );
   }

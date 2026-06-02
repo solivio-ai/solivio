@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { createOfferChatThread, listOfferChatThreads } from "@/server/offer-chat/offerChatService";
 import { getOffer } from "@/server/offers/offerService";
+
+import {
+  createOfferChatThreadRequestSchema,
+  errorResponseSchema,
+  offerChatThreadResponseSchema,
+  offerChatThreadsResponseSchema,
+} from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -37,7 +43,7 @@ export async function GET(_request: Request, context: RouteContext) {
   if (missingOffer) return missingOffer;
 
   const threads = await listOfferChatThreads(offerId);
-  return NextResponse.json({ threads });
+  return NextResponse.json(offerChatThreadsResponseSchema.parse({ threads }));
 }
 
 export async function POST(request: Request, context: RouteContext) {
@@ -48,9 +54,24 @@ export async function POST(request: Request, context: RouteContext) {
   const missingOffer = await requireOffer(offerId);
   if (missingOffer) return missingOffer;
 
-  const body = await request.json().catch(() => ({}));
-  const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : undefined;
+  const parsed = createOfferChatThreadRequestSchema.safeParse(
+    await request.json().catch(() => ({})),
+  );
+  if (!parsed.success) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "invalid_request",
+          message: "Chat thread title must be a non-empty string when provided.",
+          issues: parsed.error.issues.map((issue) => issue.message),
+        },
+      }),
+      { status: 400 },
+    );
+  }
+
+  const title = parsed.data.title?.trim();
   const thread = await createOfferChatThread(offerId, title);
 
-  return NextResponse.json({ thread }, { status: 201 });
+  return NextResponse.json(offerChatThreadResponseSchema.parse({ thread }), { status: 201 });
 }

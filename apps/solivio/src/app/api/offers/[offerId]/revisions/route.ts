@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/server/auth/session";
 import { listRevisions, saveRevision } from "@/server/offers/offerRevisionService";
 
+import {
+  errorResponseSchema,
+  offerRevisionResponseSchema,
+  offerRevisionsResponseSchema,
+} from "./openapi";
+
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ offerId: string }> };
@@ -16,12 +22,14 @@ export async function POST(_request: Request, context: RouteContext) {
 
   if (!revision) {
     return NextResponse.json(
-      { error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` } },
+      errorResponseSchema.parse({
+        error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` },
+      }),
       { status: 404 },
     );
   }
 
-  return NextResponse.json({ revision }, { status: 201 });
+  return NextResponse.json(offerRevisionResponseSchema.parse({ revision }), { status: 201 });
 }
 
 export async function GET(_request: Request, context: RouteContext) {
@@ -31,5 +39,5 @@ export async function GET(_request: Request, context: RouteContext) {
   const { offerId } = await context.params;
   const revisions = await listRevisions(offerId);
 
-  return NextResponse.json({ revisions });
+  return NextResponse.json(offerRevisionsResponseSchema.parse({ revisions }));
 }

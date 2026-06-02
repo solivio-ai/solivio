@@ -4,6 +4,8 @@ import { validateOfferWithAgent } from "@/server/agents/offerValidationAgent";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
 
+import { errorResponseSchema, offerValidationResponseSchema } from "./openapi";
+
 export const runtime = "nodejs";
 
 type RouteContext = {
@@ -19,19 +21,21 @@ export async function POST(_request: Request, context: RouteContext) {
 
   if (!offer) {
     return NextResponse.json(
-      { error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` } },
+      errorResponseSchema.parse({
+        error: { code: "offer_not_found", message: `Offer '${offerId}' was not found.` },
+      }),
       { status: 404 },
     );
   }
 
   if (!offer.clientRequest) {
     return NextResponse.json(
-      {
+      errorResponseSchema.parse({
         error: {
           code: "no_request",
           message: "This offer has no customer request to validate against.",
         },
-      },
+      }),
       { status: 422 },
     );
   }
@@ -44,5 +48,5 @@ export async function POST(_request: Request, context: RouteContext) {
 
   const result = await validateOfferWithAgent(offer.clientRequest, items, offer.unmatched ?? []);
 
-  return NextResponse.json({ validation: result });
+  return NextResponse.json(offerValidationResponseSchema.parse({ validation: result }));
 }

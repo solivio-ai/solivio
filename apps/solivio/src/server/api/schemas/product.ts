@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { plainErrorResponseSchema, routeGroup } from "./common";
-
 // ── Product entity ─────────────────────────────────────────────────────────────
 
 export const productPriceSchema = z
@@ -154,86 +152,10 @@ export const productImportResponseSchema = z
   .strict()
   .meta({ id: "ProductImportResponse" });
 
-// ── HTTP catalog ───────────────────────────────────────────────────────────────
-
-export const productRoutes = [
-  ...routeGroup({ tag: "Products", requiresAuth: true }, [
-    {
-      method: "get",
-      path: "/api/products",
-      operationId: "listProducts",
-      summary: "List product candidates",
-      responses: {
-        200: {
-          description: "Mocked product candidates available for request matching.",
-          schema: productsResponseSchema,
-        },
-      },
-    },
-    {
-      method: "post",
-      path: "/api/products/search",
-      operationId: "searchProducts",
-      summary: "Search products from a prompt",
-      requestBody: {
-        description: "Prompt used for semantic product matching against embedded products.",
-        required: true,
-        schema: productSearchRequestSchema,
-      },
-      responses: {
-        200: {
-          description: "Semantic matches from the products table with an AI summary.",
-          schema: productSearchResponseSchema,
-        },
-        400: "The request body could not be parsed or validated.",
-        500: "The server could not complete the semantic product search.",
-      },
-    },
-    {
-      method: "post",
-      path: "/api/products/text-search",
-      operationId: "searchProductsByText",
-      summary: "Search products by keyword",
-      requestBody: {
-        description: "Keyword search query, pagination, and optional searchable fields.",
-        required: true,
-        schema: productTextSearchRequestSchema,
-      },
-      responses: {
-        200: {
-          description: "Matching products and total result count.",
-          schema: productTextSearchResponseSchema,
-        },
-        400: "The request body did not include a valid query.",
-        500: "The server could not complete the text search.",
-      },
-    },
-  ]),
-  ...routeGroup({ tag: "Products" }, [
-    {
-      method: "post",
-      path: "/api/products/import",
-      operationId: "importProducts",
-      summary: "Import products with embeddings",
-      requestBody: {
-        description: "CSV file contents to parse, embed, and upsert.",
-        required: true,
-        schema: productImportRequestSchema,
-      },
-      responses: {
-        200: {
-          description: "Number of products imported.",
-          schema: productImportResponseSchema,
-        },
-        400: {
-          description: "The import body was invalid.",
-          schema: plainErrorResponseSchema,
-        },
-        500: {
-          description: "The import failed while embedding or writing products.",
-          schema: plainErrorResponseSchema,
-        },
-      },
-    },
-  ]),
-] as const satisfies readonly import("./common").ApiContract[];
+export const productImportErrorResponseSchema = z
+  .object({
+    error: z.string(),
+    errors: z.array(productImportRowErrorSchema).optional(),
+  })
+  .strict()
+  .meta({ id: "ProductImportErrorResponse" });

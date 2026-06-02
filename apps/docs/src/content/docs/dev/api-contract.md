@@ -1,24 +1,32 @@
 ---
 title: API contract
-description: How Solivio generates OpenAPI from route contracts.
+description: How Solivio generates OpenAPI from Next.js API routes.
 ---
 
-Solivio generates OpenAPI from TypeScript route contracts instead of maintaining
-a handwritten schema file.
+Solivio generates OpenAPI from the Next.js API route tree instead of maintaining
+a separate route catalog.
 
 ## Source of truth
 
-API contracts live in `apps/solivio/src/server/api/contracts.ts`. Each contract
-declares:
+API endpoints live in `apps/solivio/src/app/api/**/route.ts` or `route.tsx`.
+Each route directory has a sibling `openapi.ts` file that declares operation
+metadata and the Zod request/response schemas for the HTTP methods exported by
+that route handler.
 
-- HTTP method and path.
-- Operation ID, summary, and tags.
-- Zod request body schema, when the endpoint accepts a body.
-- Zod response schemas by status code.
+The generator derives:
 
-The Next.js route handlers import those same schemas for request validation and
-response parsing. That keeps implementation behavior and documentation tied to
-the same boundary definitions.
+- HTTP path from the route directory.
+- HTTP methods from exported `GET`, `POST`, `PATCH`, and `DELETE` handlers.
+- Operation ID, summary, tags, auth, request schemas, and response schemas from
+  the sibling `openapi.ts`.
+
+Generation fails when route exports and metadata do not match. If a handler
+exports `PATCH`, metadata for `PUT` is rejected, and missing `PATCH` metadata is
+also rejected.
+
+Reusable payload schemas live in `apps/solivio/src/server/api/schemas/`. Route
+handlers import schemas from their local `./openapi` module so runtime
+validation and documentation share the same objects.
 
 ## Generate the schema
 
@@ -26,8 +34,8 @@ the same boundary definitions.
 yarn openapi:generate
 ```
 
-This runs `scripts/generate-openapi.ts`, registers the route contracts with
-`@asteasolutions/zod-to-openapi`, and writes:
+This runs `scripts/generate-openapi.ts`, registers discovered route operations
+with `@asteasolutions/zod-to-openapi`, and writes:
 
 ```text
 apps/docs/public/openapi/solivio.json
@@ -41,12 +49,13 @@ reference pages under `/api/`.
 The generated API reference covers every Next.js route handler under
 `apps/solivio/src/app/api`:
 
-- `GET /api/auth/{authPath}`
-- `POST /api/auth/{authPath}`
+- `GET /api/auth/{all}`
+- `POST /api/auth/{all}`
 - `POST /api/chat`
-- `GET /api/embedding-models`
+- `GET /api/customers`
+- `POST /api/customers`
+- `POST /api/customers/import`
 - `GET /api/health`
-- `GET /api/offers`
 - `POST /api/offers`
 - `GET /api/offers/{offerId}`
 - `PATCH /api/offers/{offerId}`
@@ -62,15 +71,13 @@ The generated API reference covers every Next.js route handler under
 - `POST /api/offers/{offerId}/revisions`
 - `GET /api/offers/{offerId}/revisions/{revisionId}`
 - `POST /api/offers/{offerId}/revisions/{revisionId}/restore`
+- `POST /api/offers/{offerId}/validate`
 - `GET /api/offers/pdf`
 - `POST /api/offers/pdf`
 - `POST /api/offers/quick`
-- `GET /api/products`
 - `POST /api/products/import`
 - `POST /api/products/search`
 - `POST /api/products/text-search`
-- `GET /api/requests`
-- `POST /api/requests`
 
 The Better Auth route is documented as a catch-all because the concrete
 subroutes are owned by the Better Auth handler rather than by Solivio route
@@ -78,7 +85,6 @@ code.
 
 ## Validation policy
 
-Route handlers validate request bodies with the Zod schemas exported from the
-contract module and return standard `400` error payloads for contract
-violations. Add new error responses to the contract at the same time as stricter
-runtime handling lands.
+Route handlers validate request and response boundaries with the Zod schemas
+exported from their sibling `openapi.ts` module. Add or change response schemas
+in that local file at the same time as runtime behavior changes.

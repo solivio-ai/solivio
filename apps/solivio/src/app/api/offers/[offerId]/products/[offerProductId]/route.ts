@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { requireAuth } from "@/server/auth/session";
+import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
+
 import {
   errorResponseSchema,
   offerResponseSchema,
   updateOfferLineItemRequestSchema,
-} from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
-import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
+} from "./openapi";
 
 export const runtime = "nodejs";
 

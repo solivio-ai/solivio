@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 
-import {
-  addOfferProductRequestSchema,
-  errorResponseSchema,
-  offerResponseSchema,
-} from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { addProductToOffer } from "@/server/offers/offerService";
+
+import { addOfferProductRequestSchema, errorResponseSchema, offerResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 

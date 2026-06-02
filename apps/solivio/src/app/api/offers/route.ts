@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
-import { createOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import {
   CustomerSelectionError,
@@ -12,6 +11,12 @@ import {
 } from "@/server/customers/customerRepository";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer } from "@/server/offers/offerService";
+
+import {
+  createdOfferResponseSchema,
+  createOfferRequestSchema,
+  errorResponseSchema,
+} from "./openapi";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -38,12 +43,12 @@ async function resolveCustomerNameForGeneration(
 
 function customerSelectionResponse(error: CustomerSelectionError) {
   return NextResponse.json(
-    {
+    errorResponseSchema.parse({
       error: {
         code: error.code,
         message: error.message,
       },
-    },
+    }),
     { status: 400 },
   );
 }
@@ -57,7 +62,9 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "clientRequest is required" } },
+      errorResponseSchema.parse({
+        error: { code: "VALIDATION_ERROR", message: "clientRequest is required" },
+      }),
       { status: 400 },
     );
   }
@@ -80,7 +87,7 @@ export async function POST(request: Request) {
 
     saveOfferDraft(offer);
 
-    return NextResponse.json({ offer }, { status: 201 });
+    return NextResponse.json(createdOfferResponseSchema.parse({ offer }), { status: 201 });
   } catch (error) {
     if (error instanceof CustomerSelectionError) {
       return customerSelectionResponse(error);
@@ -90,7 +97,12 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const stack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
-      { error: { code: "OFFER_GENERATION_FAILED", message, stack } },
+      errorResponseSchema.parse({
+        error: {
+          code: "OFFER_GENERATION_FAILED",
+          message: stack ? `${message}\n${stack}` : message,
+        },
+      }),
       { status: 500 },
     );
   }

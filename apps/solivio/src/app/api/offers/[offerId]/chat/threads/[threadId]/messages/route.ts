@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { getOfferChatMessages, getOfferChatThread } from "@/server/offer-chat/offerChatService";
+
+import { errorResponseSchema, offerChatMessagesResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -33,5 +34,5 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   const messages = await getOfferChatMessages(threadId);
-  return NextResponse.json({ messages });
+  return NextResponse.json(offerChatMessagesResponseSchema.parse({ messages }));
 }

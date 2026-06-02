@@ -4,6 +4,8 @@ import { requireAuth } from "@/server/auth/session";
 import { restoreRevision } from "@/server/offers/offerRevisionService";
 import { getOffer } from "@/server/offers/offerService";
 
+import { errorResponseSchema, restoreOfferRevisionResponseSchema } from "./openapi";
+
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ offerId: string; revisionId: string }> };
@@ -17,12 +19,14 @@ export async function POST(_request: Request, context: RouteContext) {
 
   if (!revision) {
     return NextResponse.json(
-      { error: { code: "revision_not_found", message: `Revision '${revisionId}' was not found.` } },
+      errorResponseSchema.parse({
+        error: { code: "revision_not_found", message: `Revision '${revisionId}' was not found.` },
+      }),
       { status: 404 },
     );
   }
 
   const offer = await getOffer(offerId);
 
-  return NextResponse.json({ offer, revision });
+  return NextResponse.json(restoreOfferRevisionResponseSchema.parse({ offer, revision }));
 }

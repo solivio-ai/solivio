@@ -4,11 +4,12 @@ import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
 import { getChatAgent } from "@/server/agents/chatAgent";
-import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
 import { appendOfferChatMessage, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 import { getOfferDraft } from "@/server/offers/offerDraftStore";
 import { getOffer } from "@/server/offers/offerService";
+
+import { chatRequestSchema, errorResponseSchema } from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -93,10 +94,24 @@ export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
 
-  const body = await request.json();
-  const messages = body.messages as UIMessage[];
-  const offerId = typeof body.offerId === "string" ? body.offerId : null;
-  const threadId = typeof body.threadId === "string" ? body.threadId : null;
+  const body = await request.json().catch(() => ({}));
+  const parsed = chatRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "invalid_request",
+          message: "Request body must include chat messages.",
+          issues: parsed.error.issues.map((issue) => issue.message),
+        },
+      }),
+      { status: 400 },
+    );
+  }
+
+  const messages = parsed.data.messages as unknown as UIMessage[];
+  const offerId = parsed.data.offerId ?? null;
+  const threadId = parsed.data.threadId ?? null;
   const shouldPersist = Boolean(offerId && threadId);
 
   if ((offerId && !threadId) || (!offerId && threadId)) {

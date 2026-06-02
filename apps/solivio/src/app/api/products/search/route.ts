@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 
 import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
+import { requireAuth } from "@/server/auth/session";
+
 import {
   errorResponseSchema,
   productSearchRequestSchema,
   productSearchResponseSchema,
-} from "@/server/api/contracts";
-import { requireAuth } from "@/server/auth/session";
+} from "./openapi";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
   if (auth.response) return auth.response;
 
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const parsed = productSearchRequestSchema.safeParse(body);
 
     if (!parsed.success) {

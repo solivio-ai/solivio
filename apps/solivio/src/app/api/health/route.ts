@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { healthResponseSchema } from "../../../server/api/contracts";
 import { checkDatabase } from "../../../server/database/checkDatabase";
+import { healthResponseSchema } from "./openapi";
 
 export async function GET() {
   const database = await checkDatabase();

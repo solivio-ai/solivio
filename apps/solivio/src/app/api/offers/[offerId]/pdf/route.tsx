@@ -7,6 +7,8 @@ import { buildPdfOfferPayload, OfferDocument } from "@/features/offer-pdf";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
 
+import { errorResponseSchema, offerPdfQuerySchema } from "./openapi";
+
 export const runtime = "nodejs";
 
 type RouteContext = {
@@ -33,7 +35,9 @@ export async function GET(request: Request, context: RouteContext) {
 
   if (!offer) {
     return NextResponse.json(
-      { error: { code: "OFFER_NOT_FOUND", message: `Offer '${offerId}' was not found.` } },
+      errorResponseSchema.parse({
+        error: { code: "OFFER_NOT_FOUND", message: `Offer '${offerId}' was not found.` },
+      }),
       { status: 404 },
     );
   }
@@ -43,7 +47,23 @@ export async function GET(request: Request, context: RouteContext) {
     (<OfferDocument data={payload} />) as ReactElement<DocumentProps>,
   );
 
-  const asAttachment = new URL(request.url).searchParams.get("download") === "1";
+  const query = offerPdfQuerySchema.safeParse({
+    download: new URL(request.url).searchParams.get("download") ?? undefined,
+  });
+  if (!query.success) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "invalid_query",
+          message: "PDF query parameters are invalid.",
+          issues: query.error.issues.map((issue) => issue.message),
+        },
+      }),
+      { status: 400 },
+    );
+  }
+
+  const asAttachment = query.data.download === "1";
   const filename = `oferta-${payload.offer.number.replace(/\//g, "-")}.pdf`;
   return toPdfResponse(buffer, filename, asAttachment);
 }
