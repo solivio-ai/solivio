@@ -24,6 +24,7 @@ COPY --from=deps /app/.yarn ./.yarn
 COPY --from=deps /app/.yarnrc.yml ./
 
 COPY package.json yarn.lock tsconfig.base.json ./
+COPY scripts ./scripts
 COPY sdk ./sdk
 COPY modules ./modules
 
