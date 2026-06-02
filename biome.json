@@ -13,6 +13,7 @@
       "!!**/node_modules",
       "!!**/.next",
       "!!**/dist",
+      "!!**/modules-dist",
       "!!**/build",
       "!!**/.yarn",
       "!!apps/docs/.astro",

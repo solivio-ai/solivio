@@ -1,6 +1,9 @@
 {
-  "modules": ["@solivio/module-csv-products"],
-  "capabilities": {
-    "productImporter": "csv-products"
+  "modules": [
+    { "package": "@solivio/module-csv-products", "options": {} },
+    { "package": "@solivio/module-offer-tools", "options": {} }
+  ],
+  "slots": {
+    "product.importer": "csv-products/csv-products"
   }
 }

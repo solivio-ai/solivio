@@ -1,2 +1,2 @@
-export type { OfferSnapshot, OfferSnapshotLineItem } from "./offer.js";
-export type { ProductInput } from "./product.js";
+export type { OfferItemView, OfferSnapshot, OfferSnapshotLineItem, OfferView } from "./offer.js";
+export type { ProductInput, ProductMatch } from "./product.js";

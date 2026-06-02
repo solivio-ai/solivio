@@ -1,6 +1,51 @@
+// ── Module definition ───────────────────────────────────────────────────────
+
+// ── Capability surfaces ──────────────────────────────────────────────────────
 export type { AgentTool } from "./agent-tool.js";
-export type { OfferSnapshot, OfferSnapshotLineItem, ProductInput } from "./entities/index.js";
-export type { ImporterDefinition, ImportResult, ImportStatus } from "./importer.js";
-export type { ModuleManifest } from "./module.js";
-export { createModule } from "./module.js";
+export { defineAgentTool } from "./agent-tool.js";
+export type {
+  DefineModuleConfig,
+  ModuleContributions,
+  ModuleFactory,
+} from "./define-module.js";
+export { defineModule } from "./define-module.js";
+// ── Entity DTOs ──────────────────────────────────────────────────────────────
+export type {
+  OfferItemView,
+  OfferSnapshot,
+  OfferSnapshotLineItem,
+  OfferView,
+  ProductInput,
+  ProductMatch,
+} from "./entities/index.js";
+export type { EventSubscriber } from "./event-subscriber.js";
+export type {
+  ImporterDefinition,
+  ImportResult,
+  ImportStatus,
+  ImportTarget,
+} from "./importer.js";
+// ── Module context (the seam to shared infrastructure) ───────────────────────
+export type {
+  AiClientFactory,
+  ConfigResolver,
+  EventBus,
+  Logger,
+  ModuleContext,
+} from "./module-context.js";
 export type { RendererDefinition } from "./renderer.js";
+// ── Canonical core services ──────────────────────────────────────────────────
+export type {
+  BulkAddItemResult,
+  BulkAddResult,
+  CoreServices,
+  OfferDeleteResult,
+  OfferLineItemInput,
+  OfferMutationResult,
+  OfferService,
+  ProductSearchOptions,
+  ProductService,
+} from "./services.js";
+export type { TestContextOverrides } from "./testing.js";
+// ── Testing ──────────────────────────────────────────────────────────────────
+export { createTestContext } from "./testing.js";

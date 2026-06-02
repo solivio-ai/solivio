@@ -21,3 +21,15 @@ export interface ProductInput {
   vatRate: number;
   currency: string;
 }
+
+/**
+ * Read DTO for a product match returned by `services.products.search`.
+ * `similarity` is the semantic match score in [0, 1] (1 = closest).
+ */
+export interface ProductMatch {
+  id: string;
+  sku: string;
+  name: string;
+  description: string;
+  similarity: number;
+}

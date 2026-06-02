@@ -1,3 +1,44 @@
+/**
+ * Read DTO for a working offer line item, as returned by `services.offers.*`.
+ * A structural subset of the core's canonical offer item — the core may return
+ * a richer object at runtime; modules should depend only on these fields.
+ */
+export interface OfferItemView {
+  id?: string;
+  productId: string | null;
+  name: string;
+  description: string;
+  quantity: number;
+  unitPriceNet: number;
+  vatRate: number;
+  totalNet: number;
+  totalGross: number;
+  requestItem: string;
+  rationale: string;
+  position: number;
+}
+
+/**
+ * Read DTO for a working (pre-acceptance) offer, as returned by
+ * `services.offers.*`. Distinct from {@link OfferSnapshot}, which is the
+ * immutable accepted snapshot passed to renderers. Structural subset of the
+ * core's canonical offer.
+ */
+export interface OfferView {
+  id: string;
+  name: string;
+  status: string;
+  currency: string;
+  discountPercent: number;
+  notes: string[];
+  unmatched: string[];
+  items: OfferItemView[];
+  createdAt: string;
+  updatedAt: string;
+  customerName?: string | null;
+  clientRequest?: string | null;
+}
+
 export interface OfferSnapshotLineItem {
   productId: string;
   sku: string;

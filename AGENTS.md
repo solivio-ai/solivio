@@ -60,12 +60,14 @@ Full deployment guide (host setup, GHCR auth, rollback, troubleshooting): `apps/
 
 ## Modules
 
-First-party modules live under `modules/`. Each module is a compiled package that the core loads at server startup.
+Modules extend the core. A module is a factory built via `defineModule({ id, name, version, register(ctx, options) })`; `register` receives a `ModuleContext` (logger, config, AI, typed `services`, events) and returns typed capability contributions (v0: `importers`, `agentTools`). Modules depend only on `@solivio/sdk` — never on `@/server/*` or other modules.
 
-To add a module:
-1. Create `modules/<name>/` with `src/index.ts` (default export: `createModule({...})`), `package.json`, `tsconfig.json`, and `tsconfig.build.json` — mirror `modules/csv-products-importer/` as a template.
-2. Add the package name to `solivio.config.json` under `modules` (and `capabilities` if it provides a named capability).
-3. Run `yarn modules:build` to build it, then restart `yarn dev`.
+`yarn modules:build` builds the SDK then bundles every `modules/*` package into a self-contained ESM bundle at `modules-dist/<package>/index.mjs` (esbuild). The core loads these bundles **at startup** by file URL from `SOLIVIO_MODULES_DIR` (default: repo `modules-dist/`) and registers each one. Operators add modules by dropping pre-built bundles + editing `solivio.config.json` — no app rebuild. Design rationale and the long-term shape live in `docs/module-system.md`.
+
+To add a first-party module:
+1. Create `modules/<name>/` with `src/index.ts` (default export `defineModule({...})`), `package.json`, and `tsconfig.json` — mirror `modules/csv-products-importer/` (importer) or `modules/offer-tools/` (agent tools).
+2. Add an entry to `solivio.config.json` under `modules` (`{ "package": "@solivio/module-<name>", "options": {} }`), and bind a `slots` entry if it fills an exclusive capability.
+3. Run `yarn modules:build`, then restart `yarn dev`.
 
 ## Architecture
 

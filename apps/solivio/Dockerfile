@@ -61,6 +61,10 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+# Deployment manifest + module bundle root. Modules are loaded at runtime from
+# SOLIVIO_MODULES_DIR by file URL — no per-module image changes, no app rebuild.
+ENV SOLIVIO_CONFIG_PATH=/app/solivio.config.json
+ENV SOLIVIO_MODULES_DIR=/app/modules-dist
 
 RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 nextjs
@@ -72,10 +76,9 @@ COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/drizzle ./apps/solivio
 COPY --from=build --chown=nextjs:nodejs /app/apps/solivio/scripts/migrate.mjs ./apps/solivio/scripts/migrate.mjs
 COPY --from=build --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 COPY --from=build --chown=nextjs:nodejs /app/solivio.config.json ./solivio.config.json
-COPY --from=module-builder --chown=nextjs:nodejs /app/sdk/dist ./node_modules/@solivio/sdk/dist
-COPY --from=module-builder --chown=nextjs:nodejs /app/sdk/package.json ./node_modules/@solivio/sdk/package.json
-COPY --from=module-builder --chown=nextjs:nodejs /app/modules/csv-products-importer/dist ./node_modules/@solivio/module-csv-products/dist
-COPY --from=module-builder --chown=nextjs:nodejs /app/modules/csv-products-importer/package.json ./node_modules/@solivio/module-csv-products/package.json
+# The starter-pack module bundles — one directory, regardless of module count.
+# Adding a first-party module needs no change here; operators mount extra bundles.
+COPY --from=module-builder --chown=nextjs:nodejs /app/modules-dist ./modules-dist
 
 USER nextjs
 EXPOSE 3000
