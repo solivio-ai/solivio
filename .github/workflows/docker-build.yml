@@ -2,6 +2,23 @@ name: Docker build
 
 on:
   pull_request:
+    paths:
+      - ".github/workflows/docker-build.yml"
+      - ".yarn/releases/**"
+      - ".yarnrc.yml"
+      - "apps/docs/package.json"
+      - "apps/solivio/**"
+      - "favicon.png"
+      - "modules/**"
+      - "package.json"
+      - "packages/**"
+      - "scripts/**"
+      - "sdk/**"
+      - "solivio-logo.png"
+      - "solivio-logo-dark.png"
+      - "solivio.config.json"
+      - "tsconfig.base.json"
+      - "yarn.lock"
   workflow_dispatch:
 
 concurrency:
@@ -12,9 +29,13 @@ jobs:
   build:
     name: Docker build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -29,5 +50,3 @@ jobs:
           file: apps/solivio/Dockerfile
           target: runner
           push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max

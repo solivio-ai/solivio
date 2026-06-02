@@ -22,4 +22,8 @@ Newest first. One entry per lesson:
 
 ## Lessons
 
-_None yet. Add the first entry the next time something is corrected._
+### 2026-06-02 — Avoid PR cache writes
+
+**Context:** PR feedback suggested adding `actions: write` so a `pull_request` Docker build could export to the GitHub Actions cache.
+**Rule:** PR workflows that run untrusted branch code should keep `GITHUB_TOKEN` read-only and should not write shared caches; prefer uncached PR builds unless a trusted-only cache writer is separated from PR execution.
+**Applies to:** `.github/workflows/*.yml`, especially Docker/BuildKit cache settings.
