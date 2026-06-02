@@ -23,4 +23,5 @@ To:
 Data → AI → Structured draft → Review → Send
 
 For implementation notes, use the separate **Development** section. API
-reference pages are generated from route contracts and live under `/api/`.
+reference pages are generated from route handlers and their sibling metadata,
+and live under `/api/`.

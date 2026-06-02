@@ -157,7 +157,7 @@ Open the docs site at `http://localhost:4321`.
 
 The docs workspace generates `apps/docs/public/openapi/solivio.json` before
 starting the dev server, so the API reference always follows the route
-contracts.
+handlers and their route-local OpenAPI annotations.
 
 ## Local database notes
 
@@ -185,7 +185,7 @@ yarn db:down
 | `yarn dev` | Start the Next.js app on port 3000. |
 | `yarn docs:dev` | Start the separate docs site on port 4321. |
 | `yarn e2e` | Run Playwright smoke tests against the local app. |
-| `yarn openapi:generate` | Generate OpenAPI JSON from API route contracts. |
+| `yarn openapi:generate` | Generate OpenAPI JSON from API route handlers and metadata. |
 | `yarn typecheck` | Type-check all workspaces. |
 | `yarn build` | Build all workspaces, including the docs site. |
 | `yarn setup` | Start local Postgres, wait for readiness, and apply the schema. |

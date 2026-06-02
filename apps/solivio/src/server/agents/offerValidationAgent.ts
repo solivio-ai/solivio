@@ -2,7 +2,9 @@ import "server-only";
 
 import { Agent } from "@voltagent/core";
 import { Output } from "ai";
-import { z } from "zod";
+
+import type { OfferValidationResult } from "@/server/api/schemas/offer-validation";
+import { offerValidationResultSchema } from "@/server/api/schemas/offer-validation";
 
 import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
@@ -32,14 +34,7 @@ Verdict:
 Respond in the same language as the customer request (Polish if request is in Polish).
 `.trim();
 
-export const offerValidationResultSchema = z.object({
-  verdict: z.enum(["pass", "partial", "fail"]),
-  summary: z.string().describe("1–2 sentence overall assessment"),
-  issues: z.array(z.string()).describe("Specific problems found in the offer"),
-  missingRequirements: z.array(z.string()).describe("Customer requirements not addressed"),
-});
-
-export type OfferValidationResult = z.infer<typeof offerValidationResultSchema>;
+export type { OfferValidationResult } from "@/server/api/schemas/offer-validation";
 
 type OfferItem = {
   name: string;

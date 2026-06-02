@@ -26,6 +26,7 @@ The sections below are the quick reference. They summarize the boundaries; the d
 
 - Never import the Drizzle client (`apps/solivio/src/server/database/db.ts`) outside `apps/solivio/src/server/` or `apps/solivio/src/app/api/`.
 - Never make a module import `@/server/*` or another module — modules depend only on `@solivio/sdk`.
+- Never add dummy API schema barrels or proxy exports just to satisfy OpenAPI generation; keep route-only schemas beside the route handler and import shared schemas from the concrete module that owns them.
 - Never write custom CSS classes or add rules to `globals.css` beyond the allowed blocks, and never hard-code theme colors — use the theme tokens.
 - Never add required external services to the default demo path.
 

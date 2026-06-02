@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
-import { createOfferRequestSchema } from "@/server/api/contracts";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { createdOfferResponseSchema, createOfferRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import {
   CustomerSelectionError,
@@ -38,16 +39,29 @@ async function resolveCustomerNameForGeneration(
 
 function customerSelectionResponse(error: CustomerSelectionError) {
   return NextResponse.json(
-    {
+    errorResponseSchema.parse({
       error: {
         code: error.code,
         message: error.message,
       },
-    },
+    }),
     { status: 400 },
   );
 }
 
+/**
+ * Generate a draft offer
+ * @operationId generateOffer
+ * @description AI-assisted offer generation backed by the products table.
+ * @tag Offers
+ * @auth sessionCookie
+ * @bodyDescription Customer name and request text for the new offer.
+ * @body createOfferRequestSchema
+ * @response 201:createdOfferResponseSchema:A newly persisted draft offer.
+ * @add 400:ErrorResponse:The request body was invalid or customer selection failed.
+ * @add 500:ErrorResponse:Offer generation failed.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -57,7 +71,9 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "clientRequest is required" } },
+      errorResponseSchema.parse({
+        error: { code: "VALIDATION_ERROR", message: "clientRequest is required" },
+      }),
       { status: 400 },
     );
   }
@@ -80,7 +96,7 @@ export async function POST(request: Request) {
 
     saveOfferDraft(offer);
 
-    return NextResponse.json({ offer }, { status: 201 });
+    return NextResponse.json(createdOfferResponseSchema.parse({ offer }), { status: 201 });
   } catch (error) {
     if (error instanceof CustomerSelectionError) {
       return customerSelectionResponse(error);
@@ -90,7 +106,12 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const stack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
-      { error: { code: "OFFER_GENERATION_FAILED", message, stack } },
+      errorResponseSchema.parse({
+        error: {
+          code: "OFFER_GENERATION_FAILED",
+          message: stack ? `${message}\n${stack}` : message,
+        },
+      }),
       { status: 500 },
     );
   }

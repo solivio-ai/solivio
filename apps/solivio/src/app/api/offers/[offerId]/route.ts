@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import type { z } from "zod";
 
 import type { Offer } from "@solivio/domain";
-import {
-  errorResponseSchema,
-  offerResponseSchema,
-  updateOfferRequestSchema,
-} from "@/server/api/contracts";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerResponseSchema, updateOfferRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
@@ -36,6 +33,16 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+/**
+ * Get an offer
+ * @operationId getOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 200:offerResponseSchema:The requested offer.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function GET(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -61,6 +68,20 @@ export async function GET(_request: Request, context: RouteContext) {
   return NextResponse.json(offerResponseSchema.parse({ offer }));
 }
 
+/**
+ * Update an offer
+ * @operationId updateOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @bodyDescription Review edits to apply to the offer.
+ * @body updateOfferRequestSchema
+ * @response 200:offerResponseSchema:The updated offer.
+ * @add 400:ErrorResponse:The request body was invalid.
+ * @add 403:ErrorResponse:The offer is locked.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function PATCH(request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -155,6 +176,17 @@ export async function PATCH(request: Request, context: RouteContext) {
   return NextResponse.json(offerResponseSchema.parse({ offer }));
 }
 
+/**
+ * Delete an offer
+ * @operationId deleteOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @pathParams offerPathParamsSchema
+ * @response 204
+ * @responseDescription The offer was deleted.
+ * @add 404:ErrorResponse:The offer was not found.
+ * @openapi
+ */
 export async function DELETE(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;

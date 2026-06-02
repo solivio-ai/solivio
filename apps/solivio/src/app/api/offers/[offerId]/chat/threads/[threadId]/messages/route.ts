@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { errorResponseSchema } from "@/server/api/contracts";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerChatMessagesResponseSchema } from "@/server/api/schemas/offer-chat";
 import { requireAuth } from "@/server/auth/session";
 import { getOfferChatMessages, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 
@@ -13,6 +14,16 @@ type RouteContext = {
   }>;
 };
 
+/**
+ * List offer chat messages
+ * @operationId listOfferChatMessages
+ * @tag Chat
+ * @auth sessionCookie
+ * @pathParams offerChatMessagesPathParamsSchema
+ * @response 200:offerChatMessagesResponseSchema:Messages in the offer chat thread.
+ * @add 404:ErrorResponse:The chat thread was not found.
+ * @openapi
+ */
 export async function GET(_request: Request, context: RouteContext) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -33,5 +44,5 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   const messages = await getOfferChatMessages(threadId);
-  return NextResponse.json({ messages });
+  return NextResponse.json(offerChatMessagesResponseSchema.parse({ messages }));
 }

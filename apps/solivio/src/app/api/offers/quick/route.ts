@@ -2,13 +2,25 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import type { GeneratedOffer } from "@/server/agents/offerGenerationAgent";
-import { quickOfferRequestSchema } from "@/server/api/contracts";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { createdOfferResponseSchema, quickOfferRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";
 
+/**
+ * Create a quick offer
+ * @operationId createQuickOffer
+ * @tag Offers
+ * @auth sessionCookie
+ * @bodyDescription Manual product selections to turn into a draft offer.
+ * @body quickOfferRequestSchema
+ * @response 201:createdOfferResponseSchema:A newly persisted manual offer.
+ * @add 400:ErrorResponse:The request body was invalid or customer selection failed.
+ * @openapi
+ */
 export async function POST(request: Request) {
   const auth = await requireAuth();
   if (auth.response) return auth.response;
@@ -18,7 +30,9 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: t("errors.itemsRequired") } },
+      errorResponseSchema.parse({
+        error: { code: "VALIDATION_ERROR", message: t("errors.itemsRequired") },
+      }),
       { status: 400 },
     );
   }
@@ -27,7 +41,9 @@ export async function POST(request: Request) {
 
   if (!customerId && !customerName?.trim()) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: t("errors.customerNameRequired") } },
+      errorResponseSchema.parse({
+        error: { code: "VALIDATION_ERROR", message: t("errors.customerNameRequired") },
+      }),
       { status: 400 },
     );
   }
@@ -58,11 +74,11 @@ export async function POST(request: Request) {
       customerId,
     );
 
-    return NextResponse.json({ offer }, { status: 201 });
+    return NextResponse.json(createdOfferResponseSchema.parse({ offer }), { status: 201 });
   } catch (error) {
     if (error instanceof CustomerSelectionError) {
       return NextResponse.json(
-        { error: { code: error.code, message: error.message } },
+        errorResponseSchema.parse({ error: { code: error.code, message: error.message } }),
         { status: 400 },
       );
     }

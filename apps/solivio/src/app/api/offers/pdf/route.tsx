@@ -3,7 +3,9 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
-import { OfferDocument, pdfOfferRequestSchema, sampleOffer } from "../../../../features/offer-pdf";
+import { OfferDocument, sampleOffer } from "@/features/offer-pdf";
+import { pdfOfferRequestSchema } from "@/features/offer-pdf/lib/schema";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 
 export const runtime = "nodejs";
 
@@ -16,6 +18,14 @@ function toResponse(buffer: Buffer, filename: string) {
   });
 }
 
+/**
+ * Render sample offer PDF
+ * @operationId getSampleOfferPdf
+ * @tag Documents
+ * @responseContentType application/pdf
+ * @response 200:string:A sample offer PDF.
+ * @openapi
+ */
 export async function GET() {
   const buffer = await renderToBuffer(
     (<OfferDocument data={sampleOffer} />) as ReactElement<DocumentProps>,
@@ -23,13 +33,26 @@ export async function GET() {
   return toResponse(buffer, `oferta-${sampleOffer.offer.number}.pdf`);
 }
 
+/**
+ * Render offer PDF from payload
+ * @operationId renderOfferPdf
+ * @tag Documents
+ * @bodyDescription Offer document payload to render.
+ * @body pdfOfferRequestSchema
+ * @responseContentType application/pdf
+ * @response 200:string:The rendered offer PDF.
+ * @add 400:ErrorResponse:The PDF payload was invalid.
+ * @openapi
+ */
 export async function POST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: { code: "INVALID_JSON", message: "Request body is not valid JSON." } },
+      errorResponseSchema.parse({
+        error: { code: "INVALID_JSON", message: "Request body is not valid JSON." },
+      }),
       { status: 400 },
     );
   }
@@ -37,13 +60,13 @@ export async function POST(request: Request) {
   const parsed = pdfOfferRequestSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      {
+      errorResponseSchema.parse({
         error: {
           code: "VALIDATION_ERROR",
           message: "Invalid offer data.",
           issues: parsed.error.issues.map((i) => i.message),
         },
-      },
+      }),
       { status: 400 },
     );
   }

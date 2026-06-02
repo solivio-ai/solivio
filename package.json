@@ -41,7 +41,6 @@
     "volt": "volt"
   },
   "devDependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@biomejs/biome": "2.4.13",
     "@playwright/test": "^1.59.1",
     "@tailwindcss/oxide-darwin-arm64": "4.2.4",
@@ -52,6 +51,7 @@
     "@voltagent/cli": "^0.1.21",
     "esbuild": "^0.25.12",
     "lightningcss-darwin-arm64": "^1.32.0",
+    "next-openapi-gen": "^1.4.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "zod": "^4.3.6"

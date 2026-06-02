@@ -2,119 +2,102 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { OpenAPIRegistry, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
+import { generateProject } from "next-openapi-gen";
 
-import type { ApiResponseContract } from "../apps/solivio/src/server/api/contracts";
-import { apiContracts, apiTags } from "../apps/solivio/src/server/api/contracts";
+import { createAuth } from "../apps/solivio/src/server/auth/createAuth";
 
-const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const outputFile = path.join(rootDirectory, "apps/docs/public/openapi/solivio.json");
+const generatedDirectory = ".openapi-gen";
+const betterAuthFragmentFile = path.join(generatedDirectory, "better-auth.json");
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const registry = new OpenAPIRegistry();
-
-for (const contract of apiContracts) {
-  const request = {
-    ...(contract.requestParams ? { params: contract.requestParams } : {}),
-    ...(contract.requestQuery ? { query: contract.requestQuery } : {}),
-    ...(contract.requestBody
-      ? {
-          body: {
-            description: contract.requestBody.description,
-            required: contract.requestBody.required ?? true,
-            content: {
-              "application/json": {
-                schema: contract.requestBody.schema,
-              },
-            },
-          },
-        }
-      : {}),
-  };
-
-  registry.registerPath({
-    method: contract.method,
-    path: contract.path,
-    operationId: contract.operationId,
-    summary: contract.summary,
-    description: contract.description,
-    tags: contract.tags,
-    ...(contract.requiresAuth ? { security: [{ sessionCookie: [] }] } : {}),
-    ...(Object.keys(request).length > 0 ? { request } : {}),
-    responses: toOpenApiResponses(contract.responses),
-  });
-}
-
-const generator = new OpenApiGeneratorV31(registry.definitions, {
-  sortComponents: "alphabetically",
-});
-
-const document = generator.generateDocument({
-  openapi: "3.1.0",
-  info: {
-    title: "Solivio API",
-    summary: "API boundaries for Data → AI → Structured draft → Review → Send.",
-    description:
-      "Solivio is an open-source AI system that transforms how B2B companies create offers. The current API intentionally uses mock data so contributors can launch the product without external services.",
-    version: "0.1.0",
-    license: {
-      name: "MIT",
-      identifier: "MIT",
-    },
-  },
-  servers: [
-    {
-      url: "/",
-      description: "Solivio API origin",
-    },
-  ],
-  tags: [...apiTags],
-  security: [],
-});
-
-document.components = {
-  ...document.components,
-  securitySchemes: {
-    ...document.components?.securitySchemes,
-    sessionCookie: {
-      type: "apiKey",
-      in: "cookie",
-      name: "better-auth.session_token",
-      description: "Better Auth session cookie. Secure deployments may use a prefixed cookie name.",
-    },
-  },
+type OpenApiOperation = {
+  operationId?: string;
+  parameters?: unknown[];
+  requestBody?: unknown;
+  security?: Array<Record<string, string[]>>;
+  tags?: string[];
 };
 
-await mkdir(path.dirname(outputFile), { recursive: true });
-await writeFile(outputFile, `${JSON.stringify(document, null, 2)}\n`);
+type OpenApiPathItem = Record<string, OpenApiOperation | unknown>;
 
-console.log(`Generated ${path.relative(rootDirectory, outputFile)}`);
+const publicAuthOperations = new Set([
+  "GET /account-info",
+  "GET /callback/{id}",
+  "POST /callback/{id}",
+  "GET /delete-user/callback",
+  "GET /error",
+  "GET /ok",
+  "POST /request-password-reset",
+  "POST /reset-password",
+  "GET /reset-password/{token}",
+  "POST /sign-in/email",
+  "POST /sign-in/social",
+  "POST /sign-in/username",
+  "POST /sign-up/email",
+  "GET /verify-email",
+]);
 
-function toOpenApiResponses(responses: Record<number, ApiResponseContract>) {
+process.env.BETTER_AUTH_URL ??= "http://localhost:3000";
+process.chdir(repositoryRoot);
+
+await writeBetterAuthFragment();
+await generateProject({ configPath: "openapi-gen.config.ts" });
+
+async function writeBetterAuthFragment() {
+  const schema = await createAuth().api.generateOpenAPISchema();
+  const fragment = {
+    components: {
+      schemas: schema.components?.schemas,
+    },
+    paths: Object.fromEntries(
+      Object.entries(schema.paths ?? {}).map(([routePath, pathItem]) => [
+        `/api/auth${routePath}`,
+        normalizeAuthPathItem(routePath, pathItem as OpenApiPathItem),
+      ]),
+    ),
+  };
+
+  await mkdir(generatedDirectory, { recursive: true });
+  await writeFile(betterAuthFragmentFile, `${JSON.stringify(fragment, null, 2)}\n`);
+}
+
+function normalizeAuthPathItem(routePath: string, pathItem: OpenApiPathItem) {
   return Object.fromEntries(
-    Object.entries(responses).map(([status, response]) => [
-      status,
-      response.content
-        ? {
-            description: response.description,
-            content: Object.fromEntries(
-              Object.entries(response.content).map(([mediaType, content]) => [
-                mediaType,
-                content.schema ? { schema: content.schema } : {},
-              ]),
-            ),
-          }
-        : response.schema
-          ? {
-              description: response.description,
-              content: {
-                "application/json": {
-                  schema: response.schema,
-                },
-              },
-            }
-          : {
-              description: response.description,
-            },
-    ]),
+    Object.entries(pathItem).map(([method, operation]) => {
+      if (!isHttpOperation(operation)) return [method, operation];
+
+      operation.tags = ["Auth"];
+      operation.parameters ??= [];
+
+      if (isPublicAuthOperation(method, routePath)) {
+        delete operation.security;
+      } else {
+        operation.security = [{ sessionCookie: [] }];
+      }
+
+      if (isEmptyJsonRequestBody(operation.requestBody)) {
+        delete operation.requestBody;
+      }
+
+      return [method, operation];
+    }),
   );
+}
+
+function isHttpOperation(value: unknown): value is OpenApiOperation {
+  return typeof value === "object" && value !== null;
+}
+
+function isPublicAuthOperation(method: string, routePath: string) {
+  return publicAuthOperations.has(`${method.toUpperCase()} ${routePath}`);
+}
+
+function isEmptyJsonRequestBody(requestBody: unknown) {
+  if (typeof requestBody !== "object" || requestBody === null) return false;
+
+  const body = requestBody as {
+    content?: Record<string, { schema?: { properties?: Record<string, unknown> } }>;
+  };
+  const properties = body.content?.["application/json"]?.schema?.properties;
+  return properties !== undefined && Object.keys(properties).length === 0;
 }

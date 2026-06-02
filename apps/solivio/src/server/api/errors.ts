@@ -1,4 +1,4 @@
-import { errorResponseSchema } from "./contracts";
+import { errorResponseSchema } from "./schemas/common";
 
 export function apiError(code: string, message: string, issues?: string[]) {
   return errorResponseSchema.parse({

@@ -22,4 +22,12 @@ Newest first. One entry per lesson:
 
 ## Lessons
 
-_None yet. Add the first entry the next time something is corrected._
+### 2026-06-02 — Avoid proxy API schema barrels
+
+**Context:** During the OpenAPI migration, a central schema export file made route
+schemas look reusable even when they only existed to support generation.
+**Rule:** Keep route-only request and response schemas beside the route handler;
+move schemas to shared modules only when they are actually reused, and import
+shared schemas from their concrete owner module rather than a dummy barrel.
+**Applies to:** `apps/solivio/src/app/api/**/route.ts`,
+`apps/solivio/src/server/api/schemas/`, and OpenAPI generation.

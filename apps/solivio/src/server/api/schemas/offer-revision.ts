@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-import { routeGroup } from "./common";
-import { matchSourceSchema, offerPathParamsSchema, offerSchema, offerStatusSchema } from "./offer";
+import { matchSourceSchema, offerSchema, offerStatusSchema } from "./offer";
 
 export const offerRevisionPathParamsSchema = z
   .object({
@@ -101,63 +100,3 @@ export const restoreOfferRevisionResponseSchema = z
   })
   .strict()
   .meta({ id: "RestoreOfferRevisionResponse" });
-
-export const offerRevisionRoutes = [
-  ...routeGroup({ tag: "Offers", requiresAuth: true }, [
-    {
-      method: "get",
-      path: "/api/offers/{offerId}/revisions",
-      operationId: "listOfferRevisions",
-      summary: "List offer revisions",
-      requestParams: offerPathParamsSchema,
-      responses: {
-        200: {
-          description: "Revision history for the offer.",
-          schema: offerRevisionsResponseSchema,
-        },
-      },
-    },
-    {
-      method: "post",
-      path: "/api/offers/{offerId}/revisions",
-      operationId: "saveOfferRevision",
-      summary: "Save an offer revision",
-      requestParams: offerPathParamsSchema,
-      responses: {
-        201: {
-          description: "The saved offer revision.",
-          schema: offerRevisionResponseSchema,
-        },
-        404: "The offer was not found.",
-      },
-    },
-    {
-      method: "get",
-      path: "/api/offers/{offerId}/revisions/{revisionId}",
-      operationId: "getOfferRevision",
-      summary: "Get an offer revision",
-      requestParams: offerRevisionPathParamsSchema,
-      responses: {
-        200: {
-          description: "The requested offer revision.",
-          schema: offerRevisionResponseSchema,
-        },
-        404: "The revision was not found.",
-      },
-    },
-    {
-      method: "post",
-      path: "/api/offers/{offerId}/revisions/{revisionId}/restore",
-      operationId: "restoreOfferRevision",
-      summary: "Restore an offer revision",
-      requestParams: offerRevisionPathParamsSchema,
-      responses: {
-        200: {
-          description: "The restored offer and the revision created by the restore action.",
-          schema: restoreOfferRevisionResponseSchema,
-        },
-        404: "The revision was not found.",
-      },
-    },
-  ]),
-] as const satisfies readonly import("./common").ApiContract[];

@@ -9,7 +9,7 @@ page, guides live under `/guides`, and generated API reference pages live under
 ## GitHub Pages Deployment
 
 The repository includes `.github/workflows/docs-pages.yml`. On every push to
-`main` that changes docs, API contracts, package metadata, or the workflow
+`main` that changes docs, API routes, package metadata, or the workflow
 itself, GitHub Actions builds `apps/docs` and deploys `apps/docs/dist` to GitHub
 Pages.
 
@@ -62,15 +62,18 @@ Avoid wildcard records for `*.solivio.ai`.
 For any other static host:
 
 1. Install from the repository root with `yarn install`.
-2. Generate the API contract with `yarn openapi:generate`.
+2. Generate the OpenAPI schema with `yarn openapi:generate`.
 3. Build the docs workspace with `yarn docs:build`.
 4. Publish `apps/docs/dist`.
 
 ## API Contract
 
-Use `apps/solivio/src/server/api/contracts.ts` as the source of truth. The
-generated schema is written to `apps/docs/public/openapi/solivio.json` during the
-docs build and is consumed by the Starlight OpenAPI plugin.
+Use the Next.js route tree under `apps/solivio/src/app/api` as the source of
+truth. Exported route handlers carry `next-openapi-gen` JSDoc metadata, and
+`openapi-gen.config.ts` validates generated operations against the exported HTTP
+methods. The generated schema is written to
+`apps/docs/public/openapi/solivio.json` during the docs build and is consumed by
+the Starlight OpenAPI plugin.
 
 Before a public release, lint the generated file on a Node 24.15+ CI image:
 
