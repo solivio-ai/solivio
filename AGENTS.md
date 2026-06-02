@@ -60,7 +60,7 @@ Full deployment guide (host setup, GHCR auth, rollback, troubleshooting): `apps/
 
 ## Modules
 
-Modules extend the core. A module is a factory built via `defineModule({ id, name, version, register(ctx, options) })`; `register` receives a `ModuleContext` (logger, config, AI, typed `services`, events) and returns typed capability contributions (v0: `importers`, `agentTools`). Modules depend only on `@solivio/sdk` — never on `@/server/*` or other modules.
+Modules extend the core. A module is a factory built via `defineModule({ id, name, version, register(ctx, options) })`; `register` receives a `ModuleContext` (logger, config, AI, typed `services`, events) and returns typed capability contributions (v0: `importers`, `agentTools`, UI spike: `ui`). Server capability code depends only on `@solivio/sdk` — never on `@/server/*` or other modules. Module-owned browser UI bundles may import browser-safe peer/runtime packages such as `react` and `react-dom/client`; the module UI build rewrites React imports to the host shared runtime. Browser UI still must not import app internals.
 
 `yarn modules:build` builds the SDK then bundles every `modules/*` package into a self-contained ESM bundle at `modules-dist/<package>/index.mjs` (esbuild). The core loads these bundles **at startup** by file URL from `SOLIVIO_MODULES_DIR` (default: repo `modules-dist/`) and registers each one. Operators add modules by dropping pre-built bundles + editing `solivio.config.json` — no app rebuild. Design rationale and the long-term shape live in `docs/module-system.md`.
 

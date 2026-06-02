@@ -6,5 +6,5 @@
       "@solivio/sdk": ["../../sdk/src/index.ts"]
     }
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

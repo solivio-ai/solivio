@@ -1,9 +1,19 @@
 "use client";
 
-import { Building2, ChevronRight, Package, Users } from "lucide-react";
+import {
+  Building2,
+  ChevronRight,
+  FileText,
+  LayoutDashboard,
+  Package,
+  Plus,
+  Upload,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import type { ModuleUiIcon } from "@solivio/sdk";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
@@ -15,17 +25,34 @@ import {
 } from "@/components/ui/sidebar";
 
 interface AdminSidebarSectionProps {
+  moduleNavItems?: AdminModuleNavItem[];
   pathname: string;
   onNavigate: () => void;
 }
 
-const adminItems = [
-  { labelKey: "users", href: "/admin/users", icon: Users },
-  { labelKey: "catalogUpload", href: "/admin/products/upload", icon: Package },
-  { labelKey: "customerUpload", href: "/admin/customers/upload", icon: Building2 },
-] as const;
+export interface AdminModuleNavItem {
+  href: string;
+  icon?: ModuleUiIcon;
+  label: string;
+}
 
-export function AdminSidebarSection({ pathname, onNavigate }: AdminSidebarSectionProps) {
+const coreAdminItems = [{ labelKey: "users", href: "/admin/users", icon: Users }] as const;
+
+const moduleIconMap: Record<ModuleUiIcon, typeof Users> = {
+  building: Building2,
+  "file-text": FileText,
+  "layout-dashboard": LayoutDashboard,
+  package: Package,
+  plus: Plus,
+  upload: Upload,
+  users: Users,
+};
+
+export function AdminSidebarSection({
+  moduleNavItems = [],
+  pathname,
+  onNavigate,
+}: AdminSidebarSectionProps) {
   const t = useTranslations("AppSidebar");
 
   return (
@@ -44,8 +71,21 @@ export function AdminSidebarSection({ pathname, onNavigate }: AdminSidebarSectio
         <CollapsibleContent>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
-              {adminItems.map(({ labelKey, href, icon: Icon }) => {
+              {coreAdminItems.map(({ labelKey, href, icon: Icon }) => {
                 const label = t(`nav.${labelKey}`);
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton asChild isActive={pathname === href} tooltip={label}>
+                      <Link href={href} onClick={onNavigate}>
+                        <Icon size={16} aria-hidden="true" />
+                        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+              {moduleNavItems.map(({ href, icon, label }) => {
+                const Icon = icon ? moduleIconMap[icon] : Upload;
                 return (
                   <SidebarMenuItem key={href}>
                     <SidebarMenuButton asChild isActive={pathname === href} tooltip={label}>

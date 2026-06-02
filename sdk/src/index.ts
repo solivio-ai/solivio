@@ -54,3 +54,24 @@ export type {
 export type { TestContextOverrides } from "./testing.js";
 // ── Testing ──────────────────────────────────────────────────────────────────
 export { createTestContext } from "./testing.js";
+export type {
+  JsonObject,
+  JsonValue,
+  LocalizedText,
+  ModuleClientIslandPage,
+  ModuleUiCleanup,
+  ModuleUiContributions,
+  ModuleUiCopyBlock,
+  ModuleUiFileService,
+  ModuleUiIcon,
+  ModuleUiImporterService,
+  ModuleUiImportResult,
+  ModuleUiImportRowError,
+  ModuleUiMount,
+  ModuleUiMountContext,
+  ModuleUiNavItem,
+  ModuleUiPage,
+  ModuleUiSection,
+  ModuleUiServices,
+} from "./ui.js";
+export { MODULE_UI_CONTRACT_VERSION } from "./ui.js";

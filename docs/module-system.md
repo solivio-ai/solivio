@@ -97,7 +97,7 @@ Three layers, same as `architecture.md`, made concrete:
 ┌─────────────────────────────────────────────────────────────┐
 │  CORE (apps/solivio)                                          │
 │   • bootstrap: read config → build context → register modules │
-│   • capability registries (tools, importers, [renderers],     │
+│   • capability registries (tools, importers, ui, [renderers], │
 │     [subscribers])  ── typed, frozen after boot               │
 │   • CoreServices implementations (products, offers, …)        │
 │   • named agents consume getAgentTools()                      │
@@ -155,13 +155,15 @@ capabilities from `register` directly.
 
 ### 4.2 `ModuleContributions`
 
-A module returns a typed bag. Each field is a *capability kind*. v0 implements the first
-two; the rest are reserved (typed, validated, but not yet consumed by the core).
+A module returns a typed bag. Each field is a *capability kind*. v0 implements tools and
+importers; this branch adds the `ui` spike; the rest are reserved (typed, validated, but
+not yet consumed by the core).
 
 ```ts
 export interface ModuleContributions {
   agentTools?: AgentTool[];          // ✅ v0
   importers?: ImporterDefinition[];  // ✅ v0
+  ui?: ModuleUiContributions;        // 🧪 spike — module-owned browser UI bundles
   renderers?: RendererDefinition[];  // 🔒 reserved
   eventSubscribers?: EventSubscriber[]; // 🔒 reserved
   // future: contextProviders, validationRules, promptFragments, inputs, channels
@@ -460,12 +462,43 @@ export default defineModule({
 relocatable, independently testable (via `createTestContext()`), and overridable per
 deployment — realizing `architecture.md` §6 ("modules extend agents via tools").
 
+### 6.3 Module-owned UI bundles (spike)
+
+The UI spike adds a deliberately narrow `ui` contribution kind. Modules can declare
+admin navigation items and module pages, and each page can point at a module-owned browser
+ESM bundle emitted under `modules-dist/<package>/ui/*.mjs`.
+
+The first page kind is `"client-island"`: the core renders an admin page shell, serves the
+declared UI bundle to authenticated admins, and a small host component calls the bundle's
+`mount(element, context)` export. The module bundle owns its own React root, state, hooks,
+and component tree. React itself is shared: the module UI build rewrites imports of
+`react`, `react-dom/client`, and `react/jsx-runtime` to tiny browser shims backed by a
+frozen host runtime. The CSV product/customer upload components now live in their modules;
+the core exposes SDK-typed browser services such as `services.importer.importContent` and
+`services.files.readAsText`, while keeping the auth/persistence boundary. Page props are
+constrained to JSON-serializable values and the asset URL includes the module version plus
+emitted file metadata to avoid stale browser ESM cache entries in normal rebuild/restart
+flows.
+
+This intentionally stops short of importing module components into the host React tree. The
+current module loader imports self-contained server ESM bundles by file URL at startup;
+those bundles are not part of Next's client graph. The island pattern works around that
+bottleneck by loading browser ESM over HTTP at runtime and letting the module render into a
+dedicated DOM container. Future work can evaluate CSS asset manifests, iframes for stronger
+isolation, import maps/a formal runtime package, or a build-time frontend plugin pipeline.
+
 ## 7. Guardrails (lint, not runtime)
 
 Per `architecture.md` §2, isolation is enforced by review and lint, not the runtime:
 
 - **Modules may import only `@solivio/sdk`** (+ their own schema lib + `@solivio/domain`
   types). A Biome/lint boundary rule forbids `@/server/*` and cross-module imports.
+- **UI bundles stay isolated.** Modules do not import `@/components/ui` or app/server
+  internals. A UI page declares a relative `clientEntry`; the app serves only that entry
+  and mounts it into a dedicated DOM island. Shared theme CSS variables are the styling
+  contract for now. Module UI bundles may use browser-safe libraries and may import React
+  through the shared module UI runtime; server capability code still reaches app state only
+  through the SDK context.
 - **No canonical writes outside `ctx.services`.** Direct `db`/Drizzle imports in
   `modules/*` are banned by lint.
 - **The SDK stays runtime-inert.** No singletons, no module-scoped mutable state, no

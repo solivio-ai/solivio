@@ -601,6 +601,24 @@
     "title": "Offers",
     "subtitle": "Review generated drafts, spot missing product matches, and continue the customer conversation from one queue."
   },
+  "ModuleImport": {
+    "card": {
+      "chooseFile": "Choose a file",
+      "pickAnother": "Click to pick another file",
+      "dropOne": "or drop one onto this field",
+      "readError": "Failed to read the file.",
+      "importAction": {
+        "saving": "Importing...",
+        "import": "Import"
+      },
+      "importDone": {
+        "product": "Saved {count, plural, one {# product} other {# products}}.",
+        "customer": "Saved {count, plural, one {# customer} other {# customers}}."
+      },
+      "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
+      "importError": "Import failed."
+    }
+  },
   "ProductImport": {
     "page": {
       "title": "Import products",

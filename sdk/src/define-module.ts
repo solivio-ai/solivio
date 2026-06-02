@@ -5,6 +5,7 @@ import type { EventSubscriber } from "./event-subscriber.js";
 import type { AnyImporterDefinition } from "./importer.js";
 import type { ModuleContext } from "./module-context.js";
 import type { RendererDefinition } from "./renderer.js";
+import type { ModuleUiContributions } from "./ui.js";
 
 /**
  * The typed bag a module returns from `register`. Each field is a capability
@@ -14,6 +15,8 @@ import type { RendererDefinition } from "./renderer.js";
 export interface ModuleContributions {
   agentTools?: AgentTool[];
   importers?: AnyImporterDefinition[];
+  /** Declarative UI extension metadata consumed by core-owned host components. */
+  ui?: ModuleUiContributions;
   /** Reserved — not yet wired into the pipeline. */
   renderers?: RendererDefinition[];
   /** Reserved — not yet wired into the pipeline. */

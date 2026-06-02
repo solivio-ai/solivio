@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import type { AdminModuleNavItem } from "@/components/AdminSidebarSection";
 import { AdminSidebarSection } from "@/components/AdminSidebarSection";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SolivioLogo } from "@/components/SolivioLogo";
@@ -34,7 +35,7 @@ const navItems = [
   { labelKey: "newOffer", href: "/offers/new", icon: Plus },
 ] as const;
 
-export function AppSidebar() {
+export function AppSidebar({ adminNavItems = [] }: { adminNavItems?: AdminModuleNavItem[] }) {
   const pathname = usePathname();
   const t = useTranslations("AppSidebar");
   const { isMobile, setOpenMobile } = useSidebar();
@@ -104,7 +105,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {userIsAdmin && <AdminSidebarSection pathname={pathname} onNavigate={closeMobileSidebar} />}
+        {userIsAdmin && (
+          <AdminSidebarSection
+            moduleNavItems={adminNavItems}
+            pathname={pathname}
+            onNavigate={closeMobileSidebar}
+          />
+        )}
       </SidebarContent>
 
       <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 pb-3 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">

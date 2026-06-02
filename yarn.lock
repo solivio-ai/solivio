@@ -5552,7 +5552,14 @@ __metadata:
   resolution: "@solivio/module-csv-customers@workspace:modules/csv-customers-importer"
   dependencies:
     "@solivio/sdk": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    "@types/react-dom": "npm:^19.2.3"
+    react: "npm:^19.2.5"
+    react-dom: "npm:^19.2.5"
     typescript: "npm:^6.0.3"
+  peerDependencies:
+    react: ^19.2.5
+    react-dom: ^19.2.5
   languageName: unknown
   linkType: soft
 
@@ -5561,7 +5568,14 @@ __metadata:
   resolution: "@solivio/module-csv-products@workspace:modules/csv-products-importer"
   dependencies:
     "@solivio/sdk": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    "@types/react-dom": "npm:^19.2.3"
+    react: "npm:^19.2.5"
+    react-dom: "npm:^19.2.5"
     typescript: "npm:^6.0.3"
+  peerDependencies:
+    react: ^19.2.5
+    react-dom: ^19.2.5
   languageName: unknown
   linkType: soft
 

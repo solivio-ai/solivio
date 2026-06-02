@@ -45,6 +45,7 @@ Authoritative list: [`sdk/src/index.ts`](../sdk/src/index.ts).
 | `CoreServices`, `ProductService`, `OfferService` (+ `ProductSearchOptions`, `OfferLineItemInput`, `OfferMutationResult`, `OfferDeleteResult`, `BulkAddResult`, `BulkAddItemResult`) | types | Typed canonical service handles modules call |
 | `AgentTool`, `defineAgentTool` | type + function | Standard Schema–typed tool callable by agents, and an inference helper |
 | `ImporterDefinition`, `ImportResult`, `ImportStatus`, `ImportTarget` | types | Input surface: raw payload → normalized records |
+| `ModuleUiContributions`, `ModuleUiPage`, `ModuleUiNavItem`, `ModuleUiMountContext`, `LocalizedText` | types | Module UI page/nav metadata, browser bundle entry points, and SDK-typed browser runtime services |
 | `RendererDefinition` | type | Output surface (reserved — not yet wired) |
 | `EventSubscriber` | type | Observer-event subscriber (reserved — not yet wired) |
 | `ProductInput`, `ProductMatch` | types | Product write DTO and search-result DTO |
@@ -80,6 +81,7 @@ export default defineModule({
 | --- | --- | --- |
 | `agentTools` | implemented | `AgentTool[]` registered with the agent runtime |
 | `importers` | implemented | `ImporterDefinition[]` for raw → records transforms |
+| `ui` | spike | Module-owned browser UI bundle entry points plus page/nav metadata |
 | `renderers` | reserved | `RendererDefinition[]` — typed, not yet consumed by the core |
 | `eventSubscribers` | reserved | `EventSubscriber[]` — typed, not yet consumed by the core |
 
@@ -125,6 +127,19 @@ Framework-agnostic shape: **`name`**, **`description`**, **`parameters`** ([`Sta
 - Importers do **not** write the database; they return rows and the core persists via `services[target].import`.
 
 **`ProductInput`** — [`sdk/src/entities/product.ts`](../sdk/src/entities/product.ts): `sku`, `name`, `description`, `priceNet`, `priceGross`, `vatRate`, `currency`. Omits DB-generated fields (`id`, `createdAt`, embeddings).
+
+### Module-owned UI bundles (spike) — [`sdk/src/ui.ts`](../sdk/src/ui.ts)
+
+Modules can contribute UI pages under `ui`. A page is still registered as serializable metadata, but the rendered body is a module-owned browser ESM bundle emitted into `modules-dist/<package>/ui/*.mjs`.
+
+- **`ModuleUiPage`** v0 supports `kind: "client-island"`. It declares `clientEntry` (for example `ui/import-products.mjs`) and optional importer binding (`target` + `importerName`) so the core can pass exact import endpoint/accept props.
+- The UI bundle exports `solivioUiVersion = 1` and `mount(element, context)`. The host calls it from a client island; the module bundle owns its own React root and can use React state/hooks independently of the host React tree.
+- Page `props` must be JSON-serializable (`JsonValue`). The host passes them inside `ModuleUiMountContext` and adds SDK-typed browser services, including `services.importer.importContent(content)` for pages bound to an importer and `services.files.readAsText(file)` for file upload flows.
+- Module UI source may import `react`, `react-dom/client`, and `react/jsx-runtime`; `yarn modules:build` rewrites those imports to a versioned shared runtime supplied by the host, so UI bundles do not embed duplicate React/ReactDOM copies.
+- **`ModuleUiNavItem`** points at a contributed page by `pageId`; the core derives the actual `/admin/modules/<moduleId>/<pageId>` URL and renders an allowlisted icon.
+- The registry validates ids, icons, page references, client entry paths, importer existence, and target matches at module load. UI asset routes serve only the declared page entry for authenticated admins.
+
+This is intentionally an **isolated React island**, not an in-tree Next/React component. That avoids the current Next App Router bottleneck: runtime `file://` modules are outside the host build graph, so they cannot be imported as normal hydrated Client Components without a separate frontend extension build system. The browser-side trust model is the same as server modules: trusted operator-installed code, not a sandbox.
 
 ### Renderers (reserved) — [`sdk/src/renderer.ts`](../sdk/src/renderer.ts)
 

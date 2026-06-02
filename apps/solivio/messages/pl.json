@@ -601,6 +601,24 @@
     "title": "Oferty",
     "subtitle": "Przeglądaj wygenerowane drafty, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
   },
+  "ModuleImport": {
+    "card": {
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub przeciągnij plik tutaj",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "saving": "Importowanie...",
+        "import": "Importuj"
+      },
+      "importDone": {
+        "product": "Zapisano {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}.",
+        "customer": "Zapisano {count, plural, one {# klienta} few {# klientów} many {# klientów} other {# klientów}}."
+      },
+      "importRowErrors": "{count, plural, one {# wiersza} few {# wierszy} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
+      "importError": "Import nie powiódł się."
+    }
+  },
   "ProductImport": {
     "page": {
       "title": "Importuj produkty",
