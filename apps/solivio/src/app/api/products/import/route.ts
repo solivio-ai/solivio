@@ -2,11 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { plainErrorResponseSchema } from "@/server/api/schemas/common";
+import { requireAdmin } from "@/server/auth/session";
 import { getImporter } from "@/server/modules/registry";
 import { getDefaultEmbeddingModel } from "@/server/products/embeddingConfig";
 import { importProductsWithEmbeddings } from "@/server/products/productEmbeddingService";
-
-import { requireAdmin } from "../../../../server/auth/session";
 
 export const runtime = "nodejs";
 /** Headroom for slow OpenAI embedding round-trips on large catalogs. */
@@ -58,7 +57,7 @@ const productImportErrorResponseSchema = z
  * @auth sessionCookie
  * @bodyDescription CSV file contents to parse, embed, and upsert.
  * @body productImportRequestSchema
- * @response 201:productImportResponseSchema:Number of products imported.
+ * @response 200:productImportResponseSchema:Number of products imported.
  * @add 400:productImportErrorResponseSchema:The import body was invalid.
  * @add 403:PlainErrorResponse:The current session is not allowed to import products.
  * @add 413:PlainErrorResponse:The import payload exceeded the allowed size.

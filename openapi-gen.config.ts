@@ -4,7 +4,7 @@ import path from "node:path";
 import { defineConfig } from "next-openapi-gen";
 
 const apiDirectory = "apps/solivio/src/app/api";
-const apiMethods = ["GET", "POST", "PATCH", "DELETE"] as const;
+const apiMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] as const;
 const betterAuthPathPrefix = "/api/auth/";
 const betterAuthRoutePath = "/api/auth/{all}";
 const outputFile = "solivio.json";
@@ -30,13 +30,13 @@ type OpenApiDocument = {
 };
 
 const apiTags = [
-  { name: "Auth", description: "Better Auth session and identity routes." },
   { name: "System", description: "Operational status and readiness checks." },
   { name: "Customers", description: "Customer search, creation, and import endpoints." },
   { name: "Products", description: "Product candidate data used by matching." },
   { name: "Offers", description: "Draft offer generation boundaries." },
   { name: "Chat", description: "AI chat streams and persisted offer review conversations." },
   { name: "Documents", description: "PDF offer rendering endpoints." },
+  { name: "Auth", description: "Better Auth session and identity routes." },
 ] as const;
 
 export default defineConfig({
@@ -64,7 +64,7 @@ export default defineConfig({
   schemaDir: ["apps/solivio/src/server/api/schemas", "apps/solivio/src/features/offer-pdf/lib"],
   schemaFiles: [".openapi-gen/better-auth.json"],
   schemaType: "zod",
-  excludeSchemas: ["*Schema"],
+  excludeSchemas: ["*Schema", "*PathParams"],
   outputDir: outputDirectory,
   outputFile,
   docsUrl: "api",
@@ -78,7 +78,6 @@ export default defineConfig({
       prefixApiPaths(openApiDocument);
       addCoreComponents(openApiDocument);
       addDefaultAuthResponses(openApiDocument);
-      normalizeRequestBodies(openApiDocument);
       normalizeBinaryResponses(openApiDocument);
       sortPaths(openApiDocument);
       assertRouteCoverage(openApiDocument);
@@ -136,14 +135,6 @@ function addDefaultAuthResponses(document: OpenApiDocument) {
         },
       },
     };
-  }
-}
-
-function normalizeRequestBodies(document: OpenApiDocument) {
-  for (const operation of operations(document)) {
-    if (operation.requestBody && operation.requestBody.required === undefined) {
-      operation.requestBody.required = true;
-    }
   }
 }
 

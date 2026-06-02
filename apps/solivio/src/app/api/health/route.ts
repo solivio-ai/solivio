@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { checkDatabase } from "../../../server/database/checkDatabase";
+import { checkDatabase } from "@/server/database/checkDatabase";
 
 const databaseStatusSchema = z
   .discriminatedUnion("status", [

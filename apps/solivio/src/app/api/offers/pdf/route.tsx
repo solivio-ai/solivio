@@ -3,10 +3,9 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
+import { OfferDocument, sampleOffer } from "@/features/offer-pdf";
+import { pdfOfferRequestSchema } from "@/features/offer-pdf/lib/schema";
 import { errorResponseSchema } from "@/server/api/schemas/common";
-
-import { OfferDocument, sampleOffer } from "../../../../features/offer-pdf";
-import { pdfOfferRequestSchema } from "../../../../features/offer-pdf/lib/schema";
 
 export const runtime = "nodejs";
 

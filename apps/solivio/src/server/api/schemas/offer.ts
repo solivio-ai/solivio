@@ -135,25 +135,6 @@ export const updateOfferLineItemRequestSchema = z
     description: "New quantity for an existing offer line item.",
   });
 
-export const updateOfferItemRequestSchema = z
-  .object({
-    id: z.string().optional(),
-    productId: z.string().nullable().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    quantity: z.number().positive().optional(),
-    requestItem: z.string().optional(),
-    rationale: z.string().optional(),
-    matchSource: matchSourceSchema.nullable().optional(),
-    matchScore: z.number().nullable().optional(),
-  })
-  .strict()
-  .meta({
-    id: "UpdateOfferItemRequest",
-    description:
-      "Editable fields for an offer item. Unit price and currency are read-only from the product catalog.",
-  });
-
 export const updateOfferRequestSchema = z
   .object({
     name: z.string().min(1).optional(),
@@ -161,7 +142,6 @@ export const updateOfferRequestSchema = z
     customerName: z.string().nullable().optional(),
     status: offerStatusSchema.optional(),
     currency: z.string().optional(),
-    items: z.array(updateOfferItemRequestSchema).optional(),
     unmatched: z.array(z.string()).optional(),
     notes: z.array(z.string()).optional(),
     discountPercent: z.number().min(0).max(100).optional(),
@@ -173,21 +153,9 @@ export const updateOfferRequestSchema = z
     description: "Review edits that can be applied to a generated offer draft.",
   });
 
-// ── Persisted shape (creation response) ────────────────────────────────────────
-
-export const createdOfferLineItemSchema = offerItemSchema.meta({
-  id: "CreatedOfferLineItem",
-  description: "Persisted offer line returned immediately after offer creation.",
-});
-
-export const createdOfferSchema = offerSchema.meta({
-  id: "CreatedOffer",
-  description: "Persisted offer shape returned by creation endpoints.",
-});
-
 export const createdOfferResponseSchema = z
   .object({
-    offer: createdOfferSchema,
+    offer: offerSchema,
   })
   .strict()
   .meta({ id: "CreatedOfferResponse" });

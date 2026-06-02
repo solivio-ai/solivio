@@ -55,7 +55,7 @@ const customerImportErrorResponseSchema = z
  * @auth sessionCookie
  * @bodyDescription CSV file contents to parse and upsert.
  * @body customerImportRequestSchema
- * @response 201:customerImportResponseSchema:Number of customers imported.
+ * @response 200:customerImportResponseSchema:Number of customers imported.
  * @add 400:customerImportErrorResponseSchema:The import body was invalid.
  * @add 403:PlainErrorResponse:The current session is not allowed to import customers.
  * @add 413:PlainErrorResponse:The import payload exceeded the allowed size.

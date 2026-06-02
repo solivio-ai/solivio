@@ -54,22 +54,6 @@ export async function GET(request: Request, context: RouteContext) {
   if (auth.response) return auth.response;
 
   const { offerId } = await context.params;
-  const offer = await getOffer(offerId);
-
-  if (!offer) {
-    return NextResponse.json(
-      errorResponseSchema.parse({
-        error: { code: "OFFER_NOT_FOUND", message: `Offer '${offerId}' was not found.` },
-      }),
-      { status: 404 },
-    );
-  }
-
-  const payload = buildPdfOfferPayload(offer);
-  const buffer = await renderToBuffer(
-    (<OfferDocument data={payload} />) as ReactElement<DocumentProps>,
-  );
-
   const query = offerPdfQuerySchema.safeParse({
     download: new URL(request.url).searchParams.get("download") ?? undefined,
   });
@@ -85,6 +69,22 @@ export async function GET(request: Request, context: RouteContext) {
       { status: 400 },
     );
   }
+
+  const offer = await getOffer(offerId);
+
+  if (!offer) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: { code: "OFFER_NOT_FOUND", message: `Offer '${offerId}' was not found.` },
+      }),
+      { status: 404 },
+    );
+  }
+
+  const payload = buildPdfOfferPayload(offer);
+  const buffer = await renderToBuffer(
+    (<OfferDocument data={payload} />) as ReactElement<DocumentProps>,
+  );
 
   const asAttachment = query.data.download === "1";
   const filename = `oferta-${payload.offer.number.replace(/\//g, "-")}.pdf`;
