@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 
-import {
-  errorResponseSchema,
-  offerResponseSchema,
-  updateOfferLineItemRequestSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerResponseSchema, updateOfferLineItemRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import { removeOfferLineItem, updateOfferLineItem } from "@/server/offers/offerService";
 

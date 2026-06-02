@@ -1,16 +1,54 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import {
-  createCustomerRequestSchema,
-  customerResponseSchema,
-  customerSearchQuerySchema,
-  customersResponseSchema,
-  errorResponseSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 import { requireAuth } from "@/server/auth/session";
 import { searchCustomers, upsertCustomerByName } from "@/server/customers/customerRepository";
 
 export const runtime = "nodejs";
+
+const customerSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    source: z.string(),
+  })
+  .strict()
+  .meta({ id: "Customer", description: "A customer available for offer assignment." });
+
+const customersResponseSchema = z
+  .object({
+    customers: z.array(customerSchema),
+  })
+  .strict()
+  .meta({ id: "CustomersResponse" });
+
+const createCustomerRequestSchema = z
+  .object({
+    name: z.string().trim().min(1),
+    source: z.string().trim().min(1).optional(),
+  })
+  .strict()
+  .meta({ id: "CreateCustomerRequest" });
+
+const customerResponseSchema = z
+  .object({
+    customer: customerSchema,
+  })
+  .strict()
+  .meta({ id: "CustomerResponse" });
+
+const customerSearchQuerySchema = z
+  .object({
+    limit: z.coerce.number().int().positive().max(50).optional(),
+    q: z.string().optional(),
+    query: z.string().optional(),
+  })
+  .strict()
+  .meta({
+    id: "CustomerSearchQuery",
+    description: "Optional customer search query and result limit.",
+  });
 
 function customerDto(customer: { id: string; name: string; source: string }) {
   return { id: customer.id, name: customer.name, source: customer.source };

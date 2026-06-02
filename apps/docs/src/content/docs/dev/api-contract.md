@@ -24,9 +24,10 @@ Generation fails when exported route methods and generated OpenAPI operations do
 not match. If a handler exports `PATCH` but is missing `@openapi` metadata,
 generation fails before the docs build can publish a stale contract.
 
-Reusable payload schemas live in `apps/solivio/src/server/api/schemas/`. Route
-handlers import those schemas directly so runtime validation and documentation
-share the same objects.
+Route-only request and response schemas should live beside the route handler
+that validates with them. Shared payload schemas live in concrete modules under
+`apps/solivio/src/server/api/schemas/`, and route handlers import those modules
+directly so runtime validation and documentation share the same objects.
 
 ## Generate the schema
 
@@ -34,7 +35,9 @@ share the same objects.
 yarn openapi:generate
 ```
 
-This runs `next-openapi-gen` with `openapi-gen.config.ts` and writes:
+This writes a Better Auth OpenAPI fragment from
+`auth.api.generateOpenAPISchema()`, then runs `next-openapi-gen` with
+`openapi-gen.config.ts` and writes:
 
 ```text
 apps/docs/public/openapi/solivio.json
@@ -45,11 +48,9 @@ reference pages under `/api/`.
 
 ## Documented endpoints
 
-The generated API reference covers every Next.js route handler under
-`apps/solivio/src/app/api`:
+The generated API reference covers every Solivio-owned Next.js route handler
+under `apps/solivio/src/app/api`:
 
-- `GET /api/auth/{all}`
-- `POST /api/auth/{all}`
 - `POST /api/chat`
 - `GET /api/customers`
 - `POST /api/customers`
@@ -78,13 +79,14 @@ The generated API reference covers every Next.js route handler under
 - `POST /api/products/search`
 - `POST /api/products/text-search`
 
-The Better Auth route is documented as a catch-all because the concrete
-subroutes are owned by the Better Auth handler rather than by Solivio route
-code.
+Auth endpoints are generated from Better Auth's OpenAPI plugin and merged as
+concrete `/api/auth/*` paths instead of being represented by Solivio's
+catch-all route file.
 
 ## Validation policy
 
 Route handlers validate request and response boundaries with the Zod schemas
-exported from `apps/solivio/src/server/api/schemas/` or another directory listed
-in `schemaDir`. Add or change route JSDoc and runtime schemas together when
-handler behavior changes.
+referenced by their route JSDoc. Keep route-only schemas in the route file, and
+move schemas into `apps/solivio/src/server/api/schemas/` or another `schemaDir`
+only when they are shared by multiple handlers or server modules. Add or change
+route JSDoc and runtime schemas together when handler behavior changes.

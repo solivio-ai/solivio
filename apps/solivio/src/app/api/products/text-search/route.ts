@@ -1,15 +1,50 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import type { SearchableField } from "@/features/product-search/searchableFields";
-import {
-  errorResponseSchema,
-  productTextSearchRequestSchema,
-  productTextSearchResponseSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 import { requireAuth } from "@/server/auth/session";
 import { searchProductsByText } from "@/server/products/productTextSearchService";
 
 export const runtime = "nodejs";
+
+const productTextSearchFieldSchema = z
+  .enum(["sku", "name", "description"])
+  .meta({ id: "ProductTextSearchField" });
+
+const productTextSearchRequestSchema = z
+  .object({
+    query: z.string().trim().min(1),
+    limit: z.number().int().positive().max(20).optional(),
+    offset: z.number().int().min(0).optional(),
+    searchFields: z.array(productTextSearchFieldSchema).min(1).optional(),
+  })
+  .strict()
+  .meta({
+    id: "ProductTextSearchRequest",
+    description: "Keyword product search request.",
+  });
+
+const productTextSearchMatchSchema = z
+  .object({
+    id: z.string(),
+    sku: z.string(),
+    name: z.string(),
+    description: z.string(),
+  })
+  .strict()
+  .meta({
+    id: "ProductTextSearchMatch",
+    description: "Database product matched by keyword search.",
+  });
+
+const productTextSearchResponseSchema = z
+  .object({
+    products: z.array(productTextSearchMatchSchema),
+    totalCount: z.number().int().nonnegative(),
+  })
+  .strict()
+  .meta({ id: "ProductTextSearchResponse" });
 
 /**
  * Search products by keyword

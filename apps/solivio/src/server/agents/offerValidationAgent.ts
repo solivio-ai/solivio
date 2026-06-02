@@ -3,8 +3,8 @@ import "server-only";
 import { Agent } from "@voltagent/core";
 import { Output } from "ai";
 
-import type { OfferValidationResult } from "@/server/api/schemas";
-import { offerValidationResultSchema } from "@/server/api/schemas";
+import type { OfferValidationResult } from "@/server/api/schemas/offer-validation";
+import { offerValidationResultSchema } from "@/server/api/schemas/offer-validation";
 
 import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
@@ -34,7 +34,7 @@ Verdict:
 Respond in the same language as the customer request (Polish if request is in Polish).
 `.trim();
 
-export type { OfferValidationResult } from "@/server/api/schemas";
+export type { OfferValidationResult } from "@/server/api/schemas/offer-validation";
 
 type OfferItem = {
   name: string;

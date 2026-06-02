@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { errorResponseSchema, offerChatMessagesResponseSchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerChatMessagesResponseSchema } from "@/server/api/schemas/offer-chat";
 import { requireAuth } from "@/server/auth/session";
 import { getOfferChatMessages, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 

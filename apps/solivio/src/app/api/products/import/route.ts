@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import {
-  plainErrorResponseSchema,
-  productImportErrorResponseSchema,
-  productImportRequestSchema,
-  productImportResponseSchema,
-} from "@/server/api/schemas";
+import { plainErrorResponseSchema } from "@/server/api/schemas/common";
 import { getImporter } from "@/server/modules/registry";
 import { getDefaultEmbeddingModel } from "@/server/products/embeddingConfig";
 import { importProductsWithEmbeddings } from "@/server/products/productEmbeddingService";
@@ -18,6 +14,41 @@ export const maxDuration = 300;
 
 /** ~25 MB — fits large catalogs while blocking runaway payloads. */
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
+
+const productImportRequestSchema = z
+  .object({
+    content: z.string().min(1),
+  })
+  .strict()
+  .meta({
+    id: "ProductImportRequest",
+    description: "CSV file contents for product import.",
+  });
+
+const productImportRowErrorSchema = z
+  .object({
+    index: z.number().int().nonnegative().optional(),
+    sku: z.string().optional(),
+    message: z.string(),
+  })
+  .strict()
+  .meta({ id: "ProductImportRowError" });
+
+const productImportResponseSchema = z
+  .object({
+    count: z.number().int().nonnegative(),
+    errors: z.array(productImportRowErrorSchema),
+  })
+  .strict()
+  .meta({ id: "ProductImportResponse" });
+
+const productImportErrorResponseSchema = z
+  .object({
+    error: z.string(),
+    errors: z.array(productImportRowErrorSchema).optional(),
+  })
+  .strict()
+  .meta({ id: "ProductImportErrorResponse" });
 
 /**
  * Import products with embeddings

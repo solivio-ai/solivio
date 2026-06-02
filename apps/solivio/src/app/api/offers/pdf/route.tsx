@@ -3,9 +3,10 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
 
-import { errorResponseSchema, offerPdfRequestSchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 
 import { OfferDocument, sampleOffer } from "../../../../features/offer-pdf";
+import { pdfOfferRequestSchema } from "../../../../features/offer-pdf/lib/schema";
 
 export const runtime = "nodejs";
 
@@ -38,7 +39,7 @@ export async function GET() {
  * @operationId renderOfferPdf
  * @tag Documents
  * @bodyDescription Offer document payload to render.
- * @body offerPdfRequestSchema
+ * @body pdfOfferRequestSchema
  * @responseContentType application/pdf
  * @response 200:string:The rendered offer PDF.
  * @add 400:ErrorResponse:The PDF payload was invalid.
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = offerPdfRequestSchema.safeParse(body);
+  const parsed = pdfOfferRequestSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       errorResponseSchema.parse({

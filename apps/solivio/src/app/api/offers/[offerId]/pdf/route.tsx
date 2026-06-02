@@ -2,9 +2,10 @@ import type { DocumentProps } from "@react-pdf/renderer";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import type { ReactElement } from "react";
+import { z } from "zod";
 
 import { buildPdfOfferPayload, OfferDocument } from "@/features/offer-pdf";
-import { errorResponseSchema, offerPdfQuerySchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
 
@@ -15,6 +16,16 @@ type RouteContext = {
     offerId: string;
   }>;
 };
+
+const offerPdfQuerySchema = z
+  .object({
+    download: z.enum(["1"]).optional(),
+  })
+  .strict()
+  .meta({
+    id: "OfferPdfQuery",
+    description: "Set download=1 to return the PDF as an attachment.",
+  });
 
 function toPdfResponse(buffer: Buffer, filename: string, asAttachment = false) {
   return new Response(new Uint8Array(buffer), {

@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import type { z } from "zod";
 
 import type { Offer } from "@solivio/domain";
-import {
-  errorResponseSchema,
-  offerResponseSchema,
-  updateOfferRequestSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerResponseSchema, updateOfferRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";

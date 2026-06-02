@@ -1,14 +1,54 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { searchProductsWithVoltAgent } from "@/server/agents/productSearchAgent";
-import {
-  errorResponseSchema,
-  productSearchRequestSchema,
-  productSearchResponseSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
 import { requireAuth } from "@/server/auth/session";
 
 export const runtime = "nodejs";
+
+const productSearchRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .trim()
+      .min(1)
+      .meta({
+        examples: ["Need a battery-ready photovoltaic setup for a small office."],
+      }),
+    limit: z.number().int().positive().max(10).optional(),
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchRequest",
+    description: "Prompt used for semantic product matching.",
+  });
+
+const productSearchMatchSchema = z
+  .object({
+    id: z.string(),
+    sku: z.string(),
+    name: z.string(),
+    description: z.string(),
+    similarity: z.number().min(-1).max(1),
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchMatch",
+    description: "A database product matched semantically against the prompt.",
+  });
+
+const productSearchResponseSchema = z
+  .object({
+    prompt: z.string(),
+    answer: z.string(),
+    products: z.array(productSearchMatchSchema),
+  })
+  .strict()
+  .meta({
+    id: "ProductSearchResponse",
+    description: "Semantic product matches plus an agent summary.",
+  });
 
 /**
  * Search products from a prompt

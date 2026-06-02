@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { errorResponseSchema, offerRevisionResponseSchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerRevisionResponseSchema } from "@/server/api/schemas/offer-revision";
 import { requireAuth } from "@/server/auth/session";
 import { getRevision } from "@/server/offers/offerRevisionService";
 

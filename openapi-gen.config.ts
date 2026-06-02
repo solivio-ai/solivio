@@ -5,6 +5,8 @@ import { defineConfig } from "next-openapi-gen";
 
 const apiDirectory = "apps/solivio/src/app/api";
 const apiMethods = ["GET", "POST", "PATCH", "DELETE"] as const;
+const betterAuthPathPrefix = "/api/auth/";
+const betterAuthRoutePath = "/api/auth/{all}";
 const outputFile = "solivio.json";
 const outputDirectory = "apps/docs/public/openapi";
 
@@ -60,6 +62,7 @@ export default defineConfig({
   apiDir: apiDirectory,
   routerType: "app",
   schemaDir: ["apps/solivio/src/server/api/schemas", "apps/solivio/src/features/offer-pdf/lib"],
+  schemaFiles: [".openapi-gen/better-auth.json"],
   schemaType: "zod",
   excludeSchemas: ["*Schema"],
   outputDir: outputDirectory,
@@ -74,7 +77,6 @@ export default defineConfig({
 
       prefixApiPaths(openApiDocument);
       addCoreComponents(openApiDocument);
-      addBetterAuthRoute(openApiDocument);
       addDefaultAuthResponses(openApiDocument);
       normalizeRequestBodies(openApiDocument);
       normalizeBinaryResponses(openApiDocument);
@@ -115,45 +117,6 @@ function addCoreComponents(document: OpenApiDocument) {
     required: ["error"],
     additionalProperties: false,
     description: "Returned when no valid Better Auth session is present.",
-  };
-}
-
-function addBetterAuthRoute(document: OpenApiDocument) {
-  document.paths ??= {};
-  const parameters = [
-    {
-      name: "all",
-      in: "path",
-      required: true,
-      schema: { type: "string" },
-    },
-  ];
-
-  document.paths["/api/auth/{all}"] = {
-    get: {
-      operationId: "handleBetterAuthGet",
-      summary: "Handle Better Auth GET route",
-      description:
-        "Catch-all route delegated to Better Auth for session reads, provider callbacks, and other auth GET flows.",
-      tags: ["Auth"],
-      parameters,
-      responses: {
-        "200": { description: "Better Auth handled the GET request." },
-        "400": { description: "Better Auth rejected the request." },
-      },
-    } as OpenApiOperation,
-    post: {
-      operationId: "handleBetterAuthPost",
-      summary: "Handle Better Auth POST route",
-      description:
-        "Catch-all route delegated to Better Auth for sign-in, sign-up, sign-out, and other auth POST flows.",
-      tags: ["Auth"],
-      parameters,
-      responses: {
-        "200": { description: "Better Auth handled the POST request." },
-        "400": { description: "Better Auth rejected the request." },
-      },
-    } as OpenApiOperation,
   };
 }
 
@@ -204,7 +167,9 @@ function sortPaths(document: OpenApiDocument) {
 function assertRouteCoverage(document: OpenApiDocument) {
   const expected = new Set(
     discoverRoutes(apiDirectory).flatMap((route) =>
-      route.methods.map((method) => `${method} ${route.openApiPath}`),
+      route.openApiPath === betterAuthRoutePath
+        ? []
+        : route.methods.map((method) => `${method} ${route.openApiPath}`),
     ),
   );
   const actual = new Set(
@@ -218,7 +183,9 @@ function assertRouteCoverage(document: OpenApiDocument) {
   );
 
   const missing = [...expected].filter((operation) => !actual.has(operation));
-  const extra = [...actual].filter((operation) => !expected.has(operation));
+  const extra = [...actual].filter(
+    (operation) => !expected.has(operation) && !isBetterAuthOperation(operation),
+  );
 
   if (missing.length > 0 || extra.length > 0) {
     throw new Error(
@@ -231,6 +198,11 @@ function assertRouteCoverage(document: OpenApiDocument) {
         .join(" "),
     );
   }
+}
+
+function isBetterAuthOperation(operation: string) {
+  const [_method, routePath] = operation.split(" ");
+  return routePath?.startsWith(betterAuthPathPrefix);
 }
 
 function operations(document: OpenApiDocument) {

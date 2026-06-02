@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { validateOfferWithAgent } from "@/server/agents/offerValidationAgent";
-import { errorResponseSchema, offerValidationResponseSchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { offerValidationResponseSchema } from "@/server/api/schemas/offer-validation";
 import { requireAuth } from "@/server/auth/session";
 import { getOffer } from "@/server/offers/offerService";
 

@@ -8,7 +8,9 @@ The publishable API contract is generated OpenAPI 3.1:
 
 - Route source: `apps/solivio/src/app/api/**/route.ts`
 - Route metadata: `next-openapi-gen` JSDoc on exported route handlers
-- Reusable schemas: `apps/solivio/src/server/api/schemas/`
+- Request/response schemas: route-local Zod objects unless reused
+- Shared schemas: concrete modules under `apps/solivio/src/server/api/schemas/`
+- Auth schema: Better Auth OpenAPI plugin fragment
 - Generator: `openapi-gen.config.ts` with `next-openapi-gen`
 - Generated schema: `apps/docs/public/openapi/solivio.json`
 - Docs reference route: `http://localhost:4321/api`
@@ -18,15 +20,16 @@ The generator reads the actual Next.js route files and only includes exported
 handlers marked with `@openapi`. The config keeps a route coverage guard that
 fails generation when exported HTTP methods and generated operations diverge.
 Keep endpoint metadata on the exported handler, and import validation schemas
-directly from the reusable schema barrel.
+directly from the route file or the concrete shared schema module that owns
+them.
 
 ## Endpoints
 
-The generated schema follows the current route tree. Run
-`yarn openapi:generate` after adding, removing, or changing an API route.
+The generated schema follows the current route tree. Better Auth endpoints are
+merged from Better Auth's generated OpenAPI schema and appear as concrete
+`/api/auth/*` paths. Run `yarn openapi:generate` after adding, removing, or
+changing an API route.
 
-- `GET /api/auth/{all}`
-- `POST /api/auth/{all}`
 - `POST /api/chat`
 - `GET /api/customers`
 - `POST /api/customers`

@@ -4,7 +4,8 @@ import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
 import { getChatAgent } from "@/server/agents/chatAgent";
-import { chatRequestSchema, errorResponseSchema } from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { chatRequestSchema } from "@/server/api/schemas/offer-chat";
 import { requireAuth } from "@/server/auth/session";
 import { appendOfferChatMessage, getOfferChatThread } from "@/server/offer-chat/offerChatService";
 import { getOfferDraft } from "@/server/offers/offerDraftStore";

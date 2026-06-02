@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import type { GeneratedOffer } from "@/server/agents/offerGenerationAgent";
-import {
-  createdOfferResponseSchema,
-  errorResponseSchema,
-  quickOfferRequestSchema,
-} from "@/server/api/schemas";
+import { errorResponseSchema } from "@/server/api/schemas/common";
+import { createdOfferResponseSchema, quickOfferRequestSchema } from "@/server/api/schemas/offer";
 import { requireAuth } from "@/server/auth/session";
 import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { createOffer } from "@/server/offers/offerService";
