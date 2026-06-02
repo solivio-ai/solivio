@@ -1,0 +1,52 @@
+name: Docker build
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/docker-build.yml"
+      - ".yarn/releases/**"
+      - ".yarnrc.yml"
+      - "apps/docs/package.json"
+      - "apps/solivio/**"
+      - "favicon.png"
+      - "modules/**"
+      - "package.json"
+      - "packages/**"
+      - "scripts/**"
+      - "sdk/**"
+      - "solivio-logo.png"
+      - "solivio-logo-dark.png"
+      - "solivio.config.json"
+      - "tsconfig.base.json"
+      - "yarn.lock"
+  workflow_dispatch:
+
+concurrency:
+  group: docker-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build the full production image (deps → module-builder → build → runner)
+      # without pushing. This catches Dockerfile breakage on PRs, before it can
+      # reach the push-to-main "Build & push image" workflow.
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/solivio/Dockerfile
+          target: runner
+          push: false
