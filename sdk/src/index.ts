@@ -12,6 +12,8 @@ export { defineModule } from "./define-module.js";
 // ── Entity DTOs ──────────────────────────────────────────────────────────────
 export type {
   CustomerInput,
+  OfferImportInput,
+  OfferImportLineItem,
   OfferItemView,
   OfferSnapshot,
   OfferSnapshotLineItem,
@@ -28,6 +30,7 @@ export type {
   ImportRowError,
   ImportStatus,
   ImportTarget,
+  OfferImporterDefinition,
   ProductImporterDefinition,
 } from "./importer.js";
 // ── Module context (the seam to shared infrastructure) ───────────────────────

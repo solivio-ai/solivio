@@ -6,6 +6,7 @@
       "newOffer": "Nowa oferta",
       "catalogUpload": "Import katalogu",
       "customerUpload": "Import klientów",
+      "orderUpload": "Import zamówień",
       "users": "Użytkownicy",
       "adminGroup": "Admin"
     },
@@ -639,6 +640,27 @@
         "import": "Importuj"
       },
       "importDone": "Zapisano {count, plural, one {# klienta} few {# klientów} many {# klientów} other {# klientów}}.",
+      "importRowErrors": "{count, plural, one {# wiersza} few {# wierszy} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
+      "importError": "Import nie powiódł się."
+    }
+  },
+  "OfferImport": {
+    "page": {
+      "title": "Importuj historyczne zamówienia",
+      "description": "Prześlij plik CSV z historycznymi zamówieniami, aby zaimportować je jako oferty tylko do odczytu."
+    },
+    "card": {
+      "title": "Import zamówień",
+      "description": "Wybierz plik CSV z numerem zamówienia, nazwą klienta i pozycjami. Zaimportowane zamówienia są historycznymi rekordami tylko do odczytu.",
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub przeciągnij plik tutaj",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "saving": "Importowanie...",
+        "import": "Importuj"
+      },
+      "importDone": "Zapisano {count, plural, one {# zamówienie} few {# zamówienia} many {# zamówień} other {# zamówień}}.",
       "importRowErrors": "{count, plural, one {# wiersza} few {# wierszy} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
       "importError": "Import nie powiódł się."
     }

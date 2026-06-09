@@ -104,7 +104,7 @@ export async function restoreRevision(
   let blocked = false;
   await db.transaction(async (tx) => {
     const locked = await lockOfferForUpdate(offerId, tx);
-    if (!locked || locked.status === "accepted") {
+    if (!locked || locked.status === "accepted" || locked.status === "imported") {
       blocked = true;
       return;
     }

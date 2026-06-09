@@ -129,12 +129,12 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   if (!offer) {
     const existing = isUuid(offerId) ? await getOffer(offerId) : null;
-    if (existing?.status === "accepted") {
+    if (existing?.status === "accepted" || existing?.status === "imported") {
       return NextResponse.json(
         errorResponseSchema.parse({
           error: {
             code: "offer_locked",
-            message: "This offer has been accepted and cannot be modified.",
+            message: "This offer is locked and cannot be modified.",
           },
         }),
         { status: 403 },

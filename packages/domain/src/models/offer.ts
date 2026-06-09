@@ -1,4 +1,4 @@
-export type OfferStatus = "draft" | "accepted" | "rejected";
+export type OfferStatus = "draft" | "accepted" | "rejected" | "imported";
 
 export type MatchSource = "exact" | "semantic" | "manual";
 

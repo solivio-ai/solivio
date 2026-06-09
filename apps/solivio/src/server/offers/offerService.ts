@@ -219,7 +219,9 @@ export async function updateOfferMeta(
     const existing = await findOfferById(offerId, tx);
     if (!existing) return null;
 
-    // Locked offer can only be reopened to draft.
+    // Imported offers are fully read-only.
+    if (existing.status === "imported") return null;
+    // Accepted offer can only be reopened to draft.
     if (existing.status === "accepted" && data.status !== "draft") {
       return null;
     }
@@ -266,6 +268,7 @@ export async function updateOfferMeta(
 export async function deleteOffer(offerId: string): Promise<boolean> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
+  if (existing.status === "imported") return false;
   await deleteOfferRow(offerId);
   return true;
 }
@@ -282,7 +285,7 @@ export async function addProductToOffer(
 ): Promise<Offer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
-  if (existing.status === "accepted") return "locked";
+  if (existing.status === "accepted" || existing.status === "imported") return "locked";
 
   if (existing.items.some((i) => i.productId === productId)) return "duplicate";
 
@@ -328,7 +331,7 @@ export async function updateOfferLineItem(
 ): Promise<Offer | null | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
-  if (existing.status === "accepted") return "locked";
+  if (existing.status === "accepted" || existing.status === "imported") return "locked";
 
   const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return null;
@@ -357,7 +360,7 @@ export async function removeOfferLineItem(
 ): Promise<boolean | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
-  if (existing.status === "accepted") return "locked";
+  if (existing.status === "accepted" || existing.status === "imported") return "locked";
 
   const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return false;

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
@@ -23,6 +23,7 @@ export type InsertOfferData = {
   unmatched: string[];
   discountPercent?: number;
   discountAmount?: number;
+  createdAt?: Date;
 };
 
 export type InsertOfferItemData = {
@@ -306,6 +307,7 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
     .leftJoin(customers, eq(customers.id, offers.customerId))
     .leftJoin(requests, eq(requests.id, offers.requestId))
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .where(ne(offers.status, "imported"))
     .groupBy(offers.id, customers.name, requests.rawText)
     .orderBy(desc(offers.createdAt))
     .limit(limit);

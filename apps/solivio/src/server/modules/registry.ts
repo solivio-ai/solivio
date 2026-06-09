@@ -21,6 +21,7 @@ import type {
   ImportTarget,
   ModuleContributions,
   ModuleFactory,
+  OfferImportInput,
   ProductInput,
   RendererDefinition,
 } from "@solivio/sdk";
@@ -165,6 +166,9 @@ export async function getImporter(
 export async function getImporter(
   target: "customer",
 ): Promise<ImporterDefinition<unknown, CustomerInput>>;
+export async function getImporter(
+  target: "offer",
+): Promise<ImporterDefinition<unknown, OfferImportInput>>;
 export async function getImporter(
   target: ImportTarget = "product",
 ): Promise<AnyImporterDefinition> {
