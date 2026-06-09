@@ -166,11 +166,20 @@ export type OrderRowImportError = {
   message: string;
 };
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T[\d:.Z+-]+)?$/;
+
 function parsePositiveNumber(value: string): number | undefined {
   const trimmed = value.trim().replace(",", ".");
   if (!trimmed) return undefined;
   const n = Number(trimmed);
   return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
+/** Parse an ISO-8601 date string. Returns undefined for non-ISO or invalid dates. */
+function parseIsoDate(value: string): Date | undefined {
+  if (!ISO_DATE_RE.test(value)) return undefined;
+  const ts = Date.parse(value);
+  return Number.isNaN(ts) ? undefined : new Date(ts);
 }
 
 function parseNonNegativeNumber(value: string): number | undefined {
