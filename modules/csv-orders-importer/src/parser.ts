@@ -87,6 +87,8 @@ function detectDelimiter(text: string): string {
 }
 
 export function parseCsv(text: string): CsvParseResult {
+  // Strip UTF-8 BOM (0xFEFF) prepended by Excel and many Windows tools.
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
   const delimiter = detectDelimiter(text);
   const rawRows: string[][] = [];
   let field = "";
