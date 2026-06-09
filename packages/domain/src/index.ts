@@ -2,6 +2,7 @@
 
 export type { Customer, CustomerSource } from "./models/customer";
 export type { MatchSource, Offer, OfferItem, OfferStatus } from "./models/offer";
+export { OFFER_STATUS } from "./models/offer";
 export type {
   OfferRevision,
   OfferRevisionSnapshot,

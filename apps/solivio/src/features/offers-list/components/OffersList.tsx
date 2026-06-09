@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   CircleDashed,
+  CircleX,
   FileText,
   ListFilter,
   MoreHorizontal,
@@ -21,6 +22,8 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
+import type { OfferStatus } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -76,7 +79,6 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { calculateNetTotal } from "@/lib/offerTotals";
 
-type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
 type SortKey = "createdAtDesc" | "createdAtAsc" | "valueDesc" | "valueAsc" | "customerAsc";
 type T = ReturnType<typeof useTranslations<"OffersList">>;
@@ -127,18 +129,22 @@ const statusConfig: Record<
     badge: "default" | "secondary" | "outline";
   }
 > = {
-  draft: {
+  [OFFER_STATUS.DRAFT]: {
     icon: CircleDashed,
     badge: "outline",
   },
-  accepted: {
+  [OFFER_STATUS.ACCEPTED]: {
     icon: CheckCircle2,
     badge: "default",
+  },
+  [OFFER_STATUS.REJECTED]: {
+    icon: CircleX,
+    badge: "secondary",
   },
 };
 
 function isKnownStatus(status: string): status is OfferStatus {
-  return status === "draft" || status === "accepted";
+  return (Object.values(OFFER_STATUS) as string[]).includes(status);
 }
 
 function toIsoString(value: string | Date | undefined) {
@@ -313,15 +319,17 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
           {persisted ? (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={(event) => {
-                  event.preventDefault();
-                  onEditOpenChange(true);
-                }}
-              >
-                <Pencil size={14} aria-hidden="true" />
-                {t("actions.editDetails")}
-              </DropdownMenuItem>
+              {offer.status !== OFFER_STATUS.ACCEPTED && (
+                <DropdownMenuItem
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    onEditOpenChange(true);
+                  }}
+                >
+                  <Pencil size={14} aria-hidden="true" />
+                  {t("actions.editDetails")}
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onSelect={(event) => {
@@ -543,8 +551,8 @@ export function OffersList({ offers, hideHeader }: Props) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t("filters.all")}</SelectItem>
-                    <SelectItem value="draft">{t("filters.draft")}</SelectItem>
-                    <SelectItem value="accepted">{t("filters.accepted")}</SelectItem>
+                    <SelectItem value={OFFER_STATUS.DRAFT}>{t("filters.draft")}</SelectItem>
+                    <SelectItem value={OFFER_STATUS.ACCEPTED}>{t("filters.accepted")}</SelectItem>
                     <SelectItem value="needs-attention">{t("filters.needsAttention")}</SelectItem>
                   </SelectContent>
                 </Select>
