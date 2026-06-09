@@ -15,9 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { CustomerSelection } from "@/features/customers";
+import { CustomerCombobox } from "@/features/customers";
 
 import { OfferGenerationProgress } from "./OfferGenerationProgress";
 
@@ -28,7 +29,7 @@ export function NewOfferForm() {
   const router = useRouter();
   const t = useTranslations("NewOffer.form");
   const generationT = useTranslations("NewOffer.generation");
-  const [customerName, setCustomerName] = useState("");
+  const [customer, setCustomer] = useState<CustomerSelection>({ id: null, name: "" });
   const [clientRequest, setClientRequest] = useState("");
   const [noticeKey, setNoticeKey] = useState<NoticeKey>("initial");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +63,11 @@ export function NewOfferForm() {
       const response = await fetch("/api/offers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerName, clientRequest }),
+        body: JSON.stringify({
+          customerId: customer.id,
+          customerName: customer.name,
+          clientRequest,
+        }),
       });
 
       if (!response.ok) {
@@ -96,12 +101,11 @@ export function NewOfferForm() {
           <form className="grid gap-3.5" onSubmit={handleSubmit}>
             <div className="grid gap-2">
               <Label htmlFor="customer-name">{t("customerName.label")}</Label>
-              <Input
+              <CustomerCombobox
                 id="customer-name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                value={customer}
+                onChange={setCustomer}
                 placeholder={t("customerName.placeholder")}
-                className="bg-background/60"
                 disabled={isSubmitting}
               />
             </div>

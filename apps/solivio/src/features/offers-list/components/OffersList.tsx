@@ -34,13 +34,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -57,7 +50,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -76,14 +68,19 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { calculateNetTotal } from "@/lib/offerTotals";
 
+import { EditOfferDetailsDialog } from "./EditOfferDetailsDialog";
+
 type OfferStatus = "draft" | "accepted";
 type StatusFilter = "all" | OfferStatus | "needs-attention";
 type SortKey = "createdAtDesc" | "createdAtAsc" | "valueDesc" | "valueAsc" | "customerAsc";
 type T = ReturnType<typeof useTranslations<"OffersList">>;
 
+const UNASSIGNED_CUSTOMER_FILTER = "__unassigned";
+
 type OfferRow = {
   id: string;
   name?: string | null;
+  customerId?: string | null;
   customerName: string | null;
   clientRequest?: string | null;
   status: string;
@@ -102,6 +99,7 @@ type OfferRow = {
 type NormalizedOfferRow = {
   id: string;
   name: string;
+  customerId: string | null;
   customerName: string | null;
   clientRequest: string | null;
   formName: string;
@@ -158,6 +156,7 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
   return {
     id: offer.id,
     name: formName || offer.customerName?.trim() || t("fallbacks.unnamedOffer"),
+    customerId: offer.customerId ?? null,
     customerName: offer.customerName,
     clientRequest: offer.clientRequest ?? null,
     formName,
@@ -239,17 +238,6 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editName, setEditName] = useState(offer.formName);
-  const [editCustomer, setEditCustomer] = useState(offer.formCustomerName);
-
-  const onEditOpenChange = (open: boolean) => {
-    setEditOpen(open);
-    if (open) {
-      setEditName(offer.formName);
-      setEditCustomer(offer.formCustomerName);
-    }
-  };
 
   async function handleDelete() {
     setDeleting(true);
@@ -260,27 +248,6 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
       router.refresh();
     } finally {
       setDeleting(false);
-    }
-  }
-
-  async function handleSaveEdit() {
-    const name = editName.trim();
-    if (!name) return;
-    setSaving(true);
-    try {
-      const response = await fetch(`/api/offers/${offer.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          customerName: editCustomer.trim() ? editCustomer.trim() : null,
-        }),
-      });
-      if (!response.ok) return;
-      onEditOpenChange(false);
-      router.refresh();
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -316,7 +283,7 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
               <DropdownMenuItem
                 onSelect={(event) => {
                   event.preventDefault();
-                  onEditOpenChange(true);
+                  setEditOpen(true);
                 }}
               >
                 <Pencil size={14} aria-hidden="true" />
@@ -337,47 +304,13 @@ function OfferActions({ offer }: { offer: NormalizedOfferRow }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("actions.editDetailsTitle")}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="grid gap-2">
-              <Label htmlFor={`offer-edit-name-${offer.id}`}>{t("actions.fieldName")}</Label>
-              <Input
-                id={`offer-edit-name-${offer.id}`}
-                value={editName}
-                onChange={(event) => setEditName(event.target.value)}
-                autoComplete="off"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor={`offer-edit-customer-${offer.id}`}>
-                {t("actions.fieldCustomerName")}
-              </Label>
-              <Input
-                id={`offer-edit-customer-${offer.id}`}
-                value={editCustomer}
-                onChange={(event) => setEditCustomer(event.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
-              {t("actions.deleteCancel")}
-            </Button>
-            <Button
-              type="button"
-              disabled={saving || !editName.trim()}
-              onClick={() => void handleSaveEdit()}
-            >
-              {t("actions.saveChanges")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditOfferDetailsDialog
+        offerId={offer.id}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        initialName={offer.formName}
+        initialCustomer={{ id: offer.customerId, name: offer.formCustomerName }}
+      />
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
@@ -424,12 +357,25 @@ export function OffersList({ offers, hideHeader }: Props) {
   const t = useTranslations("OffersList");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [customerFilter, setCustomerFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("createdAtDesc");
 
   const normalizedOffers = useMemo(
     () => offers.map((offer) => normalizeOffer(offer, t)),
     [offers, t],
   );
+
+  const customerFilterOptions = useMemo(() => {
+    const byId = new Map<string, string>();
+    for (const offer of normalizedOffers) {
+      if (offer.customerId && offer.customerName?.trim()) {
+        byId.set(offer.customerId, offer.customerName.trim());
+      }
+    }
+    return [...byId.entries()].sort(([, left], [, right]) =>
+      left.localeCompare(right, locale, { sensitivity: "base" }),
+    );
+  }, [locale, normalizedOffers]);
 
   const filteredOffers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -440,7 +386,13 @@ export function OffersList({ offers, hideHeader }: Props) {
         offer.status === statusFilter ||
         (statusFilter === "needs-attention" && offer.unmatchedCount > 0);
 
+      const matchesCustomer =
+        customerFilter === "all" ||
+        (customerFilter === UNASSIGNED_CUSTOMER_FILTER && !offer.customerId) ||
+        offer.customerId === customerFilter;
+
       if (!matchesStatus) return false;
+      if (!matchesCustomer) return false;
       if (!normalizedQuery) return true;
 
       return [
@@ -472,7 +424,7 @@ export function OffersList({ offers, hideHeader }: Props) {
       }
     });
     return sorted;
-  }, [normalizedOffers, query, statusFilter, sortKey, locale]);
+  }, [normalizedOffers, query, statusFilter, customerFilter, sortKey, locale]);
 
   const visibleOffers = hideHeader ? normalizedOffers : filteredOffers;
 
@@ -551,6 +503,26 @@ export function OffersList({ offers, hideHeader }: Props) {
               </div>
 
               <div className="flex w-full items-center gap-2 sm:w-auto">
+                <UserRound size={16} aria-hidden="true" className="text-muted-foreground" />
+                <Select value={customerFilter} onValueChange={setCustomerFilter}>
+                  <SelectTrigger className="w-full sm:w-56" aria-label={t("filters.customerLabel")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("filters.allCustomers")}</SelectItem>
+                    <SelectItem value={UNASSIGNED_CUSTOMER_FILTER}>
+                      {t("filters.unassignedCustomer")}
+                    </SelectItem>
+                    {customerFilterOptions.map(([customerId, customerName]) => (
+                      <SelectItem key={customerId} value={customerId}>
+                        {customerName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex w-full items-center gap-2 sm:w-auto">
                 <ArrowUpDown size={16} aria-hidden="true" className="text-muted-foreground" />
                 <Select value={sortKey} onValueChange={(value) => setSortKey(value as SortKey)}>
                   <SelectTrigger className="w-full sm:w-52" aria-label={t("sort.label")}>
@@ -584,6 +556,7 @@ export function OffersList({ offers, hideHeader }: Props) {
                   onClick={() => {
                     setQuery("");
                     setStatusFilter("all");
+                    setCustomerFilter("all");
                   }}
                 >
                   {t("actions.clearFilters")}

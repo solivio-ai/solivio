@@ -550,6 +550,7 @@ export function OfferBuilder({
       <OfferBuilderActionBar
         assistantToggle={assistantToggle}
         compact={actionBarCompact}
+        formCustomerId={offer.customerId ?? null}
         formCustomerName={offer.customerName?.trim() ?? ""}
         formName={offer.name?.trim() ?? ""}
         offerId={offer.id}

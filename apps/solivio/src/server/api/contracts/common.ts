@@ -38,6 +38,7 @@ export type ApiContract = {
 export const apiTags = [
   { name: "Auth", description: "Better Auth session and identity routes." },
   { name: "System", description: "Operational status and readiness checks." },
+  { name: "Customers", description: "Customer search, creation, and import endpoints." },
   { name: "Products", description: "Product candidate data used by matching." },
   { name: "Requests", description: "Customer request intake and requirement extraction." },
   { name: "Offers", description: "Draft offer generation boundaries." },
