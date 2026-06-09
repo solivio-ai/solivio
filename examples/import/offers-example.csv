@@ -1,0 +1,31 @@
+order_ref;customer;item;sku;quantity;unit_price;vat;date;currency
+ORD-2024-001;Acme Corporation;Wyłącznik zmierzchowy SCHNEIDER SE-0335Z 100 lx;IV-012-00335;10;112.98;23;2024-01-15;PLN
+ORD-2024-001;Acme Corporation;Czujnik zmierzchowy OSPEL OP-0371X 2 lx;IV-012-00371;5;66.11;23;2024-01-15;PLN
+ORD-2024-002;Globex Industries;Termostat pokojowy ORNO OR-0797X LCD;IV-014-00797;8;112.36;23;2024-01-22;PLN
+ORD-2024-002;Globex Industries;Regulator temperatury SCHNEIDER SE-0840B LCD;IV-014-00840;4;173.50;23;2024-01-22;PLN
+ORD-2024-002;Globex Industries;Termostat pokojowy ORNO OR-0856M OLED;IV-014-00856;6;131.29;23;2024-01-22;PLN
+ORD-2024-003;Warsaw Electric Sp. z o.o.;Kamera IP kopułowa DSC DC-2693M 2MP 2.8-12 (motozoom)mm;;3;486.47;23;2024-02-05;PLN
+ORD-2024-003;Warsaw Electric Sp. z o.o.;Kamera IP DAHUA DH-2607T 5MP 6mm;;2;471.87;23;2024-02-05;PLN
+ORD-2024-004;Initech Solutions;Czujka pasywna podczerwieni HIKVISION DS-3109E 10m;IV-033-03109;12;94.88;23;2024-02-12;PLN
+ORD-2024-004;Initech Solutions;Panel alarmowy AJAX AJ-3394A 128 stref;IV-034-03394;1;1131.55;23;2024-02-12;PLN
+ORD-2024-004;Initech Solutions;Rejestrator DVR ORNO OR-3525G 64-kan. 12MP;IV-035-03525;1;763.53;23;2024-02-12;PLN
+ORD-2024-005;Bluth Company;Programator gniazdkowy HAGER HG-1696D tygodniowy;IV-022-01696;20;55.96;23;2024-02-20;PLN
+ORD-2024-005;Bluth Company;Programator gniazdkowy ZAMEL ZM-1527B dobowy;IV-022-01527;15;29.41;23;2024-02-20;PLN
+ORD-2024-006;Nowa Automatyka SA;Zegar astronomiczny LEGRAND LG-2232R 2-kan.;;2;403.59;23;2024-03-01;PLN
+ORD-2024-007;Acme Corporation;Czujnik wycieku wody ORNO OR-1134K Wi-Fi;IV-015-01134;6;53.74;23;2024-03-08;PLN
+ORD-2024-007;Acme Corporation;Wyłącznik zmierzchowy ABB AB-0277D 10 lx;IV-012-00277;4;115.90;23;2024-03-08;PLN
+ORD-2024-008;Umbrella Ltd;Zasilacz impulsowy ORNO OR-7701G 5V/2A;IV-071-07701;10;47.40;23;2024-03-15;PLN
+ORD-2024-008;Umbrella Ltd;Przekaźnik czasowy ORNO OR-2372E wieloFunkcyjny;IV-025-02372;5;83.51;23;2024-03-15;PLN
+ORD-2024-009;Vandelay Industries;Napęd do bramy skrzydłowej SOMFY SF-5985T 800kg;IV-054-05985;1;2797.03;23;2024-03-22;PLN
+ORD-2024-009;Vandelay Industries;Klawiatura PIN CAME CE-5424P 50 userów;IV-052-05424;2;287.59;23;2024-03-22;PLN
+ORD-2024-010;ElektroBud Sp. z o.o.;Wago WAGO WG-6320Z 8-bieg.;IV-061-06320;100;5.54;23;2024-04-03;PLN
+ORD-2024-011;Initrode;Czujnik dźwięku OSPEL OP-0623H 80 dB;IV-013-00623;8;60.01;23;2024-04-10;PLN
+ORD-2024-011;Initrode;Czujnik akustyczny LEGRAND LG-0695R 70 dB;IV-013-00695;6;76.03;23;2024-04-10;PLN
+ORD-2024-012;Soylent Corp;Włącznik czasowy natynkowy ORNO OR-1928E IP44;IV-023-01928;5;94.16;23;2024-04-18;PLN
+ORD-2024-013;Globex Industries;Wiertarka udarowa BOSCH BO-9236E 180Nm;IV-082-09236;3;749.03;23;2024-05-06;PLN
+ORD-2024-013;Globex Industries;Frezarka do bruzd MILWAUKEE ML-8991A 1300W 125mm;IV-081-08991;2;2487.67;23;2024-05-06;PLN
+ORD-2024-014;Acme Corporation;Kamera IP kopułowa DSC DC-2693M 2MP 2.8-12 (motozoom)mm;IV-031-02693;4;486.47;23;2024-05-14;PLN
+ORD-2024-014;Acme Corporation;Rejestrator DVR ORNO OR-3525G 64-kan. 12MP;IV-035-03525;1;763.53;23;2024-05-14;PLN
+ORD-2024-014;Acme Corporation;Czujka pasywna podczerwieni HIKVISION DS-3109E 10m;IV-033-03109;8;94.88;23;2024-05-14;PLN
+ORD-2024-015;Bluth Company;Przekaźnik czasowy ORNO OR-2372E wieloFunkcyjny;IV-025-02372;10;83.51;23;2024-05-28;PLN
+ORD-2024-015;Bluth Company;Programator gniazdkowy ZAMEL ZM-1527B dobowy;IV-022-01527;8;29.41;23;2024-05-28;PLN
