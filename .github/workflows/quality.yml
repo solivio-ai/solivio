@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Generate module wiring
+        run: yarn generate
+
       - name: Check formatting, lint rules, and imports
         run: yarn check
 

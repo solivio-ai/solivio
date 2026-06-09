@@ -35,6 +35,8 @@ for (const dir of dirs) {
   } catch {
     continue; // not a package
   }
+  // New-style codegen modules are wired by `yarn generate`, not bundled.
+  if (pkg.solivio?.module === true) continue;
   const entry = path.join(modulesDir, dir.name, "src", "index.ts");
   const outDir = path.join(outRoot, pkg.name);
   const outfile = path.join(outDir, "index.mjs");

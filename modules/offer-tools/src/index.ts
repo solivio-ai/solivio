@@ -1,8 +1,8 @@
-import { defineModule } from "@solivio/sdk";
+import { defineLegacyModule } from "@solivio/sdk";
 
 import { createOfferTools } from "./tools.js";
 
-export default defineModule({
+export default defineLegacyModule({
   id: "offer-tools",
   name: "Offer Tools",
   version: "0.1.0",

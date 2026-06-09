@@ -1,29 +1,40 @@
 {
   "name": "@solivio/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Types and helpers for building Solivio modules.",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./runtime": "./src/runtime.ts"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@standard-schema/spec": "^1.1.0"
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "drizzle-orm": "^0.45.2",
     "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "*",
+    "react": "*"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
