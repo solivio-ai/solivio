@@ -5584,6 +5584,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-order-history@workspace:modules/order-history":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-order-history@workspace:modules/order-history"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/sdk@workspace:*, @solivio/sdk@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@solivio/sdk@workspace:sdk"

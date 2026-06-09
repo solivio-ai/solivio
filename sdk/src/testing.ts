@@ -66,6 +66,7 @@ export function createTestContext(overrides: TestContextOverrides = {}): ModuleC
   const services: CoreServices = {
     products: overrides.services?.products ?? unprovided("services.products"),
     offers: overrides.services?.offers ?? unprovided("services.offers"),
+    history: overrides.services?.history ?? unprovided("services.history"),
   };
 
   return {

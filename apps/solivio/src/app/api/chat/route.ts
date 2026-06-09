@@ -3,6 +3,7 @@ import type { UIMessage } from "ai";
 import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
+import { CONTEXT_KEY_CUSTOMER_ID, CONTEXT_KEY_OFFER_ID } from "@/server/agents/agentToolAdapter";
 import { getChatAgent } from "@/server/agents/chatAgent";
 import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
@@ -161,8 +162,11 @@ export async function POST(request: Request) {
   setWaitUntil(after);
 
   const chatAgent = await getChatAgent();
+  const contextMap = new Map<string | symbol, unknown>();
+  if (serverOffer?.customerId) contextMap.set(CONTEXT_KEY_CUSTOMER_ID, serverOffer.customerId);
+  if (offerId) contextMap.set(CONTEXT_KEY_OFFER_ID, offerId);
   const result = await chatAgent.streamText(messagesWithContext, {
-    context: offerContext ? { currentOffer: offerContext } : undefined,
+    context: contextMap,
     onFinish: async ({ text }) => {
       if (!shouldPersist || !text.trim()) return;
 

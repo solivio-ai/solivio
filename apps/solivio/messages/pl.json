@@ -487,14 +487,14 @@
       "label": "Wątek czatu",
       "newChat": "Nowy czat"
     },
-    "welcome": "Mogę wyjaśnić tę ofertę, podsumować zapytanie klienta, przejrzeć dopasowania produktów i zaproponować ulepszenia.",
+    "welcome": "Mogę wyjaśnić tę ofertę, zaproponować ulepszenia i pomóc z powtórzeniem zamówienia na podstawie historii zakupów klienta.",
     "input": {
       "placeholder": "Powiedz AI, co zmienić lub zadaj pytanie..."
     },
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
+      "upsell": "Pokaż ostatnie zamówienia klienta"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",

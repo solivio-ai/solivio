@@ -9,6 +9,29 @@
  */
 import type { OfferView, ProductInput, ProductMatch } from "./entities/index.js";
 
+export interface PastOfferLineItem {
+  productId: string | null;
+  sku?: string | null;
+  name: string;
+  quantity: number;
+  unitPriceNet: number;
+  vatRate: number;
+  currency: string;
+}
+
+export interface PastOffer {
+  offerId: string;
+  name: string;
+  status: string;
+  createdAt: string;
+  currency: string;
+  lineItems: PastOfferLineItem[];
+}
+
+export interface OfferHistoryService {
+  recentForCustomer(input: { customerId: string; limit?: number }): Promise<PastOffer[]>;
+}
+
 export interface ProductSearchOptions {
   /** Max results to return. */
   limit?: number;
@@ -76,4 +99,5 @@ export interface OfferService {
 export interface CoreServices {
   products: ProductService;
   offers: OfferService;
+  history: OfferHistoryService;
 }

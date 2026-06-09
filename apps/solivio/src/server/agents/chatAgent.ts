@@ -1,26 +1,10 @@
 import "server-only";
 
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { Agent, createTool } from "@voltagent/core";
-import type { z } from "zod";
-
-import type { AgentTool } from "@solivio/sdk";
+import { Agent } from "@voltagent/core";
 
 import { getAgentTools } from "../modules/registry";
+import { toVoltagentTool } from "./agentToolAdapter";
 import { getModelFor } from "./modelConfig";
-
-/** Adapt an SDK AgentTool (framework-agnostic) into a Voltagent tool. */
-function toVoltagentTool(tool: AgentTool) {
-  return createTool({
-    name: tool.name,
-    description: tool.description,
-    // SDK tools type parameters as StandardSchemaV1; module authors supply Zod,
-    // which Voltagent consumes. Cast at this single adaptation boundary.
-    parameters: tool.parameters as unknown as z.ZodType,
-    execute: async (args: StandardSchemaV1.InferOutput<AgentTool["parameters"]>) =>
-      tool.execute(args),
-  });
-}
 
 const INSTRUCTIONS = [
   "You are Solivio Assistant, a B2B sales offer review assistant.",
@@ -45,6 +29,7 @@ const INSTRUCTIONS = [
   "Use the line item ID from the offer context for those tools, not the product ID.",
   "After a tool call succeeds, confirm the change to the user in plain language.",
 
+  "When the user refers to past orders, previous purchases, 'same as last time', or asks what this customer usually orders, call recall_order_history first to retrieve their history before responding.",
   "If no offer context is provided, answer as a general Solivio assistant.",
   "Keep answers concise, practical, and focused on helping a salesperson review the draft.",
 ].join(" ");
@@ -62,7 +47,7 @@ export async function getChatAgent(): Promise<Agent> {
   if (_chatAgent) return _chatAgent;
   if (_chatAgentPromise) return _chatAgentPromise;
   _chatAgentPromise = (async () => {
-    const tools = (await getAgentTools()).map(toVoltagentTool);
+    const tools = (await getAgentTools("chat-agent")).map(toVoltagentTool);
     _chatAgent = new Agent({
       name: "chat-agent",
       instructions: INSTRUCTIONS,

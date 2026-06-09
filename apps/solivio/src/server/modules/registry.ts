@@ -14,6 +14,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import type {
+  AgentId,
   AgentTool,
   AnyImporterDefinition,
   CustomerInput,
@@ -142,8 +143,9 @@ export async function getModules(): Promise<LoadedModule[]> {
   return [...(await loadModules())];
 }
 
-export async function getAgentTools(): Promise<AgentTool[]> {
-  return (await loadModules()).flatMap((m) => m.agentTools);
+export async function getAgentTools(agentId: AgentId): Promise<AgentTool[]> {
+  const all = (await loadModules()).flatMap((m) => m.agentTools);
+  return all.filter((t) => t.agents.includes(agentId));
 }
 
 export async function getImporters(): Promise<AnyImporterDefinition[]> {

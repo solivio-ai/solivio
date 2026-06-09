@@ -1,8 +1,8 @@
 // ── Module definition ───────────────────────────────────────────────────────
 
 // ── Capability surfaces ──────────────────────────────────────────────────────
-export type { AgentTool } from "./agent-tool.js";
-export { defineAgentTool } from "./agent-tool.js";
+export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.js";
+export { AGENT_IDS, defineAgentTool } from "./agent-tool.js";
 export type {
   DefineModuleConfig,
   ModuleContributions,
@@ -48,9 +48,12 @@ export type {
   BulkAddResult,
   CoreServices,
   OfferDeleteResult,
+  OfferHistoryService,
   OfferLineItemInput,
   OfferMutationResult,
   OfferService,
+  PastOffer,
+  PastOfferLineItem,
   ProductSearchOptions,
   ProductService,
 } from "./services.js";

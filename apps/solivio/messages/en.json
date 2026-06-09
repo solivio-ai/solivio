@@ -487,14 +487,14 @@
       "label": "Chat thread",
       "newChat": "Start new chat"
     },
-    "welcome": "I can explain this offer, summarize the client request, review product matches, and suggest improvements.",
+    "welcome": "I can explain this offer, suggest improvements, and help with repeat orders using this customer's order history.",
     "input": {
       "placeholder": "Tell the AI what to change or ask..."
     },
     "suggestions": {
       "summarize": "Summarize client request",
       "mostExpensive": "List 3 most expensive items in offer",
-      "upsell": "Suggest additional products for upsell"
+      "upsell": "Show customer's recent orders"
     },
     "errors": {
       "loadThreads": "Could not load chat threads.",
