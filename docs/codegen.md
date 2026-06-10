@@ -19,6 +19,20 @@ yarn generate --watch    # re-run on changes to modules/ or solivio.config.ts (y
 `yarn dev`, `yarn build`, `yarn setup`, and the Dockerfile all run the generator, as
 does CI before `yarn check`.
 
+## Config resolution
+
+The deployment manifest is resolved in order:
+
+1. `SOLIVIO_CONFIG_PATH` (env, absolute or repo-relative) — explicit override;
+2. `solivio.config.local.ts` — gitignored; written by the operator overlay tool
+   (`yarn overlay link <dir>`, see `scripts/overlay.mjs` and the public
+   "Extending Solivio" guide) and refreshed from the overlay source on every
+   run;
+3. `solivio.config.ts` — the in-repo default.
+
+In-tree modules (including overlay symlinks under `modules/`) are wired with
+**relative** import specifiers; npm-installed modules keep package specifiers.
+
 ## Inputs
 
 1. **`solivio.config.ts`** (`scripts/generate/config.mts`) — the default-exported

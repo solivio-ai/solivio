@@ -40,7 +40,8 @@
     "benchmark": "yarn workspace @solivio/app benchmark",
     "benchmark:report": "yarn workspace @solivio/app benchmark:report",
     "benchmark:readme": "yarn workspace @solivio/app benchmark:readme",
-    "volt": "volt"
+    "volt": "volt",
+    "overlay": "node scripts/overlay.mjs"
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",

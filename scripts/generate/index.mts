@@ -15,6 +15,7 @@
  *
  * Usage:  yarn generate [--watch] [--check]
  */
+import fsExtra from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -75,6 +76,11 @@ async function generate(checkOnly: boolean): Promise<void> {
 async function watch(): Promise<void> {
   const { watch: chokidarWatch } = await import("chokidar");
   const targets = [path.join(repoRoot, "modules"), path.join(repoRoot, "solivio.config.ts")];
+  const overlayState = path.join(repoRoot, ".solivio-overlay.json");
+  if (fsExtra.existsSync(overlayState)) {
+    const state = JSON.parse(fsExtra.readFileSync(overlayState, "utf8")) as { overlayDir?: string };
+    if (state.overlayDir) targets.push(path.join(state.overlayDir, "solivio.config.ts"));
+  }
   let timer: NodeJS.Timeout | undefined;
   let running = false;
   const run = async () => {

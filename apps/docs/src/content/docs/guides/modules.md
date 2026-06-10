@@ -56,19 +56,12 @@ the deliberate trade of the build-time model: modules get the full surface
 (pages, API routes, database tables, translations) instead of being limited to
 runtime-loadable plugins.
 
-## Out-of-tree modules
+## Custom modules without forking
 
-A third-party module is an npm package with the same shape as an in-tree
-module: TypeScript source under `src/`, a `defineModule({...})` manifest at
-`src/index.ts`, and `"solivio": { "module": true }` in its `package.json`.
-Install it, add the package name to `solivio.config.ts`, run `yarn generate`,
-and rebuild:
-
-```bash
-yarn add @acme/solivio-module-erp-sync
-# add "@acme/solivio-module-erp-sync" to solivio.config.ts modules
-yarn generate && yarn build
-```
+Operators run their own modules from a separate repository linked into a
+stock checkout with `yarn overlay link` — no fork, conflict-free base
+updates. See **[Extending Solivio](/guides/extending/)** for the full
+workflow, including npm-published modules.
 
 ## Database migrations
 

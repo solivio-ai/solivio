@@ -36,14 +36,21 @@ function stubContent(scanned: ScannedExports, allowed: string[], specifier: stri
 export function emitAppStubs(writer: Writer, modules: ModuleModel[], repoRoot: string): void {
   let needsAdminGuard = false;
 
+  /** Stub → module-source specifier; relative for in-tree modules (see registries.mts). */
+  const specifierFor = (module: ModuleModel, stubRel: string, srcPath: string): string => {
+    if (!module.inTree) return `${module.packageName}/${srcPath}`;
+    const fromDir = path.posix.dirname(`${APP}/${stubRel}`);
+    return path.posix.relative(fromDir, `modules/${module.id}/src/${srcPath}`);
+  };
+
   for (const module of modules) {
     const groupDir = module.routeGroup === "protected" ? "(protected)/(gen)" : "(gen-public)";
 
     for (const page of module.pages) {
-      const specifier = `${module.packageName}/${page.srcPath}`;
+      const targetDir = page.routePath === "" ? groupDir : `${groupDir}/${page.routePath}`;
+      const specifier = specifierFor(module, `${targetDir}/${page.kind}.tsx`, page.srcPath);
       const content = stubContent(page.exports, PAGE_EXPORTS, specifier);
       if (content === "") continue;
-      const targetDir = page.routePath === "" ? groupDir : `${groupDir}/${page.routePath}`;
       writer.write(`${APP}/${targetDir}/${page.kind}.tsx`, content);
       if (
         module.routeGroup === "protected" &&
@@ -54,7 +61,11 @@ export function emitAppStubs(writer: Writer, modules: ModuleModel[], repoRoot: s
     }
 
     for (const route of module.apiRoutes) {
-      const specifier = `${module.packageName}/${route.srcPath}`;
+      const specifier = specifierFor(
+        module,
+        `api/(gen)/${route.routePath}/route.ts`,
+        route.srcPath,
+      );
       const content = stubContent(route.exports, HTTP_METHODS, specifier);
       if (content === "") continue;
       writer.write(`${APP}/api/(gen)/${route.routePath}/route.ts`, content);

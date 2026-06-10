@@ -54,3 +54,6 @@ apps/solivio/src/generated/
 apps/solivio/src/app/(protected)/(gen)/
 apps/solivio/src/app/(gen-public)/
 apps/solivio/src/app/api/(gen)/
+
+# Operator overlay manifest (linked by scripts/overlay.mjs) — never commit
+solivio.config.local.ts

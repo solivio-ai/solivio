@@ -62,6 +62,7 @@ Before research or coding, match the task to a row and read the linked guide. A 
 | Overall architecture, layering, and module boundaries | `docs/architecture.md` |
 | Database schema, per-owner migration journals, table adoption, or the entity-relationship model | `docs/database.md` + `docs/erd.md` |
 | HTTP API routes and their conventions | `docs/api.md` |
+| Operator overlays — running custom modules without forking (`yarn overlay`) | `docs/codegen.md` → Config resolution + public guide `apps/docs/.../guides/extending.md` |
 | Building/publishing images, deployment | `docs/publishing.md` + this file → **Build** / **Deploy** |
 | Product scope and what the MVP includes | `docs/mvp-scope.md` |
 | Why a load-bearing technical decision was made | `docs/adr/` |

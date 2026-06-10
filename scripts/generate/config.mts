@@ -24,8 +24,43 @@ function isPackageRef(ref: string): boolean {
   return ref.startsWith("@") || ref.includes("/");
 }
 
+/**
+ * Deployment config resolution order:
+ *   1. SOLIVIO_CONFIG_PATH (absolute or repo-relative) — explicit override,
+ *   2. solivio.config.local.ts — gitignored operator overlay manifest,
+ *   3. solivio.config.ts — the in-repo default.
+ */
+export function resolveConfigPath(repoRoot: string): string {
+  const fromEnv = process.env.SOLIVIO_CONFIG_PATH?.trim();
+  if (fromEnv) {
+    const absolute = path.isAbsolute(fromEnv) ? fromEnv : path.join(repoRoot, fromEnv);
+    if (!fs.existsSync(absolute)) {
+      throw new Error(`SOLIVIO_CONFIG_PATH points to a missing file: ${absolute}`);
+    }
+    return absolute;
+  }
+  const localPath = path.join(repoRoot, "solivio.config.local.ts");
+  refreshOverlayConfig(repoRoot, localPath);
+  if (fs.existsSync(localPath)) return localPath;
+  return path.join(repoRoot, "solivio.config.ts");
+}
+
+/** Keep the copied overlay manifest in sync with its source (scripts/overlay.mjs). */
+function refreshOverlayConfig(repoRoot: string, localPath: string): void {
+  const statePath = path.join(repoRoot, ".solivio-overlay.json");
+  if (!fs.existsSync(statePath)) return;
+  const state = JSON.parse(fs.readFileSync(statePath, "utf8")) as { overlayDir?: string };
+  if (!state.overlayDir) return;
+  const source = path.join(state.overlayDir, "solivio.config.ts");
+  if (!fs.existsSync(source)) return;
+  const content = fs.readFileSync(source, "utf8");
+  if (!fs.existsSync(localPath) || fs.readFileSync(localPath, "utf8") !== content) {
+    fs.writeFileSync(localPath, content);
+  }
+}
+
 export async function loadConfig(repoRoot: string): Promise<LoadedConfig> {
-  const configPath = path.join(repoRoot, "solivio.config.ts");
+  const configPath = resolveConfigPath(repoRoot);
   if (!fs.existsSync(configPath)) {
     throw new Error(`Missing ${configPath}`);
   }

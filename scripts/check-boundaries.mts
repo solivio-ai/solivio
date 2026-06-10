@@ -108,7 +108,7 @@ if (fs.existsSync(modulesDir)) {
 for (const filePath of walk(path.join(repoRoot, "apps/solivio/src"))) {
   if (isGenerated(filePath)) continue;
   for (const specifier of importsOf(filePath)) {
-    if (specifier.startsWith("@solivio/module-")) {
+    if (specifier.startsWith("@solivio/module-") || /^\.\.(\/\.\.)*\/modules\//.test(specifier)) {
       errors.push(
         `${rel(filePath)}: app code imports module "${specifier}" directly — go through @/generated/*`,
       );

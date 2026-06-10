@@ -7,7 +7,16 @@ const GEN = "apps/solivio/src/generated";
 
 const camel = (id: string): string => id.replace(/-([a-z0-9])/g, (_, c: string) => c.toUpperCase());
 
-const spec = (module: ModuleModel, srcPath: string): string => `${module.packageName}/${srcPath}`;
+/**
+ * Import specifier for a module source file as seen from src/generated/.
+ * In-tree modules (including operator-overlay symlinks) use relative paths —
+ * package-name resolution through symlink chains is unreliable under
+ * Turbopack; npm-installed modules keep their package specifiers.
+ */
+const spec = (module: ModuleModel, srcPath: string): string =>
+  module.inTree
+    ? `../../../../modules/${module.id}/src/${srcPath}`
+    : `${module.packageName}/${srcPath}`;
 
 export function emitRegistries(
   writer: Writer,
