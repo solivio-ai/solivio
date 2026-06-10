@@ -14,7 +14,7 @@ export type UpsertProductRow = {
   name: string;
   description: string;
   source: string;
-  embedding: number[];
+  embedding: number[] | null;
 };
 
 export type ProductSummaryRow = {

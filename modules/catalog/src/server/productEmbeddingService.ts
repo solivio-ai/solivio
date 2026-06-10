@@ -4,7 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { embedMany } from "ai";
 
 import type { ProductInput } from "@solivio/sdk";
-import { getAi, getDb } from "@solivio/sdk/runtime";
+import { getAi, getDb, getLogger } from "@solivio/sdk/runtime";
 
 import { upsertPricesBatch } from "./productPriceRepository.ts";
 import { findIdsBySku, upsertMany } from "./productRepository.ts";
@@ -15,10 +15,22 @@ export async function importProductsWithEmbeddings(
 ): Promise<{ count: number }> {
   if (rows.length === 0) return { count: 0 };
 
-  const { embeddings } = await embedMany({
-    model: openai.embedding(model ?? getAi().embeddingModelId()),
-    values: rows.map((r) => `${r.sku} ${r.name} ${r.description}`),
-  });
+  // Semantic search is an enhancement, not a requirement: without an OpenAI
+  // key (e.g. the default demo path or CI) products import with null
+  // embeddings and text search still works.
+  let embeddings: Array<number[] | null>;
+  if (process.env.OPENAI_API_KEY?.trim()) {
+    const result = await embedMany({
+      model: openai.embedding(model ?? getAi().embeddingModelId()),
+      values: rows.map((r) => `${r.sku} ${r.name} ${r.description}`),
+    });
+    embeddings = result.embeddings;
+  } else {
+    getLogger("catalog").warn(
+      "OPENAI_API_KEY is not set — importing products without embeddings (semantic search disabled for these rows)",
+    );
+    embeddings = rows.map(() => null);
+  }
 
   await getDb().transaction(async (tx) => {
     await upsertMany(
