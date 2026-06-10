@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { OFFER_STATUS } from "@solivio/domain";
+
 import { routeGroup } from "./common";
 
 export const offerPathParamsSchema = z
@@ -20,7 +22,7 @@ export const offerProductPathParamsSchema = z
 // ── Enums ──────────────────────────────────────────────────────────────────────
 
 export const offerStatusSchema = z
-  .enum(["draft", "accepted", "rejected", "imported"])
+  .enum([OFFER_STATUS.DRAFT, OFFER_STATUS.ACCEPTED, OFFER_STATUS.REJECTED, OFFER_STATUS.IMPORTED])
   .meta({ id: "OfferStatus" });
 
 export const matchSourceSchema = z

@@ -2,6 +2,7 @@ import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -71,7 +72,7 @@ export function OfferSummary({
           setDiscountPercent={setDiscountPercent}
           subtotal={subtotal}
           total={total}
-          isLocked={status === "accepted"}
+          isLocked={status === OFFER_STATUS.ACCEPTED}
         />
       </CardContent>
     </Card>

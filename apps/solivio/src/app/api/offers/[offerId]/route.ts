@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { z } from "zod";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import {
   errorResponseSchema,
   offerResponseSchema,
@@ -129,7 +130,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   if (!offer) {
     const existing = isUuid(offerId) ? await getOffer(offerId) : null;
-    if (existing?.status === "accepted" || existing?.status === "imported") {
+    if (existing?.status === OFFER_STATUS.ACCEPTED || existing?.status === OFFER_STATUS.IMPORTED) {
       return NextResponse.json(
         errorResponseSchema.parse({
           error: {

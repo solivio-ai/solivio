@@ -3,6 +3,7 @@ import "server-only";
 import { inArray } from "drizzle-orm";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import { appConfig } from "../config/appConfig";
@@ -145,7 +146,7 @@ export async function createOffer(
         customerId: customer?.id ?? null,
         requestId: request.id,
         userId: userId ?? null,
-        status: "draft",
+        status: OFFER_STATUS.DRAFT,
         currency: offerCurrency,
         notes: generated.notes,
         unmatched: [...generated.unmatched, ...extraUnmatched, ...hallucinated],
@@ -220,9 +221,9 @@ export async function updateOfferMeta(
     if (!existing) return null;
 
     // Imported offers are fully read-only.
-    if (existing.status === "imported") return null;
+    if (existing.status === OFFER_STATUS.IMPORTED) return null;
     // Accepted offer can only be reopened to draft.
-    if (existing.status === "accepted" && data.status !== "draft") {
+    if (existing.status === OFFER_STATUS.ACCEPTED && data.status !== OFFER_STATUS.DRAFT) {
       return null;
     }
 
@@ -254,7 +255,7 @@ export async function updateOfferMeta(
     }
 
     const hasContentChanges = Object.keys(definedPatch).some((key) => key !== "status");
-    if (data.status === "accepted") {
+    if (data.status === OFFER_STATUS.ACCEPTED) {
       await saveRevision(offerId, userId ?? null, new Date(), tx);
     } else if (hasContentChanges) {
       await saveRevision(offerId, userId ?? null, undefined, tx);
@@ -285,7 +286,8 @@ export async function addProductToOffer(
 ): Promise<Offer | null | "duplicate" | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
-  if (existing.status === "accepted" || existing.status === "imported") return "locked";
+  if (existing.status === OFFER_STATUS.ACCEPTED || existing.status === OFFER_STATUS.IMPORTED)
+    return "locked";
 
   if (existing.items.some((i) => i.productId === productId)) return "duplicate";
 
@@ -331,7 +333,8 @@ export async function updateOfferLineItem(
 ): Promise<Offer | null | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return null;
-  if (existing.status === "accepted" || existing.status === "imported") return "locked";
+  if (existing.status === OFFER_STATUS.ACCEPTED || existing.status === OFFER_STATUS.IMPORTED)
+    return "locked";
 
   const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return null;
@@ -360,7 +363,8 @@ export async function removeOfferLineItem(
 ): Promise<boolean | "locked"> {
   const existing = await findOfferById(offerId);
   if (!existing) return false;
-  if (existing.status === "accepted" || existing.status === "imported") return "locked";
+  if (existing.status === OFFER_STATUS.ACCEPTED || existing.status === OFFER_STATUS.IMPORTED)
+    return "locked";
 
   const item = existing.items.find((i) => i.id === offerItemId);
   if (!item) return false;

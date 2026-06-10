@@ -4,6 +4,7 @@ import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 
 import { db } from "../database/db";
 import { customers, offerItems, offers, products, requests, users } from "../database/schema";
@@ -307,7 +308,7 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
     .leftJoin(customers, eq(customers.id, offers.customerId))
     .leftJoin(requests, eq(requests.id, offers.requestId))
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
-    .where(ne(offers.status, "imported"))
+    .where(ne(offers.status, OFFER_STATUS.IMPORTED))
     .groupBy(offers.id, customers.name, requests.rawText)
     .orderBy(desc(offers.createdAt))
     .limit(limit);
@@ -318,7 +319,7 @@ export async function findRecentOffersByCustomer(
   { limit = 10 }: { limit?: number } = {},
   tx: Tx = db,
 ): Promise<OfferRow[]> {
-  const HISTORY_STATUSES = ["imported", "accepted"] as const;
+  const HISTORY_STATUSES = [OFFER_STATUS.IMPORTED, OFFER_STATUS.ACCEPTED] as const;
 
   const offerIds = await tx
     .select({ id: offers.id })
