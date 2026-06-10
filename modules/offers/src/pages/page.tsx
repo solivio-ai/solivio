@@ -7,6 +7,7 @@ import { AppPage } from "@solivio/ui/components/app-page.tsx";
 import { Button } from "@solivio/ui/components/button.tsx";
 import { Card, CardContent, CardTitle } from "@solivio/ui/components/card.tsx";
 
+import { IntegrationsSection } from "../components/dashboard/IntegrationsSection.tsx";
 import { OffersList } from "../components/offers-list/components/OffersList.tsx";
 import { QuickOfferSearch } from "../components/product-search/index.ts";
 import { getRecentOffers } from "../server/offerService.ts";
@@ -47,6 +48,7 @@ export default async function Home() {
         <OffersList offers={recentOffers} hideHeader />
       </div>
 
+      <IntegrationsSection />
       <Slot id="dashboard.cards" />
     </AppPage>
   );

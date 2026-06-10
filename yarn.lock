@@ -5621,18 +5621,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@solivio/module-csv-customers@workspace:modules/csv-customers-importer":
+"@solivio/module-csv-import@workspace:modules/csv-import":
   version: 0.0.0-use.local
-  resolution: "@solivio/module-csv-customers@workspace:modules/csv-customers-importer"
-  dependencies:
-    "@solivio/sdk": "workspace:*"
-    typescript: "npm:^6.0.3"
-  languageName: unknown
-  linkType: soft
-
-"@solivio/module-csv-products@workspace:modules/csv-products-importer":
-  version: 0.0.0-use.local
-  resolution: "@solivio/module-csv-products@workspace:modules/csv-products-importer"
+  resolution: "@solivio/module-csv-import@workspace:modules/csv-import"
   dependencies:
     "@solivio/sdk": "workspace:*"
     typescript: "npm:^6.0.3"

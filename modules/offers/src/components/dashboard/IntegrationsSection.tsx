@@ -44,7 +44,7 @@ const INTEGRATIONS: IntegrationConfig[] = [
 ];
 
 export async function IntegrationsSection() {
-  const t = await getTranslations("Dashboard");
+  const t = await getTranslations("offers.dashboard");
 
   return (
     <section className="space-y-3">

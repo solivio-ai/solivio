@@ -9,5 +9,9 @@ import { defineConfig } from "@solivio/sdk/config";
  * for out-of-tree modules; use `[ref, { ...options }]` to pass options.
  */
 export default defineConfig({
-  modules: ["catalog", "customers", "offers", "offer-chat"],
+  modules: ["catalog", "customers", "offers", "offer-chat", "csv-import"],
+  slots: {
+    "product.importer": "csv-import/csv-products",
+    "customer.importer": "csv-import/csv-customers",
+  },
 });

@@ -1,13 +1,18 @@
-import type { CustomerInput, ImporterDefinition, ImportResult } from "@solivio/sdk";
+import type { ImporterDefinition, ImportResult, ProductInput } from "@solivio/sdk";
 
-import { extractCustomerRows, getMissingColumns, parseCsv, resolveColumnMap } from "./parser.js";
+import {
+  extractProductRows,
+  getMissingColumns,
+  parseCsv,
+  resolveColumnMap,
+} from "./productParser.ts";
 
-export const csvCustomerImporter: ImporterDefinition<unknown, CustomerInput> = {
-  name: "csv-customers",
-  description: "Imports customers from a CSV file into the core customer list.",
-  target: "customer",
+export const csvProductImporter: ImporterDefinition<unknown, ProductInput> = {
+  name: "csv-products",
+  description: "Imports products from a CSV file into the core product catalog.",
+  target: "product",
   accept: [".csv", "text/csv"],
-  run: async (payload: unknown): Promise<ImportResult<CustomerInput>> => {
+  run: async (payload: unknown): Promise<ImportResult<ProductInput>> => {
     if (typeof payload !== "string") {
       return {
         status: "failed",
@@ -37,8 +42,8 @@ export const csvCustomerImporter: ImporterDefinition<unknown, CustomerInput> = {
       };
     }
 
-    const { records, rowErrors } = extractCustomerRows(rows, columnMap);
-    const errors: ImportResult<CustomerInput>["errors"] = [...rowErrors];
+    const { records, rowErrors } = extractProductRows(rows, columnMap);
+    const errors: ImportResult<ProductInput>["errors"] = [...rowErrors];
 
     if (records.length === 0) {
       return {

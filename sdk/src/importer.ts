@@ -43,6 +43,6 @@ export interface ImporterDefinition<TPayload = unknown, TRecord = unknown> {
   run: (payload: TPayload) => Promise<ImportResult<TRecord>>;
 }
 
-export type AnyImporterDefinition = ImporterDefinition<never, unknown>;
+export type AnyImporterDefinition = ImporterDefinition<unknown, unknown>;
 export type ProductImporterDefinition = ImporterDefinition<unknown, ProductInput>;
 export type CustomerImporterDefinition = ImporterDefinition<unknown, CustomerInput>;

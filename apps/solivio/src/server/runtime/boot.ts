@@ -2,10 +2,10 @@ import "server-only";
 
 import type { AuthGuards, SolivioRuntime } from "@solivio/sdk/runtime";
 import { setRuntime } from "@solivio/sdk/runtime";
-import { agentTools } from "@/generated/ai";
+import { agentTools, importerProviders } from "@/generated/ai";
 import { subscribers } from "@/generated/events";
 import { jobs } from "@/generated/jobs";
-import { moduleOptions } from "@/generated/modules";
+import { moduleOptions, slotBindings } from "@/generated/modules";
 import { createServices } from "@/generated/services";
 import { db } from "@/server/database/db";
 import { createModuleLogger } from "@/server/modules/logger";
@@ -43,12 +43,30 @@ export function bootModuleRuntime(): void {
         getModelFor(role as Parameters<typeof getModelFor>[0]) ?? getModelFor("chat"),
     },
     auth,
-    // Bridge to the legacy runtime-bundle registry until the importer modules
-    // move to the codegen system (then this reads the generated ai registry).
+    // Importer resolution over the generated registry: an explicit slot
+    // binding ("<moduleId>/<importerName>") wins; otherwise a sole provider
+    // for the target is used implicitly.
     importer: async (target) => {
-      const { getImporter } = await import("@/server/modules/registry");
-      // The legacy registry exposes per-target overloads, not the union.
-      return target === "product" ? getImporter("product") : getImporter("customer");
+      const binding = slotBindings[`${target}.importer`];
+      if (binding) {
+        const [moduleId, importerName] = binding.split("/");
+        const bound = importerProviders.find(
+          (provider) => provider.moduleId === moduleId && provider.importer.name === importerName,
+        );
+        if (!bound) {
+          throw new Error(`Slot "${target}.importer" is bound to unknown importer "${binding}"`);
+        }
+        return bound.importer;
+      }
+      const candidates = importerProviders.filter(
+        (provider) => provider.importer.target === target,
+      );
+      if (candidates.length === 1) return candidates[0].importer;
+      throw new Error(
+        candidates.length === 0
+          ? `No importer provides target "${target}"`
+          : `Multiple importers provide target "${target}" — bind a slot in solivio.config.ts`,
+      );
     },
     moduleOptions,
     agentTools,
