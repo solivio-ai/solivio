@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { z } from "zod";
 
+import type { Offer } from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
 import {
   errorResponseSchema,
@@ -8,6 +9,7 @@ import {
   updateOfferRequestSchema,
 } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
+import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { getOfferDraft, updateOfferDraft } from "@/server/offers/offerDraftStore";
 import { deleteOffer, getOffer, updateOfferMeta } from "@/server/offers/offerService";
 
@@ -15,6 +17,8 @@ function asDraftPatch(data: z.infer<typeof updateOfferRequestSchema>) {
   return {
     status: data.status,
     name: data.name,
+    customerId: data.customerId,
+    customerName: data.customerName,
     unmatched: data.unmatched,
     discountPercent: data.discountPercent,
     discountAmount: data.discountAmount,
@@ -81,28 +85,48 @@ export async function PATCH(request: Request, context: RouteContext) {
   const hasPersistedPatch =
     input.data.status !== undefined ||
     input.data.name !== undefined ||
+    input.data.customerId !== undefined ||
+    input.data.customerName !== undefined ||
     input.data.discountPercent !== undefined ||
     input.data.discountAmount !== undefined ||
     input.data.unmatched !== undefined ||
     input.data.notes !== undefined ||
     input.data.currency !== undefined;
 
-  const offer =
-    isUuid(offerId) && hasPersistedPatch
-      ? ((await updateOfferMeta(
-          offerId,
-          {
-            status: input.data.status,
-            name: input.data.name,
-            currency: input.data.currency,
-            discountPercent: input.data.discountPercent,
-            discountAmount: input.data.discountAmount,
-            notes: input.data.notes,
-            unmatched: input.data.unmatched,
+  let offer: Offer | null;
+  try {
+    offer =
+      isUuid(offerId) && hasPersistedPatch
+        ? await updateOfferMeta(
+            offerId,
+            {
+              status: input.data.status,
+              name: input.data.name,
+              customerId: input.data.customerId,
+              customerName: input.data.customerName,
+              currency: input.data.currency,
+              discountPercent: input.data.discountPercent,
+              discountAmount: input.data.discountAmount,
+              notes: input.data.notes,
+              unmatched: input.data.unmatched,
+            },
+            auth.session.user.id,
+          )
+        : updateOfferDraft(offerId, asDraftPatch(input.data));
+  } catch (error) {
+    if (error instanceof CustomerSelectionError) {
+      return NextResponse.json(
+        errorResponseSchema.parse({
+          error: {
+            code: error.code,
+            message: error.message,
           },
-          auth.session.user.id,
-        )) ?? updateOfferDraft(offerId, asDraftPatch(input.data)))
-      : updateOfferDraft(offerId, asDraftPatch(input.data));
+        }),
+        { status: 400 },
+      );
+    }
+    throw error;
+  }
 
   if (!offer) {
     const existing = isUuid(offerId) ? await getOffer(offerId) : null;

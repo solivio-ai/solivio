@@ -3,26 +3,35 @@
  * They are pure transformation functions: raw payload in, normalized records out.
  * The core receives the records and handles persistence, deduplication, and indexing.
  *
- * Importers are generic over the entity they produce. v0 wires only the
- * `product` target; `customer`/`request`/etc. are reserved for later.
+ * Importers are generic over the entity they produce. The core routes records
+ * by target and owns persistence, deduplication, and indexing.
  */
 
-import type { ProductInput } from "./entities/product.js";
+import type { CustomerInput, ProductInput } from "./entities/index.js";
 
 /** Canonical entity an importer produces. The core routes records by target. */
-export type ImportTarget = "product";
+export type ImportTarget = "product" | "customer";
 
 /** `success` — all rows parsed; `partial` — some rows failed; `failed` — no records produced. */
 export type ImportStatus = "success" | "partial" | "failed";
 
-export interface ImportResult<TRecord = ProductInput> {
+export interface ImportRowError {
+  index?: number;
+  /** Product importers can attach the source SKU for easier troubleshooting. */
+  sku?: string;
+  /** Customer importers can attach the parsed name for easier troubleshooting. */
+  name?: string;
+  message: string;
+}
+
+export interface ImportResult<TRecord = unknown> {
   status: ImportStatus;
   /** Normalized records ready for the core to persist. */
   records: TRecord[];
-  errors: Array<{ index?: number; sku?: string; message: string }>;
+  errors: ImportRowError[];
 }
 
-export interface ImporterDefinition<TPayload = unknown, TRecord = ProductInput> {
+export interface ImporterDefinition<TPayload = unknown, TRecord = unknown> {
   /** Unique name for this importer, e.g. "csv-products". */
   name: string;
   description: string;
@@ -33,3 +42,7 @@ export interface ImporterDefinition<TPayload = unknown, TRecord = ProductInput> 
   accept: string[];
   run: (payload: TPayload) => Promise<ImportResult<TRecord>>;
 }
+
+export type AnyImporterDefinition = ImporterDefinition<never, unknown>;
+export type ProductImporterDefinition = ImporterDefinition<unknown, ProductInput>;
+export type CustomerImporterDefinition = ImporterDefinition<unknown, CustomerInput>;

@@ -107,6 +107,7 @@ export const offerResponseSchema = z
 
 export const createOfferRequestSchema = z
   .object({
+    customerId: z.string().uuid().nullable().optional(),
     customerName: z.string().optional(),
     clientRequest: z.string().min(1),
   })
@@ -160,6 +161,8 @@ export const updateOfferItemRequestSchema = z
 export const updateOfferRequestSchema = z
   .object({
     name: z.string().min(1).optional(),
+    customerId: z.string().uuid().nullable().optional(),
+    customerName: z.string().nullable().optional(),
     status: offerStatusSchema.optional(),
     currency: z.string().optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
@@ -210,6 +213,8 @@ export const quickOfferItemSchema = z
 
 export const quickOfferRequestSchema = z
   .object({
+    customerId: z.string().uuid().nullable().optional(),
+    customerName: z.string().optional(),
     items: z.array(quickOfferItemSchema).min(1),
   })
   .strict()

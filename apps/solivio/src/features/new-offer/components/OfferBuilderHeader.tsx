@@ -31,13 +31,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -45,9 +38,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EditOfferDetailsDialog } from "@/features/offers-list/components/EditOfferDetailsDialog";
 
 import type { SaveState } from "./offer-builder-types";
 
@@ -67,6 +59,7 @@ type OfferBuilderHeaderProps = {
 type OfferBuilderActionBarProps = {
   assistantToggle?: ReactNode;
   compact: boolean;
+  formCustomerId: string | null;
   formCustomerName: string;
   formName: string;
   offerId: string;
@@ -124,6 +117,7 @@ export function OfferBuilderHeader({
 export function OfferBuilderActionBar({
   assistantToggle,
   compact,
+  formCustomerId,
   formCustomerName,
   formName,
   offerId,
@@ -148,17 +142,6 @@ export function OfferBuilderActionBar({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editName, setEditName] = useState(formName);
-  const [editCustomer, setEditCustomer] = useState(formCustomerName);
-
-  const onEditOpenChange = (open: boolean) => {
-    setEditOpen(open);
-    if (open) {
-      setEditName(formName);
-      setEditCustomer(formCustomerName);
-    }
-  };
 
   async function handleDelete() {
     setDeleting(true);
@@ -169,31 +152,6 @@ export function OfferBuilderActionBar({
       router.push("/offers");
     } finally {
       setDeleting(false);
-    }
-  }
-
-  async function handleSaveEdit() {
-    const name = editName.trim();
-    if (!name) return;
-    setSaving(true);
-    try {
-      const response = await fetch(`/api/offers/${offerId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          customerName: editCustomer.trim() ? editCustomer.trim() : null,
-        }),
-      });
-      if (!response.ok) return;
-      const payload = await response.json().catch(() => null);
-      if (payload?.offer) {
-        onUpdate?.(payload.offer as Offer);
-      }
-      onEditOpenChange(false);
-      router.refresh();
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -335,7 +293,7 @@ export function OfferBuilderActionBar({
                   <DropdownMenuItem
                     onSelect={(event) => {
                       event.preventDefault();
-                      onEditOpenChange(true);
+                      setEditOpen(true);
                     }}
                   >
                     <Pencil size={14} aria-hidden="true" />
@@ -354,49 +312,14 @@ export function OfferBuilderActionBar({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Dialog open={editOpen} onOpenChange={onEditOpenChange}>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>{tList("actions.editDetailsTitle")}</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-2">
-                    <div className="grid gap-2">
-                      <Label htmlFor={`offer-builder-edit-name-${offerId}`}>
-                        {tList("actions.fieldName")}
-                      </Label>
-                      <Input
-                        id={`offer-builder-edit-name-${offerId}`}
-                        value={editName}
-                        onChange={(event) => setEditName(event.target.value)}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor={`offer-builder-edit-customer-${offerId}`}>
-                        {tList("actions.fieldCustomerName")}
-                      </Label>
-                      <Input
-                        id={`offer-builder-edit-customer-${offerId}`}
-                        value={editCustomer}
-                        onChange={(event) => setEditCustomer(event.target.value)}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter className="gap-2">
-                    <Button type="button" variant="outline" onClick={() => onEditOpenChange(false)}>
-                      {tList("actions.deleteCancel")}
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={saving || !editName.trim()}
-                      onClick={() => void handleSaveEdit()}
-                    >
-                      {tList("actions.saveChanges")}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <EditOfferDetailsDialog
+                offerId={offerId}
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                initialName={formName}
+                initialCustomer={{ id: formCustomerId, name: formCustomerName }}
+                onSaved={onUpdate}
+              />
 
               <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                 <AlertDialogContent>
