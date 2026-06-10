@@ -1,9 +1,11 @@
 import "server-only";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
-import { db, getService } from "@solivio/sdk/runtime";
+import { db, emitEvent, getService } from "@solivio/sdk/runtime";
 
 import type { GeneratedOffer } from "../ai/agents/offerGenerationAgent.ts";
+// Type-side: this module's own event declarations.
+import type {} from "../events.ts";
 import { appConfig } from "./appConfig.ts";
 import type { InsertOfferItemData, OfferRow, UpdateOfferMetaInput } from "./offerRepository.ts";
 import {
@@ -147,6 +149,7 @@ export async function createOffer(
   if (!created) {
     throw new Error("Offer was created but could not be loaded");
   }
+  await emitEvent("offers.offer.created", { offerId });
   return created;
 }
 

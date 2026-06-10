@@ -30,3 +30,49 @@ test("a signed-in admin reaches the module customers upload page", async ({ page
   await page.goto("/admin/customers/upload");
   await expect(page.getByRole("heading", { name: "Import customers" })).toBeVisible();
 });
+
+test("products-sync runs against an external source and records a run", async ({ page }) => {
+  const accountId = `e2es${Date.now().toString(36)}`;
+
+  await page.goto("/login?mode=signup");
+  await page.getByLabel("Username").fill(accountId);
+  await page.getByLabel("Email").fill(`${accountId}@example.com`);
+  await page.getByLabel("Password").fill("Solivio-e2e-12345");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL("/", { timeout: 30_000 });
+
+  const fixture = [
+    {
+      sku: `SYNC-${accountId}-1`,
+      name: "Synced widget",
+      description: "From sync",
+      priceNet: 10,
+      priceGross: 12.3,
+      vatRate: 23,
+      currency: "PLN",
+    },
+    {
+      sku: `SYNC-${accountId}-2`,
+      name: "Synced gadget",
+      description: "From sync",
+      priceNet: 20,
+      priceGross: 24.6,
+      vatRate: 23,
+      currency: "PLN",
+    },
+  ];
+  const sourceUrl = `data:application/json,${encodeURIComponent(JSON.stringify(fixture))}`;
+
+  const response = await page.request.post("/api/products-sync/runs", {
+    data: { sourceUrl },
+  });
+  expect(response.ok()).toBeTruthy();
+  const { run } = (await response.json()) as { run: { status: string; imported: number } };
+  expect(run.status).toBe("succeeded");
+  expect(run.imported).toBe(2);
+
+  // The run shows up on the module admin page.
+  await page.goto("/admin/products-sync");
+  await expect(page.getByRole("heading", { name: "Products Sync" })).toBeVisible();
+  await expect(page.getByText("data:application/json").first()).toBeVisible();
+});

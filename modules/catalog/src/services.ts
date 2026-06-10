@@ -1,5 +1,9 @@
-import type { ProductInput, Services } from "@solivio/sdk";
+// Type-side: this module's own event declarations.
 
+import type { ProductInput, Services } from "@solivio/sdk";
+import { emitEvent } from "@solivio/sdk/runtime";
+
+import type {} from "./events.ts";
 import { importProductsWithEmbeddings } from "./server/productEmbeddingService.ts";
 import type { ProductPriceRow } from "./server/productPriceRepository.ts";
 import { findActivePricesForProducts } from "./server/productPriceRepository.ts";
@@ -59,7 +63,11 @@ function createCatalogService(): CatalogService {
     searchByPrompt: (query, opts) => searchProductsByPrompt(query, opts),
     searchBatch: (queries, opts) => searchProductsBatch(queries, opts),
     lookupBySkus: (skus) => lookupProductsBySkus(skus),
-    importProducts: (records) => importProductsWithEmbeddings(records),
+    importProducts: async (records) => {
+      const result = await importProductsWithEmbeddings(records);
+      await emitEvent("catalog.products.imported", { count: result.count });
+      return result;
+    },
     getProductsByIds: (ids) => getProductsByIds(ids),
     getActivePricesForProducts: (ids, currency) => findActivePricesForProducts(ids, currency),
   };

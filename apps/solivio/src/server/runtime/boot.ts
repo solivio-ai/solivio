@@ -18,7 +18,7 @@ import { createUsersService } from "@/server/runtime/usersService";
  * instrumentation.ts; everything module code reaches at runtime flows from
  * here.
  */
-export function bootModuleRuntime(): void {
+export function bootModuleRuntime(): SolivioRuntime {
   const auth: AuthGuards = {
     async requireAuth() {
       const { requireAuth } = await import("@/server/auth/session");
@@ -74,4 +74,5 @@ export function bootModuleRuntime(): void {
     jobs,
   };
   setRuntime(runtime);
+  return runtime;
 }

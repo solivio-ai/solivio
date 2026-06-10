@@ -6,8 +6,12 @@
 export interface JobDefinition<TPayload = void> {
   /** Unique name, must be prefixed with the module id: `<moduleId>.<job>`. */
   readonly name: string;
-  /** Cron expression; when set, the job is scheduled automatically at boot. */
-  readonly schedule?: string;
+  /**
+   * Cron expression; when set, the job is scheduled automatically at boot.
+   * A function form is resolved at boot (the runtime is initialized then), so
+   * modules can derive the schedule from their deployment options.
+   */
+  readonly schedule?: string | (() => string | undefined);
   /** Retry attempts on failure (default 3). */
   readonly retryLimit?: number;
   readonly handler: (payload: TPayload) => Promise<void>;
