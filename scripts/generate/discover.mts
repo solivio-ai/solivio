@@ -58,6 +58,7 @@ export interface ModuleModel {
     nav: boolean;
     slots: boolean;
     schema: boolean;
+    contracts: boolean;
     aiTools: boolean;
     aiImporters: boolean;
     aiAgents: boolean;
@@ -226,6 +227,7 @@ export async function discoverModule(entry: ConfigEntry): Promise<ModuleModel> {
       nav: exists("nav.tsx"),
       slots: exists("slots.tsx"),
       schema: exists("data/schema.ts"),
+      contracts: exists("contracts/routes.ts"),
       aiTools: exists("ai/tools.ts"),
       aiImporters: exists("ai/importers.ts"),
       aiAgents: exists("ai/agents.ts"),

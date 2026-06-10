@@ -1,6 +1,5 @@
+import { moduleApiContracts } from "../../../generated/contracts";
 import type { ApiContract } from "./common";
-import { customerRoutes } from "./customer";
-import { requestRoutes } from "./customer-request";
 import { offerRoutesAfterRevisions, offerRoutesBeforeRevisions } from "./offer";
 import { chatRoutes } from "./offer-chat";
 import { documentRoutes } from "./offer-pdf";
@@ -10,9 +9,8 @@ import { systemRoutes } from "./system";
 
 export const apiContracts = [
   ...systemRoutes,
-  ...customerRoutes,
+  ...moduleApiContracts,
   ...productRoutes,
-  ...requestRoutes,
   ...offerRoutesBeforeRevisions,
   ...offerRevisionRoutes,
   ...offerRoutesAfterRevisions,

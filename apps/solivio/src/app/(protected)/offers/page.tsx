@@ -1,4 +1,4 @@
-import { AppPage } from "@/components/AppPage";
+import { AppPage } from "@solivio/ui/components/app-page.tsx";
 import { OffersList } from "@/features/offers-list/components/OffersList";
 import { getOffers } from "@/server/offers/offerService";
 

@@ -3,8 +3,8 @@
 import { AlertTriangle, CheckCircle2, MessageSquare, Send, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@solivio/ui/components/dialog.tsx";
 
 export type ValidationResult = {
   verdict: "pass" | "partial" | "fail";

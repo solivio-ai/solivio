@@ -5490,6 +5490,7 @@ __metadata:
     "@solivio/domain": "workspace:*"
     "@solivio/sdk": "workspace:*"
     "@solivio/theme": "workspace:*"
+    "@solivio/ui": "workspace:*"
     "@tailwindcss/oxide-darwin-arm64": "npm:^4.2.4"
     "@tailwindcss/postcss": "npm:^4.2.4"
     "@types/node": "npm:25.6.0"
@@ -5565,6 +5566,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-customers@workspace:modules/customers":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-customers@workspace:modules/customers"
+  dependencies:
+    "@solivio/domain": "workspace:*"
+    "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    drizzle-orm: "npm:^0.45.2"
+    lucide-react: "npm:^1.11.0"
+    next: "npm:^16.2.4"
+    next-intl: "npm:^4.9.2"
+    server-only: "npm:^0.0.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/module-offer-tools@workspace:modules/offer-tools":
   version: 0.0.0-use.local
   resolution: "@solivio/module-offer-tools@workspace:modules/offer-tools"
@@ -5583,13 +5606,17 @@ __metadata:
     "@types/react": "npm:^19.2.14"
     drizzle-orm: "npm:^0.45.2"
     typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
   peerDependencies:
     drizzle-orm: "*"
     react: "*"
+    zod: "*"
   peerDependenciesMeta:
     drizzle-orm:
       optional: true
     react:
+      optional: true
+    zod:
       optional: true
   languageName: unknown
   linkType: soft
@@ -5597,6 +5624,27 @@ __metadata:
 "@solivio/theme@workspace:*, @solivio/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@solivio/theme@workspace:packages/theme"
+  languageName: unknown
+  linkType: soft
+
+"@solivio/ui@workspace:*, @solivio/ui@workspace:packages/ui":
+  version: 0.0.0-use.local
+  resolution: "@solivio/ui@workspace:packages/ui"
+  dependencies:
+    "@types/react": "npm:^19.2.14"
+    "@types/react-dom": "npm:^19.2.3"
+    class-variance-authority: "npm:^0.7.1"
+    clsx: "npm:^2.1.1"
+    lucide-react: "npm:^1.11.0"
+    next-themes: "npm:^0.4.6"
+    radix-ui: "npm:^1.4.3"
+    react-resizable-panels: "npm:^4.10.0"
+    sonner: "npm:^2.0.7"
+    tailwind-merge: "npm:^3.5.0"
+    typescript: "npm:^6.0.3"
+  peerDependencies:
+    react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -14519,6 +14567,13 @@ __metadata:
     parseurl: "npm:^1.3.3"
     send: "npm:^1.2.0"
   checksum: 10c0/37986096e8572e2dfaad35a3925fa8da0c0969f8814fd7788e84d4d388bc068cf0c06d1658509788e55bed942a6b6d040a8a267fa92bb9ffb1179f8bacde5fd7
+  languageName: node
+  linkType: hard
+
+"server-only@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "server-only@npm:0.0.1"
+  checksum: 10c0/4704f0ef85da0be981af6d4ed8e739d39bcfd265b9c246a684060acda5642d0fdc6daffc2308e71e2682c5f508090978802eae0a77623c9b90a49f9ae68048d6
   languageName: node
   linkType: hard
 

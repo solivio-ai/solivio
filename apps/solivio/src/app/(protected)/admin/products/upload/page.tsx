@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
-import { AppPage } from "@/components/AppPage";
+import { AppPage } from "@solivio/ui/components/app-page.tsx";
 import { ProductImport } from "@/features/product-import";
 import { getImporter } from "@/server/modules/registry";
 

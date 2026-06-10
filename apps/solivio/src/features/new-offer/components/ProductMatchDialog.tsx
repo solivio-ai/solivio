@@ -4,8 +4,8 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@solivio/ui/components/alert.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import type { ProductSearchMatch } from "@/features/product-search";
 import { ProductSearchDialog } from "@/features/product-search";
 

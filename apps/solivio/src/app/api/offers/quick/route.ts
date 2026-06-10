@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
+import { CustomerSelectionError } from "@solivio/domain";
 import type { GeneratedOffer } from "@/server/agents/offerGenerationAgent";
 import { quickOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import { CustomerSelectionError } from "@/server/customers/customerRepository";
 import { createOffer } from "@/server/offers/offerService";
 
 export const runtime = "nodejs";

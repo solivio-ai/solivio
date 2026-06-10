@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@solivio/ui/components/button.tsx";
 import type { ProductSearchMatch } from "@/features/product-search";
 import { ProductSearchDialog } from "@/features/product-search";
 

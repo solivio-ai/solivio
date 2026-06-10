@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
 import { signIn, signUp } from "@/lib/auth-client";
 
 type Props = {

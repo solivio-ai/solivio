@@ -18,11 +18,17 @@ import {
 } from "react";
 
 import type { Offer } from "@solivio/domain";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@solivio/ui/components/alert.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@solivio/ui/components/card.tsx";
+import { Textarea } from "@solivio/ui/components/textarea.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 export type OfferChatHandle = {
   sendText: (text: string) => void;

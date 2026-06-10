@@ -4,7 +4,7 @@ import { Clock, RotateCcw, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { OfferRevision } from "@solivio/domain";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@solivio/ui/components/skeleton.tsx";
 
 type OfferRevisionTimelineProps = {
   revisions: OfferRevision[];

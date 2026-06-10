@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@solivio/ui/components/sidebar.tsx";
 import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentSession } from "@/server/auth/session";
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {

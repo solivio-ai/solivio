@@ -4,10 +4,10 @@ import { Check, ChevronsUpDown, Loader2, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
+import { Popover, PopoverContent, PopoverTrigger } from "@solivio/ui/components/popover.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 export type CustomerSelection = {
   id: string | null;

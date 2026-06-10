@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@solivio/ui/components/progress.tsx";
 
 type OfferGenerationProgressProps = {
   elapsedMs: number;

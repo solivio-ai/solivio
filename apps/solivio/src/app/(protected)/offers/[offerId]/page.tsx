@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
-import { AppPage } from "@/components/AppPage";
+import { AppPage } from "@solivio/ui/components/app-page.tsx";
 import { OfferReview } from "@/features/new-offer";
 
 export async function generateMetadata() {

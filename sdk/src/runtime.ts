@@ -1,9 +1,37 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import type { ImporterDefinition, ImportTarget } from "./importer.js";
 import type { AnyJobDefinition } from "./job.js";
 import type { AiClientFactory, Logger } from "./module-context.js";
 import type { EventName, Events, ServiceName, Services } from "./registries.js";
 import type { AnySubscriberDefinition } from "./subscriber.js";
+
+/** Minimal session shape exposed to modules (provider-agnostic). */
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  role?: string | null;
+}
+
+export interface AuthSession {
+  user: SessionUser;
+}
+
+/**
+ * Result of an in-handler auth guard: either a session, or a ready-to-return
+ * error `Response` (401/403).
+ */
+export type GuardResult =
+  | { session: AuthSession; response?: never }
+  | { session?: never; response: Response };
+
+export interface AuthGuards {
+  /** Requires a signed-in session. */
+  requireAuth(): Promise<GuardResult>;
+  /** Requires a signed-in admin. */
+  requireAdmin(): Promise<GuardResult>;
+}
 
 /**
  * Server-only runtime accessors for module code.
@@ -22,6 +50,9 @@ export interface SolivioRuntime {
   logger: (moduleId: string) => Logger;
   db: NodePgDatabase<Record<string, unknown>>;
   ai: AiClientFactory;
+  auth: AuthGuards;
+  /** Resolves the importer bound to a target (via slot binding or sole provider). */
+  importer: (target: ImportTarget) => Promise<ImporterDefinition>;
   moduleOptions: Record<string, unknown>;
   subscribers: ReadonlyArray<AnySubscriberDefinition>;
   jobs: ReadonlyArray<AnyJobDefinition>;
@@ -77,6 +108,16 @@ export function getDb(): NodePgDatabase<Record<string, unknown>> {
 /** Deployment AI model ids. */
 export function getAi(): AiClientFactory {
   return runtime().ai;
+}
+
+/** Session guards for module API routes (auth itself stays core). */
+export function getAuth(): AuthGuards {
+  return runtime().auth;
+}
+
+/** The importer capability bound to a target ("product", "customer", …). */
+export function getImporter(target: ImportTarget): Promise<ImporterDefinition> {
+  return runtime().importer(target);
 }
 
 /** The module's validated options from `solivio.config.ts`. */

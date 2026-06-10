@@ -3,9 +3,8 @@ import { check, index, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core"
 
 import type { Offer } from "@solivio/domain";
 
+import { customers, requests } from "../../../generated/schema";
 import { users } from "./auth";
-import { customers } from "./customers";
-import { requests } from "./requests";
 import { timestamps } from "./timestamps";
 
 export const offers = pgTable(

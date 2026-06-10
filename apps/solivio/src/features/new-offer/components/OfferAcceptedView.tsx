@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
-import { Button } from "@/components/ui/button";
+import { Button } from "@solivio/ui/components/button.tsx";
 import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import type { DraftLine } from "./offer-builder-types";

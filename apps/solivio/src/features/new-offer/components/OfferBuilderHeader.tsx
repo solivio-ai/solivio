@@ -26,9 +26,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from "@solivio/ui/components/alert-dialog.tsx";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +36,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+} from "@solivio/ui/components/dropdown-menu.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@solivio/ui/components/tooltip.tsx";
 import { EditOfferDetailsDialog } from "@/features/offers-list/components/EditOfferDetailsDialog";
 
 import type { SaveState } from "./offer-builder-types";

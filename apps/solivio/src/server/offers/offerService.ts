@@ -3,20 +3,13 @@ import "server-only";
 import { inArray } from "drizzle-orm";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { getService } from "@solivio/sdk/runtime";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import { appConfig } from "../config/appConfig";
-import {
-  CustomerSelectionError,
-  customerNamesMatch,
-  findCustomerById,
-  normalizeCustomerName,
-  upsertCustomerByName,
-} from "../customers/customerRepository";
 import { db } from "../database/db";
 import { products } from "../database/schema";
 import { findActivePricesForProducts } from "../products/productPriceRepository";
-import { insertRequest } from "../requests/requestRepository";
 import type { InsertOfferItemData, OfferRow, UpdateOfferMetaInput } from "./offerRepository";
 import {
   deleteOfferItem,
@@ -65,35 +58,6 @@ function round4(n: number): number {
   return Math.round(n * 10000) / 10000;
 }
 
-async function resolveOfferCustomer(
-  input: { customerId?: string | null; customerName?: string | null },
-  source: string,
-  tx: typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0],
-) {
-  const customerId = input.customerId?.trim() || null;
-  const customerName = input.customerName ? normalizeCustomerName(input.customerName) : "";
-
-  if (customerId) {
-    const customer = await findCustomerById(customerId, tx);
-    if (!customer) {
-      throw new CustomerSelectionError("customer_not_found", "Selected customer was not found.");
-    }
-    if (customerName && !customerNamesMatch(customer.name, customerName)) {
-      throw new CustomerSelectionError(
-        "customer_mismatch",
-        "Selected customer does not match the provided customer name.",
-      );
-    }
-    return customer;
-  }
-
-  if (customerName) {
-    return upsertCustomerByName(customerName, source, tx);
-  }
-
-  return null;
-}
-
 // ── Public service ─────────────────────────────────────────────────────────────
 
 export async function createOffer(
@@ -127,18 +91,18 @@ export async function createOffer(
     offerCurrency,
   );
 
+  // Customer resolution and request intake run before the offer transaction:
+  // the upsert is idempotent and concurrency-safe inside the customers module,
+  // and an intake request row without an offer is harmless.
+  const customersService = getService("customers");
+  const customer = await customersService.resolveCustomer({ customerId, customerName }, "manual");
+  const request = await customersService.createRequest({
+    customerId: customer?.id ?? null,
+    rawText: clientRequest,
+    source: "manual",
+  });
+
   const offerId = await db.transaction(async (tx) => {
-    const customer = await resolveOfferCustomer({ customerId, customerName }, "manual", tx);
-
-    const request = await insertRequest(
-      {
-        customerId: customer?.id ?? null,
-        rawText: clientRequest,
-        source: "manual",
-      },
-      tx,
-    );
-
     const offer = await insertOffer(
       {
         name: name ?? "Draft",
@@ -215,6 +179,22 @@ export async function updateOfferMeta(
   data: UpdateOfferMetaInput & { customerName?: string | null },
   userId?: string | null,
 ): Promise<Offer | null> {
+  // Customer resolution runs before the transaction (idempotent upsert inside
+  // the customers module; a stray upsert when the offer turns out missing or
+  // locked is harmless).
+  const { customerName, ...rest } = data;
+  let resolvedCustomerId: string | null | undefined;
+  if (data.customerId) {
+    const customer = await getService("customers").resolveCustomer(
+      { customerId: data.customerId, customerName },
+      "manual",
+    );
+    resolvedCustomerId = customer?.id ?? null;
+  } else if (customerName !== undefined) {
+    const customer = await getService("customers").resolveCustomer({ customerName }, "manual");
+    resolvedCustomerId = customer?.id ?? null;
+  }
+
   return db.transaction(async (tx) => {
     const existing = await findOfferById(offerId, tx);
     if (!existing) return null;
@@ -224,18 +204,9 @@ export async function updateOfferMeta(
       return null;
     }
 
-    const { customerName, ...rest } = data;
     const patch: UpdateOfferMetaInput = { ...rest };
-    if (data.customerId) {
-      const customer = await resolveOfferCustomer(
-        { customerId: data.customerId, customerName },
-        "manual",
-        tx,
-      );
-      patch.customerId = customer?.id ?? null;
-    } else if (customerName !== undefined) {
-      const customer = await resolveOfferCustomer({ customerName }, "manual", tx);
-      patch.customerId = customer?.id ?? null;
+    if (resolvedCustomerId !== undefined) {
+      patch.customerId = resolvedCustomerId;
     }
     // When customerId is explicitly null and no name is given, `patch` already
     // carries `customerId: null` from the `...rest` spread, so no branch is needed.

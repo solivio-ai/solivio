@@ -73,10 +73,13 @@ export function emitI18n(writer: Writer, modules: ModuleModel[], repoRoot: strin
 
 export function emitTailwind(writer: Writer, modules: ModuleModel[], repoRoot: string): void {
   const genDirAbs = path.join(repoRoot, GEN);
-  const lines = modules.map((module) => {
-    const rel = path.relative(genDirAbs, path.join(module.dir, "src")).split(path.sep).join("/");
-    return `@source "${rel}";`;
-  });
+  const toSource = (absDir: string): string =>
+    `@source "${path.relative(genDirAbs, absDir).split(path.sep).join("/")}";`;
+  const lines = [
+    // Shared UI kit lives outside the app, so Tailwind needs an explicit source.
+    toSource(path.join(repoRoot, "packages/ui/src")),
+    ...modules.map((module) => toSource(path.join(module.dir, "src"))),
+  ];
   writer.write(`${GEN}/tailwind.css`, `${lines.join("\n")}\n`);
 }
 

@@ -22,7 +22,13 @@ const modulePackages = (() => {
 const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: workspaceRoot,
-  transpilePackages: ["@solivio/domain", "@solivio/theme", "@solivio/sdk", ...modulePackages],
+  transpilePackages: [
+    "@solivio/domain",
+    "@solivio/theme",
+    "@solivio/sdk",
+    "@solivio/ui",
+    ...modulePackages,
+  ],
   serverExternalPackages: ["@voltagent/core", "@ai-sdk/openai"],
   turbopack: {
     root: workspaceRoot,

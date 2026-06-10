@@ -7,13 +7,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 
 import type { Offer, OfferRevision } from "@solivio/domain";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@solivio/ui/components/button.tsx";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@solivio/ui/components/card.tsx";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@solivio/ui/components/resizable.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@solivio/ui/components/tooltip.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 import type { OfferChatHandle } from "@/features/offer-chat/components/OfferChat";
 import { OfferChat } from "@/features/offer-chat/components/OfferChat";
-import { cn } from "@/lib/utils";
 
 import { OfferAcceptedView } from "./OfferAcceptedView";
 import { OfferBuilder } from "./OfferBuilder";

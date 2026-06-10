@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 import type { ChangeEvent, ReactNode } from "react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
 
 type RowError = { index?: number; sku?: string; message: string };
 

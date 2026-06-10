@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Item, ItemActions, ItemContent, ItemTitle } from "@solivio/ui/components/item.tsx";
 
 export function UnmatchedItem({
   item,

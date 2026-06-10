@@ -20,6 +20,7 @@
     "@solivio/domain": "workspace:*",
     "@solivio/sdk": "workspace:*",
     "@solivio/theme": "workspace:*",
+    "@solivio/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.2.4",
     "@voltagent/core": "^2.7.3",
     "ai": "^6.0.168",

@@ -47,6 +47,7 @@ jobs:
           AUTH_SIGNUP_ENABLED=true
           AUTH_CREDENTIALS_ENABLED=true
           AUTH_SSO_ENABLED=false
+          AUTH_SIGNUP_DEFAULT_ROLE=admin
           EOF
 
       - name: Install Playwright browser

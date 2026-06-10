@@ -5,16 +5,16 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import type { Offer } from "@solivio/domain";
-import { Button } from "@/components/ui/button";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@solivio/ui/components/dialog.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
 import type { CustomerSelection } from "@/features/customers";
 import { CustomerCombobox } from "@/features/customers";
 

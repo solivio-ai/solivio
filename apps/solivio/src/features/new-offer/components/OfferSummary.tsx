@@ -2,8 +2,8 @@ import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@solivio/ui/components/alert.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
 
 import { CommercialTotals } from "./CommercialTotals";
 import type { DraftLine } from "./offer-builder-types";

@@ -29,10 +29,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from "@solivio/ui/components/alert-dialog.tsx";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@solivio/ui/components/dropdown-menu.tsx";
 import {
   Empty,
   EmptyContent,
@@ -48,15 +48,15 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
+} from "@solivio/ui/components/empty.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@solivio/ui/components/select.tsx";
 import {
   Table,
   TableBody,
@@ -64,8 +64,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+} from "@solivio/ui/components/table.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@solivio/ui/components/tooltip.tsx";
 import { calculateNetTotal } from "@/lib/offerTotals";
 
 import { EditOfferDetailsDialog } from "./EditOfferDetailsDialog";

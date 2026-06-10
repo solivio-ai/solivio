@@ -1,3 +1,5 @@
+/// <reference path="./ambient.d.ts" />
+
 // ── Module definition (v2 manifest model) ───────────────────────────────────
 
 // ── Capability surfaces ──────────────────────────────────────────────────────

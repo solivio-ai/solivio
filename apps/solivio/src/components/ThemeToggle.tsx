@@ -4,9 +4,9 @@ import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@solivio/ui/components/tooltip.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 type Theme = "light" | "dark";
 

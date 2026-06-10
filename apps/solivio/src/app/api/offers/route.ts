@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { CustomerSelectionError, customerNamesMatch, normalizeCustomerName } from "@solivio/domain";
+import { getService } from "@solivio/sdk/runtime";
 import { generateOfferWithAgent } from "@/server/agents/offerGenerationAgent";
 import { generateOfferName } from "@/server/agents/offerNameAgent";
 import { createOfferRequestSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
-import {
-  CustomerSelectionError,
-  customerNamesMatch,
-  findCustomerById,
-  normalizeCustomerName,
-} from "@/server/customers/customerRepository";
 import { saveOfferDraft } from "@/server/offers/offerDraftStore";
 import { createOffer } from "@/server/offers/offerService";
 
@@ -23,7 +19,7 @@ async function resolveCustomerNameForGeneration(
   const normalizedName = customerName ? normalizeCustomerName(customerName) : undefined;
   if (!customerId) return normalizedName;
 
-  const customer = await findCustomerById(customerId);
+  const customer = await getService("customers").findById(customerId);
   if (!customer) {
     throw new CustomerSelectionError("customer_not_found", "Selected customer was not found.");
   }

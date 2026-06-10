@@ -25,7 +25,7 @@
     "docs:build": "yarn workspace @solivio/docs build",
     "openapi:generate": "yarn workspace @solivio/docs openapi:generate",
     "build": "yarn generate && yarn modules:build && yarn workspace @solivio/app build && yarn workspace @solivio/docs build",
-    "check": "biome check .",
+    "check": "biome check . && tsx scripts/check-boundaries.mts",
     "e2e": "playwright test",
     "typecheck": "yarn workspaces foreach -Ap run typecheck",
     "start": "yarn workspace @solivio/app start",

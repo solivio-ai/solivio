@@ -8,6 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./config": "./src/config.ts",
+    "./contracts": "./src/contracts.ts",
+    "./db": "./src/db.ts",
     "./runtime": "./src/runtime.ts"
   },
   "files": [
@@ -22,17 +24,22 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "drizzle-orm": "^0.45.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.3.6"
   },
   "peerDependencies": {
     "drizzle-orm": "*",
-    "react": "*"
+    "react": "*",
+    "zod": "*"
   },
   "peerDependenciesMeta": {
     "drizzle-orm": {
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "zod": {
       "optional": true
     }
   },

@@ -23,6 +23,26 @@ export function emitRegistries(
   emitSlots(writer, modules);
   emitAcl(writer, modules);
   emitSchema(writer, modules);
+  emitContracts(writer, modules);
+}
+
+function emitContracts(writer: Writer, modules: ModuleModel[]): void {
+  const providers = modules.filter((module) => module.has.contracts);
+  const imports = providers
+    .map(
+      (module) =>
+        `import { routes as ${camel(module.id)}Routes } from "${spec(module, "contracts/routes.ts")}";`,
+    )
+    .join("\n");
+  writer.write(
+    `${GEN}/contracts.ts`,
+    `import type { ApiContract } from "@solivio/sdk/contracts";
+${imports ? `\n${imports}\n` : ""}
+export const moduleApiContracts: readonly ApiContract[] = [
+${providers.map((module) => `  ...${camel(module.id)}Routes,`).join("\n")}
+];
+`,
+  );
 }
 
 function emitModules(writer: Writer, modules: ModuleModel[], config: SolivioConfig): void {

@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Card, CardContent, CardTitle } from "@solivio/ui/components/card.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
 import type { CustomerSelection } from "@/features/customers";
 import { CustomerCombobox } from "@/features/customers";
 import type { ProductSearchMatch } from "@/features/product-search";

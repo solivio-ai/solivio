@@ -2,8 +2,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-import { AppPage } from "@/components/AppPage";
-import { Button } from "@/components/ui/button";
+import { AppPage } from "@solivio/ui/components/app-page.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import { NewOfferForm } from "@/features/new-offer";
 
 export async function generateMetadata() {

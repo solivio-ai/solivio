@@ -4,16 +4,16 @@ import { Minus, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@solivio/ui/components/dialog.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
+import { Skeleton } from "@solivio/ui/components/skeleton.tsx";
 
 import type { ProductSearchMatch, SearchableField } from "../hooks/useProductSearch";
 import { useProductSearch } from "../hooks/useProductSearch";

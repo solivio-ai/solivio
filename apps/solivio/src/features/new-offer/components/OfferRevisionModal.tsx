@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import type { OfferRevision } from "@solivio/domain";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@solivio/ui/components/alert.tsx";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@solivio/ui/components/dialog.tsx";
+import { Skeleton } from "@solivio/ui/components/skeleton.tsx";
 import { calculateNetTotal, calculateSubtotalNet } from "@/lib/offerTotals";
 
 import { formatCurrency } from "./offer-builder-types";

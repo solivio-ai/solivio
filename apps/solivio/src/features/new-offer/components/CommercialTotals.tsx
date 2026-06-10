@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@solivio/ui/components/input.tsx";
 
 import type { DraftLine } from "./offer-builder-types";
 import { formatCurrency } from "./offer-builder-types";

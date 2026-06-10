@@ -14,9 +14,15 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@solivio/ui/components/card.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 type IntegrationConfig = {
   key: string;

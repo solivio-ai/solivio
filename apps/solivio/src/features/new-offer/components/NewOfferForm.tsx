@@ -6,17 +6,17 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@solivio/ui/components/dialog.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
+import { Textarea } from "@solivio/ui/components/textarea.tsx";
 import type { CustomerSelection } from "@/features/customers";
 import { CustomerCombobox } from "@/features/customers";
 

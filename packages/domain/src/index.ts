@@ -1,6 +1,11 @@
 // Canonical domain models. Pure TS types + small constants. No infra deps.
 
 export type { Customer, CustomerSource } from "./models/customer";
+export {
+  CustomerSelectionError,
+  customerNamesMatch,
+  normalizeCustomerName,
+} from "./models/customer-selection";
 export type { MatchSource, Offer, OfferItem, OfferStatus } from "./models/offer";
 export type {
   OfferRevision,
