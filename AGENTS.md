@@ -24,6 +24,7 @@ The sections below are the quick reference. They summarize the boundaries; the d
 
 ## Never
 
+- Never compare or assign offer status using raw string literals (`"draft"`, `"accepted"`, `"rejected"`); always use `OFFER_STATUS` from `@solivio/domain`.
 - Never import the Drizzle client (`apps/solivio/src/server/database/db.ts`) outside `apps/solivio/src/server/` or `apps/solivio/src/app/api/`.
 - Never make a module import `@/server/*` or another module — modules depend only on `@solivio/sdk`.
 - Never write custom CSS classes or add rules to `globals.css` beyond the allowed blocks, and never hard-code theme colors — use the theme tokens.

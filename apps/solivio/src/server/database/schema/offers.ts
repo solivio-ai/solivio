@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { check, index, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 
 import { users } from "./auth";
 import { customers } from "./customers";
@@ -16,7 +17,7 @@ export const offers = pgTable(
     requestId: uuid("request_id").references(() => requests.id),
     userId: text("user_id").references(() => users.id),
     name: text("name").notNull().default("Draft"),
-    status: text("status").$type<Offer["status"]>().notNull().default("draft"),
+    status: text("status").$type<Offer["status"]>().notNull().default(OFFER_STATUS.DRAFT),
     currency: text("currency").notNull().default("PLN"),
     discountPercent: numeric("discount_percent", { precision: 5, scale: 2, mode: "number" })
       .notNull()

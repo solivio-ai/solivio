@@ -3,6 +3,7 @@ import type { UIMessage } from "ai";
 import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { getChatAgent } from "@/server/agents/chatAgent";
 import { errorResponseSchema } from "@/server/api/contracts";
 import { requireAuth } from "@/server/auth/session";
@@ -50,7 +51,7 @@ function formatOfferContext(offer: Offer) {
     `Discount: ${discountPercent}% (${effectiveDiscount} ${currency})`,
     `Total net: ${total} ${currency}`,
     `Pricing check: ${unpricedLineCount === 0 ? "all lines have prices" : `${unpricedLineCount} line(s) need a unit price`}`,
-    `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,
+    `Sales review check: ${offer.status !== OFFER_STATUS.DRAFT ? "marked complete" : "not marked complete"}`,
     "",
     "Products:",
   ];
