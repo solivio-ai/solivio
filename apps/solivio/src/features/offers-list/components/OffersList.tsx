@@ -139,6 +139,10 @@ const statusConfig: Record<
     icon: CircleX,
     badge: "secondary",
   },
+  [OFFER_STATUS.IMPORTED]: {
+    icon: PackageCheck,
+    badge: "default",
+  },
 };
 
 function isKnownStatus(status: string): status is OfferStatus {
