@@ -1,0 +1,483 @@
+{
+  "dashboard": {
+    "newOffer": {
+      "title": "Dodaj nową ofertę",
+      "description": "Draft oferty z zapytania klienta.",
+      "button": "Nowa oferta"
+    },
+    "integrations": {
+      "title": "Źródła danych",
+      "subtitle": "Im więcej kontekstu dostarczysz - tym trafniejsza oferta. Połącz systemy, które już masz.",
+      "badge": {
+        "active": "Aktywna",
+        "available": "Dostępna"
+      },
+      "action": {
+        "integrate": "Skontaktuj się"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Katalog produktów",
+          "description": "Tysiące SKU pod ręką, właściwe produkty dobrane do zapytania - bez ręcznego przeszukiwania katalogów."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Aktualna baza produktów, cenniki i historia zamówień prosto z ERP - Solivio zawsze pracuje na rzeczywistych danych."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pobieraj profile klientów i zacznij od spersonalizowanej oferty."
+        },
+        "priceRules": {
+          "name": "Reguły cenowe",
+          "description": "Progi ilościowe, rabaty kontraktowe, marże na kategoriach - stosowane automatycznie, bez ręcznych wyliczeń."
+        },
+        "inventory": {
+          "name": "Magazyn",
+          "description": "Zobacz dostępność każdej pozycji w momencie tworzenia oferty. Żadnych ofert na produkty, których nie ma na stanie."
+        },
+        "industryKnowledge": {
+          "name": "Wiedza branżowa",
+          "description": "Uwzględnij specyfikę branży, segmentów - Solivio zinterpretuje zapytania w odpowiednim kontekście."
+        },
+        "documentation": {
+          "name": "Dokumentacja",
+          "description": "Karty techniczne, specyfikacje, materiały sprzedażowe - zostaną uwzględnione przy doborze i uzasadnianiu rekomendacji."
+        },
+        "historicalOrders": {
+          "name": "Historyczne zamówienia",
+          "description": "Klient często zamawia te same produkty? Solivio to rozpozna i uwzględni w kolejnej ofercie."
+        },
+        "rfqBenchmarks": {
+          "name": "Benchmarki zapytań ofertowych",
+          "description": "Podobne zapytanie było już obsługiwane? Solivio uczy się z poprzednich ofert i przyspiesza kolejne."
+        },
+        "productReviews": {
+          "name": "Opinie produktowe",
+          "description": "Uwzględniaj opinie i preferencje klientów przy rekomendacjach oraz zamiennikach produktów."
+        }
+      }
+    }
+  },
+  "demoOffer": {
+    "pageTitle": "Oferta demo",
+    "title": "Produkty w ofercie",
+    "addProduct": "Dodaj produkt",
+    "empty": "Brak dodanych produktów",
+    "qty": "szt: {count}"
+  },
+  "newOffer": {
+    "page": {
+      "title": "Nowa oferta",
+      "back": "Wróć"
+    },
+    "form": {
+      "title": "Utwórz ofertę",
+      "description": "Wprowadź dane klienta i treść zapytania.",
+      "customerName": {
+        "label": "Nazwa klienta",
+        "placeholder": "ACME Sp. z o.o."
+      },
+      "clientRequest": {
+        "label": "Zapytanie klienta",
+        "placeholder": "Opisz, czego potrzebuje klient..."
+      },
+      "actions": {
+        "generate": "Wygeneruj draft oferty",
+        "preparing": "Przygotowuję draft..."
+      },
+      "notices": {
+        "initial": "Uzupełnij zapytanie i wygeneruj draft oferty.",
+        "preparing": "Przygotowuję draft oferty...",
+        "generated": "Draft oferty wygenerowany. Otwieram przegląd...",
+        "error": "Nie udało się teraz wygenerować oferty. Spróbuj ponownie."
+      }
+    },
+    "generation": {
+      "dialogTitle": "Postęp generowania oferty",
+      "dialogDescription": "Draft oferty jest przygotowywany na podstawie zapytania klienta.",
+      "title": "Przygotowuję draft oferty",
+      "activeStep": "{title}: {description}",
+      "draftReady": "Draft gotowy",
+      "elapsed": "{seconds} s",
+      "progressLabel": "Postęp generowania oferty",
+      "stepCounter": "Krok {current} z {total}",
+      "progressValue": "{progress}%",
+      "requestSnapshot": "Podgląd zapytania",
+      "unnamedCustomer": "Klient bez nazwy",
+      "catalogPreview": "Wstępne dopasowania z katalogu",
+      "steps": {
+        "readingRequest": {
+          "title": "Czytam zapytanie",
+          "description": "Zapisuję kontekst klienta i treść zapytania.",
+          "detail": "Przyjęcie"
+        },
+        "extractingNeeds": {
+          "title": "Wyodrębniam potrzeby",
+          "description": "Wyszukuję pozycje produktowe, ilości i ograniczenia.",
+          "detail": "Wymagania"
+        },
+        "preparingSearches": {
+          "title": "Przygotowuję wyszukiwania",
+          "description": "Buduję zapytania katalogowe dla każdej pozycji.",
+          "detail": "Plan wyszukiwania"
+        },
+        "searchingCatalog": {
+          "title": "Przeszukuję katalog",
+          "description": "Sprawdzam kandydatów i wyniki podobieństwa semantycznego.",
+          "detail": "Dopasowanie"
+        },
+        "checkingGaps": {
+          "title": "Sprawdzam braki",
+          "description": "Oddzielam pewne dopasowania od elementów do przeglądu.",
+          "detail": "Walidacja"
+        },
+        "composingDraft": {
+          "title": "Składam draft",
+          "description": "Wyceniam dopasowane produkty i zapisuję draft oferty.",
+          "detail": "Draft"
+        }
+      }
+    },
+    "builder": {
+      "titleFallback": "Szkic oferty",
+      "lineItem": {
+        "requested": "Zapytanie:"
+      },
+      "status": {
+        "draft": "Szkic",
+        "accepted": "Zaakceptowana"
+      },
+      "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}",
+      "generated": "Wygenerowano {date}",
+      "addProduct": "Dodaj produkt",
+      "acceptDraft": "Zaakceptuj ofertę",
+      "save": {
+        "saving": "Zapisywanie zmian...",
+        "saved": "Wszystkie zmiany zapisane.",
+        "error": "Nie udało się zapisać zmian.",
+        "retry": "Spróbuj ponownie"
+      },
+      "createdBy": "Utworzone przez: {name}",
+      "lastModifiedBy": "Ostatnia zmiana: {name}",
+      "backToDraft": "Przywróć do szkicu",
+      "manuallyAdded": "Dodano ręcznie",
+      "noRequestText": "Do tego szkicu nie dołączono tekstu zapytania klienta.",
+      "done": "Gotowe",
+      "confirmMatch": "Dodaj produkt",
+      "matchSelectPrompt": "Wybierz produkt do dopasowania",
+      "matchingItem": "Dopasowujesz: „{item}\"",
+      "matchSelectedProduct": "Zostanie dodany: {name} × {quantity}"
+    },
+    "review": {
+      "pageTitle": "Przegląd oferty",
+      "loading": "Wczytywanie wygenerowanej oferty...",
+      "error": "Nie udało się wczytać tej oferty.",
+      "notFound": "Oferta niedostępna",
+      "createAnother": "Utwórz kolejny szkic",
+      "assistant": {
+        "title": "Asystent"
+      },
+      "revisions": "Wersje",
+      "resizeLabel": "Zmień rozmiar paneli przeglądu i asystenta",
+      "validation": {
+        "title": "Wynik walidacji AI",
+        "verdict": {
+          "pass": "Oferta kompletna",
+          "partial": "Częściowo spełniona",
+          "fail": "Wymagania niespełnione"
+        },
+        "missingRequirements": "Brakujące wymagania",
+        "notes": "Uwagi",
+        "allMet": "Wszystkie wymagania klienta są spełnione.",
+        "close": "Zamknij",
+        "transferToChat": "Przekaż do czatu",
+        "acceptOffer": "Zaakceptuj ofertę",
+        "checking": "Sprawdzam...",
+        "acceptWithoutAi": "Zaakceptuj bez sprawdzenia AI",
+        "checkWithAI": "Sprawdź z AI",
+        "messageHeader": "Wyniki walidacji AI",
+        "statusLabel": "Status",
+        "chatPrompt": "Pomóż mi rozwiązać problemy wymienione powyżej."
+      },
+      "summary": {
+        "title": "Podsumowanie",
+        "description": "Podsumowanie i weryfikacja przed wysłaniem szkicu.",
+        "customerRequest": "Zapytanie klienta",
+        "reviewChecks": "Weryfikacja",
+        "notes": "Notatki",
+        "checks": {
+          "allPriced": "Wszystkie pozycje mają ceny",
+          "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",
+          "availabilityConfirmed": "Dostępność potwierdzona",
+          "missingAvailability": "{count, plural, one {# pozycja wymaga potwierdzenia dostępności} few {# pozycje wymagają potwierdzenia dostępności} many {# pozycji wymaga potwierdzenia dostępności} other {# pozycji wymaga potwierdzenia dostępności}}",
+          "offerAccepted": "Oferta zaakceptowana"
+        }
+      },
+      "commercial": {
+        "title": "Podsumowanie handlowe",
+        "subtotal": "Wartość netto",
+        "discount": "Rabat",
+        "discountValue": "Wartość rabatu",
+        "totalNet": "Suma netto"
+      },
+      "products": {
+        "title": "Produkty",
+        "description": "Przejrzyj dopasowane produkty, ilości i ceny.",
+        "unmatchedTitle": "Niedopasowane pozycje zapytania",
+        "unmatchedDescription": "Następujące pozycje z zapytania klienta nie mogły zostać przypisane do żadnego produktu w katalogu:",
+        "removeUnmatched": "Oznacz jako rozwiązane",
+        "removeUnmatchedAria": "Usuń niedopasowaną pozycję: {item}",
+        "manuallyMatchProduct": "Dopasuj ręcznie",
+        "empty": "Brak produktów w tej ofercie.",
+        "match": "Dopasowanie produktu",
+        "qty": "Ilość",
+        "unitPrice": "Cena jedn.",
+        "lineTotal": "Wartość",
+        "actions": "Akcje",
+        "sku": "SKU",
+        "requested": "Zapytanie",
+        "mergedBadge": "Suma z {count} zapytań",
+        "details": "Szczegóły",
+        "availability": "Dostępność",
+        "brand": "Marka",
+        "quantityAria": "Ilość dla {name}",
+        "removeAria": "Usuń {name}"
+      },
+      "acceptedView": {
+        "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
+        "attribution": "Odpowiedzialna osoba",
+        "downloadPdf": "Wygeneruj i pobierz PDF",
+        "goToOffers": "Wróć do listy ofert",
+        "pdfViewer": {
+          "loading": "Ładowanie PDF…",
+          "error": "Nie udało się załadować PDF.",
+          "zoomOut": "Pomniejsz",
+          "zoomIn": "Powiększ",
+          "previousPage": "Poprzednia strona",
+          "nextPage": "Następna strona"
+        }
+      }
+    },
+    "revision": {
+      "timeline": {
+        "justNow": "przed chwilą",
+        "ago": "{time} temu",
+        "empty": "Brak zapisanych wersji.",
+        "checkpoint": "Wersje są zapisywane automatycznie podczas edycji.",
+        "revisionLabel": "Wersja {number}",
+        "latest": "Najnowsza",
+        "accepted": "Zaakceptowana"
+      },
+      "modal": {
+        "previewAria": "Podgląd wersji {number}",
+        "title": "Wersja {number}",
+        "savedBy": "Zapisane przez {name}",
+        "loading": "Wczytywanie wersji...",
+        "name": "Nazwa",
+        "customer": "Klient",
+        "status": "Status",
+        "notes": "Notatki",
+        "lineItems": "Pozycje ({count})",
+        "product": "Produkt",
+        "qty": "Ilość",
+        "unitPrice": "Cena jedn.",
+        "total": "Suma",
+        "accepted": "Zaakceptowana",
+        "clientRequest": "Zapytanie klienta",
+        "unmatched": "Nieznalezione pozycje",
+        "subtotal": "Wartość netto",
+        "discount": "Rabat",
+        "totalNet": "Razem netto",
+        "close": "Zamknij",
+        "restoring": "Przywracanie...",
+        "restoreAction": "Przywróć tę wersję",
+        "previewUnavailable": "Podgląd wersji jest niedostępny."
+      }
+    }
+  },
+  "offersList": {
+    "actions": {
+      "clearFilters": "Wyczyść filtry",
+      "deleteCancel": "Anuluj",
+      "deleteOffer": "Usuń ofertę",
+      "deleteOfferConfirm": "Usuń",
+      "deleteOfferConfirmDescription": "Usunąć „{name}”? Tej operacji nie można cofnąć.",
+      "deleteOfferConfirmTitle": "Usunąć tę ofertę?",
+      "editDetails": "Edytuj szczegóły",
+      "editDetailsTitle": "Edytuj szczegóły oferty",
+      "fieldCustomerName": "Nazwa klienta",
+      "fieldName": "Nazwa oferty",
+      "newOffer": "Nowa oferta",
+      "offerActions": "Akcje oferty",
+      "openActions": "Otwórz akcje dla {name}",
+      "reviewOffer": "Przejrzyj ofertę",
+      "saveChanges": "Zapisz zmiany"
+    },
+    "attention": {
+      "allMatched": "Wszystko dopasowane",
+      "gapCount": "{count, plural, one {# brakujące produkty} few {# brakujące produkty} many {# brakujące produkty} other {# brakujące produkty}}"
+    },
+    "badges": {
+      "accepted": "{count} zaakceptowano",
+      "draftsToReview": "{count} do przeglądu",
+      "matchedProducts": "{count, plural, one {# dopasowany produkt} few {# dopasowane produkty} many {# dopasowanych produktów} other {# dopasowanego produktu}}",
+      "needsAttention": "{count} z brakującymi produktami",
+      "offerCount": "{count, plural, one {# oferta} few {# oferty} many {# ofert} other {# oferty}}"
+    },
+    "empty": {
+      "description": "Generuj oferty bazując na zapytaniach klientów.",
+      "title": "Nie masz jeszcze ofert"
+    },
+    "filters": {
+      "accepted": "Zaakceptowana",
+      "all": "Wszystkie oferty",
+      "allCustomers": "Wszyscy klienci",
+      "customerLabel": "Filtruj po kliencie",
+      "draft": "Szkic",
+      "label": "Filtruj oferty",
+      "needsAttention": "Wymaga uwagi",
+      "unassignedCustomer": "Nieprzypisany"
+    },
+    "fallbacks": {
+      "customStatus": "Status niestandardowy",
+      "request": "Nie zapisano jeszcze zapytania klienta.",
+      "customer": "Nieprzypisany klient",
+      "noValue": "—",
+      "unnamedOffer": "Szkic oferty"
+    },
+    "matchingEmpty": {
+      "description": "Zmień wyszukiwanie, status lub filtr klienta, aby poszerzyć kolejkę.",
+      "title": "Brak pasujących ofert"
+    },
+    "notes": {
+      "generation": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}",
+      "short": "{count, plural, one {# notatka} few {# notatki} many {# notatek} other {# notatki}}"
+    },
+    "productCount": "{count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktu}}",
+    "queue": "Kolejka",
+    "recent": {
+      "title": "Ostatnie oferty"
+    },
+    "search": {
+      "label": "Szukaj ofert",
+      "placeholder": "Szukaj klienta, zapytania lub oferty"
+    },
+    "status": {
+      "accepted": {
+        "description": "Zatwierdzona oferta",
+        "label": "Zaakceptowana"
+      },
+      "draft": {
+        "description": "Wymaga przeglądu przez handlowca",
+        "label": "Szkic"
+      }
+    },
+    "sort": {
+      "label": "Sortuj",
+      "createdAtDesc": "Najnowsze",
+      "createdAtAsc": "Najstarsze",
+      "valueDesc": "Wartość: malejąco",
+      "valueAsc": "Wartość: rosnąco",
+      "customerAsc": "Klient (A–Z)"
+    },
+    "table": {
+      "actions": "Akcje",
+      "coverage": "Pokrycie",
+      "createdAt": "Data zamówienia",
+      "customerRequest": "Zapytanie klienta",
+      "offer": "Oferta",
+      "status": "Status",
+      "value": "Wartość"
+    },
+    "title": "Oferty",
+    "subtitle": "Przeglądaj wygenerowane drafty, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
+  },
+  "productSearchDialog": {
+    "title": "Szukaj produktów",
+    "description": "Przeszukaj katalog i dostosuj ilości przed dodaniem produktów do oferty.",
+    "placeholder": "Szukaj produktów…",
+    "searchAria": "Szukaj",
+    "searchIn": "Szukaj w:",
+    "productsFound": "{count, plural, one {# znaleziony produkt} few {# znalezione produkty} many {# znalezionych produktów} other {# znalezionych produktów}}",
+    "searching": "Szukam...",
+    "noResults": "Brak wyników.",
+    "decreaseQuantity": "Zmniejsz ilość dla {name}",
+    "increaseQuantity": "Zwiększ ilość dla {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Nazwa",
+      "description": "Opis"
+    }
+  },
+  "quickOffer": {
+    "errors": {
+      "itemsRequired": "pozycje są wymagane",
+      "customerNameRequired": "nazwa klienta jest wymagana"
+    },
+    "offer": {
+      "title": "Szybka oferta",
+      "description": "Ręczny wybór z katalogu",
+      "note": "Oferta utworzona ręcznie z wyszukiwania produktów",
+      "productNameFallback": "Ręczny wybór",
+      "requestItem": "Ręczny wybór",
+      "rationale": "Wybrane przez użytkownika"
+    }
+  },
+  "quickSearch": {
+    "card": {
+      "title": "Znajdź produkt",
+      "description": "Draft oferty z wybranych produktów."
+    },
+    "searchPlaceholder": "Szukaj produktów...",
+    "customerName": {
+      "label": "Nazwa klienta",
+      "placeholder": "ACME Sp. z o.o."
+    },
+    "itemsSelected": "{count, plural, one {# wybrany produkt} few {# wybrane produkty} many {# wybranych produktów} other {# wybranych produktów}}",
+    "noItemsSelected": "Brak wybranych pozycji",
+    "actions": {
+      "cancel": "Anuluj",
+      "creating": "Tworzenie...",
+      "createDraft": "Utwórz szkic oferty"
+    }
+  },
+  "customerCombobox": {
+    "loading": "Wczytuję klientów...",
+    "empty": "Nie znaleziono klientów.",
+    "create": "Utwórz „{name}”"
+  },
+  "offerChat": {
+    "title": "Asystent Solivio",
+    "status": {
+      "thinking": "Myślę",
+      "ready": "Gotowy"
+    },
+    "threads": {
+      "label": "Wątek czatu",
+      "newChat": "Nowy czat"
+    },
+    "welcome": "Mogę wyjaśnić tę ofertę, podsumować zapytanie klienta, przejrzeć dopasowania produktów i zaproponować ulepszenia.",
+    "input": {
+      "placeholder": "Powiedz AI, co zmienić lub zadaj pytanie..."
+    },
+    "suggestions": {
+      "summarize": "Podsumuj zapytanie klienta",
+      "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
+      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
+    },
+    "errors": {
+      "loadThreads": "Nie udało się wczytać wątków czatu.",
+      "loadMessages": "Nie udało się wczytać wiadomości czatu.",
+      "createThread": "Nie udało się utworzyć wątku czatu.",
+      "startChat": "Nie udało się rozpocząć nowego czatu.",
+      "loadHistory": "Nie udało się wczytać historii czatu.",
+      "switchThread": "Nie udało się przełączyć wątku czatu."
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "offers": "Oferty",
+    "newOffer": "Nowa oferta"
+  }
+}

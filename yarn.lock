@@ -109,6 +109,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/gateway@npm:3.0.127":
+  version: 3.0.127
+  resolution: "@ai-sdk/gateway@npm:3.0.127"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.10"
+    "@ai-sdk/provider-utils": "npm:4.0.27"
+    "@vercel/oidc": "npm:3.2.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10c0/cb79a8f15754cf3bcbe478883a5649f9aaa749f97cc8c4837015655d33c6900d7f45b4e419a29f2fa3aa0eec53063f32b597b20fd42b8456fda83987bf7ac05d
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/google-vertex@npm:^3.0.25":
   version: 3.0.132
   resolution: "@ai-sdk/google-vertex@npm:3.0.132"
@@ -247,12 +260,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/provider-utils@npm:4.0.27":
+  version: 4.0.27
+  resolution: "@ai-sdk/provider-utils@npm:4.0.27"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.10"
+    "@standard-schema/spec": "npm:^1.1.0"
+    eventsource-parser: "npm:^3.0.8"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10c0/2202dedcbe8f58883ef37425111392c6b5b5c2f85dfbbd11b13173e9d349da3d977ba610586c4b5412720e07b09f63ba0e88dbc6e21f043441a67f6d51225020
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/provider@npm:2.0.1, @ai-sdk/provider@npm:^2.0.0":
   version: 2.0.1
   resolution: "@ai-sdk/provider@npm:2.0.1"
   dependencies:
     json-schema: "npm:^0.4.0"
   checksum: 10c0/3ec560c5b03401a1e3b8c73875f4258cb815668367157a3caa4d30f580ff5adffbba54ee52f875161c986c5225a88cb3829f050437e0a2d7e5820b72cf08238b
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider@npm:3.0.10":
+  version: 3.0.10
+  resolution: "@ai-sdk/provider@npm:3.0.10"
+  dependencies:
+    json-schema: "npm:^0.4.0"
+  checksum: 10c0/c9b162165c3fd4684e4f7a1c041db3ad75785c841d904bac577006b7b2299d1b465557b1d32e3f59b6d8536a0ef5741b195aad86fc3e0e1d2a39f077062a83c4
   languageName: node
   linkType: hard
 
@@ -276,6 +311,20 @@ __metadata:
   peerDependencies:
     react: ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
   checksum: 10c0/36bc6415f8e9f8af682d9b740db3139b3a753c1095c55b09332bf545a32af37e77e2e4d2619425e0187c27effcb5c56db76531d3ef8e701bd267b1cde3a65f2b
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/react@npm:^3.0.57":
+  version: 3.0.201
+  resolution: "@ai-sdk/react@npm:3.0.201"
+  dependencies:
+    "@ai-sdk/provider-utils": "npm:4.0.27"
+    ai: "npm:6.0.199"
+    swr: "npm:^2.2.5"
+    throttleit: "npm:2.1.0"
+  peerDependencies:
+    react: ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
+  checksum: 10c0/2d2d79764300441ecc1a0ba0a9d0bfafa5001223a05fcdd582b18ddd7cfb0f2347d6d1e7d20c8adf79877d306dd43915d6a5c3e2ae38ff6a5b2853e0b08cf56c
   languageName: node
   linkType: hard
 
@@ -5612,13 +5661,59 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@solivio/module-offer-tools@workspace:modules/offer-tools":
+"@solivio/module-offer-chat@workspace:modules/offer-chat":
   version: 0.0.0-use.local
-  resolution: "@solivio/module-offer-tools@workspace:modules/offer-tools"
+  resolution: "@solivio/module-offer-chat@workspace:modules/offer-chat"
   dependencies:
+    "@ai-sdk/openai": "npm:^3.0.53"
+    "@ai-sdk/react": "npm:^3.0.57"
+    "@solivio/domain": "workspace:*"
     "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    "@voltagent/core": "npm:^2.7.3"
+    ai: "npm:^6.0.168"
+    drizzle-orm: "npm:^0.45.2"
+    lucide-react: "npm:^1.11.0"
+    next: "npm:^16.2.4"
+    next-intl: "npm:^4.9.2"
+    server-only: "npm:^0.0.1"
     typescript: "npm:^6.0.3"
     zod: "npm:^4.3.6"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
+"@solivio/module-offers@workspace:modules/offers":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-offers@workspace:modules/offers"
+  dependencies:
+    "@ai-sdk/openai": "npm:^3.0.53"
+    "@ai-sdk/react": "npm:^3.0.170"
+    "@react-pdf/renderer": "npm:^4.5.1"
+    "@solivio/domain": "workspace:*"
+    "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    "@voltagent/core": "npm:^2.7.3"
+    ai: "npm:^6.0.168"
+    decimal.js: "npm:^10.6.0"
+    drizzle-orm: "npm:^0.45.2"
+    lucide-react: "npm:^1.11.0"
+    next: "npm:^16.2.4"
+    next-intl: "npm:^4.9.2"
+    react-pdf: "npm:^10.4.1"
+    react-resizable-panels: "npm:^4.10.0"
+    server-only: "npm:^0.0.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -6654,6 +6749,20 @@ __metadata:
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
   checksum: 10c0/600a4693885f31f1873e742533f11070aeec5a23541704c71e625d31d47bb6702f99bfda7d3d21c7170b2c831fd57696299762afab7e1682a4fad2bcd8b4abcf
+  languageName: node
+  linkType: hard
+
+"ai@npm:6.0.199":
+  version: 6.0.199
+  resolution: "ai@npm:6.0.199"
+  dependencies:
+    "@ai-sdk/gateway": "npm:3.0.127"
+    "@ai-sdk/provider": "npm:3.0.10"
+    "@ai-sdk/provider-utils": "npm:4.0.27"
+    "@opentelemetry/api": "npm:^1.9.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10c0/9fa556e787a90e4dcf7733d57386d76c293a6405a1e3277f33ea598be8c89fb87c254c2f971681e1b833d3dc647316a21828e2229cbf85e47664510ac56c62c9
   languageName: node
   linkType: hard
 
@@ -9043,6 +9152,13 @@ __metadata:
   version: 3.0.8
   resolution: "eventsource-parser@npm:3.0.8"
   checksum: 10c0/3a73eee85311f33b12fa558381a477c1bdcf8c024a429a9d48f87b043e328c26d24ed280fd7ca92e2fdd4c8c37f749b758420c1533778aaca2beabf895024efa
+  languageName: node
+  linkType: hard
+
+"eventsource-parser@npm:^3.0.8":
+  version: 3.1.0
+  resolution: "eventsource-parser@npm:3.1.0"
+  checksum: 10c0/5ab4c6c9a2a042be0b387b6d03810eb580bac4ce90e299ede56458125a97ffe3af8145b2740089fc898a96cfa5aae792ee79f2a06257fba2776b0e7bce037071
   languageName: node
   linkType: hard
 

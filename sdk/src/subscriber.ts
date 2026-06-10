@@ -1,4 +1,4 @@
-import type { EventName, Events } from "./registries.js";
+import type { EventName, Events } from "./registries.ts";
 
 /**
  * An event subscriber — one per file under a module's `src/subscribers/`,

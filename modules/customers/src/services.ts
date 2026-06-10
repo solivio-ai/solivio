@@ -4,11 +4,12 @@ import type { Services } from "@solivio/sdk";
 import type { CustomerRow } from "./server/customerRepository.ts";
 import {
   findCustomerById,
+  findCustomersByIds,
   searchCustomers,
   upsertCustomerByName,
 } from "./server/customerRepository.ts";
 import type { RequestRow } from "./server/requestRepository.ts";
-import { findRequestById, insertRequest } from "./server/requestRepository.ts";
+import { findRequestById, findRequestsByIds, insertRequest } from "./server/requestRepository.ts";
 
 export type { CustomerRow, RequestRow };
 
@@ -19,6 +20,8 @@ export type { CustomerRow, RequestRow };
  */
 export interface CustomersService {
   findById(id: string): Promise<CustomerRow | null>;
+  /** Batch display lookup for id-only cross-module references. */
+  findByIds(ids: string[]): Promise<Array<{ id: string; name: string }>>;
   searchCustomers(query?: string, limit?: number): Promise<CustomerRow[]>;
   /** Find-or-create by display name (normalized, concurrency-safe). */
   upsertByName(name: string, source?: string): Promise<CustomerRow>;
@@ -38,6 +41,8 @@ export interface CustomersService {
     source?: string;
   }): Promise<RequestRow>;
   findRequestById(id: string): Promise<RequestRow | null>;
+  /** Batch raw-text lookup for id-only cross-module references. */
+  findRequestsByIds(ids: string[]): Promise<Array<{ id: string; rawText: string }>>;
 }
 
 declare module "@solivio/sdk" {
@@ -49,6 +54,7 @@ declare module "@solivio/sdk" {
 function createCustomersService(): CustomersService {
   return {
     findById: (id) => findCustomerById(id),
+    findByIds: (ids) => findCustomersByIds(ids),
     searchCustomers: (query, limit) => searchCustomers(query, limit),
     upsertByName: (name, source) => upsertCustomerByName(name, source),
     async resolveCustomer(input, source) {
@@ -80,6 +86,7 @@ function createCustomersService(): CustomersService {
     },
     createRequest: (input) => insertRequest(input),
     findRequestById: (id) => findRequestById(id),
+    findRequestsByIds: (ids) => findRequestsByIds(ids),
   };
 }
 

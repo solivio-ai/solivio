@@ -10,8 +10,8 @@ import type {
   EventBus,
   Logger,
   ModuleContext,
-} from "./module-context.js";
-import type { CoreServices } from "./services.js";
+} from "./module-context.ts";
+import type { CoreServices } from "./services.ts";
 
 function noopLogger(): Logger {
   const log: Logger = {

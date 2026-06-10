@@ -1,10 +1,10 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-import type { AgentTool } from "./agent-tool.js";
-import type { EventSubscriber } from "./event-subscriber.js";
-import type { AnyImporterDefinition } from "./importer.js";
-import type { ModuleContext } from "./module-context.js";
-import type { RendererDefinition } from "./renderer.js";
+import type { AgentTool } from "./agent-tool.ts";
+import type { EventSubscriber } from "./event-subscriber.ts";
+import type { AnyImporterDefinition } from "./importer.ts";
+import type { ModuleContext } from "./module-context.ts";
+import type { RendererDefinition } from "./renderer.ts";
 
 /**
  * The typed bag a module returns from `register`. Each field is a capability

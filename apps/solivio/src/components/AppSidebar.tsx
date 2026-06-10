@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, LayoutDashboard, Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -28,12 +28,6 @@ import { UserMenu } from "@/features/auth/components/UserMenu";
 import { navRegistry } from "@/generated/nav";
 import { isAdmin } from "@/lib/auth";
 import { useSession } from "@/lib/auth-client";
-
-const navItems = [
-  { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
-  { labelKey: "offers", href: "/offers", icon: FileText },
-  { labelKey: "newOffer", href: "/offers/new", icon: Plus },
-] as const;
 
 const moduleNavItems = navRegistry.filter((entry) => (entry.section ?? "main") === "main");
 
@@ -89,21 +83,6 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
-              {navItems.map(({ labelKey, href, icon: Icon }) => {
-                const active = pathname === href;
-                const label = t(`nav.${labelKey}`);
-
-                return (
-                  <SidebarMenuItem key={href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={label}>
-                      <Link href={href} onClick={closeMobileSidebar}>
-                        <Icon size={16} aria-hidden="true" />
-                        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
               {moduleNavItems.map((entry) => {
                 const label = tModules(`${entry.moduleId}.${entry.labelKey}`);
                 const Icon = entry.icon;

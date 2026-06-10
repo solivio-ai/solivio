@@ -19,6 +19,7 @@ export type UpsertProductRow = {
 
 export type ProductSummaryRow = {
   id: string;
+  sku: string | null;
   name: string;
   description: string;
 };
@@ -67,7 +68,12 @@ export async function getProductsByIds(ids: string[], tx?: Tx): Promise<ProductS
   const conn = tx ?? getDb();
 
   return await conn
-    .select({ id: products.id, name: products.name, description: products.description })
+    .select({
+      id: products.id,
+      sku: products.sku,
+      name: products.name,
+      description: products.description,
+    })
     .from(products)
     .where(inArray(products.id, ids));
 }

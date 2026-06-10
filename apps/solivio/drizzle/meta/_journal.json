@@ -29,6 +29,13 @@
       "when": 1781077686619,
       "tag": "0003_detach_catalog_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781095156747,
+      "tag": "0004_detach_offers_tables",
+      "breakpoints": true
     }
   ]
 }

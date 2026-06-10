@@ -4,7 +4,7 @@
  * Pure: snapshot in, artifact out — no side effects, no canonical writes.
  */
 
-import type { OfferSnapshot } from "./entities/offer.js";
+import type { OfferSnapshot } from "./entities/offer.ts";
 
 export interface RendererDefinition {
   /** Unique name for this renderer, e.g. "pdf". */

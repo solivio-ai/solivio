@@ -2,12 +2,6 @@ import "server-only";
 
 import type { CoreServices, OfferService, ProductService } from "@solivio/sdk";
 import { getService } from "@solivio/sdk/runtime";
-import {
-  addProductToOffer,
-  bulkAddProductsToOffer,
-  removeOfferLineItem,
-  updateOfferLineItem,
-} from "@/server/offers/offerService";
 
 /**
  * Concrete implementation of the SDK's CoreServices contract over the app's
@@ -35,35 +29,12 @@ const products: ProductService = {
 };
 
 const offers: OfferService = {
-  async addProduct(offerId, item) {
-    const result = await addProductToOffer(
-      offerId,
-      item.productId,
-      item.quantity,
-      item.requestItem,
-      undefined,
-      item.rationale,
-    );
-    if (result === null) return { status: "not_found" };
-    if (result === "duplicate") return { status: "duplicate" };
-    if (result === "locked") return { status: "locked" };
-    return { status: "ok", offer: result };
-  },
-  async updateLineItem(offerId, offerProductId, quantity) {
-    const result = await updateOfferLineItem(offerProductId, offerId, quantity);
-    if (result === null) return { status: "not_found" };
-    if (result === "locked") return { status: "locked" };
-    return { status: "ok", offer: result };
-  },
-  async removeLineItem(offerId, offerProductId) {
-    const result = await removeOfferLineItem(offerProductId, offerId);
-    if (result === "locked") return { status: "locked" };
-    if (!result) return { status: "not_found" };
-    return { status: "ok" };
-  },
-  async bulkAddProducts(offerId, items) {
-    return bulkAddProductsToOffer(offerId, items);
-  },
+  addProduct: (offerId, item) => getService("offers").addProduct(offerId, item),
+  updateLineItem: (offerId, offerProductId, quantity) =>
+    getService("offers").updateLineItem(offerId, offerProductId, quantity),
+  removeLineItem: (offerId, offerProductId) =>
+    getService("offers").removeLineItem(offerId, offerProductId),
+  bulkAddProducts: (offerId, items) => getService("offers").bulkAddProducts(offerId, items),
 };
 
 export const coreServices: CoreServices = { products, offers };

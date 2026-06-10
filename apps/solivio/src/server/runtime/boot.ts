@@ -2,14 +2,16 @@ import "server-only";
 
 import type { AuthGuards, SolivioRuntime } from "@solivio/sdk/runtime";
 import { setRuntime } from "@solivio/sdk/runtime";
+import { agentTools } from "@/generated/ai";
 import { subscribers } from "@/generated/events";
 import { jobs } from "@/generated/jobs";
 import { moduleOptions } from "@/generated/modules";
 import { createServices } from "@/generated/services";
-import { getModelFor } from "@/server/agents/modelConfig";
 import { db } from "@/server/database/db";
 import { createModuleLogger } from "@/server/modules/logger";
 import { getDefaultEmbeddingModel } from "@/server/runtime/ai/embeddingConfig";
+import { getModelFor } from "@/server/runtime/ai/modelConfig";
+import { createUsersService } from "@/server/runtime/usersService";
 
 /**
  * Initializes the SDK runtime from the generated registries. Called once from
@@ -29,7 +31,9 @@ export function bootModuleRuntime(): void {
   };
 
   const runtime: SolivioRuntime = {
-    services: createServices(),
+    services: createServices({
+      users: createUsersService,
+    }),
     logger: (moduleId) => createModuleLogger({ module: moduleId }),
     db: db as SolivioRuntime["db"],
     ai: {
@@ -47,6 +51,7 @@ export function bootModuleRuntime(): void {
       return target === "product" ? getImporter("product") : getImporter("customer");
     },
     moduleOptions,
+    agentTools,
     subscribers,
     jobs,
   };

@@ -1,0 +1,483 @@
+{
+  "dashboard": {
+    "newOffer": {
+      "title": "Start a new offer",
+      "description": "Draft an offer from a customer request.",
+      "button": "New offer"
+    },
+    "integrations": {
+      "title": "Data sources",
+      "subtitle": "The more context you give Solivio, the sharper the offers. Connect the systems you already use.",
+      "badge": {
+        "active": "Active",
+        "available": "Available"
+      },
+      "action": {
+        "integrate": "Get in touch"
+      },
+      "items": {
+        "productCatalog": {
+          "name": "Product Catalog",
+          "description": "Thousands of SKUs at hand — the right products picked for each request without digging through catalogs."
+        },
+        "erp": {
+          "name": "ERP",
+          "description": "Current products, pricing, and order history straight from your ERP — Solivio always works with real data."
+        },
+        "crm": {
+          "name": "CRM",
+          "description": "Pull customer profiles and start every quote already personalized."
+        },
+        "priceRules": {
+          "name": "Price Rules",
+          "description": "Volume thresholds, contract discounts, category margins — applied automatically, no manual math."
+        },
+        "inventory": {
+          "name": "Inventory",
+          "description": "See real-time stock as you build the offer. No more quoting items that aren't on the shelf."
+        },
+        "industryKnowledge": {
+          "name": "Industry Knowledge",
+          "description": "Capture industry and segment specifics so Solivio reads each request in the right context."
+        },
+        "documentation": {
+          "name": "Documentation",
+          "description": "Technical sheets, specs, and sales materials — used when picking products and explaining the choice."
+        },
+        "historicalOrders": {
+          "name": "Historical Orders",
+          "description": "Customer keeps ordering the same items? Solivio recognizes the pattern and reuses it on the next offer."
+        },
+        "rfqBenchmarks": {
+          "name": "RFQ Benchmarks",
+          "description": "Seen a similar request before? Solivio learns from past offers to speed up the next ones."
+        },
+        "productReviews": {
+          "name": "Product Reviews",
+          "description": "Factor customer feedback and preferences into recommendations and substitutes."
+        }
+      }
+    }
+  },
+  "demoOffer": {
+    "pageTitle": "Demo offer",
+    "title": "Offer products",
+    "addProduct": "Add product",
+    "empty": "No products added yet",
+    "qty": "qty: {count}"
+  },
+  "newOffer": {
+    "page": {
+      "title": "New offer",
+      "back": "Back"
+    },
+    "form": {
+      "title": "Create offer",
+      "description": "Provide the customer details and request text.",
+      "customerName": {
+        "label": "Customer name",
+        "placeholder": "ACME Ltd."
+      },
+      "clientRequest": {
+        "label": "Customer request",
+        "placeholder": "Describe what the customer needs..."
+      },
+      "actions": {
+        "generate": "Generate draft offer",
+        "preparing": "Preparing draft..."
+      },
+      "notices": {
+        "initial": "Fill in the request and generate a draft offer.",
+        "preparing": "Preparing draft offer...",
+        "generated": "Draft offer generated. Opening review...",
+        "error": "Could not generate offer right now. Please try again."
+      }
+    },
+    "generation": {
+      "dialogTitle": "Offer generation progress",
+      "dialogDescription": "The draft offer is being prepared from the customer request.",
+      "title": "Preparing draft offer",
+      "activeStep": "{title}: {description}",
+      "draftReady": "Draft ready",
+      "elapsed": "{seconds}s elapsed",
+      "progressLabel": "Offer generation progress",
+      "stepCounter": "Step {current} of {total}",
+      "progressValue": "{progress}%",
+      "requestSnapshot": "Request snapshot",
+      "unnamedCustomer": "Unnamed customer",
+      "catalogPreview": "Catalog results taking shape",
+      "steps": {
+        "readingRequest": {
+          "title": "Reading request",
+          "description": "Capturing the customer context and raw request text.",
+          "detail": "Intake"
+        },
+        "extractingNeeds": {
+          "title": "Extracting needs",
+          "description": "Finding product lines, quantities, and constraints.",
+          "detail": "Requirements"
+        },
+        "preparingSearches": {
+          "title": "Preparing searches",
+          "description": "Building catalog-ready queries for each request item.",
+          "detail": "Search plan"
+        },
+        "searchingCatalog": {
+          "title": "Searching catalog",
+          "description": "Checking candidates and semantic similarity scores.",
+          "detail": "Matching"
+        },
+        "checkingGaps": {
+          "title": "Checking gaps",
+          "description": "Separating confident matches from items for review.",
+          "detail": "Validation"
+        },
+        "composingDraft": {
+          "title": "Composing draft",
+          "description": "Pricing matched products and saving the offer draft.",
+          "detail": "Draft"
+        }
+      }
+    },
+    "builder": {
+      "titleFallback": "Draft offer",
+      "lineItem": {
+        "requested": "Requested:"
+      },
+      "status": {
+        "draft": "Draft",
+        "accepted": "Accepted"
+      },
+      "productCount": "{count, plural, one {# product} other {# products}}",
+      "generated": "Generated {date}",
+      "addProduct": "Add product",
+      "acceptDraft": "Accept draft",
+      "save": {
+        "saving": "Saving changes...",
+        "saved": "All changes saved.",
+        "error": "Could not save changes.",
+        "retry": "Retry"
+      },
+      "createdBy": "Created by {name}",
+      "lastModifiedBy": "Last modified by {name}",
+      "backToDraft": "Back to draft",
+      "manuallyAdded": "Manually added",
+      "noRequestText": "No customer request text was attached to this draft.",
+      "done": "Done",
+      "confirmMatch": "Add product",
+      "matchSelectPrompt": "Select a product to match",
+      "matchingItem": "Matching: \"{item}\"",
+      "matchSelectedProduct": "Will add: {name} × {quantity}"
+    },
+    "review": {
+      "pageTitle": "Offer review",
+      "loading": "Loading generated offer...",
+      "error": "Could not load this offer.",
+      "notFound": "Offer not available",
+      "createAnother": "Create another draft",
+      "assistant": {
+        "title": "Assistant"
+      },
+      "revisions": "Revisions",
+      "resizeLabel": "Resize offer review and assistant panes",
+      "validation": {
+        "title": "AI Validation Result",
+        "verdict": {
+          "pass": "Offer complete",
+          "partial": "Partially fulfilled",
+          "fail": "Requirements not met"
+        },
+        "missingRequirements": "Missing requirements",
+        "notes": "Notes",
+        "allMet": "All customer requirements are met.",
+        "close": "Close",
+        "transferToChat": "Transfer to chat",
+        "acceptOffer": "Accept offer",
+        "checking": "Checking...",
+        "acceptWithoutAi": "Accept without AI check",
+        "checkWithAI": "Check with AI",
+        "messageHeader": "AI Validation Results",
+        "statusLabel": "Status",
+        "chatPrompt": "Please help me resolve the problems listed above."
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Totals and the checks needed before this draft is sent.",
+        "customerRequest": "Customer request",
+        "reviewChecks": "Review checks",
+        "notes": "Notes",
+        "checks": {
+          "allPriced": "All lines have prices",
+          "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
+          "availabilityConfirmed": "Availability confirmed",
+          "missingAvailability": "{count, plural, one {# line needs availability confirmation} other {# lines need availability confirmation}}",
+          "offerAccepted": "Offer accepted"
+        }
+      },
+      "commercial": {
+        "title": "Commercial totals",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "discountValue": "Discount value",
+        "totalNet": "Total net"
+      },
+      "products": {
+        "title": "Products",
+        "description": "Review the matched products, quantities, and pricing first.",
+        "unmatchedTitle": "Unmatched Request Items",
+        "unmatchedDescription": "The following items from the customer's request could not be mapped to any products in our catalog:",
+        "removeUnmatched": "Mark as resolved",
+        "removeUnmatchedAria": "Remove unmatched request item: {item}",
+        "manuallyMatchProduct": "Match manually",
+        "empty": "No products in this offer yet.",
+        "match": "Product Match",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "lineTotal": "Line total",
+        "actions": "Actions",
+        "sku": "SKU",
+        "requested": "Requested",
+        "mergedBadge": "Summed from {count} requests",
+        "details": "Details",
+        "availability": "Availability",
+        "brand": "Brand",
+        "quantityAria": "Quantity for {name}",
+        "removeAria": "Remove {name}"
+      },
+      "acceptedView": {
+        "pdfPreviewAria": "Accepted offer PDF preview",
+        "attribution": "Attribution",
+        "downloadPdf": "Generate and download PDF",
+        "goToOffers": "Go to offers list",
+        "pdfViewer": {
+          "loading": "Loading PDF…",
+          "error": "Failed to load PDF.",
+          "zoomOut": "Zoom out",
+          "zoomIn": "Zoom in",
+          "previousPage": "Previous page",
+          "nextPage": "Next page"
+        }
+      }
+    },
+    "revision": {
+      "timeline": {
+        "justNow": "just now",
+        "ago": "{time} ago",
+        "empty": "No saved revisions yet.",
+        "checkpoint": "Revisions are saved automatically as you edit.",
+        "revisionLabel": "Revision {number}",
+        "latest": "Latest",
+        "accepted": "Accepted"
+      },
+      "modal": {
+        "previewAria": "Revision {number} preview",
+        "title": "Revision {number}",
+        "savedBy": "Saved by {name}",
+        "loading": "Loading revision...",
+        "name": "Name",
+        "customer": "Customer",
+        "status": "Status",
+        "notes": "Notes",
+        "lineItems": "Line items ({count})",
+        "product": "Product",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "total": "Total",
+        "accepted": "Accepted",
+        "clientRequest": "Client request",
+        "unmatched": "Unmatched items",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "totalNet": "Total net",
+        "close": "Close",
+        "restoring": "Restoring...",
+        "restoreAction": "Restore this revision",
+        "previewUnavailable": "Revision preview is unavailable."
+      }
+    }
+  },
+  "offersList": {
+    "actions": {
+      "clearFilters": "Clear filters",
+      "deleteCancel": "Cancel",
+      "deleteOffer": "Delete offer",
+      "deleteOfferConfirm": "Delete",
+      "deleteOfferConfirmDescription": "Delete \"{name}\"? This cannot be undone.",
+      "deleteOfferConfirmTitle": "Delete this offer?",
+      "editDetails": "Edit details",
+      "editDetailsTitle": "Edit offer details",
+      "fieldCustomerName": "Customer name",
+      "fieldName": "Offer name",
+      "newOffer": "New offer",
+      "offerActions": "Offer actions",
+      "openActions": "Open actions for {name}",
+      "reviewOffer": "Review offer",
+      "saveChanges": "Save changes"
+    },
+    "attention": {
+      "allMatched": "All matched",
+      "gapCount": "{count, plural, one {# gap} other {# gaps}}"
+    },
+    "badges": {
+      "accepted": "{count} accepted",
+      "draftsToReview": "{count} to review",
+      "matchedProducts": "{count, plural, one {# matched product} other {# matched products}}",
+      "needsAttention": "{count} with gaps",
+      "offerCount": "{count, plural, one {# offer} other {# offers}}"
+    },
+    "empty": {
+      "description": "Generate structured offer drafts based on your customer requests.",
+      "title": "No offers yet"
+    },
+    "filters": {
+      "accepted": "Accepted",
+      "all": "All offers",
+      "allCustomers": "All customers",
+      "customerLabel": "Filter by customer",
+      "draft": "Draft",
+      "label": "Filter offers",
+      "needsAttention": "Needs attention",
+      "unassignedCustomer": "Unassigned"
+    },
+    "fallbacks": {
+      "customStatus": "Custom status",
+      "request": "No customer request captured yet.",
+      "customer": "Unassigned customer",
+      "noValue": "—",
+      "unnamedOffer": "Draft offer"
+    },
+    "matchingEmpty": {
+      "description": "Adjust the search term, status, or customer filter to widen the queue.",
+      "title": "No matching offers"
+    },
+    "notes": {
+      "generation": "{count, plural, one {# generation note} other {# generation notes}}",
+      "short": "{count, plural, one {# note} other {# notes}}"
+    },
+    "productCount": "{count, plural, one {# product} other {# products}}",
+    "queue": "Queue",
+    "recent": {
+      "title": "Recent Offers"
+    },
+    "search": {
+      "label": "Search offers",
+      "placeholder": "Search customer, request, or offer"
+    },
+    "status": {
+      "accepted": {
+        "description": "Approved offer",
+        "label": "Accepted"
+      },
+      "draft": {
+        "description": "Needs sales review",
+        "label": "Draft"
+      }
+    },
+    "sort": {
+      "label": "Sort",
+      "createdAtDesc": "Newest first",
+      "createdAtAsc": "Oldest first",
+      "valueDesc": "Value: high to low",
+      "valueAsc": "Value: low to high",
+      "customerAsc": "Customer (A–Z)"
+    },
+    "table": {
+      "actions": "Actions",
+      "coverage": "Coverage",
+      "createdAt": "Order date",
+      "customerRequest": "Customer request",
+      "offer": "Offer",
+      "status": "Status",
+      "value": "Total Price"
+    },
+    "title": "Offers",
+    "subtitle": "Review generated drafts, spot missing product matches, and continue the customer conversation from one queue."
+  },
+  "productSearchDialog": {
+    "title": "Search products",
+    "description": "Search the catalog and adjust quantities before adding products to the offer.",
+    "placeholder": "Search products…",
+    "searchAria": "Search",
+    "searchIn": "Search in:",
+    "productsFound": "{count, plural, one {# product found} other {# products found}}",
+    "searching": "Searching...",
+    "noResults": "No results found.",
+    "decreaseQuantity": "Decrease quantity for {name}",
+    "increaseQuantity": "Increase quantity for {name}",
+    "fields": {
+      "sku": "SKU",
+      "name": "Name",
+      "description": "Description"
+    }
+  },
+  "quickOffer": {
+    "errors": {
+      "itemsRequired": "items are required",
+      "customerNameRequired": "customer name is required"
+    },
+    "offer": {
+      "title": "Quick Offer",
+      "description": "Manual selection from catalog",
+      "note": "Offer created manually from product search",
+      "productNameFallback": "Manual selection",
+      "requestItem": "Manual Selection",
+      "rationale": "Selected by user"
+    }
+  },
+  "quickSearch": {
+    "card": {
+      "title": "Find a product",
+      "description": "Draft an offer from selected products."
+    },
+    "searchPlaceholder": "Search products...",
+    "customerName": {
+      "label": "Customer name",
+      "placeholder": "ACME Ltd."
+    },
+    "itemsSelected": "{count, plural, one {# item selected} other {# items selected}}",
+    "noItemsSelected": "No items selected",
+    "actions": {
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createDraft": "Create Draft Offer"
+    }
+  },
+  "customerCombobox": {
+    "loading": "Loading customers...",
+    "empty": "No customers found.",
+    "create": "Create \"{name}\""
+  },
+  "offerChat": {
+    "title": "Solivio Assistant",
+    "status": {
+      "thinking": "Thinking",
+      "ready": "Ready"
+    },
+    "threads": {
+      "label": "Chat thread",
+      "newChat": "Start new chat"
+    },
+    "welcome": "I can explain this offer, summarize the client request, review product matches, and suggest improvements.",
+    "input": {
+      "placeholder": "Tell the AI what to change or ask..."
+    },
+    "suggestions": {
+      "summarize": "Summarize client request",
+      "mostExpensive": "List 3 most expensive items in offer",
+      "upsell": "Suggest additional products for upsell"
+    },
+    "errors": {
+      "loadThreads": "Could not load chat threads.",
+      "loadMessages": "Could not load chat messages.",
+      "createThread": "Could not create chat thread.",
+      "startChat": "Could not start a new chat.",
+      "loadHistory": "Could not load chat history.",
+      "switchThread": "Could not switch chat thread."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "offers": "Offers",
+    "newOffer": "New Offer"
+  }
+}

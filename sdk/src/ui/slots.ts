@@ -8,7 +8,7 @@ import type { ComponentType } from "react";
  * merging if a module needs to define its own slot surface).
  */
 export interface SlotPropsMap {
-  "dashboard.cards": Record<string, never>;
+  "dashboard.cards": Record<never, never>;
   "offer-detail.panel": { offerId: string };
   "import.panel": { target: "products" | "customers" };
 }

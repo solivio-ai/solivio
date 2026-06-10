@@ -94,14 +94,20 @@ const factories: Record<string, (deps: Services) => unknown> = {
 ${spreads}
 };
 
-/** Lazy, memoizing service container; factories receive the container itself. */
-export function createServices(): Services {
+/**
+ * Lazy, memoizing service container; factories receive the container itself.
+ * The host may register additional (core-provided) services via \`extra\`.
+ */
+export function createServices(
+  extra: Record<string, (deps: Services) => unknown> = {},
+): Services {
+  const all: Record<string, (deps: Services) => unknown> = { ...factories, ...extra };
   const cache = new Map<string, unknown>();
   const services = new Proxy({} as Services, {
     get(_target, name) {
       if (typeof name !== "string") return undefined;
       if (!cache.has(name)) {
-        const factory = factories[name];
+        const factory = all[name];
         if (!factory) {
           throw new Error(\`Unknown service "\${name}" — is its module enabled?\`);
         }
@@ -109,7 +115,7 @@ export function createServices(): Services {
       }
       return cache.get(name);
     },
-    has: (_target, name) => typeof name === "string" && name in factories,
+    has: (_target, name) => typeof name === "string" && name in all,
   });
   return services;
 }

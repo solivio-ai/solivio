@@ -1,0 +1,345 @@
+import "server-only";
+
+import { and, desc, eq, sql } from "drizzle-orm";
+
+import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { db, getService } from "@solivio/sdk/runtime";
+
+import { offerItems, offers } from "../data/schema.ts";
+
+type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
+
+// ── Insert payloads ────────────────────────────────────────────────────────────
+
+export type InsertOfferData = {
+  name: string;
+  customerId: string | null;
+  requestId: string | null;
+  userId: string | null;
+  status: OfferStatus;
+  currency: string;
+  notes: string[];
+  unmatched: string[];
+  discountPercent?: number;
+  discountAmount?: number;
+};
+
+export type InsertOfferItemData = {
+  offerId: string;
+  productId: string | null;
+  name: string;
+  description: string;
+  quantity: number;
+  unitPriceNet: number;
+  vatRate: number;
+  unitGrossPrice: number;
+  totalNet: number;
+  totalGross: number;
+  requestItem: string;
+  rationale: string;
+  matchSource: MatchSource | null;
+  matchScore: number | null;
+  position: number;
+};
+
+// ── Row shapes ─────────────────────────────────────────────────────────────────
+
+export type OfferRow = {
+  id: string;
+  name: string;
+  customerId: string | null;
+  customerName: string | null;
+  requestId: string | null;
+  clientRequest: string | null;
+  userId: string | null;
+  userName: string | null;
+  status: OfferStatus;
+  currency: string;
+  notes: string[];
+  unmatched: string[];
+  discountPercent: number;
+  discountAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  items: OfferItemRow[];
+};
+
+export type OfferItemRow = {
+  id: string;
+  productId: string | null;
+  productSku: string | null;
+  name: string;
+  description: string;
+  quantity: number;
+  unitPriceNet: number;
+  vatRate: number;
+  unitGrossPrice: number;
+  totalNet: number;
+  totalGross: number;
+  requestItem: string;
+  rationale: string;
+  matchSource: MatchSource | null;
+  matchScore: number | null;
+  position: number;
+};
+
+// ── Inserts ────────────────────────────────────────────────────────────────────
+
+export async function insertOffer(data: InsertOfferData, tx: Tx = db) {
+  const [offer] = await tx.insert(offers).values(data).returning();
+  return offer;
+}
+
+export async function insertOfferItems(items: InsertOfferItemData[], tx: Tx = db) {
+  if (items.length === 0) return;
+  await tx.insert(offerItems).values(items);
+}
+
+export async function insertOfferItem(data: InsertOfferItemData, tx: Tx = db) {
+  const [item] = await tx.insert(offerItems).values(data).returning({ id: offerItems.id });
+  return item;
+}
+
+// ── Updates ────────────────────────────────────────────────────────────────────
+
+export type UpdateOfferMetaInput = {
+  status?: OfferStatus;
+  name?: string;
+  currency?: string;
+  customerId?: string | null;
+  requestId?: string | null;
+  discountPercent?: number;
+  discountAmount?: number;
+  notes?: string[];
+  unmatched?: string[];
+};
+
+export async function updateOfferMeta(offerId: string, data: UpdateOfferMetaInput, tx: Tx = db) {
+  const patch: Record<string, unknown> = { updatedAt: new Date() };
+  if (data.status !== undefined) patch.status = data.status;
+  if (data.name !== undefined) patch.name = data.name;
+  if (data.currency !== undefined) patch.currency = data.currency;
+  if (data.customerId !== undefined) patch.customerId = data.customerId;
+  if (data.requestId !== undefined) patch.requestId = data.requestId;
+  if (data.discountPercent !== undefined) patch.discountPercent = data.discountPercent;
+  if (data.discountAmount !== undefined) patch.discountAmount = data.discountAmount;
+  if (data.notes !== undefined) patch.notes = data.notes;
+  if (data.unmatched !== undefined) patch.unmatched = data.unmatched;
+
+  const [offer] = await tx
+    .update(offers)
+    .set(patch)
+    .where(eq(offers.id, offerId))
+    .returning({ id: offers.id });
+  return offer ?? null;
+}
+
+export async function touchOffer(offerId: string, userId: string | null, tx: Tx = db) {
+  await tx.update(offers).set({ userId, updatedAt: new Date() }).where(eq(offers.id, offerId));
+}
+
+export async function lockOfferForUpdate(
+  id: string,
+  tx: Tx,
+): Promise<{ id: string; status: OfferStatus } | null> {
+  const rows = await tx
+    .select({ id: offers.id, status: offers.status })
+    .from(offers)
+    .where(eq(offers.id, id))
+    .for("update");
+  return rows[0] ?? null;
+}
+
+export async function deleteOffer(offerId: string, tx: Tx = db) {
+  const [row] = await tx.delete(offers).where(eq(offers.id, offerId)).returning({ id: offers.id });
+  return row ?? null;
+}
+
+export async function updateOfferItem(
+  offerItemId: string,
+  offerId: string,
+  data: {
+    quantity?: number;
+    unitPriceNet?: number;
+    vatRate?: number;
+    unitGrossPrice?: number;
+    totalNet?: number;
+    totalGross?: number;
+  },
+  tx: Tx = db,
+) {
+  const patch: Record<string, unknown> = { updatedAt: new Date() };
+  if (data.quantity !== undefined) patch.quantity = data.quantity;
+  if (data.unitPriceNet !== undefined) patch.unitPriceNet = data.unitPriceNet;
+  if (data.vatRate !== undefined) patch.vatRate = data.vatRate;
+  if (data.unitGrossPrice !== undefined) patch.unitGrossPrice = data.unitGrossPrice;
+  if (data.totalNet !== undefined) patch.totalNet = data.totalNet;
+  if (data.totalGross !== undefined) patch.totalGross = data.totalGross;
+
+  await tx
+    .update(offerItems)
+    .set(patch)
+    .where(and(eq(offerItems.id, offerItemId), eq(offerItems.offerId, offerId)));
+}
+
+export async function deleteOfferItem(offerItemId: string, offerId: string, tx: Tx = db) {
+  await tx
+    .delete(offerItems)
+    .where(and(eq(offerItems.id, offerItemId), eq(offerItems.offerId, offerId)));
+}
+
+// ── Reads ──────────────────────────────────────────────────────────────────────
+
+export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow | null> {
+  const [offer] = await tx.select().from(offers).where(eq(offers.id, id)).limit(1);
+  if (!offer) return null;
+
+  const items = await tx
+    .select()
+    .from(offerItems)
+    .where(eq(offerItems.offerId, id))
+    .orderBy(offerItems.position, offerItems.createdAt, offerItems.id);
+
+  // Cross-module references are id-only: enrich display data through the
+  // owning modules' services instead of SQL joins.
+  const productIds = [
+    ...new Set(items.map((item) => item.productId).filter((v): v is string => v !== null)),
+  ];
+  const [customer, request, userRows, productRows] = await Promise.all([
+    offer.customerId ? getService("customers").findById(offer.customerId) : null,
+    offer.requestId ? getService("customers").findRequestById(offer.requestId) : null,
+    offer.userId ? getService("users").findDisplayByIds([offer.userId]) : [],
+    productIds.length > 0 ? getService("catalog").getProductsByIds(productIds) : [],
+  ]);
+  const skuByProductId = new Map(productRows.map((product) => [product.id, product.sku]));
+
+  return {
+    id: offer.id,
+    name: offer.name,
+    customerId: offer.customerId,
+    customerName: customer?.name ?? null,
+    requestId: offer.requestId,
+    clientRequest: request?.rawText ?? null,
+    userId: offer.userId,
+    userName: userRows[0]?.name ?? null,
+    status: offer.status,
+    currency: offer.currency,
+    notes: offer.notes,
+    unmatched: offer.unmatched,
+    discountPercent: offer.discountPercent,
+    discountAmount: offer.discountAmount,
+    createdAt: offer.createdAt,
+    updatedAt: offer.updatedAt,
+    items: items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      productSku: item.productId ? (skuByProductId.get(item.productId) ?? null) : null,
+      name: item.name,
+      description: item.description,
+      quantity: item.quantity,
+      unitPriceNet: item.unitPriceNet,
+      vatRate: item.vatRate,
+      unitGrossPrice: item.unitGrossPrice,
+      totalNet: item.totalNet,
+      totalGross: item.totalGross,
+      requestItem: item.requestItem,
+      rationale: item.rationale,
+      matchSource: item.matchSource as MatchSource | null,
+      matchScore: item.matchScore,
+      position: item.position,
+    })),
+  };
+}
+
+export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
+  const rows = await tx
+    .select({
+      id: offers.id,
+      name: offers.name,
+      status: offers.status,
+      currency: offers.currency,
+      customerId: offers.customerId,
+      requestId: offers.requestId,
+      notes: offers.notes,
+      unmatched: offers.unmatched,
+      discountPercent: offers.discountPercent,
+      discountAmount: offers.discountAmount,
+      createdAt: offers.createdAt,
+      updatedAt: offers.updatedAt,
+      itemCount: sql<number>`COUNT(${offerItems.id})`.mapWith(Number),
+      totalNet: sql<number>`COALESCE(SUM(${offerItems.totalNet}), 0)`.mapWith(Number),
+      totalGross: sql<number>`COALESCE(SUM(${offerItems.totalGross}), 0)`.mapWith(Number),
+    })
+    .from(offers)
+    .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .groupBy(offers.id)
+    .orderBy(desc(offers.createdAt))
+    .limit(limit);
+
+  const customerIds = [
+    ...new Set(rows.map((row) => row.customerId).filter((v): v is string => v !== null)),
+  ];
+  const requestIds = [
+    ...new Set(rows.map((row) => row.requestId).filter((v): v is string => v !== null)),
+  ];
+  const [customerRows, requestRows] = await Promise.all([
+    getService("customers").findByIds(customerIds),
+    getService("customers").findRequestsByIds(requestIds),
+  ]);
+  const customerNameById = new Map(customerRows.map((row) => [row.id, row.name]));
+  const requestTextById = new Map(requestRows.map((row) => [row.id, row.rawText]));
+
+  return rows.map((row) => ({
+    ...row,
+    customerName: row.customerId ? (customerNameById.get(row.customerId) ?? null) : null,
+    clientRequest: row.requestId ? (requestTextById.get(row.requestId) ?? null) : null,
+  }));
+}
+
+// ── Domain mapping helper ──────────────────────────────────────────────────────
+
+export function offerRowToDomain(row: OfferRow): Offer {
+  return {
+    id: row.id,
+    customerId: row.customerId,
+    requestId: row.requestId,
+    userId: row.userId,
+    name: row.name,
+    status: row.status,
+    currency: row.currency,
+    discountPercent: row.discountPercent,
+    discountAmount: row.discountAmount,
+    notes: row.notes,
+    unmatched: row.unmatched,
+    customerName: row.customerName,
+    clientRequest: row.clientRequest,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+    userName: row.userName,
+    items: row.items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.name,
+      description: item.description,
+      quantity: item.quantity,
+      unitPriceNet: item.unitPriceNet,
+      vatRate: item.vatRate,
+      unitGrossPrice: item.unitGrossPrice,
+      totalNet: item.totalNet,
+      totalGross: item.totalGross,
+      requestItem: item.requestItem,
+      rationale: item.rationale,
+      matchSource: item.matchSource,
+      matchScore: item.matchScore,
+      position: item.position,
+      product: item.productId
+        ? {
+            id: item.productId,
+            sku: item.productSku ?? undefined,
+            name: item.name,
+            description: item.description,
+          }
+        : null,
+    })),
+  };
+}

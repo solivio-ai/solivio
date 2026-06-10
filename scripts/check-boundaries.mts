@@ -43,8 +43,14 @@ function walk(dir: string): string[] {
   return results;
 }
 
+const TYPE_ONLY_SERVICE_IMPORT =
+  /import\s+type\s[^;]*from\s*["']@solivio\/module-[a-z-]+\/services\.ts["'];?/g;
+
 function importsOf(filePath: string): string[] {
-  const source = fs.readFileSync(filePath, "utf8");
+  // Type-only imports of another module's services.ts are the sanctioned way
+  // to see its Services augmentation in a standalone typecheck — erased at
+  // runtime, so they create no runtime coupling.
+  const source = fs.readFileSync(filePath, "utf8").replaceAll(TYPE_ONLY_SERVICE_IMPORT, "");
   const specifiers: string[] = [];
   for (const match of source.matchAll(IMPORT_PATTERN)) {
     specifiers.push(match[1]);

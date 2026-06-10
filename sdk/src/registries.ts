@@ -18,8 +18,15 @@
  * ```
  */
 
-// biome-ignore lint/suspicious/noEmptyInterface: merged by module declarations
-export interface Services {}
+/** Core-provided service: minimal display data for the core-owned users table. */
+export interface CoreUsersService {
+  findDisplayByIds(ids: string[]): Promise<Array<{ id: string; name: string }>>;
+}
+
+export interface Services {
+  /** Provided by the host (auth/users stay core-owned). */
+  users: CoreUsersService;
+}
 
 /**
  * Event name → payload map. Event names follow `<moduleId>.<entity>.<action>`

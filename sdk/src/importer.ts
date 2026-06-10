@@ -7,7 +7,7 @@
  * by target and owns persistence, deduplication, and indexing.
  */
 
-import type { CustomerInput, ProductInput } from "./entities/index.js";
+import type { CustomerInput, ProductInput } from "./entities/index.ts";
 
 /** Canonical entity an importer produces. The core routes records by target. */
 export type ImportTarget = "product" | "customer";

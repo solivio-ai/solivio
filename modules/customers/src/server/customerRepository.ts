@@ -1,6 +1,6 @@
 import "server-only";
 
-import { asc, eq, ilike, sql } from "drizzle-orm";
+import { asc, eq, ilike, inArray, sql } from "drizzle-orm";
 
 import { normalizeCustomerName } from "@solivio/domain";
 import { getDb } from "@solivio/sdk/runtime";
@@ -44,6 +44,18 @@ export async function findCustomerById(id: string, tx?: Tx): Promise<CustomerRow
   const conn = tx ?? getDb();
   const [row] = await conn.select().from(customers).where(eq(customers.id, id)).limit(1);
   return row ?? null;
+}
+
+export async function findCustomersByIds(
+  ids: string[],
+  tx?: Tx,
+): Promise<Array<{ id: string; name: string }>> {
+  if (ids.length === 0) return [];
+  const conn = tx ?? getDb();
+  return conn
+    .select({ id: customers.id, name: customers.name })
+    .from(customers)
+    .where(inArray(customers.id, ids));
 }
 
 export async function insertCustomer(

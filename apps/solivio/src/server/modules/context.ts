@@ -1,8 +1,8 @@
 import "server-only";
 
 import type { AiClientFactory, ConfigResolver, ModuleContext } from "@solivio/sdk";
-import { getModelFor } from "@/server/agents/modelConfig";
 import { getDefaultEmbeddingModel } from "@/server/runtime/ai/embeddingConfig";
+import { getModelFor } from "@/server/runtime/ai/modelConfig";
 
 import { coreServices } from "./coreServices";
 import { eventBus } from "./events";
@@ -27,8 +27,7 @@ function createConfigResolver(moduleId: string): ConfigResolver {
 const ai: AiClientFactory = {
   chatModelId: () => getModelFor("chat"),
   embeddingModelId: () => getDefaultEmbeddingModel(),
-  modelFor: (role) =>
-    getModelFor(role as Parameters<typeof getModelFor>[0]) ?? getModelFor("chat"),
+  modelFor: (role) => getModelFor(role as Parameters<typeof getModelFor>[0]) ?? getModelFor("chat"),
 };
 
 /** Builds the single seam handed to a module's register() at boot. */

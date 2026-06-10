@@ -1,8 +1,13 @@
 {
   "modules": [
-    { "package": "@solivio/module-csv-products", "options": {} },
-    { "package": "@solivio/module-csv-customers", "options": {} },
-    { "package": "@solivio/module-offer-tools", "options": {} }
+    {
+      "package": "@solivio/module-csv-products",
+      "options": {}
+    },
+    {
+      "package": "@solivio/module-csv-customers",
+      "options": {}
+    }
   ],
   "slots": {
     "product.importer": "csv-products/csv-products",

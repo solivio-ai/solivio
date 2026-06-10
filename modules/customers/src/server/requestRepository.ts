@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { getDb } from "@solivio/sdk/runtime";
 
@@ -38,4 +38,16 @@ export async function findRequestById(id: string, tx?: Tx): Promise<RequestRow |
   const conn = tx ?? getDb();
   const [row] = await conn.select().from(requests).where(eq(requests.id, id)).limit(1);
   return row ?? null;
+}
+
+export async function findRequestsByIds(
+  ids: string[],
+  tx?: Tx,
+): Promise<Array<{ id: string; rawText: string }>> {
+  if (ids.length === 0) return [];
+  const conn = tx ?? getDb();
+  return conn
+    .select({ id: requests.id, rawText: requests.rawText })
+    .from(requests)
+    .where(inArray(requests.id, ids));
 }

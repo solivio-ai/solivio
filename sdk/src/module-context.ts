@@ -1,4 +1,4 @@
-import type { CoreServices } from "./services.js";
+import type { CoreServices } from "./services.ts";
 
 /**
  * Structured logger handed to a module, pre-tagged with the module id.

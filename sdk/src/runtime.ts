@@ -1,10 +1,11 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import type { ImporterDefinition, ImportTarget } from "./importer.js";
-import type { AnyJobDefinition } from "./job.js";
-import type { AiClientFactory, Logger } from "./module-context.js";
-import type { EventName, Events, ServiceName, Services } from "./registries.js";
-import type { AnySubscriberDefinition } from "./subscriber.js";
+import type { AgentTool } from "./agent-tool.ts";
+import type { ImporterDefinition, ImportTarget } from "./importer.ts";
+import type { AnyJobDefinition } from "./job.ts";
+import type { AiClientFactory, Logger } from "./module-context.ts";
+import type { EventName, Events, ServiceName, Services } from "./registries.ts";
+import type { AnySubscriberDefinition } from "./subscriber.ts";
 
 /** Minimal session shape exposed to modules (provider-agnostic). */
 export interface SessionUser {
@@ -53,6 +54,8 @@ export interface SolivioRuntime {
   auth: AuthGuards;
   /** Resolves the importer bound to a target (via slot binding or sole provider). */
   importer: (target: ImportTarget) => Promise<ImporterDefinition>;
+  /** All agent tools contributed by enabled modules (generated registry). */
+  agentTools: ReadonlyArray<AgentTool>;
   moduleOptions: Record<string, unknown>;
   subscribers: ReadonlyArray<AnySubscriberDefinition>;
   jobs: ReadonlyArray<AnyJobDefinition>;
@@ -105,6 +108,24 @@ export function getDb(): NodePgDatabase<Record<string, unknown>> {
   return runtime().db;
 }
 
+/**
+ * Lazy drop-in for a module-level `db` constant: every property access
+ * resolves through {@link getDb} at call time, so importing this is safe
+ * before the runtime boots.
+ */
+export const db: NodePgDatabase<Record<string, unknown>> = new Proxy(
+  {} as NodePgDatabase<Record<string, unknown>>,
+  {
+    get(_target, prop) {
+      const real = getDb() as unknown as Record<PropertyKey, unknown>;
+      const value = real[prop];
+      return typeof value === "function"
+        ? (value as (...args: unknown[]) => unknown).bind(real)
+        : value;
+    },
+  },
+);
+
 /** Deployment AI model ids. */
 export function getAi(): AiClientFactory {
   return runtime().ai;
@@ -113,6 +134,11 @@ export function getAi(): AiClientFactory {
 /** Session guards for module API routes (auth itself stays core). */
 export function getAuth(): AuthGuards {
   return runtime().auth;
+}
+
+/** Agent tools contributed by enabled modules. */
+export function getAgentTools(): ReadonlyArray<AgentTool> {
+  return runtime().agentTools;
 }
 
 /** The importer capability bound to a target ("product", "customer", …). */

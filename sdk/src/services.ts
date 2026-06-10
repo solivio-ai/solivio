@@ -7,7 +7,7 @@
  * implementation and injects it via {@link ModuleContext.services}. These shapes
  * are the load-bearing part of the module contract.
  */
-import type { OfferView, ProductInput, ProductMatch } from "./entities/index.js";
+import type { OfferView, ProductInput, ProductMatch } from "./entities/index.ts";
 
 export interface ProductSearchOptions {
   /** Max results to return. */
