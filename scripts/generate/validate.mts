@@ -149,6 +149,65 @@ export function validate(
     }
   }
 
+  // Cross-module service usage must be declared in dependsOn, and runtime
+  // accessors must not run at module scope (the runtime boots after import).
+  const RUNTIME_ACCESSORS =
+    /\b(getDb|getService|getAi|getAuth|getAgentTools|getImporter|getModuleOptions|getLogger)\(/;
+  for (const module of modules) {
+    const ownServices = new Set<string>(["users"]);
+    const servicesPath = path.join(module.dir, "src/services.ts");
+    if (fs.existsSync(servicesPath)) {
+      const servicesSource = fs.readFileSync(servicesPath, "utf8");
+      const block = servicesSource.match(/interface Services \{([^}]*)\}/);
+      for (const m of (block?.[1] ?? "").matchAll(/^\s*([a-zA-Z0-9_]+)\s*:/gm)) {
+        ownServices.add(m[1]);
+      }
+    }
+    const allowed = new Set([...module.dependsOn, ...ownServices]);
+
+    const walkSrc = (dir: string): string[] =>
+      fs.existsSync(dir)
+        ? fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+            const absPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) return walkSrc(absPath);
+            return /\.(ts|tsx)$/.test(entry.name) ? [absPath] : [];
+          })
+        : [];
+
+    for (const filePath of walkSrc(path.join(module.dir, "src"))) {
+      const source = fs.readFileSync(filePath, "utf8");
+      const relFile = path.relative(repoRoot, filePath);
+
+      for (const m of source.matchAll(/getService\(\s*["']([a-z0-9-]+)["']\s*\)/g)) {
+        const name = m[1];
+        if (!allowed.has(name)) {
+          errors.push(
+            `${relFile}: getService("${name}") but module "${module.id}" does not declare it in dependsOn — ` +
+              `add dependsOn: [..., "${name}"] to the manifest (or it is the module's own/unknown service)`,
+          );
+        }
+      }
+
+      for (const line of source.split("\n")) {
+        // Module-scope statements only (no indentation): a runtime accessor
+        // CALL here runs at import time, before instrumentation boots.
+        const accessorMatch = RUNTIME_ACCESSORS.exec(line);
+        const beforeAccessor = accessorMatch ? line.slice(0, accessorMatch.index) : "";
+        if (
+          /^(export )?(const|let|var)\b/.test(line) &&
+          accessorMatch &&
+          // a "=>" or "function" before the call means it runs lazily — fine
+          !/=>|function/.test(beforeAccessor)
+        ) {
+          errors.push(
+            `${relFile}: runtime accessor called at module scope ("${line.trim().slice(0, 60)}…") — ` +
+              "resolve services/db/models lazily inside handlers or factories; the runtime boots after modules are imported",
+          );
+        }
+      }
+    }
+  }
+
   // Permissions must be module-prefixed
   for (const module of modules) {
     for (const permission of module.permissions) {

@@ -56,7 +56,7 @@ Important values:
 | `POSTGRES_PASSWORD`   | Database password used by the `db` service.                                                   |
 | `DATABASE_URL`        | Internal app database URL, usually `postgresql://solivio:<password>@db:5432/solivio`.         |
 | `OPENAI_API_KEY`      | Enables AI-backed product import, matching, offer generation, and chat.                       |
-| `OPENAI_MODEL_*`      | Optional per-role model overrides (see `apps/solivio/src/server/agents/modelConfig.ts`).      |
+| `OPENAI_MODEL_*`      | Optional per-role model overrides (see `apps/solivio/src/server/runtime/ai/modelConfig.ts`).      |
 | `EMBEDDING_MODEL`     | Optional override for product embedding model. Defaults to `text-embedding-3-large`.          |
 | `BETTER_AUTH_URL`     | Public app URL, for example `https://offers.example.com`.                                     |
 | `BETTER_AUTH_SECRET`  | Auth signing secret. Generate with `openssl rand -base64 32`.                                 |

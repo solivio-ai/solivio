@@ -31,7 +31,7 @@
     "start": "yarn workspace @solivio/app start",
     "setup": "yarn db:up && yarn db:wait && yarn generate && yarn db:migrate",
     "db:up": "docker compose up -d db",
-    "db:wait": "node --env-file=apps/solivio/.env.local scripts/db-wait.mjs",
+    "db:wait": "node scripts/db-wait.mjs",
     "db:down": "docker compose down",
     "db:check": "yarn workspace @solivio/app db:check",
     "db:generate": "node scripts/db/generate.mjs",
@@ -41,7 +41,11 @@
     "benchmark:report": "yarn workspace @solivio/app benchmark:report",
     "benchmark:readme": "yarn workspace @solivio/app benchmark:readme",
     "volt": "volt",
-    "overlay": "node scripts/overlay.mjs"
+    "overlay": "node scripts/overlay.mjs",
+    "seed": "tsx scripts/seed.mts",
+    "create-module": "node scripts/create-module.mjs",
+    "test:generator": "node --import tsx --test scripts/generate/__tests__/*.test.mts",
+    "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test:generator"
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",

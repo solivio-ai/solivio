@@ -41,13 +41,17 @@ The sections below are the quick reference. They summarize the boundaries; the d
 Choose the smallest relevant set for the change:
 
 ```bash
+yarn validate                # the PR gate: biome + boundaries + generate --check + typecheck + generator tests
 yarn biome check --write .   # format, sort imports, apply safe lint fixes
 yarn generate                # regenerate module wiring (add --check to validate only)
 yarn check                   # Biome quality gate + module boundary checker (CI runs this)
 yarn typecheck               # when TS, API contracts, server code, or React behavior changes
+yarn test:generator          # unit tests for scripts/generate (run after touching it)
 yarn db:check                # journals match schemas (core + every module journal)
 yarn e2e                     # Playwright against http://localhost:3000 (yarn setup first)
 ```
+
+Scaffold a new module with `yarn create-module <id>`; load demo data with `yarn seed`.
 
 ## Task Router — Where to Find Detailed Guidance
 

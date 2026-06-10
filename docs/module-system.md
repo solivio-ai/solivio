@@ -220,6 +220,25 @@ import type {} from "@solivio/module-offers/services.ts";
 The boundary checker (`scripts/check-boundaries.mts`) explicitly allows exactly this
 form and rejects every other cross-module import.
 
+**Why declaration merging, and why the type-only import?** TypeScript lets several
+files re-open the same interface and add members ("declaration merging") — but an
+augmentation only exists in a compilation that actually *includes* the file declaring
+it. The SDK ships `Services` as an empty interface; each module's `services.ts` adds
+its own key. In the app's typecheck this works automatically, because the generated
+`services.ts` imports every enabled module's `services.ts`. A module's **standalone**
+typecheck, however, only includes its own files — so without the type-only import
+above, a dependency's key simply isn't on `Services`, and `getService("offers")`
+fails with `not assignable to parameter of type 'never'` (or names a different,
+unrelated service). If you see that error, the missing augmentation is almost always
+the cause: add the `import type {}` line for the module you depend on.
+
+Two related foot-guns the generator catches for you: a `declare module` block in a
+file with **no imports or exports** is a *script*, and its declaration **replaces**
+the SDK module type instead of augmenting it (this is why `events.ts` files start
+with `import type {} from "@solivio/sdk"`); and calling `getService()` for a module
+you haven't listed in `dependsOn` fails at generate time rather than at runtime when
+that module is disabled.
+
 ## 6. Events, subscribers, and jobs
 
 `src/events.ts` declares the module's typed events by augmenting the SDK's `Events`
