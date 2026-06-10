@@ -164,6 +164,22 @@ Docs:
 - Deployment: `apps/docs/src/content/docs/guides/deployment.md`
 - Feature walkthrough: `apps/docs/src/content/docs/guides/features.md`
 
+## 📊 Agent Benchmarks
+
+A measurable benchmark suite for Solivio's AI agents lives in
+[`apps/solivio/benchmarks/`](apps/solivio/benchmarks/README.md) — 12 scenario
+cases (basic → expert) scored deterministically against a fixed product
+catalog, with committed results and per-run history. Use it to track agent
+quality over time and compare models:
+
+```bash
+yarn benchmark            # run the suite (writes a .json result)
+yarn benchmark:report     # render markdown + refresh the latest-results summary
+```
+
+See [`apps/solivio/benchmarks/README.md`](apps/solivio/benchmarks/README.md)
+for scoring rules, case catalog, and the latest results.
+
 ## 🤝 Contributing
 
 Contributions should keep the default demo path simple, documented, and runnable without mandatory external services.

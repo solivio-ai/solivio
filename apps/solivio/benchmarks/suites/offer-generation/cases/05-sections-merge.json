@@ -1,0 +1,20 @@
+{
+  "id": "05-sections-merge",
+  "title": "Quantities spread across sections requiring merge",
+  "difficulty": "realistic",
+  "notes": "Tests the MERGE rule: identical products listed per floor must be combined into one line item with summed quantity. Variant trap: YDYp 3x2,5 must not be confused with 3x1,5.",
+  "customer": {
+    "name": "DomBud Development",
+    "profile": "Property developer, sends per-floor material breakdowns from site managers."
+  },
+  "request": "Wycena materiałów dla budynku przy ul. Polnej:\n\nParter:\n- gniazdo podtynkowe pojedyncze z uziemieniem x20\n- łącznik jednobiegunowy biały x10\n- przewód YDYp 3x2,5 – 1 krążek\n\nPiętro:\n- gniazdo podtynkowe pojedyncze z uziemieniem x15\n- łącznik jednobiegunowy biały x8\n- przewód YDYp 3x2,5 – 2 krążki\n\nDodatkowo żarówki LED E27 10W – 30 szt.",
+  "expected": {
+    "items": [
+      { "sku": "GNI-PT-1-BI", "quantity": 35, "altSkus": ["GNI-PT-1-CZ", "GNI-PT-1-SR"] },
+      { "sku": "LACZ-1-BI", "quantity": 18 },
+      { "sku": "KAB-YDYP-3X25", "quantity": 3 },
+      { "sku": "LED-E27-10-4K", "quantity": 30, "altSkus": ["LED-E27-10-3K", "LED-E27-10-6.5K"] }
+    ],
+    "unmatched": []
+  }
+}

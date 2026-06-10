@@ -1,0 +1,21 @@
+{
+  "id": "01-simple-explicit",
+  "title": "Simple explicit list with quantities",
+  "difficulty": "basic",
+  "notes": "Baseline case: clean bullet list, every item present in the catalog, no traps. Any reasonable agent should score 1.0.",
+  "customer": {
+    "name": "Elektromont Kraków Sp. z o.o.",
+    "profile": "Mid-size electrical installation company, orders monthly, mostly residential projects."
+  },
+  "request": "Dzień dobry,\nproszę o przygotowanie oferty na poniższe pozycje:\n- panel LED 60x60 40W 4000K – 12 szt\n- wyłącznik nadprądowy B16 jednobiegunowy – 8 szt\n- przewód YDYp 3x1,5 – 2 krążki\n- puszka podtynkowa fi80 z pokrywą – 50 szt\n- taśma izolacyjna czarna – 10 szt\n\nPozdrawiam,\nMarek Kowalski",
+  "expected": {
+    "items": [
+      { "sku": "LED-PAN-6060-40-4K", "quantity": 12 },
+      { "sku": "WYL-B16-1P", "quantity": 8 },
+      { "sku": "KAB-YDYP-3X15", "quantity": 2 },
+      { "sku": "PSZ-80-PT", "quantity": 50 },
+      { "sku": "TAS-IZO-19-BK", "quantity": 10 }
+    ],
+    "unmatched": []
+  }
+}

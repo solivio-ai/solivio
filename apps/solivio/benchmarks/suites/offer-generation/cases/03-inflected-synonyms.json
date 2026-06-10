@@ -1,0 +1,19 @@
+{
+  "id": "03-inflected-synonyms",
+  "title": "Inflected Polish, synonyms, and one item missing from catalog",
+  "difficulty": "realistic",
+  "notes": "Tests lemmatization (detektorów wycieku → czujnik zalania), concept-level synonym matching (detektor wycieku = czujnik zalania, latarka czołowa), and correct unmatched handling for coax RG6 which is not in the catalog (UTP cat.6 is a distractor that must NOT be picked).",
+  "customer": {
+    "name": "Hydro-Instal Tarnów",
+    "profile": "Plumbing & heating installer, occasional electrical purchases."
+  },
+  "request": "Potrzebujemy 6 detektorów wycieku wody do kotłowni, 4 latarek czołowych dla ekipy, 10 łączników schodowych białych oraz 3 szpule kabla koncentrycznego RG6.",
+  "expected": {
+    "items": [
+      { "sku": "CZJ-ZAL-01", "quantity": 6 },
+      { "sku": "LAT-CZO-350", "quantity": 4, "altSkus": ["LAT-CZO-500"] },
+      { "sku": "LACZ-SCH-BI", "quantity": 10 }
+    ],
+    "unmatched": ["kabel koncentryczny RG6"]
+  }
+}

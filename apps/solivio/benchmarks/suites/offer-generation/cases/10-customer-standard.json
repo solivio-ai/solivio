@@ -1,0 +1,19 @@
+{
+  "id": "10-customer-standard",
+  "title": "Order in the customer's house standard (context not in the request)",
+  "difficulty": "expert",
+  "notes": "KNOWN GAP CASE (same family as 04): 'w naszym standardzie' resolves only through customer context — this client's standard is the silver (SR) accessory series, which the agent cannot know from the request text. Also requires per-room multiplication (3 rooms × ...) and inferring frame count (one frame per accessory: 12 sockets + 6 switches = 18 single frames). Today the agent will likely pick white variants and miss frames math; measures progress on customer-context awareness. IMPORTANT: the customer name must stay color-neutral — an earlier version named the hotel 'Srebrny Staw' and gpt-5.4-nano inferred the silver series from the name alone, scoring 83% without the capability under test.",
+  "customer": {
+    "name": "Hotel Magnolia",
+    "profile": "Boutique hotel chain. House standard: silver (srebrny) accessory series for all sockets and switches — every past order used the SR variants."
+  },
+  "request": "Dzień dobry, proszę o osprzęt na 3 pokoje hotelowe w naszym standardzie: na każdy pokój 4 gniazda podwójne i 2 łączniki schodowe, plus ramki pojedyncze do wszystkiego.",
+  "expected": {
+    "items": [
+      { "sku": "GNI-PT-2-SR", "quantity": 12 },
+      { "sku": "LACZ-SCH-SR", "quantity": 6 },
+      { "sku": "RAM-1-SR", "quantity": 18 }
+    ],
+    "unmatched": []
+  }
+}

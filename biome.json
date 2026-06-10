@@ -18,7 +18,8 @@
       "!!**/.yarn",
       "!!apps/docs/.astro",
       "!apps/docs/public/openapi",
-      "!apps/solivio/drizzle/meta"
+      "!apps/solivio/drizzle/meta",
+      "!apps/solivio/benchmarks/results"
     ]
   },
   "formatter": {
