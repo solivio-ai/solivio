@@ -20,7 +20,14 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const SHARED_PACKAGES = ["@solivio/sdk", "@solivio/ui", "@solivio/theme", "@solivio/domain"];
+const SHARED_PACKAGES = [
+  "@solivio/sdk",
+  "@solivio/ui",
+  "@solivio/theme",
+  "@solivio/domain",
+  // Generated slot host (aliased to apps/solivio/src/generated/slots.tsx).
+  "@solivio/slots",
+];
 
 const IMPORT_PATTERN = /(?:from|import)\s*\(?\s*["']([^"']+)["']\)?/g;
 

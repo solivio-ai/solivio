@@ -35,6 +35,8 @@ export function bootModuleRuntime(): void {
     ai: {
       chatModelId: () => getModelFor("chat"),
       embeddingModelId: () => getDefaultEmbeddingModel(),
+      modelFor: (role) =>
+        getModelFor(role as Parameters<typeof getModelFor>[0]) ?? getModelFor("chat"),
     },
     auth,
     // Bridge to the legacy runtime-bundle registry until the importer modules

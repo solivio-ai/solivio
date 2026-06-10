@@ -59,6 +59,7 @@ export function createTestContext(overrides: TestContextOverrides = {}): ModuleC
   const ai: AiClientFactory = {
     chatModelId: overrides.ai?.chatModelId ?? (() => "test-chat-model"),
     embeddingModelId: overrides.ai?.embeddingModelId ?? (() => "test-embedding-model"),
+    modelFor: overrides.ai?.modelFor ?? (() => "test-chat-model"),
   };
 
   const events: EventBus = overrides.events ?? { subscribe() {} };

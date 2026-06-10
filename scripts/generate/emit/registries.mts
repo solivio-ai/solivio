@@ -240,7 +240,9 @@ function emitSlots(writer: Writer, modules: ModuleModel[]): void {
     .join("\n");
   writer.write(
     `${GEN}/slots.tsx`,
-    `import type { SlotContribution, SlotContributions } from "@solivio/sdk";
+    `import type React from "react";
+
+import type { SlotContribution, SlotContributions, SlotId, SlotPropsMap } from "@solivio/sdk";
 ${imports ? `\n${imports}\n` : ""}
 function mergeSlots(all: SlotContributions[]): SlotContributions {
   const merged: Record<string, SlotContribution[]> = {};
@@ -258,6 +260,25 @@ function mergeSlots(all: SlotContributions[]): SlotContributions {
 export const slotRegistry: SlotContributions = mergeSlots([
 ${providers.map((module) => `  ${camel(module.id)}Slots,`).join("\n")}
 ]);
+
+/**
+ * Renders every contribution registered for a slot. Core code imports this
+ * from "@/generated/slots"; module pages import it as "@solivio/slots"
+ * (aliased here by next.config + tsconfig paths).
+ */
+export function Slot<K extends SlotId>({
+  id,
+  ...props
+}: { id: K } & SlotPropsMap[K]): React.ReactNode {
+  const items = (slotRegistry[id] ?? []) as ReadonlyArray<SlotContribution<K>>;
+  return (
+    <>
+      {items.map((contribution) => (
+        <contribution.component key={contribution.id} {...(props as unknown as SlotPropsMap[K])} />
+      ))}
+    </>
+  );
+}
 `,
   );
 }

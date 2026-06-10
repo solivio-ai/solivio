@@ -32,6 +32,10 @@ const nextConfig = {
   serverExternalPackages: ["@voltagent/core", "@ai-sdk/openai"],
   turbopack: {
     root: workspaceRoot,
+    resolveAlias: {
+      // Sanctioned import for module pages to host slot contributions.
+      "@solivio/slots": "./src/generated/slots.tsx",
+    },
   },
 };
 

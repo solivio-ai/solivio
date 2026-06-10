@@ -34,6 +34,11 @@ export interface AiClientFactory {
   chatModelId(): string;
   /** Default embedding model id for the deployment. */
   embeddingModelId(): string;
+  /**
+   * Model id for a named agent role (e.g. "offerGeneration", "chat").
+   * Falls back to the deployment chat model for unknown roles.
+   */
+  modelFor(role: string): string;
 }
 
 /**

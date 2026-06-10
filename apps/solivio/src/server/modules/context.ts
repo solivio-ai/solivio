@@ -27,6 +27,8 @@ function createConfigResolver(moduleId: string): ConfigResolver {
 const ai: AiClientFactory = {
   chatModelId: () => getModelFor("chat"),
   embeddingModelId: () => getDefaultEmbeddingModel(),
+  modelFor: (role) =>
+    getModelFor(role as Parameters<typeof getModelFor>[0]) ?? getModelFor("chat"),
 };
 
 /** Builds the single seam handed to a module's register() at boot. */
