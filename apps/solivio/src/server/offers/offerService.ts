@@ -1,15 +1,11 @@
 import "server-only";
 
-import { inArray } from "drizzle-orm";
-
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 import { getService } from "@solivio/sdk/runtime";
 
 import type { GeneratedOffer } from "../agents/offerGenerationAgent";
 import { appConfig } from "../config/appConfig";
 import { db } from "../database/db";
-import { products } from "../database/schema";
-import { findActivePricesForProducts } from "../products/productPriceRepository";
 import type { InsertOfferItemData, OfferRow, UpdateOfferMetaInput } from "./offerRepository";
 import {
   deleteOfferItem,
@@ -72,21 +68,16 @@ export async function createOffer(
   const offerCurrency = appConfig.defaultCurrency;
 
   // Validate products exist before we open a transaction.
+  const catalog = getService("catalog");
   const productIds = items.map((i) => i.productId);
-  const existingProducts =
-    productIds.length > 0
-      ? await db
-          .select({ id: products.id, name: products.name, description: products.description })
-          .from(products)
-          .where(inArray(products.id, productIds))
-      : [];
+  const existingProducts = await catalog.getProductsByIds(productIds);
   const productMap = new Map(existingProducts.map((p) => [p.id, p]));
   const validItems = items.filter((item) => productMap.has(item.productId));
   const hallucinated = items
     .filter((item) => !productMap.has(item.productId))
     .map((item) => item.requestItem);
 
-  const priceMap = await findActivePricesForProducts(
+  const priceMap = await catalog.getActivePricesForProducts(
     validItems.map((i) => i.productId),
     offerCurrency,
   );
@@ -257,13 +248,11 @@ export async function addProductToOffer(
 
   if (existing.items.some((i) => i.productId === productId)) return "duplicate";
 
-  const [product] = await db
-    .select({ id: products.id, name: products.name, description: products.description })
-    .from(products)
-    .where(inArray(products.id, [productId]));
+  const catalog = getService("catalog");
+  const [product] = await catalog.getProductsByIds([productId]);
   if (!product) return null;
 
-  const priceMap = await findActivePricesForProducts([productId], existing.currency);
+  const priceMap = await catalog.getActivePricesForProducts([productId], existing.currency);
   const price = priceMap.get(productId);
   const unitPriceNet = price?.net ?? 0;
   const vatRate = price?.vatRate ?? 23;

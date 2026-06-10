@@ -4,7 +4,6 @@
       "dashboard": "Panel",
       "offers": "Oferty",
       "newOffer": "Nowa oferta",
-      "catalogUpload": "Import katalogu",
       "users": "Użytkownicy",
       "adminGroup": "Admin"
     },
@@ -599,27 +598,6 @@
     },
     "title": "Oferty",
     "subtitle": "Przeglądaj wygenerowane drafty, wykrywaj brakujące dopasowania produktów i kontynuuj rozmowę z klientem z jednej kolejki."
-  },
-  "ProductImport": {
-    "page": {
-      "title": "Importuj produkty",
-      "description": "Prześlij plik katalogu, aby zaimportować produkty."
-    },
-    "card": {
-      "title": "Import katalogu",
-      "description": "Wybierz plik i zaimportuj go do katalogu produktów. Import odbywa się po stronie serwera.",
-      "chooseFile": "Wybierz plik",
-      "pickAnother": "Kliknij, aby wybrać inny plik",
-      "dropOne": "lub przeciągnij plik tutaj",
-      "readError": "Nie udało się odczytać pliku.",
-      "importAction": {
-        "embedding": "Importowanie...",
-        "import": "Importuj"
-      },
-      "importDone": "Zapisano {count, plural, one {# produkt} few {# produkty} many {# produktów} other {# produktów}}.",
-      "importRowErrors": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
-      "importError": "Import nie powiódł się."
-    }
   },
   "QuickOffer": {
     "errors": {

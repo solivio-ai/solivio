@@ -4,7 +4,6 @@
       "dashboard": "Dashboard",
       "offers": "Offers",
       "newOffer": "New Offer",
-      "catalogUpload": "Catalog Upload",
       "users": "Users",
       "adminGroup": "Admin"
     },
@@ -599,27 +598,6 @@
     },
     "title": "Offers",
     "subtitle": "Review generated drafts, spot missing product matches, and continue the customer conversation from one queue."
-  },
-  "ProductImport": {
-    "page": {
-      "title": "Import products",
-      "description": "Upload a catalog file to import products."
-    },
-    "card": {
-      "title": "Catalog upload",
-      "description": "Pick a file and import it into the product catalog. The importer runs server-side.",
-      "chooseFile": "Choose a file",
-      "pickAnother": "Click to pick another file",
-      "dropOne": "or drop one onto this field",
-      "readError": "Failed to read the file.",
-      "importAction": {
-        "embedding": "Importing...",
-        "import": "Import"
-      },
-      "importDone": "Saved {count, plural, one {# product} other {# products}}.",
-      "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
-      "importError": "Import failed."
-    }
   },
   "Dashboard": {
     "newOffer": {

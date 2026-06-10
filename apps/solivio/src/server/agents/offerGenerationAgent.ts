@@ -4,7 +4,8 @@ import { Agent, createTool } from "@voltagent/core";
 import { Output } from "ai";
 import { z } from "zod";
 
-import { lookupProductsBySkus, searchProductsBatch } from "../products/productSearchService";
+import { getService } from "@solivio/sdk/runtime";
+
 import { getModelFor } from "./modelConfig";
 import { voltOpsClient } from "./voltOpsClient";
 
@@ -156,10 +157,11 @@ export async function generateOfferWithAgent(
       const skuQueries = queries.filter((q) => q.kind === "sku").map((q) => q.query);
       const descQueries = queries.filter((q) => q.kind === "description").map((q) => q.query);
 
+      const catalog = getService("catalog");
       const [skuMap, descMap] = await Promise.all([
-        lookupProductsBySkus(skuQueries),
+        catalog.lookupBySkus(skuQueries),
         // Top-10 candidates per query (recall stage). LLM reranks in next agent pass (precision).
-        searchProductsBatch(descQueries, { limit: 10, minSimilarity: 0 }),
+        catalog.searchBatch(descQueries, { limit: 10, minSimilarity: 0 }),
       ]);
 
       // Truncate description shown to LLM to keep prompt small while still giving rerank signal.

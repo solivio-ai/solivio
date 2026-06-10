@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Package, Users } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -24,10 +24,7 @@ interface AdminSidebarSectionProps {
   onNavigate: () => void;
 }
 
-const adminItems = [
-  { labelKey: "users", href: "/admin/users", icon: Users },
-  { labelKey: "catalogUpload", href: "/admin/products/upload", icon: Package },
-] as const;
+const adminItems = [{ labelKey: "users", href: "/admin/users", icon: Users }] as const;
 
 const moduleAdminItems = navRegistry.filter((entry) => entry.section === "admin");
 

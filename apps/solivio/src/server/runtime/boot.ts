@@ -9,7 +9,7 @@ import { createServices } from "@/generated/services";
 import { getModelFor } from "@/server/agents/modelConfig";
 import { db } from "@/server/database/db";
 import { createModuleLogger } from "@/server/modules/logger";
-import { getDefaultEmbeddingModel } from "@/server/products/embeddingConfig";
+import { getDefaultEmbeddingModel } from "@/server/runtime/ai/embeddingConfig";
 
 /**
  * Initializes the SDK runtime from the generated registries. Called once from

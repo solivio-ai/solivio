@@ -1,39 +1,36 @@
 import "server-only";
 
 import type { CoreServices, OfferService, ProductService } from "@solivio/sdk";
+import { getService } from "@solivio/sdk/runtime";
 import {
   addProductToOffer,
   bulkAddProductsToOffer,
   removeOfferLineItem,
   updateOfferLineItem,
 } from "@/server/offers/offerService";
-import { importProductsWithEmbeddings } from "@/server/products/productEmbeddingService";
-import {
-  searchProductsBatch,
-  searchProductsByPrompt,
-} from "@/server/products/productSearchService";
 
 /**
  * Concrete implementation of the SDK's CoreServices contract over the app's
  * canonical services. This is the only place module-facing handles bind to app
- * internals — modules themselves see only the SDK interfaces.
+ * internals — modules themselves see only the SDK interfaces. Product
+ * operations delegate to the catalog module's service.
  */
 const products: ProductService = {
   async search(query, opts) {
-    return searchProductsByPrompt(query, {
+    return getService("catalog").searchByPrompt(query, {
       limit: opts?.limit,
       minSimilarity: opts?.minSimilarity,
     });
   },
   async searchBatch(queries, opts) {
-    const map = await searchProductsBatch(queries, {
+    const map = await getService("catalog").searchBatch(queries, {
       limit: opts?.limit,
       minSimilarity: opts?.minSimilarity,
     });
     return Object.fromEntries(map);
   },
   async import(records) {
-    return importProductsWithEmbeddings(records);
+    return getService("catalog").importProducts(records);
   },
 };
 

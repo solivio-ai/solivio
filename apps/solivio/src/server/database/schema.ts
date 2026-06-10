@@ -6,5 +6,3 @@ export { offerChatMessages, offerChatThreads } from "./schema/offer-chat";
 export { offerItems } from "./schema/offer-items";
 export { offerRevisions } from "./schema/offer-revisions";
 export { offers } from "./schema/offers";
-export { productPrices } from "./schema/product-prices";
-export { products } from "./schema/products";

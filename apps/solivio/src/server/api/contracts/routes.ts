@@ -4,13 +4,11 @@ import { offerRoutesAfterRevisions, offerRoutesBeforeRevisions } from "./offer";
 import { chatRoutes } from "./offer-chat";
 import { documentRoutes } from "./offer-pdf";
 import { offerRevisionRoutes } from "./offer-revision";
-import { productRoutes } from "./product";
 import { systemRoutes } from "./system";
 
 export const apiContracts = [
   ...systemRoutes,
   ...moduleApiContracts,
-  ...productRoutes,
   ...offerRoutesBeforeRevisions,
   ...offerRevisionRoutes,
   ...offerRoutesAfterRevisions,

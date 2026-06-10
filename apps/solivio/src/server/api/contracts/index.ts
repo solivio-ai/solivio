@@ -6,6 +6,5 @@ export * from "./offer";
 export * from "./offer-chat";
 export * from "./offer-pdf";
 export * from "./offer-revision";
-export * from "./product";
 export * from "./routes";
 export * from "./system";

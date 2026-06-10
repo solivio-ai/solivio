@@ -5548,6 +5548,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-catalog@workspace:modules/catalog":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-catalog@workspace:modules/catalog"
+  dependencies:
+    "@ai-sdk/openai": "npm:^3.0.53"
+    "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.14"
+    "@voltagent/core": "npm:^2.7.3"
+    ai: "npm:^6.0.168"
+    drizzle-orm: "npm:^0.45.2"
+    lucide-react: "npm:^1.11.0"
+    next: "npm:^16.2.4"
+    next-intl: "npm:^4.9.2"
+    server-only: "npm:^0.0.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/module-csv-customers@workspace:modules/csv-customers-importer":
   version: 0.0.0-use.local
   resolution: "@solivio/module-csv-customers@workspace:modules/csv-customers-importer"

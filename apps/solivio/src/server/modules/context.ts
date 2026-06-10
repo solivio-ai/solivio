@@ -2,7 +2,7 @@ import "server-only";
 
 import type { AiClientFactory, ConfigResolver, ModuleContext } from "@solivio/sdk";
 import { getModelFor } from "@/server/agents/modelConfig";
-import { getDefaultEmbeddingModel } from "@/server/products/embeddingConfig";
+import { getDefaultEmbeddingModel } from "@/server/runtime/ai/embeddingConfig";
 
 import { coreServices } from "./coreServices";
 import { eventBus } from "./events";
