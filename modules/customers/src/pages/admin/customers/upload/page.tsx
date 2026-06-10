@@ -6,12 +6,12 @@ import { AppPage } from "@solivio/ui/components/app-page.tsx";
 import { CustomerImport } from "../../../../components/CustomerImport.tsx";
 
 export async function generateMetadata() {
-  const t = await getTranslations("CustomerImport.page");
+  const t = await getTranslations("customers.import.page");
   return { title: t("title") };
 }
 
 export default async function CustomerUploadPage() {
-  const t = await getTranslations("CustomerImport.page");
+  const t = await getTranslations("customers.import.page");
   const importer = await getImporter("customer");
 
   return (

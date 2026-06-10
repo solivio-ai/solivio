@@ -20,7 +20,7 @@ type ImportStatus =
 type Props = { accept: string[] };
 
 export function CustomerImport({ accept }: Props) {
-  const t = useTranslations("CustomerImport");
+  const t = useTranslations("customers.import");
   const [fileName, setFileName] = useState<string | null>(null);
   const [rawContent, setRawContent] = useState<string | null>(null);
   const [status, setStatus] = useState<ImportStatus>({ kind: "idle" });

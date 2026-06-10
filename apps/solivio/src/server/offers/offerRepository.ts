@@ -5,8 +5,8 @@ import { alias } from "drizzle-orm/pg-core";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
 
-import { db } from "../database/db";
 import { customers, requests } from "../../generated/schema";
+import { db } from "../database/db";
 import { offerItems, offers, products, users } from "../database/schema";
 
 type Tx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];

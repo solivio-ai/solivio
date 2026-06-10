@@ -1,5 +1,26 @@
 {
   "nav": {
     "upload": "Customer Upload"
+  },
+  "import": {
+    "page": {
+      "title": "Import customers",
+      "description": "Upload a customer file to make offer creation faster."
+    },
+    "card": {
+      "title": "Customer upload",
+      "description": "Pick a CSV file with at least a customer name column. Existing names are reused automatically.",
+      "chooseFile": "Choose a file",
+      "pickAnother": "Click to pick another file",
+      "dropOne": "or drop one onto this field",
+      "readError": "Failed to read the file.",
+      "importAction": {
+        "saving": "Importing...",
+        "import": "Import"
+      },
+      "importDone": "Saved {count, plural, one {# customer} other {# customers}}.",
+      "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
+      "importError": "Import failed."
+    }
   }
 }
