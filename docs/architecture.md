@@ -1,151 +1,134 @@
 # Solivio Architecture
 
-Status: high-level architecture
+Status: high-level architecture — reflects the build-time-codegen modular monolith (`adr/0002`)
 Audience: contributors, integrators, operators
-Last updated: 2026-05-13
+Last updated: 2026-06-10
 
 Solivio turns an unstructured customer request into an accepted, dispatched offer. The product is the **pipeline that connects request to offer to customer**, with a salesperson in the loop.
 
-This document describes the *shape* of the system. Stack choices live in `adr/`. Canonical schemas and service interfaces live in `contracts.md`. The current set of named agents lives in `agents.md`.
+This document describes the *shape* of the system. Stack choices live in `adr/`. The module system mechanics live in `module-system.md` and `codegen.md`; the SDK contract in `contracts.md`; the current agents in `agents.md`.
 
 ---
 
 ## 1. Principles
 
 - **One pipeline, many surfaces.** Capture, understand, enrich, draft, review, accept, dispatch, learn — a single core pipeline. The *sources* of input, *sources* of context, *formats* of output, and *destinations* of output are pluggable.
-- **Stable core, replaceable everything else.** The core owns canonical state, the pipeline state machine, and the named AI agents. Modules sit around it.
-- **Agent-driven inside, deterministic at the edges.** Named AI agents do the squishy work. Pipeline transitions around them are deterministic, validated, and audited.
+- **Small core, feature modules.** The core owns auth, the app shell, and the runtime; everything offer-shaped lives in modules that are compiled into the app at build time.
+- **Agent-driven inside, deterministic at the edges.** Named AI agents do the squishy work. The transitions around them are deterministic, validated, and audited.
 - **Each instance gets smarter over time.** Salesperson edits and accepted offers feed a learning loop that resurfaces as instance-memory tools — no model fine-tuning.
 
-## 2. Tenancy and isolation — explicit
+## 2. Tenancy, isolation, and the operator model
 
-**Solivio is single-tenant per deployment.** One instance serves one client. There is no `tenant_id` on canonical tables. Audit, secrets, storage, configuration, and AI cost limits are all scoped per deployment, not per tenant. Multi-tenant SaaS is not a v0 path; if it ever becomes one, it is a schema-wide rework, not a flag.
+**Solivio is single-tenant per deployment.** One instance serves one client. There is no `tenant_id` on canonical tables. Audit, secrets, storage, configuration, and AI cost limits are all scoped per deployment, not per tenant. Multi-tenant SaaS is not a v0 path.
 
-**Module isolation is enforced by code review and lint, not by the runtime.** All modules in v0 are first-party or operator-shipped code in the operator's image. There are no separate database users, no row-level security, and no `search_path` scoping. A module receives a Drizzle handle, a logger, a storage namespace, a config object, and a typed set of core service handles — all by convention.
+**Composing a deployment is a build-time operation.** `solivio.config.ts` lists the enabled modules (and their options and slot bindings); `yarn generate` wires them; the Next.js build compiles them in. Enabling a module = edit the config + rebuild the image. This supersedes the earlier load-at-startup bundle-loader model (`SOLIVIO_MODULES_DIR`) — the "drop a bundle, restart, no rebuild" property was deliberately traded for first-class module pages/routes, declaration-merged types, and one bundling model (`adr/0002`). Out-of-tree modules are npm packages with `"solivio": { "module": true }`, installed and listed in the config like any in-tree module.
 
-There is no marketplace, no runtime install, no untrusted plugin code. If a deployment needs runtime isolation between modules and the core, it is not Solivio v0.
+**Module isolation is enforced by codegen and lint, not by the runtime.** All module code runs in-process with full trust. The boundaries are: the generator validates the module graph; `scripts/check-boundaries.mts` (part of `yarn check`) forbids cross-module and module→app imports; and the database rules (own tables, id-only references) keep data ownership clean. There are no separate database users, no row-level security, no sandboxing. There is no marketplace and no runtime install.
 
 ## 3. Two layers: core and modules
 
-### 3.1 The core
+### 3.1 The core (`apps/solivio`)
 
 The core is small, stable, and irreplaceable. It owns:
 
-- the **offer lifecycle state machine** (draft → in_review → validated → accepted, with reopens, immutable accepted snapshots, and explicit failure transitions like `agent_failed` and `dispatch_failed`),
-- **canonical persistence** for requests, requirements, customers, products, offers, revisions, accepted snapshots,
-- the **named agent system** — registry, prompt assembly, model dispatch, tool invocation, fallback handling,
-- the **canonical service interfaces** modules call to request changes (modules never write canonical tables directly),
-- the **validation phase** — runs registered typed rules in declared priority order,
-- the **audit / evidence ledger** — records every state change and every AI interaction,
-- the **module registry** and **instance configuration**,
-- the **shared infrastructure** described in section 5.
+- **authentication** (better-auth), the session proxy, the login page, and user administration (`/admin/users`) — the `users` table stays core-owned and is exposed to modules only through the `users` service,
+- the **app shell**: root layouts, the sidebar (rendering the generated nav registry), theming, and i18n plumbing,
+- the **runtime boot** (`instrumentation.ts` → `src/server/runtime/boot.ts`): assembling the SDK runtime from the generated registries — services container, logger, Drizzle handle, AI model routing, auth guards, importer resolution,
+- the **jobs/events engine** (pg-boss on the same Postgres, `adr/0004`),
+- **operational surface**: `/api/health`, the migration runner that applies the core journal plus every module journal at startup,
+- the **generated wiring** (`src/generated/**` and the `(gen)` app trees) — generator-owned, gitignored.
 
-The core does not know about specific external systems, file formats, transport protocols, or specific AI prompts. It speaks in canonical entities, named transitions, named agents, and the surfaces / tools / rules modules expose.
+The core does not know about offers, products, or customers. Those are modules.
 
-### 3.2 Modules
+### 3.2 Modules (`modules/<id>`)
 
-A module is a compiled package (`dist/index.js`) that the core loads at server startup via `solivio.config.json`. Modules are authored in TypeScript under `modules/<name>/src/` and built with `yarn modules:build` before the app starts. The core never bundles module code — it loads the compiled output at Node.js runtime.
+A module is a TypeScript source package discovered by file convention and wired by `yarn generate`. It can contribute pages, API routes, services, typed events, subscribers, jobs, agent tools, importers, OpenAPI contracts, i18n, nav entries, slot fills, ACL permissions — and own its database tables with its own migration journal. Mechanics: `module-system.md`.
 
-A module is a unit of replaceable behavior. It can:
+The hard lines:
 
-- implement one or more **surfaces** (input, enrichment, renderer, channel),
-- register **tools** named agents can call,
-- register **always-loaded context providers** the core injects into an agent before it runs,
-- register **typed validation rules** the validation phase runs,
-- register **prompt fragments** appended to specific agents' system prompts,
-- own **its own tables** for module-private state (FK to canonical tables permitted; ON DELETE behavior is decided by an explicit policy in `contracts.md`, not by the module),
-- subscribe to **pipeline observer events** (no mutation rights — see section 7).
+- **Calls** between modules go through typed services (`getService()`) and events (`emitEvent()`), never imports. The one exception is a type-only import of a dependency's `services.ts` for the typecheck.
+- **Data** crosses module boundaries as id-only references — no FK constraints onto another module's tables and no SQL joins across them; display data is fetched through batch service lookups.
+- **Infrastructure** is reached only through `@solivio/sdk/runtime` accessors.
 
-The hard line is on **canonical writes**: modules cannot mutate canonical state directly. They request changes through core service handles. Modules read canonical entities through the same handles.
+### 3.3 Current modules and dependency direction
 
-## 4. The four extension surfaces
+`dependsOn` declarations form a small DAG (validated acyclic by the generator):
 
-- **Inputs** — turn raw inbound events (form, email, webhook, voice) into a normalized request. The core persists the raw payload before normalization for replay.
-- **Enrichment** — expose data to agents in one of two modes:
-  - **Tools (agent-callable).** The agent decides whether to call them based on intent (`search_catalog`, `lookup_industry_standard`, `recall_instance_memory`).
-  - **Always-loaded context (deterministic).** The core fetches them before the agent runs and injects them into prompt context (applicable pricing rules, mandatory legal disclaimers, customer credit status).
-  The split exists because some knowledge is too important to be optional. Treating pricing rules or legal constraints as agent-decided tools is a bug.
-- **Renderers** — turn an accepted offer snapshot into an artifact (PDF, DOCX, JSON, plain text). Pure: snapshot in, artifact out.
-- **Channels** — dispatch a rendered artifact to a destination (email, CRM, webhook, manual download). Channels never mutate offer state — acceptance happens *first*, dispatch happens *after*.
+```
+customers ◄──┐
+             ├── offers ◄── offer-chat
+catalog  ◄───┘
+   ▲
+   └── products-sync                csv-import (headless; no deps)
+```
 
-For v0, **one provider per capability per agent**. Cross-provider merging (dedup, conflict, priority) is deferred until a real need appears.
+- **catalog** — products + prices, semantic search, import target `product`.
+- **customers** — customers + intake requests, import target `customer`.
+- **offers** — offer lifecycle: drafts, line items, revisions, PDF, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`).
+- **offer-chat** — the offer review chat *domain*: threads, messages, the copilot agent, streaming routes.
+- **csv-import** — CSV importer capabilities for the product/customer import targets (bound via config `slots`).
+- **products-sync** — the reference example: scheduled sync of products from an external source into the catalog.
+
+One deliberate seam: the chat **panel UI lives in offers** (it integrates imperatively with the offer review screen) while the chat **domain lives in offer-chat**; the panel reaches it over HTTP only. When UI cohesion and domain ownership pull apart, HTTP is the boundary that lets each module keep what it owns.
+
+## 4. The extension surfaces
+
+The long-term surface taxonomy — inputs, enrichment, renderers, channels — still frames where capabilities belong. Implemented today:
+
+- **Importers** (input) — pure transforms (raw payload → normalized records) declared in `ai/importers.ts`; the owning module's import route persists the records. Exclusive per target, selected by a config slot.
+- **Agent tools** (enrichment) — declared in `ai/tools.ts`, merged into one registry, consumed by agents via `getAgentTools()`.
+- **Slots** (UI) — typed injection points (`SlotPropsMap`) that modules fill via `slots.tsx`.
+- **Events + subscribers** (cross-cutting) — typed observer events; subscribers have no mutation rights over another module's state except through its services.
+- **Jobs** — cron-schedulable background work on the queue.
+
+Renderers and channels as formal capability kinds remain future surfaces; today PDF rendering lives inside the offers module.
+
+For v0, **one provider per exclusive capability**. Cross-provider merging (dedup, conflict, priority) is deferred until a real need appears.
 
 ## 5. Shared infrastructure
 
-Every module receives a **context object** at boot and on each invocation. The context is the only path to shared infrastructure. Modules never reach for raw `process.env`, raw file IO, or raw database connections.
+The `@solivio/sdk/runtime` accessors are the only path to shared infrastructure — modules never reach for raw `process.env`-backed singletons, the app's database client, or another module's internals. The runtime hands out: the typed services container, a structured logger tagged per module, the shared Drizzle handle, deployment AI model ids (`getAi().modelFor(role)`), session guards (`getAuth()`), importer resolution, the agent-tool registry, validated module options, event emission, and job enqueueing. The full table is in `module-system.md` §8.
 
-The context exposes: a Drizzle handle scoped to the module's own tables, structured logging tagged with module id and pipeline correlation id, a job-queue handle, a configuration + secrets resolver, an event bus for observer events, an AI client factory, an agent invoker (for renderers and channels that internally call an agent), an i18n translator, and a typed handle to canonical core services.
-
-**Storage** is a `StorageProvider` interface with two implementations: a filesystem volume (default) and S3-compatible (optional). Both expose `put` / `get` / `delete` / `signedUrl`. Keys are namespaced: `core/...` is core-owned, `mod_<id>/...` is module-owned. A module's `storage.put(key, ...)` is transparently prefixed with `mod_<id>/`. A module needing a core-owned blob goes through a typed core service.
-
-The exact backend framework, frontend framework, agent flow framework, and job runner are decided in `adr/`.
+A blob `StorageProvider` (filesystem default, S3-compatible optional) remains a planned addition, not yet in the runtime.
 
 ## 6. Agents
 
-Solivio runs several named agents. They are **owned by the core**, not contributed by modules — agent runs touch canonical state, downstream contracts, and audit, and need to be tightly coupled to the core to do that safely.
+Named agents live **in the module that owns their domain**: offers owns generation/name/validation, offer-chat owns the salesperson copilot, catalog owns product search. The core contributes the per-role model routing (`getAi().modelFor(role)`, env-overridable per role) — not the agents themselves. Modules extend each other's agents indirectly by contributing **tools** to the shared registry; the copilot in offer-chat runs with tools contributed by offers. Current inventory and file map: `agents.md`.
 
-Each agent has, owned by the core's agent definition: a base system prompt, model configuration (provider, model, temperature, fallback model), flow definition, the set of tool capabilities and always-loaded capabilities it expects, fallback behavior, and defaults for missing capabilities.
+Agent construction is **lazy**: agents are built memoized inside handlers, never at import time, because the SDK runtime only exists after instrumentation boot.
 
-Modules extend agents three ways, in order of risk:
-
-1. **Contribute tools / always-loaded context (low).** A module declares an enrichment capability the agent expects; the core wires it in. This is the primary extension path.
-2. **Contribute prompt fragments (medium).** A module appends scoped instructions to a specific agent's system prompt. Composed in declared order, version-controlled in instance config.
-3. **Replace the agent wholesale (high).** Install a module that takes over an agent's name with higher priority. Same output schema, same tool capabilities. Strong SDK conformance tests required; instance config explicitly opts in.
-
-**AI failure is first-class.** Every agent declares a fallback mode (skip-with-warning, retry-with-cheaper-model, escalate-to-salesperson, fail-the-transition). The pipeline state machine has explicit `agent_failed` transitions. Salesperson UI surfaces failures with partial output and a manual override path. Per-instance cost and rate limits live in core configuration; when tripped, the agent fails into its declared fallback — never silent degradation.
-
-For the current set of named agents in this repo, see `agents.md`.
+**AI failure handling** (declared fallback modes, cost/rate limits, full audit ledger) remains the target model; today failures surface to the salesperson UI and structured logs.
 
 ## 7. Pipeline state and observer events
 
-Pipeline transitions are deterministic, named, and validated by core services. After each transition, the core fires an **observer event**. Modules subscribe for cross-cutting work (notify Slack on `offer_accepted`, push to CRM, log analytics, trigger learning extraction on `feedback_captured`).
-
-**Observer events have no mutation rights.** A subscriber can do anything in its own state, call out to external systems, or enqueue work — but it cannot change canonical state from inside an event handler. To request a state change in response to an event, the subscriber calls a core service explicitly, where the core validates the transition and audits who requested it.
+Pipeline transitions are deterministic and validated inside the owning module's services. After significant changes a module emits a typed **event** (`<moduleId>.<entity>.<action>`). Subscribers — in-process or persistent (queued, at-least-once) — do cross-cutting work: notify, sync, learn. **Subscribers have no mutation rights** over other modules' state; to request a change they call that module's service, which validates it.
 
 ## 8. Validation as a typed rule registry
 
-The one place modules influence state *before* a transition is validation. This is a rule registry, not hook subscriptions.
-
-Modules register typed rules (`PriceRule`, `MarginRule`, `LegalRule`, `StockRule`, …) at boot, each with explicit priority and scope. The validation phase runs all applicable rules in priority order. A rule returns `pass`, `warn`, or `block` with a structured reason. `block` halts the transition; `warn` records an override the salesperson can take (override is audited). Conflicts are resolved by priority and explicit precedence in instance config. Outcomes are deterministic and auditable.
+The target model is unchanged: modules register typed validation rules (`PriceRule`, `MarginRule`, …) with priority and scope; the validation phase runs them in order; `block` halts, `warn` records an overridable warning. Today validation is AI-assisted inside the offers module (`offerValidationAgent`); the typed rule registry is a future capability kind.
 
 ## 9. Data ownership
 
-The core owns canonical tables — requests, requirements, customers, products, offers, revisions, accepted snapshots, audit events, dispatch records, learning events, module registry, instance config — and is the only writer.
-
-Modules own everything else. Module table names are prefixed by module id. Module migrations ship inside the module package.
-
-PostgreSQL (with pgvector) is the system of record for structured data. Storage holds blobs.
+Each module owns its tables and its migration journal; the core owns the auth tables and its own journal. New module tables are `<module_id>_`-prefixed (a frozen grandfathered list of pre-split tables keeps unprefixed names). Cross-module references are id-only — the FK constraints between module boundaries were explicitly dropped (`adr/0003`). PostgreSQL (with pgvector) is the system of record. Details: `database.md`.
 
 ## 10. AI safety
 
 AI surfaces are treated as security boundaries.
 
 - **Prompt layering.** Trusted system prompt + trusted tool descriptions + untrusted user content clearly marked. Customer text never appears where it could be interpreted as instructions. Output is constrained by structured-output schemas wherever possible.
-- **Output validation.** Agent outputs are validated against expected schemas before they affect canonical state. Schema-failed drafts are retried per the agent's fallback policy, then escalated — never silently rendered.
-- **Audit ledger.** Every agent call records: agent id, model, prompt version, system prompt, user input, tool calls, tool results, raw output, validated output, latency, cost. An accepted offer can be reproduced from this trail.
-- **Cost and rate limits.** Per-instance budget, per-request token caps, per-user rate limits. AI failures fall back per the agent's declared mode.
-- **Sensitive data.** PII handling rules are configured per instance. The starter pack ships conservative defaults.
-- **Authorization.** Only authenticated salespeople and configured automated input adapters trigger agent runs. Tool calls inherit caller authorization.
+- **Output validation.** Agent outputs are validated against expected schemas before they affect state; schema-failed drafts are surfaced, never silently rendered.
+- **Audit.** Tracing via VoltOps is opt-in per deployment (`VOLTAGENT_*` env vars); the full evidence-ledger model (reproduce any accepted offer from its trail) remains the target.
+- **Cost and rate limits.** Per-role model selection keeps cheap roles on small models; explicit budgets/limits are future work.
+- **Authorization.** Only authenticated salespeople trigger agent runs; module API routes guard with `getAuth().requireAuth()`/`requireAdmin()`.
 
-## 11. Starter pack
+## 11. The default deployment
 
-The official image ships a starter pack of first-party modules. After clone and standard setup, the operator gets a working pipeline end-to-end with one AI provider credential, a Postgres connection, and a storage volume:
-
-- **manual-input** — form-based request entry,
-- **csv-products** — CSV upload and product indexing,
-- **catalog-tool** — `search_catalog` over locally-indexed products,
-- **instance-memory-tool** — recalls accepted offers and salesperson corrections,
-- **pdf-renderer** — PDF generation,
-- **manual-download** — "download offer" channel.
-
-The core ships with default first-party agent definitions (see `agents.md`) with tested prompts and conservative model defaults. These are not modules — they are owned by the core.
-
-Larger integrations (Odoo, HubSpot, WhatsApp, voice) live outside this repo and ship via the SDK.
+The stock image, built from this repo's `solivio.config.ts`, ships the six first-party modules (§3.3) and runs the pipeline end-to-end with one AI provider credential and a Postgres connection. Larger integrations (Odoo, HubSpot, WhatsApp, voice) are intended to live outside this repo as out-of-tree module packages.
 
 ## 12. Out of scope (v0)
 
 - multi-tenant SaaS with shared deployments,
-- runtime plugin installation, plugin marketplace, hot-loadable adapters, out-of-process / sidecar modules,
+- runtime plugin installation, plugin marketplace, hot-loadable adapters, out-of-process / sidecar modules — and, since `adr/0002`, **no-rebuild module install** of any kind,
 - a public REST/GraphQL API for third-party app developers (distinct from the integration SDK),
 - runtime prompt management (experimentation UI, A/B comparisons, runtime prompt edits),
 - automatic table or storage cleanup on module uninstall,
@@ -156,4 +139,4 @@ Larger integrations (Odoo, HubSpot, WhatsApp, voice) live outside this repo and 
 
 ## 13. Short version
 
-A small, opinionated **core** owns the offer lifecycle, canonical state, and the **named agents** that run AI work. Around it, **four extension surfaces** — inputs, enrichment, renderers, channels — and a **typed validation rule registry**. Cross-cutting integration uses **observer events** with no mutation rights. Pre-acceptance state changes go through the rule registry. Agent failures are first-class transitions with declared fallback modes. Modules can own any tables and storage namespace they need but cannot write canonical tables — they call core services instead. Single-tenant per deployment, no runtime isolation between modules and the core, growing by adding modules — not by rearchitecting the core.
+A small **core** (auth, app shell, runtime boot, jobs engine) hosts feature **modules** compiled in at build time by codegen. Modules own their pages, routes, services, events, jobs, agents, and tables; they talk through typed services and events, reference each other's data by id only, and reach infrastructure only through the SDK runtime. A deployment is composed in `solivio.config.ts` and built into an image — config + rebuild, not runtime loading. Single-tenant per deployment, isolation by codegen + lint, growing by adding modules — not by rearchitecting the core.

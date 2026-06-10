@@ -3,13 +3,7 @@
 import type { Offer } from "@solivio/domain";
 import type {} from "@solivio/module-catalog/services.ts";
 import type {} from "@solivio/module-customers/services.ts";
-import type {
-  BulkAddResult,
-  OfferDeleteResult,
-  OfferLineItemInput,
-  OfferMutationResult,
-  Services,
-} from "@solivio/sdk";
+import type { Services } from "@solivio/sdk";
 
 import { getOfferDraft } from "./server/offerDraftStore.ts";
 import {
@@ -19,6 +13,33 @@ import {
   removeOfferLineItem,
   updateOfferLineItem,
 } from "./server/offerService.ts";
+
+/** Result of an offer mutation that returns the updated offer. */
+export type OfferMutationResult =
+  | { status: "ok"; offer: Offer }
+  | { status: "not_found" }
+  | { status: "locked" }
+  | { status: "duplicate" };
+
+/** Result of an offer mutation with no returned offer. */
+export type OfferDeleteResult = { status: "ok" } | { status: "not_found" } | { status: "locked" };
+
+export interface OfferLineItemInput {
+  productId: string;
+  quantity: number;
+  requestItem?: string;
+  rationale?: string;
+}
+
+export interface BulkAddItemResult {
+  productId: string;
+  status: "added" | "duplicate" | "not_found" | "locked";
+}
+
+export interface BulkAddResult {
+  results: BulkAddItemResult[];
+  offer: Offer | null;
+}
 
 /**
  * The offers module's public API: offer reads for cross-module consumers

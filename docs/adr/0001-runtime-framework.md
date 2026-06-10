@@ -1,7 +1,7 @@
 # ADR 0001 — Backend and frontend runtime framework
 
-Status: **proposed** (open — needs a concrete blocker before deciding)
-Date: 2026-05-07
+Status: **accepted (stay on Next.js)** — resolved by [ADR 0002](0002-build-time-module-codegen.md): build-time codegen gives modules first-class pages/routes, so the blocker that could have forced re-platforming never materialized. The content below is preserved as written while the question was open.
+Date: 2026-05-07 (resolved 2026-06-10)
 
 ## Context
 

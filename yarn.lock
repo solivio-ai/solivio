@@ -8752,7 +8752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.25.10, esbuild@npm:^0.25.12, esbuild@npm:^0.25.4":
+"esbuild@npm:^0.25.10, esbuild@npm:^0.25.4":
   version: 0.25.12
   resolution: "esbuild@npm:0.25.12"
   dependencies:
@@ -15142,7 +15142,6 @@ __metadata:
     "@voltagent/cli": "npm:^0.1.21"
     chokidar: "npm:^4.0.3"
     concurrently: "npm:^9.2.0"
-    esbuild: "npm:^0.25.12"
     lightningcss-darwin-arm64: "npm:^1.32.0"
     tsx: "npm:^4.21.0"
     typescript: "npm:^6.0.3"

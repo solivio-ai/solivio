@@ -5,7 +5,7 @@ import PgBoss from "pg-boss";
 import type { SolivioRuntime } from "@solivio/sdk/runtime";
 import { subscribers } from "@/generated/events";
 import { jobs } from "@/generated/jobs";
-import { createModuleLogger } from "@/server/modules/logger";
+import { createModuleLogger } from "@/server/runtime/logger";
 
 const BOSS_KEY = Symbol.for("solivio.pgboss");
 type GlobalWithBoss = typeof globalThis & { [BOSS_KEY]?: PgBoss };

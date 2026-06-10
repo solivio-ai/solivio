@@ -4,7 +4,5 @@ export async function register() {
     const runtime = bootModuleRuntime();
     const { startJobEngine } = await import("./src/server/runtime/jobs");
     runtime.enqueue = await startJobEngine();
-    const { loadModules } = await import("./src/server/modules/registry");
-    await loadModules();
   }
 }

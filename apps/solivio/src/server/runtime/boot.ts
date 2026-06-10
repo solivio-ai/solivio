@@ -8,9 +8,9 @@ import { jobs } from "@/generated/jobs";
 import { moduleOptions, slotBindings } from "@/generated/modules";
 import { createServices } from "@/generated/services";
 import { db } from "@/server/database/db";
-import { createModuleLogger } from "@/server/modules/logger";
 import { getDefaultEmbeddingModel } from "@/server/runtime/ai/embeddingConfig";
 import { getModelFor } from "@/server/runtime/ai/modelConfig";
+import { createModuleLogger } from "@/server/runtime/logger";
 import { createUsersService } from "@/server/runtime/usersService";
 
 /**
