@@ -1,9 +1,6 @@
-// Barrel re-export. Per-table definitions live in `./schema/*`.
-// Drizzle picks up all exported tables via the path configured in `drizzle.config.ts`.
-
-// Module-owned tables (re-exported from the generated barrel so drizzle-kit
-// and the typed db client see the full schema).
-export * from "../../generated/schema";
+// CORE-owned tables only (module-owned tables live in modules/<id>/src/data/schema.ts
+// with their own migration journals). Drizzle diffs core tables via this barrel;
+// the runtime client in ./db.ts merges in the generated module schema barrel.
 export { accounts, sessions, users, verifications } from "./schema/auth";
 export { offerChatMessages, offerChatThreads } from "./schema/offer-chat";
 export { offerItems } from "./schema/offer-items";

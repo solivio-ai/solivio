@@ -11,7 +11,7 @@
     "db:check": "node scripts/check-drizzle-drift.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio --config src/generated/db/drizzle.studio.config.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",

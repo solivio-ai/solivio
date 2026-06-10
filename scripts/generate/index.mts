@@ -23,6 +23,7 @@ import type { ModuleModel } from "./discover.mts";
 import { discoverModule } from "./discover.mts";
 import { emitAppStubs } from "./emit/app.mts";
 import { emitI18n, emitNextModules, emitPublicRoutes, emitTailwind } from "./emit/assets.mts";
+import { emitDb } from "./emit/db.mts";
 import { emitRegistries } from "./emit/registries.mts";
 import { Writer } from "./lib/write.mts";
 import { validate } from "./validate.mts";
@@ -61,6 +62,7 @@ async function generate(checkOnly: boolean): Promise<void> {
   emitTailwind(writer, modules, repoRoot);
   emitNextModules(writer, modules);
   emitPublicRoutes(writer, modules);
+  emitDb(writer, modules, repoRoot);
   for (const tree of OWNED_TREES) writer.prune(tree);
 
   for (const warning of warnings) console.warn(`⚠ ${warning}`);

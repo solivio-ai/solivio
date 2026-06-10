@@ -15,6 +15,13 @@
       "when": 1779095872580,
       "tag": "0001_faithful_molly_hayes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781076184794,
+      "tag": "0002_detach_module_tables",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,6 @@ import { check, index, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core"
 
 import type { Offer } from "@solivio/domain";
 
-import { customers, requests } from "../../../generated/schema";
 import { users } from "./auth";
 import { timestamps } from "./timestamps";
 
@@ -11,8 +10,10 @@ export const offers = pgTable(
   "offers",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    customerId: uuid("customer_id").references(() => customers.id),
-    requestId: uuid("request_id").references(() => requests.id),
+    // Cross-module references are id-only (no FK constraint): the customers
+    // module owns those tables and its own migration journal.
+    customerId: uuid("customer_id"),
+    requestId: uuid("request_id"),
     userId: text("user_id").references(() => users.id),
     name: text("name").notNull().default("Draft"),
     status: text("status").$type<Offer["status"]>().notNull().default("draft"),
