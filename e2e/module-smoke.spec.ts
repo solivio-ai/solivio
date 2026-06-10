@@ -76,3 +76,30 @@ test("products-sync runs against an external source and records a run", async ({
   await expect(page.getByRole("heading", { name: "Products Sync" })).toBeVisible();
   await expect(page.getByText("data:application/json").first()).toBeVisible();
 });
+
+test("historical orders import creates read-only imported offers", async ({ page }) => {
+  const accountId = `e2eo${Date.now().toString(36)}`;
+
+  await page.goto("/login?mode=signup");
+  await page.getByLabel("Username").fill(accountId);
+  await page.getByLabel("Email").fill(`${accountId}@example.com`);
+  await page.getByLabel("Password").fill("Solivio-e2e-12345");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL("/", { timeout: 30_000 });
+
+  const csv = [
+    "order_ref;customer;item;sku;quantity;unit_price;vat;date;currency",
+    `ORD-${accountId};E2E Historical Co;Test widget;E2E-${accountId};2;10.00;23;2024-01-15;PLN`,
+  ].join("\n");
+
+  const response = await page.request.post("/api/offers/import", {
+    data: { content: csv },
+  });
+  expect(response.ok()).toBeTruthy();
+  const body = (await response.json()) as { count: number };
+  expect(body.count).toBe(1);
+
+  // The module admin upload page renders.
+  await page.goto("/admin/offers/upload");
+  await expect(page.getByRole("heading", { name: "Import historical orders" })).toBeVisible();
+});

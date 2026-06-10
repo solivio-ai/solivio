@@ -457,14 +457,14 @@
       "label": "Wątek czatu",
       "newChat": "Nowy czat"
     },
-    "welcome": "Mogę wyjaśnić tę ofertę, podsumować zapytanie klienta, przejrzeć dopasowania produktów i zaproponować ulepszenia.",
+    "welcome": "Mogę wyjaśnić tę ofertę, zaproponować ulepszenia i pomóc z powtórzeniem zamówienia na podstawie historii zakupów klienta.",
     "input": {
       "placeholder": "Powiedz AI, co zmienić lub zadaj pytanie..."
     },
     "suggestions": {
       "summarize": "Podsumuj zapytanie klienta",
       "mostExpensive": "Wylistuj 3 najdroższe pozycje w ofercie",
-      "upsell": "Zaproponuj dodatkowe produkty i je dodaj"
+      "upsell": "Pokaż ostatnie zamówienia klienta"
     },
     "errors": {
       "loadThreads": "Nie udało się wczytać wątków czatu.",
@@ -478,6 +478,28 @@
   "nav": {
     "dashboard": "Panel",
     "offers": "Oferty",
-    "newOffer": "Nowa oferta"
+    "newOffer": "Nowa oferta",
+    "orderUpload": "Import zamówień"
+  },
+  "import": {
+    "page": {
+      "title": "Importuj historyczne zamówienia",
+      "description": "Prześlij plik CSV z historycznymi zamówieniami, aby zaimportować je jako oferty tylko do odczytu."
+    },
+    "card": {
+      "title": "Import zamówień",
+      "description": "Wybierz plik CSV z numerem zamówienia, nazwą klienta i pozycjami. Zaimportowane zamówienia są historycznymi rekordami tylko do odczytu.",
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub przeciągnij plik tutaj",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "saving": "Importowanie...",
+        "import": "Importuj"
+      },
+      "importDone": "Zapisano {count, plural, one {# zamówienie} few {# zamówienia} many {# zamówień} other {# zamówień}}.",
+      "importRowErrors": "{count, plural, one {# wiersza} few {# wierszy} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
+      "importError": "Import nie powiódł się."
+    }
   }
 }

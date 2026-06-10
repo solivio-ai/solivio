@@ -1,8 +1,9 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { db, getService } from "@solivio/sdk/runtime";
 
 import { offerItems, offers } from "../data/schema.ts";
@@ -22,6 +23,7 @@ export type InsertOfferData = {
   unmatched: string[];
   discountPercent?: number;
   discountAmount?: number;
+  createdAt?: Date;
 };
 
 export type InsertOfferItemData = {
@@ -272,6 +274,7 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
     })
     .from(offers)
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .where(ne(offers.status, OFFER_STATUS.IMPORTED))
     .groupBy(offers.id)
     .orderBy(desc(offers.createdAt))
     .limit(limit);
@@ -293,6 +296,86 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
     ...row,
     customerName: row.customerId ? (customerNameById.get(row.customerId) ?? null) : null,
     clientRequest: row.requestId ? (requestTextById.get(row.requestId) ?? null) : null,
+  }));
+}
+
+export async function findRecentOffersByCustomer(
+  customerId: string,
+  { limit = 10 }: { limit?: number } = {},
+  tx: Tx = db,
+): Promise<OfferRow[]> {
+  const HISTORY_STATUSES = [OFFER_STATUS.IMPORTED, OFFER_STATUS.ACCEPTED] as const;
+
+  const offerRows = await tx
+    .select()
+    .from(offers)
+    .where(and(eq(offers.customerId, customerId), inArray(offers.status, [...HISTORY_STATUSES])))
+    .orderBy(desc(offers.createdAt))
+    .limit(limit);
+
+  if (offerRows.length === 0) return [];
+
+  const ids = offerRows.map((row) => row.id);
+  const items = await tx
+    .select()
+    .from(offerItems)
+    .where(inArray(offerItems.offerId, ids))
+    .orderBy(offerItems.position, offerItems.createdAt, offerItems.id);
+
+  // Cross-module references are id-only: enrich display data through the
+  // owning modules' services instead of SQL joins.
+  const requestIds = [
+    ...new Set(offerRows.map((row) => row.requestId).filter((v): v is string => v !== null)),
+  ];
+  const productIds = [
+    ...new Set(items.map((item) => item.productId).filter((v): v is string => v !== null)),
+  ];
+  const [customerRows, requestRows, productRows] = await Promise.all([
+    getService("customers").findByIds([customerId]),
+    getService("customers").findRequestsByIds(requestIds),
+    productIds.length > 0 ? getService("catalog").getProductsByIds(productIds) : [],
+  ]);
+  const customerName = customerRows[0]?.name ?? null;
+  const requestTextById = new Map(requestRows.map((row) => [row.id, row.rawText]));
+  const skuByProductId = new Map(productRows.map((product) => [product.id, product.sku]));
+
+  return offerRows.map((offer) => ({
+    id: offer.id,
+    name: offer.name,
+    customerId: offer.customerId,
+    customerName,
+    requestId: offer.requestId,
+    clientRequest: offer.requestId ? (requestTextById.get(offer.requestId) ?? null) : null,
+    userId: offer.userId,
+    userName: null,
+    status: offer.status,
+    currency: offer.currency,
+    notes: offer.notes,
+    unmatched: offer.unmatched,
+    discountPercent: offer.discountPercent,
+    discountAmount: offer.discountAmount,
+    createdAt: offer.createdAt,
+    updatedAt: offer.updatedAt,
+    items: items
+      .filter((item) => item.offerId === offer.id)
+      .map((item) => ({
+        id: item.id,
+        productId: item.productId,
+        productSku: item.productId ? (skuByProductId.get(item.productId) ?? null) : null,
+        name: item.name,
+        description: item.description,
+        quantity: item.quantity,
+        unitPriceNet: item.unitPriceNet,
+        vatRate: item.vatRate,
+        unitGrossPrice: item.unitGrossPrice,
+        totalNet: item.totalNet,
+        totalGross: item.totalGross,
+        requestItem: item.requestItem,
+        rationale: item.rationale,
+        matchSource: item.matchSource as MatchSource | null,
+        matchScore: item.matchScore,
+        position: item.position,
+      })),
   }));
 }
 

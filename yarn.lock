@@ -5565,10 +5565,12 @@ __metadata:
     react-dom: "npm:^19.2.5"
     react-pdf: "npm:^10.4.1"
     react-resizable-panels: "npm:^4.10.0"
+    server-only: "npm:^0.0.1"
     shadcn: "npm:^4.5.0"
     sonner: "npm:^2.0.7"
     tailwind-merge: "npm:^3.5.0"
     tailwindcss: "npm:^4.2.4"
+    tsx: "npm:^4.21.0"
     tw-animate-css: "npm:^1.4.0"
     typescript: "npm:6.0.3"
     zod: "npm:^4.3.6"
@@ -5706,6 +5708,16 @@ __metadata:
     next: "*"
     next-intl: "*"
     react: "*"
+  languageName: unknown
+  linkType: soft
+
+"@solivio/module-order-history@workspace:modules/order-history":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-order-history@workspace:modules/order-history"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 

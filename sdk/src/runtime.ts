@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import type { AgentTool } from "./agent-tool.ts";
+import type { AgentId, AgentTool } from "./agent-tool.ts";
 import type { ImporterDefinition, ImportTarget } from "./importer.ts";
 import type { AnyJobDefinition } from "./job.ts";
 import type { AiClientFactory, Logger } from "./module-context.ts";
@@ -136,9 +136,10 @@ export function getAuth(): AuthGuards {
   return runtime().auth;
 }
 
-/** Agent tools contributed by enabled modules. */
-export function getAgentTools(): ReadonlyArray<AgentTool> {
-  return runtime().agentTools;
+/** Agent tools contributed by enabled modules, optionally filtered by target agent. */
+export function getAgentTools(agentId?: AgentId): ReadonlyArray<AgentTool> {
+  const tools = runtime().agentTools;
+  return agentId ? tools.filter((tool) => tool.agents.includes(agentId)) : tools;
 }
 
 /** The importer capability bound to a target ("product", "customer", …). */

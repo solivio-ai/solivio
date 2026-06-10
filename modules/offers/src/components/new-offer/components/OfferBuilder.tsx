@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { Button } from "@solivio/ui/components/button.tsx";
 
 import type { ProductSearchMatch } from "../../../components/product-search/index.ts";
@@ -420,7 +421,7 @@ export function OfferBuilder({
 
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
-      if (nextStatus === "accepted") {
+      if (nextStatus === OFFER_STATUS.ACCEPTED) {
         onAccepted?.(nextOffer);
       }
 
@@ -542,7 +543,7 @@ export function OfferBuilder({
             if (!open) setValidationResult(null);
           }}
           result={validationResult}
-          onAccept={() => updateStatus("accepted")}
+          onAccept={() => updateStatus(OFFER_STATUS.ACCEPTED)}
           onSendToChat={onSendToChat}
         />
       )}
@@ -555,8 +556,8 @@ export function OfferBuilder({
         formName={offer.name?.trim() ?? ""}
         offerId={offer.id}
         offerTitle={offerHeaderTitle}
-        onAccept={() => void saveReview("accepted")}
-        onReopen={() => void saveReview("draft")}
+        onAccept={() => void saveReview(OFFER_STATUS.ACCEPTED)}
+        onReopen={() => void saveReview(OFFER_STATUS.DRAFT)}
         onValidate={() => void handleValidate()}
         validateState={validateState}
         onAddProduct={() => setSearchOpen(true)}

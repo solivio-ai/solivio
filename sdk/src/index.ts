@@ -1,10 +1,16 @@
 /// <reference path="./ambient.d.ts" />
 
 // ── Module definition ─────────────────────────────────────────────────────────
-export type { AgentTool } from "./agent-tool.ts";
-export { defineAgentTool } from "./agent-tool.ts";
+export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.ts";
+export { AGENT_IDS, defineAgentTool } from "./agent-tool.ts";
 // ── Entity DTOs (import surface for importer capabilities) ────────────────────
-export type { CustomerInput, ProductInput, ProductMatch } from "./entities/index.ts";
+export type {
+  CustomerInput,
+  OfferImportInput,
+  OfferImportLineItem,
+  ProductInput,
+  ProductMatch,
+} from "./entities/index.ts";
 export type {
   AnyImporterDefinition,
   CustomerImporterDefinition,
@@ -13,6 +19,7 @@ export type {
   ImportRowError,
   ImportStatus,
   ImportTarget,
+  OfferImporterDefinition,
   ProductImporterDefinition,
 } from "./importer.ts";
 export type { AnyJobDefinition, JobDefinition } from "./job.ts";

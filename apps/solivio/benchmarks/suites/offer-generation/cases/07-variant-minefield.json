@@ -1,0 +1,21 @@
+{
+  "id": "07-variant-minefield",
+  "title": "Near-variant disambiguation in dense product families",
+  "difficulty": "hard",
+  "notes": "Five correct picks hiding among 48 breakers, 18 RCDs and 8 RCBOs where every neighbor differs by one parameter (characteristic, amperage, pole count, trip current). The RCBO line is the hardest: 'różnicówka z członem nadprądowym' must map to RCBO-B16-30, not to an RCD or a plain breaker.",
+  "customer": {
+    "name": "Nowak Instalacje",
+    "profile": "One-man electrical business, precise about protection device specs."
+  },
+  "request": "Dzień dobry, do nowej instalacji mieszkania potrzebuję: na obwody oświetleniowe wyłączniki B10 jednofazowe 6 szt, na obwody gniazdowe B16 jednofazowe 6 szt, do płyty indukcyjnej jeden trójfazowy B16, do tego wyłącznik różnicowoprądowy 40A 30mA czterobiegunowy, oraz różnicówka z członem nadprądowym B16 do obwodu pralki.",
+  "expected": {
+    "items": [
+      { "sku": "WYL-B10-1P", "quantity": 6 },
+      { "sku": "WYL-B16-1P", "quantity": 6 },
+      { "sku": "WYL-B16-3P", "quantity": 1 },
+      { "sku": "RCD-40-30-4P", "quantity": 1 },
+      { "sku": "RCBO-B16-30", "quantity": 1 }
+    ],
+    "unmatched": []
+  }
+}

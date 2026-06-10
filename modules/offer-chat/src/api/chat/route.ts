@@ -3,8 +3,10 @@ import type { UIMessage } from "ai";
 import { after, NextResponse } from "next/server";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { getAuth, getService } from "@solivio/sdk/runtime";
 
+import { CONTEXT_KEY_CUSTOMER_ID, CONTEXT_KEY_OFFER_ID } from "../../ai/agentToolAdapter.ts";
 import { getChatAgent } from "../../ai/chatAgent.ts";
 import { errorResponseSchema } from "../../contracts/index.ts";
 import { appendOfferChatMessage, getOfferChatThread } from "../../server/offerChatService.ts";
@@ -49,7 +51,7 @@ function formatOfferContext(offer: Offer) {
     `Discount: ${discountPercent}% (${effectiveDiscount} ${currency})`,
     `Total net: ${total} ${currency}`,
     `Pricing check: ${unpricedLineCount === 0 ? "all lines have prices" : `${unpricedLineCount} line(s) need a unit price`}`,
-    `Sales review check: ${offer.status !== "draft" ? "marked complete" : "not marked complete"}`,
+    `Sales review check: ${offer.status !== OFFER_STATUS.DRAFT ? "marked complete" : "not marked complete"}`,
     "",
     "Products:",
   ];
@@ -160,8 +162,11 @@ export async function POST(request: Request) {
   setWaitUntil(after);
 
   const chatAgent = await getChatAgent();
+  const contextMap = new Map<string | symbol, unknown>();
+  if (serverOffer?.customerId) contextMap.set(CONTEXT_KEY_CUSTOMER_ID, serverOffer.customerId);
+  if (offerId) contextMap.set(CONTEXT_KEY_OFFER_ID, offerId);
   const result = await chatAgent.streamText(messagesWithContext, {
-    context: offerContext ? { currentOffer: offerContext } : undefined,
+    context: contextMap,
     onFinish: async ({ text }) => {
       if (!shouldPersist || !text.trim()) return;
 

@@ -1,0 +1,24 @@
+{
+  "id": "09-implied-specs",
+  "title": "Specs implied by installation location, not stated",
+  "difficulty": "hard",
+  "notes": "Nothing says IP44/IP65 explicitly — the rating is implied by the location (bathroom, garage, outdoors). The catalog has ordinary variants of every item; picking the non-hermetic one is the natural model error. Wall-mounted outdoor motion sensor: detection angle unstated, so both 120° and 180° wall IP44 sensors are accepted.",
+  "customer": {
+    "name": "Jan Kowalczyk",
+    "profile": "Private home owner finishing a house, describes needs by room, not by spec."
+  },
+  "request": "Wykańczamy dom i potrzebuję: do łazienki gniazda pojedyncze 4 szt (musi wytrzymać wilgoć), do garażu oprawa świetlówkowa LED 120cm 2 szt, nad wejście od zewnątrz czujnik ruchu na ścianę, oraz zwykłe gniazda podtynkowe pojedyncze białe do salonu 10 szt.",
+  "expected": {
+    "items": [
+      {
+        "sku": "GNI-HERM-IP44-BI",
+        "quantity": 4,
+        "altSkus": ["GNI-HERM-IP44-CZ", "GNI-HERM-IP44-SR"]
+      },
+      { "sku": "LED-HERM-120-36", "quantity": 2 },
+      { "sku": "CZJ-RUCH-120-IP44", "quantity": 1, "altSkus": ["CZJ-RUCH-180-IP44"] },
+      { "sku": "GNI-PT-1-BI", "quantity": 10 }
+    ],
+    "unmatched": []
+  }
+}

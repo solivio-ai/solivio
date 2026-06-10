@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 
 import type { Offer, OfferRevision } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Card,
@@ -251,7 +252,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     const response = await fetch(`/api/offers/${offerId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" }),
+      body: JSON.stringify({ status: OFFER_STATUS.DRAFT }),
     });
 
     if (!response.ok) return;
@@ -341,7 +342,7 @@ export function OfferReview({ offerId }: OfferReviewProps) {
     );
   }
 
-  if (state.offer.status === "accepted") {
+  if (state.offer.status === OFFER_STATUS.ACCEPTED) {
     return (
       <section className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
         <OfferAcceptedView offer={state.offer} onBackToDraft={() => void handleBackToDraft()} />

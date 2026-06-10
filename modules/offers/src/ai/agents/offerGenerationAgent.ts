@@ -4,8 +4,9 @@ import { Agent, createTool } from "@voltagent/core";
 import { Output } from "ai";
 import { z } from "zod";
 
-import { getService } from "@solivio/sdk/runtime";
+import { getAgentTools, getService } from "@solivio/sdk/runtime";
 
+import { CONTEXT_KEY_CUSTOMER_ID, toVoltagentTool } from "./agentToolAdapter.ts";
 import { getModelFor } from "./modelConfig.ts";
 import { voltOpsClient } from "./voltOpsClient.ts";
 
@@ -119,6 +120,7 @@ export type GeneratedOffer = z.infer<typeof agentOutputSchema>;
 export async function generateOfferWithAgent(
   clientRequest: string,
   customerName?: string,
+  customerId?: string | null,
 ): Promise<GeneratedOffer> {
   const searchProductsTool = createTool({
     name: "search_products",
@@ -197,11 +199,13 @@ export async function generateOfferWithAgent(
     },
   });
 
+  const moduleTools = (await getAgentTools("offer-generation-agent")).map(toVoltagentTool);
+
   const agent = new Agent({
     name: "offer-generation-agent",
     instructions: OFFER_AGENT_INSTRUCTIONS,
     model: getModelFor("offerGeneration"),
-    tools: [searchProductsTool],
+    tools: [searchProductsTool, ...moduleTools],
     voltOpsClient,
   });
 
@@ -212,8 +216,12 @@ export async function generateOfferWithAgent(
     .filter(Boolean)
     .join("\n");
 
+  const contextMap = new Map<string | symbol, unknown>();
+  if (customerId) contextMap.set(CONTEXT_KEY_CUSTOMER_ID, customerId);
+
   const result = await agent.generateText(userMessage, {
     output: Output.object({ schema: agentOutputSchema }),
+    context: contextMap,
   });
 
   return agentOutputSchema.parse(result.output);

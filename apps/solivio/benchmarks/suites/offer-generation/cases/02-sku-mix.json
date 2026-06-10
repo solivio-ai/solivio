@@ -1,0 +1,21 @@
+{
+  "id": "02-sku-mix",
+  "title": "SKU codes mixed with natural-language descriptions",
+  "difficulty": "basic",
+  "notes": "Tests sku-vs-description fragment classification: two exact SKU references inline with three descriptive items.",
+  "customer": {
+    "name": "TechVolt Serwis",
+    "profile": "Service company, repeat customer, often orders by SKU from previous invoices."
+  },
+  "request": "Zamawiam: 2x ZL-221-415, 1x ROZ-12-NT, do tego czujnik ruchu sufitowy 360 stopni 4 sztuki, jeden multimetr cyfrowy oraz opaski kablowe 200mm 5 opakowań.",
+  "expected": {
+    "items": [
+      { "sku": "ZL-221-415", "quantity": 2 },
+      { "sku": "ROZ-12-NT", "quantity": 1 },
+      { "sku": "CZJ-RUCH-360", "quantity": 4 },
+      { "sku": "MIER-MULTI-CY", "quantity": 1 },
+      { "sku": "OPK-KAB-200-BK", "quantity": 5, "altSkus": ["OPK-KAB-200-NT"] }
+    ],
+    "unmatched": []
+  }
+}

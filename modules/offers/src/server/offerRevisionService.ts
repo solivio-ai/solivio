@@ -3,6 +3,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 
 import type { OfferRevision, OfferRevisionSnapshot } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import { db } from "@solivio/sdk/runtime";
 
 import { offerItems, offers } from "../data/schema.ts";
@@ -109,7 +110,11 @@ export async function restoreRevision(
   let blocked = false;
   await db.transaction(async (tx) => {
     const locked = await lockOfferForUpdate(offerId, tx);
-    if (!locked || locked.status === "accepted") {
+    if (
+      !locked ||
+      locked.status === OFFER_STATUS.ACCEPTED ||
+      locked.status === OFFER_STATUS.IMPORTED
+    ) {
       blocked = true;
       return;
     }
@@ -148,7 +153,7 @@ export async function restoreRevision(
         unmatched: snapshot.unmatched,
         discountPercent: snapshot.discountPercent ?? 0,
         discountAmount: snapshot.discountAmount ?? 0,
-        status: "draft",
+        status: OFFER_STATUS.DRAFT,
         userId,
         updatedAt: new Date(),
       })

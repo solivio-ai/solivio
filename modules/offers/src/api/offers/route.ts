@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   try {
     const resolvedCustomerName = await resolveCustomerNameForGeneration(customerId, customerName);
     const [generated, offerName] = await Promise.all([
-      generateOfferWithAgent(clientRequest, resolvedCustomerName),
+      generateOfferWithAgent(clientRequest, resolvedCustomerName, customerId),
       generateOfferName(clientRequest, resolvedCustomerName),
     ]);
     const offer = await createOffer(

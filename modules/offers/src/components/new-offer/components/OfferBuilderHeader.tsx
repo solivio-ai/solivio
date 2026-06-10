@@ -18,6 +18,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -84,14 +85,16 @@ export function OfferBuilderHeader({
 }: OfferBuilderHeaderProps) {
   const t = useTranslations("offers.newOffer.builder");
 
-  const statusLabel = status === "accepted" ? t("status.accepted") : t("status.draft");
+  const statusLabel = status === OFFER_STATUS.ACCEPTED ? t("status.accepted") : t("status.draft");
 
   return (
     <header className="grid min-w-0 gap-2 rounded-xl border border-foreground/15 bg-card p-3 shadow-sm">
       <div className="grid min-w-0 gap-2">
         <h1 className="truncate text-lg leading-tight font-semibold">{offerTitle}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant={status === "accepted" ? "default" : "outline"}>{statusLabel}</Badge>
+          <Badge variant={status === OFFER_STATUS.ACCEPTED ? "default" : "outline"}>
+            {statusLabel}
+          </Badge>
           <Badge variant="secondary">{t("productCount", { count: lineCount })}</Badge>
           <Badge variant="outline">{t("generated", { date: generatedDate })}</Badge>
         </div>
@@ -177,13 +180,16 @@ export function OfferBuilderActionBar({
           : null;
   const SaveStatusIcon = saveStatus?.Icon;
 
-  const statusLabel = status === "accepted" ? t("status.accepted") : t("status.draft");
+  const statusLabel = status === OFFER_STATUS.ACCEPTED ? t("status.accepted") : t("status.draft");
 
   return (
     <div className="sticky bottom-2 z-30 -mx-1 px-1 pt-1">
       <div className="mx-auto flex w-full flex-col gap-2 rounded-xl border border-foreground/15 bg-card/95 p-2 m-0! ring-1 ring-background/80 backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <Badge variant={status === "accepted" ? "default" : "outline"} className="shrink-0">
+          <Badge
+            variant={status === OFFER_STATUS.ACCEPTED ? "default" : "outline"}
+            className="shrink-0"
+          >
             {statusLabel}
           </Badge>
           {saveStatus && SaveStatusIcon ? (
@@ -208,12 +214,12 @@ export function OfferBuilderActionBar({
             size="sm"
             variant="outline"
             onClick={onAddProduct}
-            disabled={status === "accepted"}
+            disabled={status === OFFER_STATUS.ACCEPTED}
           >
             <Plus size={16} aria-hidden="true" />
             <span className={compact ? "sr-only md:not-sr-only" : ""}>{t("addProduct")}</span>
           </Button>
-          {status === "accepted" ? (
+          {status === OFFER_STATUS.ACCEPTED ? (
             <Button
               className={compact ? "sm:w-auto" : "w-full sm:w-auto"}
               size="sm"

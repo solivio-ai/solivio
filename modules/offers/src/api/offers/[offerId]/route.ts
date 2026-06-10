@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { z } from "zod";
 
 import type { Offer } from "@solivio/domain";
-import { CustomerSelectionError } from "@solivio/domain";
+import { CustomerSelectionError, OFFER_STATUS } from "@solivio/domain";
 import { getAuth } from "@solivio/sdk/runtime";
 
 import {
@@ -130,12 +130,12 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   if (!offer) {
     const existing = isUuid(offerId) ? await getOffer(offerId) : null;
-    if (existing?.status === "accepted") {
+    if (existing?.status === OFFER_STATUS.ACCEPTED || existing?.status === OFFER_STATUS.IMPORTED) {
       return NextResponse.json(
         errorResponseSchema.parse({
           error: {
             code: "offer_locked",
-            message: "This offer has been accepted and cannot be modified.",
+            message: "This offer is locked and cannot be modified.",
           },
         }),
         { status: 403 },

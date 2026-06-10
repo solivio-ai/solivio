@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import type { Offer } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 import {
   Accordion,
   AccordionContent,
@@ -123,7 +124,7 @@ export function OfferProductsReview({
     };
   }, []);
 
-  const isLocked = status === "accepted";
+  const isLocked = status === OFFER_STATUS.ACCEPTED;
 
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">

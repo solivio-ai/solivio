@@ -6,6 +6,8 @@ import type {} from "@solivio/module-customers/services.ts";
 import type { Services } from "@solivio/sdk";
 
 import { getOfferDraft } from "./server/offerDraftStore.ts";
+import type { PastOffer } from "./server/offerHistoryService.ts";
+import { recentOffersForCustomer } from "./server/offerHistoryService.ts";
 import {
   addProductToOffer,
   bulkAddProductsToOffer,
@@ -45,7 +47,11 @@ export interface BulkAddResult {
  * The offers module's public API: offer reads for cross-module consumers
  * (offer-chat context) and the line-item mutations exposed to agent tools.
  */
+export type { PastOffer, PastOfferLineItem } from "./server/offerHistoryService.ts";
+
 export interface OffersService {
+  /** Recent accepted/imported offers for a customer (order history). */
+  recentOffersForCustomer(input: { customerId: string; limit?: number }): Promise<PastOffer[]>;
   getOffer(id: string): Promise<Offer | null>;
   /** In-memory draft fallback used while a generated offer is unsaved. */
   getDraft(offerId: string): Offer | null;
@@ -68,6 +74,7 @@ declare module "@solivio/sdk" {
 function createOffersService(): OffersService {
   return {
     getOffer: (id) => getOffer(id),
+    recentOffersForCustomer: (input) => recentOffersForCustomer(input),
     getDraft: (offerId) => getOfferDraft(offerId),
     async addProduct(offerId, item) {
       const result = await addProductToOffer(
