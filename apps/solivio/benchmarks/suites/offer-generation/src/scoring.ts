@@ -56,6 +56,9 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
   for (const item of generated.items) {
     generatedBySku.set(item.productSku, { quantity: item.quantity });
   }
+  // Snapshot before matching: the loop below consumes matched entries, so the
+  // map's size afterwards is only the count of unmatched extras.
+  const generatedCount = generatedBySku.size;
 
   const matchedSkus = new Set<string>();
   const verdicts: ItemVerdict[] = benchCase.expected.items.map((expected) => {
@@ -86,7 +89,6 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
 
   const credit = verdicts.reduce((sum, v) => sum + v.credit, 0);
   const expectedCount = benchCase.expected.items.length;
-  const generatedCount = generatedBySku.size; // deduplicated, consistent with the map used for matching
 
   const itemRecall = expectedCount === 0 ? 1 : credit / expectedCount;
   const itemPrecision =
