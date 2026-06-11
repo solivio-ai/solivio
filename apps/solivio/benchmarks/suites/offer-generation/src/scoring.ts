@@ -1,6 +1,6 @@
 import type { BenchmarkCase } from "./types";
 
-// Structural subset of GeneratedOffer (apps/solivio/src/server/agents/offerGenerationAgent.ts).
+// Structural subset of GeneratedOffer (the offers service's generateOffer output).
 // Kept structural so this module stays importable without the server-only agent code.
 export type GeneratedOfferLike = {
   items: Array<{ productSku: string; quantity: number }>;

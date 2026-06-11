@@ -11,8 +11,10 @@ reached over HTTP).
   `src/data/migrations`). Cross-module references (customer_id, request_id,
   user_id, product_id) are id-only — display data is fetched through services
   (`customers`, `catalog`, `users`), never SQL joins on foreign tables.
-- **Public API:** `offers` service (`getService("offers")`): getOffer, getDraft,
-  addProduct, updateLineItem, removeLineItem, bulkAddProducts.
+- **Public API:** `offers` service (`getService("offers")`): generateOffer (runs
+  the offer-generation agent, no persistence — also the benchmark entrypoint),
+  getOffer, getDraft, recentOffersForCustomer, addProduct, updateLineItem,
+  removeLineItem, bulkAddProducts.
 - **Agent tools:** `src/ai/tools.ts` contributes the copilot tools to the
   generated registry (consumed by offer-chat's agent via getAgentTools()).
 - **Slots:** the dashboard page hosts `<Slot id="dashboard.cards" />`.

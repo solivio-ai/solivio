@@ -5,6 +5,8 @@ import type {} from "@solivio/module-catalog/services.ts";
 import type {} from "@solivio/module-customers/services.ts";
 import type { Services } from "@solivio/sdk";
 
+import type { GeneratedOffer } from "./ai/agents/offerGenerationAgent.ts";
+import { generateOfferWithAgent } from "./ai/agents/offerGenerationAgent.ts";
 import { getOfferDraft } from "./server/offerDraftStore.ts";
 import type { PastOffer } from "./server/offerHistoryService.ts";
 import { recentOffersForCustomer } from "./server/offerHistoryService.ts";
@@ -47,9 +49,20 @@ export interface BulkAddResult {
  * The offers module's public API: offer reads for cross-module consumers
  * (offer-chat context) and the line-item mutations exposed to agent tools.
  */
+export type { GeneratedOffer } from "./ai/agents/offerGenerationAgent.ts";
 export type { PastOffer, PastOfferLineItem } from "./server/offerHistoryService.ts";
 
 export interface OffersService {
+  /**
+   * Runs the offer-generation agent over a raw customer request and returns
+   * the structured draft (matched items, unmatched fragments, notes) without
+   * persisting anything.
+   */
+  generateOffer(input: {
+    request: string;
+    customerName?: string;
+    customerId?: string | null;
+  }): Promise<GeneratedOffer>;
   /** Recent accepted/imported offers for a customer (order history). */
   recentOffersForCustomer(input: { customerId: string; limit?: number }): Promise<PastOffer[]>;
   getOffer(id: string): Promise<Offer | null>;
@@ -73,6 +86,8 @@ declare module "@solivio/sdk" {
 
 function createOffersService(): OffersService {
   return {
+    generateOffer: ({ request, customerName, customerId }) =>
+      generateOfferWithAgent(request, customerName, customerId),
     getOffer: (id) => getOffer(id),
     recentOffersForCustomer: (input) => recentOffersForCustomer(input),
     getDraft: (offerId) => getOfferDraft(offerId),

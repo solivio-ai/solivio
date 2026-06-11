@@ -80,8 +80,9 @@ yarn benchmark:report --file benchmarks/results/offer-generation/<run>.json
 yarn benchmark:readme                     # refresh "Latest results" above from the latest .json
 ```
 
-Requires `.env.local` with `DATABASE_URL` and `OPENAI_API_KEY` (same as
-`yarn dev`) and the local Postgres container running (`yarn db:up`).
+Requires `DATABASE_URL` and `OPENAI_API_KEY` in `.env.local` or `.env`
+(same layering as `yarn db:migrate`) and the local Postgres container
+running (`yarn db:up`).
 
 For any number you publish or any model comparison, use `--runs 3` or more —
 single runs carry LLM nondeterminism noise.
@@ -89,11 +90,16 @@ single runs carry LLM nondeterminism noise.
 ## How it works
 
 1. Creates a dedicated `solivio_benchmark` database on the same Postgres
-   container (committed Drizzle migrations + pgvector). The dev database is
-   never touched, and benchmark search results never depend on dev data.
-2. Syncs the products table to exactly mirror `cases/catalog.json`
-   (deletes strays, embeds new/changed rows with the production format).
-3. Calls the real `generateOfferWithAgent` — full tool loop and vector
+   container (pgvector + every committed journal: core and each enabled
+   module's migrations) and boots the module runtime — the same services,
+   agent tools and db accessors the app wires in `instrumentation.ts`, minus
+   the job engine. The dev database is never touched, and benchmark search
+   results never depend on dev data.
+2. Syncs the catalog to exactly mirror `cases/catalog.json`: deletes strays,
+   imports new/changed rows through `getService("catalog").importProducts`,
+   so embeddings come from the same code path as production imports.
+3. Calls the real offer-generation agent through the offers service
+   (`getService("offers").generateOffer`) — full tool loop and vector
    search — once per case per run, in parallel.
 4. Scores deterministically and writes a `.json` result (single source of
    truth) to `results/<suite>/`. Markdown is rendered from it on demand via

@@ -50,7 +50,9 @@ async function main() {
     throw new Error(`Unknown suite "${args.suite}". Available: ${Object.keys(SUITES).join(", ")}`);
   }
 
+  // Same env layering as scripts/migrate.mjs: .env.local first, .env fallback.
   config({ path: path.join(appRoot, ".env.local") });
+  config({ path: path.join(appRoot, ".env") });
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not set");
   if (args.model) process.env.OPENAI_MODEL_OFFER_GENERATION = args.model;
@@ -70,7 +72,20 @@ async function main() {
   const setup = await import("./src/setup");
   console.log(`Preparing benchmark database (${new URL(benchmarkUrl).pathname.slice(1)})...`);
   await setup.ensureBenchmarkDatabase(adminUrl, benchmarkUrl);
-  await setup.runMigrations(path.join(appRoot, "drizzle"));
+  // The real migration runner: core journal plus every enabled module's
+  // journal (the products table lives in the catalog module's journal).
+  execSync("node scripts/migrate.mjs", {
+    cwd: appRoot,
+    env: { ...process.env, DATABASE_URL: benchmarkUrl },
+    stdio: "inherit",
+  });
+
+  // Boot the module runtime (services, db, agent tools) exactly like
+  // instrumentation.ts does in the app — minus the pg-boss job engine, which
+  // benchmarks don't need. Must come after the DATABASE_URL rewrite: the
+  // Drizzle client binds to the env var when boot imports it.
+  const { bootModuleRuntime } = await import("../src/server/runtime/boot");
+  bootModuleRuntime();
 
   const suite = await suiteLoader();
   await suite.prepare();
