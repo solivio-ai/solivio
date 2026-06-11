@@ -17,29 +17,21 @@ type CatalogProduct = { sku: string; name: string; description: string };
 export const BENCHMARK_DB_NAME = "solivio_benchmark";
 
 /** Creates the benchmark database and pgvector extension if missing. */
+/** Creates the benchmark database and pgvector extension if missing. */
 export async function ensureBenchmarkDatabase(adminUrl: string, benchmarkUrl: string) {
+  const dbName = new URL(benchmarkUrl).pathname.slice(1);
   const admin = new Client({ connectionString: adminUrl });
   await admin.connect();
   try {
     const exists = await admin.query("SELECT 1 FROM pg_database WHERE datname = $1", [
-      BENCHMARK_DB_NAME,
+      dbName,
     ]);
     if (exists.rowCount === 0) {
-      await admin.query(`CREATE DATABASE ${BENCHMARK_DB_NAME}`);
+      await admin.query(`CREATE DATABASE ${dbName}`);
     }
   } finally {
     await admin.end();
   }
-
-  // The docker init script only installs pgvector in the default database.
-  const bench = new Client({ connectionString: benchmarkUrl });
-  await bench.connect();
-  try {
-    await bench.query("CREATE EXTENSION IF NOT EXISTS vector");
-  } finally {
-    await bench.end();
-  }
-}
 
 export async function runMigrations(migrationsFolder: string) {
   await migrate(db, { migrationsFolder });

@@ -131,5 +131,6 @@ export const mean = (values: number[]): number =>
 export const stddev = (values: number[]): number => {
   if (values.length < 2) return 0;
   const m = mean(values);
-  return Math.sqrt(mean(values.map((v) => (v - m) ** 2)));
+  const sumSq = values.reduce((acc, v) => acc + (v - m) ** 2, 0);
+  return Math.sqrt(sumSq / (values.length - 1));
 };
