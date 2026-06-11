@@ -72,6 +72,9 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
     }
     matchedSkus.add(matchedSku);
     const generatedQuantity = generatedBySku.get(matchedSku)?.quantity ?? null;
+    // Consume the generated item: one offer line can satisfy only one expected
+    // item, even when candidate SKU sets (sku + altSkus) overlap across items.
+    generatedBySku.delete(matchedSku);
     return {
       expectedSku: expected.sku,
       expectedQuantity: expected.quantity,
