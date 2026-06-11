@@ -5,7 +5,7 @@ import { openai } from "@ai-sdk/openai";
 import { embedMany } from "ai";
 import { inArray, notInArray } from "drizzle-orm";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Client } from "pg";
+import { Client, escapeIdentifier } from "pg";
 
 import { db } from "../../src/server/database/db";
 import { products } from "../../src/server/database/schema";
@@ -16,13 +16,16 @@ type CatalogProduct = { sku: string; name: string; description: string };
 
 /** Creates the benchmark database and pgvector extension if missing. */
 export async function ensureBenchmarkDatabase(adminUrl: string, benchmarkUrl: string) {
-  const dbName = new URL(benchmarkUrl).pathname.slice(1);
+  // Decode %xx like the pg connection string parser does, so the name we
+  // create matches the one the benchmark connection will open.
+  const dbName = decodeURIComponent(new URL(benchmarkUrl).pathname.slice(1));
   const admin = new Client({ connectionString: adminUrl });
   await admin.connect();
   try {
     const exists = await admin.query("SELECT 1 FROM pg_database WHERE datname = $1", [dbName]);
     if (exists.rowCount === 0) {
-      await admin.query(`CREATE DATABASE ${dbName}`);
+      // CREATE DATABASE cannot be parameterized — escape the identifier.
+      await admin.query(`CREATE DATABASE ${escapeIdentifier(dbName)}`);
     }
   } finally {
     await admin.end();
