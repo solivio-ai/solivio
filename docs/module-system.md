@@ -91,7 +91,7 @@ Everything else is discovered from the conventional layout. All parts are option
 | `AGENTS.md` | The module's working notes for agents/contributors |
 
 `modules/products-sync/` is the reference example — it exercises every surface: options
-schema, an own prefixed table with a real (non-adoption) migration, a cron-schedulable
+schema, an own prefixed table with its own migration, a cron-schedulable
 job, an event, an admin API route, an admin page with nav entry, ACL permissions, and
 i18n. `modules/customers/` is the simplest full-stack module; `modules/csv-import/` is a
 headless capability-only module (importers, no tables/routes/pages).
@@ -272,14 +272,13 @@ pg-boss against the existing Postgres inside the Next server process; see
 ## 7. Per-module database
 
 Each module with a `src/data/schema.ts` owns its tables and its own migration journal
-(`src/data/migrations/`, applied into its own `drizzle_migrations_<module>` table). New
-tables must be named `<module_id>_*`; a fixed grandfathered list of pre-split tables
-keeps unprefixed names. Cross-module references are **id-only columns without FK
+(`src/data/migrations/`, applied into its own `drizzle_migrations_<module>` table).
+Every table must be named `<module_id>` or `<module_id>_*` (snake_case; hyphens in the
+module id become underscores). Cross-module references are **id-only columns without FK
 constraints** — display data is fetched through batch service lookups, never SQL joins
 on another module's tables. `yarn db:generate <moduleId>` diffs a module's schema
-against its journal using the generated per-module drizzle config. Full model, commands,
-and the adoption/detach recipe for moving tables: `database.md` and
-`adr/0003-per-module-migrations.md`.
+against its journal using the generated per-module drizzle config. Full model and
+commands: `database.md` and `adr/0003-per-module-migrations.md`.
 
 ## 8. The runtime — `@solivio/sdk/runtime`
 

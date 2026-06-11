@@ -5,7 +5,7 @@ import { timestamps } from "@solivio/sdk/db";
 import { halfvec } from "./halfvec.ts";
 
 export const products = pgTable(
-  "products",
+  "catalog_products",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     sku: text("sku").notNull().unique(),
@@ -16,12 +16,12 @@ export const products = pgTable(
     ...timestamps,
   },
   (table) => [
-    index("products_embedding_idx").using("hnsw", table.embedding.op("halfvec_cosine_ops")),
+    index("catalog_products_embedding_idx").using("hnsw", table.embedding.op("halfvec_cosine_ops")),
   ],
 );
 
 export const productPrices = pgTable(
-  "product_prices",
+  "catalog_product_prices",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     productId: uuid("product_id")
@@ -35,7 +35,10 @@ export const productPrices = pgTable(
     ...timestamps,
   },
   (table) => [
-    index("product_prices_product_id_idx").on(table.productId),
-    uniqueIndex("product_prices_product_currency_unique").on(table.productId, table.currency),
+    index("catalog_product_prices_product_id_idx").on(table.productId),
+    uniqueIndex("catalog_product_prices_product_currency_unique").on(
+      table.productId,
+      table.currency,
+    ),
   ],
 );

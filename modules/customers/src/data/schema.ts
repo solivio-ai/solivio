@@ -10,7 +10,7 @@ export const customers = pgTable("customers", {
 });
 
 export const requests = pgTable(
-  "requests",
+  "customers_requests",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     customerId: uuid("customer_id").references(() => customers.id),
@@ -18,5 +18,5 @@ export const requests = pgTable(
     source: text("source").notNull().default("manual"),
     ...timestamps,
   },
-  (table) => [index("requests_customer_id_idx").on(table.customerId)],
+  (table) => [index("customers_requests_customer_id_idx").on(table.customerId)],
 );

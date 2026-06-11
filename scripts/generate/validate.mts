@@ -5,23 +5,6 @@ import type { SolivioConfig } from "@solivio/sdk/config";
 
 import type { ModuleModel } from "./discover.mts";
 
-/** Tables that predate the module split and keep their unprefixed names. */
-const GRANDFATHERED_TABLES = new Set([
-  "products",
-  "product_prices",
-  "customers",
-  "requests",
-  "offers",
-  "offer_items",
-  "offer_revisions",
-  "offer_chat_threads",
-  "offer_chat_messages",
-  "users",
-  "sessions",
-  "accounts",
-  "verifications",
-]);
-
 const snake = (id: string): string => id.replaceAll("-", "_");
 
 /** Strip (group) segments so route collisions compare final URL paths. */
@@ -133,18 +116,16 @@ export function validate(
     }
   }
 
-  // Table ownership: new tables must be prefixed with the module id
+  // Table ownership: module tables must be prefixed with the module id
   for (const module of modules) {
     if (!module.has.schema) continue;
     const schemaSource = fs.readFileSync(path.join(module.dir, "src/data/schema.ts"), "utf8");
     for (const match of schemaSource.matchAll(/pgTable\(\s*["'`]([^"'`]+)["'`]/g)) {
       const table = match[1];
       const prefix = snake(module.id);
-      if (table === prefix || table.startsWith(`${prefix}_`) || GRANDFATHERED_TABLES.has(table)) {
-        continue;
-      }
+      if (table === prefix || table.startsWith(`${prefix}_`)) continue;
       errors.push(
-        `Module "${module.id}" defines table "${table}" — new tables must be named "${prefix}_*"`,
+        `Module "${module.id}" defines table "${table}" — module tables must be named "${prefix}" or "${prefix}_*"`,
       );
     }
   }
@@ -206,6 +187,38 @@ export function validate(
         }
       }
     }
+  }
+
+  // Job names and subscriber ids must be module-prefixed and unique — each
+  // maps to a pg-boss queue, so a collision silently shares a queue across
+  // modules.
+  const queueOwners = new Map<string, string>();
+  for (const module of modules) {
+    const checkDefinition = (file: string, field: "name" | "id", kind: string): void => {
+      const source = fs.readFileSync(path.join(module.dir, "src", file), "utf8");
+      const literal = source.match(new RegExp(`\\b${field}:\\s*["']([^"']+)["']`));
+      if (!literal) {
+        errors.push(
+          `${kind} "${module.id}/${file}" has no literal ${field} — every file in that directory ` +
+            `is registered, and must define ${field}: "${module.id}.…"`,
+        );
+        return;
+      }
+      const value = literal[1];
+      if (!value.startsWith(`${module.id}.`)) {
+        errors.push(
+          `${kind} ${field} "${value}" in module "${module.id}" must start with "${module.id}."`,
+        );
+      }
+      const key = `${kind}:${value}`;
+      const owner = queueOwners.get(key);
+      if (owner) {
+        errors.push(`${kind} ${field} collision: "${value}" (modules "${owner}", "${module.id}")`);
+      }
+      queueOwners.set(key, module.id);
+    };
+    for (const file of module.jobFiles) checkDefinition(file, "name", "Job");
+    for (const file of module.subscriberFiles) checkDefinition(file, "id", "Subscriber");
   }
 
   // Permissions must be module-prefixed

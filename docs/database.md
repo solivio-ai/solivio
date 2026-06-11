@@ -2,7 +2,7 @@
 
 Status: implemented — per-owner Drizzle journals (see `adr/0003-per-module-migrations.md`)
 Audience: contributors, operators
-Last updated: 2026-06-10
+Last updated: 2026-06-11
 
 PostgreSQL (with pgvector) is the system of record. Schema is defined with Drizzle ORM
 and changed only through committed migrations. Since the module split, **each schema
@@ -14,6 +14,9 @@ owner has its own journal**. The entity-relationship model lives in `erd.md`.
 | --- | --- | --- | --- |
 | core | `apps/solivio/src/server/database/schema.ts` (auth: `users`, `sessions`, `accounts`, `verifications`) | `apps/solivio/drizzle/` | `__drizzle_migrations` (drizzle default) |
 | each module | `modules/<id>/src/data/schema.ts` | `modules/<id>/src/data/migrations/` | `drizzle_migrations_<module_id>` |
+
+Every journal starts from a single fresh `0000_init` baseline: the core journal creates
+only the auth tables, and each module's journal creates that module's own tables.
 
 The migration runner (`apps/solivio/scripts/migrate.mjs`, invoked by `yarn db:migrate`
 and by the production container at startup) applies the core journal first, then every
@@ -27,17 +30,16 @@ studio config spanning all schemas.
 
 ## Rules
 
-- **New module tables must be `<module_id>_`-prefixed** (snake_case, e.g.
-  `products_sync_runs`). The generator fails otherwise. A frozen, grandfathered list of
-  pre-split tables keeps unprefixed names: `products`, `product_prices`, `customers`,
-  `requests`, `offers`, `offer_items`, `offer_revisions`, `offer_chat_threads`,
-  `offer_chat_messages`, plus the core auth tables.
+- **Every module table must be named `<module_id>` or `<module_id>_*`** (snake_case;
+  hyphens in the module id become underscores — e.g. `customers`, `catalog_products`,
+  `products_sync_runs`). The generator fails otherwise; there are no exceptions. The
+  core auth tables (`users`, `sessions`, `accounts`, `verifications`) are core-owned,
+  not module tables.
 - **Cross-module references are id-only.** A module never declares an FK constraint
-  onto another owner's table and never SQL-joins it — the boundary-crossing FK
-  constraints were dropped in the detach migrations. Store the id column (optionally
+  onto another owner's table and never SQL-joins it. Store the id column (optionally
   indexed), and resolve display data through batch service lookups
   (`getService("customers").findByIds(...)`, the host `users` service, …).
-  Intra-module FKs (e.g. `offer_items → offers`) are fine and kept.
+  Intra-module FKs (e.g. `offers_items → offers`) are fine and kept.
 - No module imports another owner's schema objects; each module's tables are private to
   it, reachable from outside only through its service.
 
@@ -53,7 +55,7 @@ yarn db:studio                # Drizzle Studio over core + all module schemas
 
 `yarn db:generate <moduleId>` requires the generated per-module config — run
 `yarn generate` first if the module was just enabled. Extra drizzle-kit args pass
-through (e.g. `yarn db:generate offers --custom --name adopt`).
+through (e.g. `yarn db:generate offers --custom --name backfill`).
 
 The standard change flow:
 
@@ -61,35 +63,6 @@ The standard change flow:
 2. `yarn db:generate [moduleId]` and **review the generated SQL**.
 3. `yarn db:migrate` locally; `yarn db:check` to confirm no drift.
 4. Commit the schema change together with the journal files.
-
-## Moving an existing table into a module — detach + adopt
-
-Used when a table that already exists on deployed databases changes owner (this is how
-the pre-split tables moved into modules; see `apps/solivio/drizzle/0002–0004` and each
-module's `0000_adopt_grandfathered_tables.sql`):
-
-1. **Detach (old owner).** Remove the table from the old owner's schema file and write
-   a custom migration in the old owner's journal that drops only the **cross-module FK
-   constraints** touching it (cross-owner references become id-only) — the table itself
-   is **not dropped**. Regenerating the old owner's journal then "forgets" the table in
-   its snapshot.
-2. **Adopt (new owner).** Define the table in the module's `data/schema.ts` and write
-   an **idempotent** adoption migration as the module journal's first entry:
-   `CREATE TABLE IF NOT EXISTS ...`, `CREATE INDEX IF NOT EXISTS ...`, constraint adds
-   wrapped in `DO $$ ... EXCEPTION WHEN duplicate_object THEN null END $$`. On deployed
-   databases (where the baseline already created the table) every statement is a no-op;
-   on fresh databases it builds the table from scratch.
-3. Verify: `yarn db:check` (journals match schemas) and the continuity check below.
-
-## Continuity verification
-
-`scripts/db/verify-continuity.mjs` (run in CI after `yarn setup`) guarantees deployed
-databases migrate cleanly onto the split journals: it creates a scratch database,
-applies **only the frozen pre-split baseline** of the core journal (simulating the
-deployed demo database), then runs the real runner (core + module journals) on top and
-asserts it converges — tables present, cross-module FK constraints gone. The baseline
-cutoff (`BASELINE_MAX_IDX`) is frozen forever; entries at or below it must never be
-edited.
 
 ## Local image and operations
 

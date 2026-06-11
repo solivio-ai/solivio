@@ -47,7 +47,7 @@ export const offers = pgTable(
 );
 
 export const offerItems = pgTable(
-  "offer_items",
+  "offers_items",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     offerId: uuid("offer_id")
@@ -79,11 +79,11 @@ export const offerItems = pgTable(
     position: integer("position").notNull().default(0),
     ...timestamps,
   },
-  (table) => [index("offer_items_offer_id_idx").on(table.offerId)],
+  (table) => [index("offers_items_offer_id_idx").on(table.offerId)],
 );
 
 export const offerRevisions = pgTable(
-  "offer_revisions",
+  "offers_revisions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     offerId: uuid("offer_id")
@@ -95,7 +95,7 @@ export const offerRevisions = pgTable(
     ...timestamps,
   },
   (table) => [
-    index("offer_revisions_offer_id_idx").on(table.offerId),
-    uniqueIndex("offer_revisions_offer_revision_unique").on(table.offerId, table.revisionNumber),
+    index("offers_revisions_offer_id_idx").on(table.offerId),
+    uniqueIndex("offers_revisions_offer_revision_unique").on(table.offerId, table.revisionNumber),
   ],
 );

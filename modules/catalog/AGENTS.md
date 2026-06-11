@@ -2,7 +2,7 @@
 
 Owns the product catalog: products and their prices.
 
-- **Tables (owned):** `products`, `product_prices` — defined in `src/data/schema.ts` (with the `halfvec` pgvector helper in `src/data/halfvec.ts`). No other module may import them; cross-module references are id-only (e.g. `offer_items.product_id` has no FK).
+- **Tables (owned):** `catalog_products`, `catalog_product_prices` — defined in `src/data/schema.ts` (with the `halfvec` pgvector helper in `src/data/halfvec.ts`). No other module may import them; cross-module references are id-only (e.g. `offers_items.product_id` has no FK).
 - **Public API:** the `catalog` service in `src/services.ts` (`getService("catalog")`): `searchByPrompt`, `searchBatch`, `lookupBySkus`, `importProducts`, `getProductsByIds`, `getActivePricesForProducts`. Everything else in `src/server/` is module-private.
 - **HTTP routes:** `POST /api/products/search`, `POST /api/products/text-search`, `POST /api/products/import` (admin). Contracts in `src/contracts/`.
 - **Pages:** `/admin/products/upload` (admin-gated structurally).

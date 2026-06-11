@@ -1,11 +1,11 @@
 {
-  "id": "e2f872b9-3eb0-4ab8-a608-34e2b587e091",
+  "id": "76867f69-f823-4f17-a416-05e592f2fa8c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.offer_items": {
-      "name": "offer_items",
+    "public.offers_items": {
+      "name": "offers_items",
       "schema": "",
       "columns": {
         "id": {
@@ -131,8 +131,8 @@
         }
       },
       "indexes": {
-        "offer_items_offer_id_idx": {
-          "name": "offer_items_offer_id_idx",
+        "offers_items_offer_id_idx": {
+          "name": "offers_items_offer_id_idx",
           "columns": [
             {
               "expression": "offer_id",
@@ -148,9 +148,9 @@
         }
       },
       "foreignKeys": {
-        "offer_items_offer_id_offers_id_fk": {
-          "name": "offer_items_offer_id_offers_id_fk",
-          "tableFrom": "offer_items",
+        "offers_items_offer_id_offers_id_fk": {
+          "name": "offers_items_offer_id_offers_id_fk",
+          "tableFrom": "offers_items",
           "tableTo": "offers",
           "columnsFrom": ["offer_id"],
           "columnsTo": ["id"],
@@ -164,8 +164,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.offer_revisions": {
-      "name": "offer_revisions",
+    "public.offers_revisions": {
+      "name": "offers_revisions",
       "schema": "",
       "columns": {
         "id": {
@@ -215,8 +215,8 @@
         }
       },
       "indexes": {
-        "offer_revisions_offer_id_idx": {
-          "name": "offer_revisions_offer_id_idx",
+        "offers_revisions_offer_id_idx": {
+          "name": "offers_revisions_offer_id_idx",
           "columns": [
             {
               "expression": "offer_id",
@@ -230,8 +230,8 @@
           "method": "btree",
           "with": {}
         },
-        "offer_revisions_offer_revision_unique": {
-          "name": "offer_revisions_offer_revision_unique",
+        "offers_revisions_offer_revision_unique": {
+          "name": "offers_revisions_offer_revision_unique",
           "columns": [
             {
               "expression": "offer_id",
@@ -253,9 +253,9 @@
         }
       },
       "foreignKeys": {
-        "offer_revisions_offer_id_offers_id_fk": {
-          "name": "offer_revisions_offer_id_offers_id_fk",
-          "tableFrom": "offer_revisions",
+        "offers_revisions_offer_id_offers_id_fk": {
+          "name": "offers_revisions_offer_id_offers_id_fk",
+          "tableFrom": "offers_revisions",
           "tableTo": "offers",
           "columnsFrom": ["offer_id"],
           "columnsTo": ["id"],

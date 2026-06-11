@@ -2,7 +2,7 @@
 
 Owns customers and customer requests (intake records).
 
-- **Tables (owned):** `customers`, `requests` — defined in `src/data/schema.ts`. No other module may import them; cross-module references are id-only.
+- **Tables (owned):** `customers`, `customers_requests` — defined in `src/data/schema.ts`. No other module may import them; cross-module references are id-only.
 - **Public API:** the `customers` service in `src/services.ts` (`getService("customers")`): `findById`, `upsertByName`, `resolveCustomer`, `searchCustomers`, `createRequest`, `findRequestById`. Everything else in `src/server/` is module-private.
 - **HTTP routes:** `GET/POST /api/customers`, `POST /api/customers/import` (admin). Contracts in `src/contracts/`.
 - **Pages:** `/admin/customers/upload` (admin-gated structurally).

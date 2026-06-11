@@ -30,7 +30,7 @@ The sections below are the quick reference. They summarize the boundaries; the d
 - Never import another module at runtime — cross-module calls go through `getService()` and typed events only. The one sanctioned exception is a **type-only** import of a dependency module's `services.ts` (erased at runtime) to pull its `Services` augmentation into the typecheck.
 - Never make a module import app internals (`@/...`, `@solivio/app`) — modules depend only on `@solivio/sdk` and the shared packages.
 - Never SQL-join another module's tables. Cross-module references are id-only columns (no FK constraints); fetch display data through batch service lookups (`findByIds`-style).
-- Never name a new module table without the `<module_id>_` prefix (snake_case); only the grandfathered pre-split tables keep unprefixed names (see `docs/database.md`).
+- Never name a module table anything other than `<module_id>` or `<module_id>_*` (snake_case, hyphens in the module id become underscores; see `docs/database.md`).
 - Never run module code at import time that touches the runtime (`getDb()`, `getService()`, `getAi()`, …) — instantiate agents and resolve services lazily inside handlers/factories; the runtime boots in `instrumentation.ts` after modules are imported.
 - Never import the Drizzle client (`apps/solivio/src/server/database/db.ts`) outside `apps/solivio/src/server/` or `apps/solivio/src/app/api/`; module code uses `getDb()`/`db` from `@solivio/sdk/runtime` with its own `data/schema.ts` tables.
 - Never write custom CSS classes or add rules to `globals.css` beyond the allowed blocks, and never hard-code theme colors — use the theme tokens.
@@ -64,7 +64,7 @@ Before research or coding, match the task to a row and read the linked guide. A 
 | What the public SDK/module contract surface is — what is stable and what modules may import | `docs/contracts.md` |
 | AI agents — which module owns which agent, agent tools, per-role models | `docs/agents.md` |
 | Overall architecture, layering, and module boundaries | `docs/architecture.md` |
-| Database schema, per-owner migration journals, table adoption, or the entity-relationship model | `docs/database.md` + `docs/erd.md` |
+| Database schema, per-owner migration journals, or the entity-relationship model | `docs/database.md` + `docs/erd.md` |
 | HTTP API routes and their conventions | `docs/api.md` |
 | Operator overlays — running custom modules without forking (`yarn overlay`) | `docs/codegen.md` → Config resolution + public guide `apps/docs/.../guides/extending.md` |
 | Building/publishing images, deployment | `docs/publishing.md` + this file → **Build** / **Deploy** |
@@ -107,7 +107,7 @@ Use `yarn check` as the single repository quality gate. It includes the module b
 
 Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes. Run `yarn db:check` after schema work.
 
-Playwright e2e tests use the normal local app path: `yarn setup` prepares Postgres, module wiring, and migrations, and `yarn e2e` runs against `http://localhost:3000` while starting `yarn dev` if needed. Do not add separate e2e setup scripts. CI (`.github/workflows/quality.yml`) runs `yarn generate`, `yarn check`, `yarn typecheck`, `yarn db:check`, prepares `.env.local`, runs `yarn setup`, verifies migration continuity (`scripts/db/verify-continuity.mjs`), and then runs `yarn e2e`.
+Playwright e2e tests use the normal local app path: `yarn setup` prepares Postgres, module wiring, and migrations, and `yarn e2e` runs against `http://localhost:3000` while starting `yarn dev` if needed. Do not add separate e2e setup scripts. CI (`.github/workflows/quality.yml`) runs `yarn generate`, `yarn check`, `yarn typecheck`, `yarn db:check`, prepares `.env.local`, runs `yarn setup`, and then runs `yarn e2e`.
 
 ## Build
 
@@ -193,9 +193,7 @@ Schema changes:
 3. Review the generated SQL in the owning journal.
 4. Run `yarn db:migrate` locally and `yarn db:check` to confirm no drift.
 
-Moving an existing table into a module uses the **detach + adopt** recipe (a core detach migration drops cross-module FKs and forgets the table; an idempotent module adoption migration claims it) — see `docs/database.md`. CI's continuity check (`scripts/db/verify-continuity.mjs`) guarantees already-deployed databases migrate cleanly onto the split journals.
-
-New module tables must be named `<module_id>_*` (snake_case); cross-module references are id-only columns without FK constraints.
+Module tables must be named `<module_id>` or `<module_id>_*` (snake_case); cross-module references are id-only columns without FK constraints.
 
 ## UI
 

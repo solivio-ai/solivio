@@ -63,10 +63,8 @@ Generation fails (and `--check` reports) on:
 - page/API-route collisions between modules, or between a module and a handwritten app
   route (route groups are stripped before comparing URLs);
 - an API route file exporting no HTTP method;
-- a module table not named `<module_id>_*` (snake_case) and not in the grandfathered
-  list (`validate.mts` holds the frozen set: `products`, `product_prices`, `customers`,
-  `requests`, `offers`, `offer_items`, `offer_revisions`, `offer_chat_threads`,
-  `offer_chat_messages`, `users`, `sessions`, `accounts`, `verifications`);
+- a module table not named `<module_id>` or `<module_id>_*` (snake_case; hyphens in
+  the module id become underscores);
 - a permission in `acl.ts` not prefixed `<moduleId>.`;
 - a `slots` binding referencing a disabled/unknown module.
 

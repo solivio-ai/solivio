@@ -5,8 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781096716135,
-      "tag": "0000_create_products_sync_runs",
+      "when": 1781167574922,
+      "tag": "0000_init",
       "breakpoints": true
     }
   ]

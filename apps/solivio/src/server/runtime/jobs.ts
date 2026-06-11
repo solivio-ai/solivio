@@ -32,6 +32,10 @@ export async function startJobEngine(): Promise<SolivioRuntime["enqueue"]> {
 
   for (const job of jobs) {
     await boss.createQueue(job.name).catch(() => {});
+    // Dev hot reload re-runs instrumentation against the cached boss instance;
+    // drop the previous worker so each queue has exactly one, with the
+    // freshest handler.
+    await boss.offWork(job.name).catch(() => {});
     await boss.work(job.name, { batchSize: 1 }, async ([item]) => {
       logger.info("job started", { job: job.name, id: item.id });
       await job.handler(item.data);
@@ -49,6 +53,7 @@ export async function startJobEngine(): Promise<SolivioRuntime["enqueue"]> {
     if (!subscriber.persistent) continue;
     const queue = `subscriber:${subscriber.id}`;
     await boss.createQueue(queue).catch(() => {});
+    await boss.offWork(queue).catch(() => {});
     await boss.work(queue, { batchSize: 1 }, async ([item]) => {
       await subscriber.handler(item.data);
     });

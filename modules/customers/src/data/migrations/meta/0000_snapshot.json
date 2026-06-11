@@ -1,5 +1,5 @@
 {
-  "id": "96ebbb0a-5500-419b-a6f3-abd064ca54be",
+  "id": "5e3fe122-218a-449e-b7af-642f70b8720c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -51,8 +51,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.requests": {
-      "name": "requests",
+    "public.customers_requests": {
+      "name": "customers_requests",
       "schema": "",
       "columns": {
         "id": {
@@ -97,8 +97,8 @@
         }
       },
       "indexes": {
-        "requests_customer_id_idx": {
-          "name": "requests_customer_id_idx",
+        "customers_requests_customer_id_idx": {
+          "name": "customers_requests_customer_id_idx",
           "columns": [
             {
               "expression": "customer_id",
@@ -114,9 +114,9 @@
         }
       },
       "foreignKeys": {
-        "requests_customer_id_customers_id_fk": {
-          "name": "requests_customer_id_customers_id_fk",
-          "tableFrom": "requests",
+        "customers_requests_customer_id_customers_id_fk": {
+          "name": "customers_requests_customer_id_customers_id_fk",
+          "tableFrom": "customers_requests",
           "tableTo": "customers",
           "columnsFrom": ["customer_id"],
           "columnsTo": ["id"],

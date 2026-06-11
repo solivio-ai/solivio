@@ -9,8 +9,8 @@ import { fileURLToPath } from "node:url";
  * Without a module id, diffs the CORE schema against the core journal
  * (apps/solivio/drizzle). With a module id, diffs that module's schema
  * against its own journal (modules/<id>/src/data/migrations) using the
- * generated per-module config. Extra args (e.g. `--custom --name adopt`)
- * pass through to drizzle-kit.
+ * generated per-module config. Extra args (e.g. `--name init`) pass
+ * through to drizzle-kit.
  */
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "../..");

@@ -7,7 +7,7 @@ and ALL offer-facing UI (dashboard "/", /offers, /offers/new, /offers/[offerId],
 the review screen; the chat DOMAIN lives in the offer-chat module and is
 reached over HTTP).
 
-- **Tables (owned):** `offers`, `offer_items`, `offer_revisions` (own journal in
+- **Tables (owned):** `offers`, `offers_items`, `offers_revisions` (own journal in
   `src/data/migrations`). Cross-module references (customer_id, request_id,
   user_id, product_id) are id-only — display data is fetched through services
   (`customers`, `catalog`, `users`), never SQL joins on foreign tables.

@@ -59,11 +59,6 @@ jobs:
       - name: Start database and apply migrations
         run: yarn setup
 
-      - name: Verify migration continuity
-        run: node scripts/db/verify-continuity.mjs
-        env:
-          DATABASE_URL: postgresql://solivio:solivio@localhost:5432/solivio
-
       - name: Run end-to-end tests
         run: yarn e2e
 

@@ -82,7 +82,16 @@ if (fs.existsSync(modulesDir)) {
 
     for (const filePath of walk(path.join(moduleDir, "src"))) {
       for (const specifier of importsOf(filePath)) {
-        if (specifier.startsWith(".") || specifier.startsWith("node:")) continue;
+        if (specifier.startsWith(".")) {
+          // Relative imports must stay inside the module — `../../apps/...`
+          // would silently bypass the package-name rules below.
+          const resolved = path.resolve(path.dirname(filePath), specifier);
+          if (!resolved.startsWith(moduleDir + path.sep)) {
+            errors.push(`${rel(filePath)}: relative import escapes the module ("${specifier}")`);
+          }
+          continue;
+        }
+        if (specifier.startsWith("node:")) continue;
         if (specifier.startsWith("@solivio/module-")) {
           errors.push(
             `${rel(filePath)}: imports another module ("${specifier}") — use getService()/events instead`,

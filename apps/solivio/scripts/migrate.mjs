@@ -7,9 +7,7 @@ import pg from "pg";
 
 /**
  * Applies all migration journals in order:
- *   1. the frozen core journal (./drizzle, default __drizzle_migrations table —
- *      identical behavior to the pre-split runner, so deployed databases and
- *      fresh checkouts converge on the same history), then
+ *   1. the core journal (./drizzle, default __drizzle_migrations table), then
  *   2. each enabled module's journal (from the generated manifest), each with
  *      its own drizzle_migrations_<module> table.
  *

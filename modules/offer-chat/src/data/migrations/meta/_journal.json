@@ -5,8 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781095170687,
-      "tag": "0000_adopt_grandfathered_tables",
+      "when": 1781167573881,
+      "tag": "0000_init",
       "breakpoints": true
     }
   ]

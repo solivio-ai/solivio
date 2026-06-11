@@ -160,9 +160,17 @@ export async function emitEvent<E extends EventName>(name: E, payload: Events[E]
   const rt = runtime();
   for (const subscriber of rt.subscribers) {
     if (subscriber.event !== name) continue;
-    if (subscriber.persistent && rt.enqueue) {
-      await rt.enqueue(`subscriber:${subscriber.id}`, payload);
-      continue;
+    if (subscriber.persistent) {
+      if (rt.enqueue) {
+        await rt.enqueue(`subscriber:${subscriber.id}`, payload);
+        continue;
+      }
+      // Queue not wired yet (event emitted during boot, before the jobs
+      // engine started) — fall back to inline so the event is not lost, but
+      // say so: the subscriber loses retry/persistence semantics this once.
+      rt.logger("events").warn(
+        `Persistent subscriber "${subscriber.id}" ran inline for "${String(name)}" — job queue not wired yet`,
+      );
     }
     try {
       await subscriber.handler(payload);

@@ -109,7 +109,7 @@ The target model is unchanged: modules register typed validation rules (`PriceRu
 
 ## 9. Data ownership
 
-Each module owns its tables and its migration journal; the core owns the auth tables and its own journal. New module tables are `<module_id>_`-prefixed (a frozen grandfathered list of pre-split tables keeps unprefixed names). Cross-module references are id-only — the FK constraints between module boundaries were explicitly dropped (`adr/0003`). PostgreSQL (with pgvector) is the system of record. Details: `database.md`.
+Each module owns its tables and its migration journal; the core owns the auth tables and its own journal. Every module table is named `<module_id>` or `<module_id>_*` (snake_case; no exceptions). Cross-module references are id-only — no FK constraints cross module boundaries (`adr/0003`). PostgreSQL (with pgvector) is the system of record. Details: `database.md`.
 
 ## 10. AI safety
 

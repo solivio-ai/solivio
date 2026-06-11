@@ -1,8 +1,4 @@
--- Adopts the pre-existing `offers`, `offer_items`, and `offer_revisions`
--- tables into this module's journal. Everything is guarded to be a no-op on
--- databases where the core baseline already created them; on fresh databases
--- where the baseline ever stops creating them, this builds them from scratch.
-CREATE TABLE IF NOT EXISTS "offer_items" (
+CREATE TABLE "offers_items" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"offer_id" uuid NOT NULL,
 	"product_id" uuid,
@@ -23,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "offer_items" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "offer_revisions" (
+CREATE TABLE "offers_revisions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"offer_id" uuid NOT NULL,
 	"revision_number" integer NOT NULL,
@@ -33,7 +29,7 @@ CREATE TABLE IF NOT EXISTS "offer_revisions" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "offers" (
+CREATE TABLE "offers" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"customer_id" uuid,
 	"request_id" uuid,
@@ -51,19 +47,11 @@ CREATE TABLE IF NOT EXISTS "offers" (
 	CONSTRAINT "offers_discount_amount_nonneg" CHECK ("offers"."discount_amount" >= 0)
 );
 --> statement-breakpoint
-DO $$ BEGIN
-	ALTER TABLE "offer_items" ADD CONSTRAINT "offer_items_offer_id_offers_id_fk" FOREIGN KEY ("offer_id") REFERENCES "public"."offers"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
-	WHEN duplicate_object THEN null;
-END $$;--> statement-breakpoint
-DO $$ BEGIN
-	ALTER TABLE "offer_revisions" ADD CONSTRAINT "offer_revisions_offer_id_offers_id_fk" FOREIGN KEY ("offer_id") REFERENCES "public"."offers"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
-	WHEN duplicate_object THEN null;
-END $$;--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "offer_items_offer_id_idx" ON "offer_items" USING btree ("offer_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "offer_revisions_offer_id_idx" ON "offer_revisions" USING btree ("offer_id");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "offer_revisions_offer_revision_unique" ON "offer_revisions" USING btree ("offer_id","revision_number");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "offers_customer_id_idx" ON "offers" USING btree ("customer_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "offers_request_id_idx" ON "offers" USING btree ("request_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "offers_status_idx" ON "offers" USING btree ("status");
+ALTER TABLE "offers_items" ADD CONSTRAINT "offers_items_offer_id_offers_id_fk" FOREIGN KEY ("offer_id") REFERENCES "public"."offers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "offers_revisions" ADD CONSTRAINT "offers_revisions_offer_id_offers_id_fk" FOREIGN KEY ("offer_id") REFERENCES "public"."offers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "offers_items_offer_id_idx" ON "offers_items" USING btree ("offer_id");--> statement-breakpoint
+CREATE INDEX "offers_revisions_offer_id_idx" ON "offers_revisions" USING btree ("offer_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "offers_revisions_offer_revision_unique" ON "offers_revisions" USING btree ("offer_id","revision_number");--> statement-breakpoint
+CREATE INDEX "offers_customer_id_idx" ON "offers" USING btree ("customer_id");--> statement-breakpoint
+CREATE INDEX "offers_request_id_idx" ON "offers" USING btree ("request_id");--> statement-breakpoint
+CREATE INDEX "offers_status_idx" ON "offers" USING btree ("status");

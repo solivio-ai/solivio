@@ -1,11 +1,11 @@
 {
-  "id": "d4d0fe0a-ab0c-48c1-9a41-8c65cf8f891e",
+  "id": "bcd0e479-bf2f-46a6-a272-4c03cf96c110",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.product_prices": {
-      "name": "product_prices",
+    "public.catalog_product_prices": {
+      "name": "catalog_product_prices",
       "schema": "",
       "columns": {
         "id": {
@@ -69,8 +69,8 @@
         }
       },
       "indexes": {
-        "product_prices_product_id_idx": {
-          "name": "product_prices_product_id_idx",
+        "catalog_product_prices_product_id_idx": {
+          "name": "catalog_product_prices_product_id_idx",
           "columns": [
             {
               "expression": "product_id",
@@ -84,8 +84,8 @@
           "method": "btree",
           "with": {}
         },
-        "product_prices_product_currency_unique": {
-          "name": "product_prices_product_currency_unique",
+        "catalog_product_prices_product_currency_unique": {
+          "name": "catalog_product_prices_product_currency_unique",
           "columns": [
             {
               "expression": "product_id",
@@ -107,10 +107,10 @@
         }
       },
       "foreignKeys": {
-        "product_prices_product_id_products_id_fk": {
-          "name": "product_prices_product_id_products_id_fk",
-          "tableFrom": "product_prices",
-          "tableTo": "products",
+        "catalog_product_prices_product_id_catalog_products_id_fk": {
+          "name": "catalog_product_prices_product_id_catalog_products_id_fk",
+          "tableFrom": "catalog_product_prices",
+          "tableTo": "catalog_products",
           "columnsFrom": ["product_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -123,8 +123,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.products": {
-      "name": "products",
+    "public.catalog_products": {
+      "name": "catalog_products",
       "schema": "",
       "columns": {
         "id": {
@@ -182,8 +182,8 @@
         }
       },
       "indexes": {
-        "products_embedding_idx": {
-          "name": "products_embedding_idx",
+        "catalog_products_embedding_idx": {
+          "name": "catalog_products_embedding_idx",
           "columns": [
             {
               "expression": "embedding",
@@ -202,8 +202,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "products_sku_unique": {
-          "name": "products_sku_unique",
+        "catalog_products_sku_unique": {
+          "name": "catalog_products_sku_unique",
           "nullsNotDistinct": false,
           "columns": ["sku"]
         }
