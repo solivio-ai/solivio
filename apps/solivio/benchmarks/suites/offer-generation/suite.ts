@@ -40,14 +40,18 @@ export function loadCases(filters: {
   caseIds: Set<string> | null;
   difficulties: Set<string> | null;
 }): BenchmarkCase[] {
-  return readdirSync(casesDir)
-    .filter((f) => f.endsWith(".json") && f !== "catalog.json")
-    // readdir order is filesystem-dependent; the fingerprint hashes the loaded
-    // array, so a stable order is required for cross-machine comparability.
-    .sort()
-    .map((f) => benchmarkCaseSchema.parse(JSON.parse(readFileSync(path.join(casesDir, f), "utf8"))))
-    .filter((c) => !filters.caseIds || filters.caseIds.has(c.id))
-    .filter((c) => !filters.difficulties || filters.difficulties.has(c.difficulty));
+  return (
+    readdirSync(casesDir)
+      .filter((f) => f.endsWith(".json") && f !== "catalog.json")
+      // readdir order is filesystem-dependent; the fingerprint hashes the loaded
+      // array, so a stable order is required for cross-machine comparability.
+      .sort()
+      .map((f) =>
+        benchmarkCaseSchema.parse(JSON.parse(readFileSync(path.join(casesDir, f), "utf8"))),
+      )
+      .filter((c) => !filters.caseIds || filters.caseIds.has(c.id))
+      .filter((c) => !filters.difficulties || filters.difficulties.has(c.difficulty))
+  );
 }
 
 /** Scores are only comparable between runs with the same fingerprint. */
