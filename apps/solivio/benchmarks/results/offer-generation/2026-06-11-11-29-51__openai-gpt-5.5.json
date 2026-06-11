@@ -1,0 +1,2306 @@
+{
+  "meta": {
+    "timestamp": "2026-06-11T11:29:51.160Z",
+    "model": "openai/gpt-5.5",
+    "embeddingModel": "text-embedding-3-large",
+    "runsPerCase": 1,
+    "gitCommit": "f21f09d",
+    "caseSetHash": "d5b0c5b49792"
+  },
+  "aggregate": {
+    "meanScore": 0.8148148148148149,
+    "stddevAcrossCases": 0.32736425054932755,
+    "tiers": {
+      "basic": {
+        "mean": 1,
+        "caseCount": 2
+      },
+      "realistic": {
+        "mean": 1,
+        "caseCount": 2
+      },
+      "hard": {
+        "mean": 0.9074074074074074,
+        "caseCount": 6
+      },
+      "expert": {
+        "mean": 0.16666666666666669,
+        "caseCount": 2
+      }
+    },
+    "cases": [
+      {
+        "id": "01-simple-explicit",
+        "difficulty": "basic",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "02-sku-mix",
+        "difficulty": "basic",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "03-inflected-synonyms",
+        "difficulty": "realistic",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "04-repeat-order-history",
+        "difficulty": "expert",
+        "mean": 0.33333333333333337,
+        "stddev": 0
+      },
+      {
+        "id": "05-sections-merge",
+        "difficulty": "realistic",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "06-messy-site-email",
+        "difficulty": "hard",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "07-variant-minefield",
+        "difficulty": "hard",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "08-unit-conversion",
+        "difficulty": "hard",
+        "mean": 0.5,
+        "stddev": 0
+      },
+      {
+        "id": "09-implied-specs",
+        "difficulty": "hard",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "10-customer-standard",
+        "difficulty": "expert",
+        "mean": 0,
+        "stddev": 0
+      },
+      {
+        "id": "11-bulk-rfq",
+        "difficulty": "hard",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "12-prose-amendments",
+        "difficulty": "hard",
+        "mean": 0.9444444444444444,
+        "stddev": 0
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "01-simple-explicit",
+      "title": "Simple explicit list with quantities",
+      "caseFile": "../../suites/offer-generation/cases/01-simple-explicit.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "LED-PAN-6060-40-4K",
+              "expectedQuantity": 12,
+              "matchedSku": "LED-PAN-6060-40-4K",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 8,
+              "matchedSku": "WYL-B16-1P",
+              "generatedQuantity": 8,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X15",
+              "expectedQuantity": 2,
+              "matchedSku": "KAB-YDYP-3X15",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "PSZ-80-PT",
+              "expectedQuantity": 50,
+              "matchedSku": "PSZ-80-PT",
+              "generatedQuantity": 50,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TAS-IZO-19-BK",
+              "expectedQuantity": 10,
+              "matchedSku": "TAS-IZO-19-BK",
+              "generatedQuantity": 10,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 16075,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "b9e88f6a-2a2b-4fea-9bba-9bdfce10f2b0",
+                "productName": "Panel LED 60x60 40W 4000K",
+                "productSku": "LED-PAN-6060-40-4K",
+                "requestItem": "panel LED 60x60 40W 4000K – 12 szt",
+                "quantity": 12,
+                "rationale": "Zgodność kategorii i parametrów: panel LED 60x60 cm, moc 40W, barwa 4000K.",
+                "matchSource": "semantic",
+                "matchScore": 0.7806
+              },
+              {
+                "productId": "2c254854-7087-4fd2-b6d8-e13a65d40e9c",
+                "productName": "Wyłącznik nadprądowy B16 1P",
+                "productSku": "WYL-B16-1P",
+                "requestItem": "wyłącznik nadprądowy B16 jednobiegunowy – 8 szt",
+                "quantity": 8,
+                "rationale": "Ten sam typ aparatu: wyłącznik nadprądowy, charakterystyka B, 16A, 1-biegunowy.",
+                "matchSource": "semantic",
+                "matchScore": 0.7493
+              },
+              {
+                "productId": "74be9674-6457-4615-b59e-654da3ef57e1",
+                "productName": "Przewód YDYp 3x1,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X15",
+                "requestItem": "przewód YDYp 3x1,5 – 2 krążki",
+                "quantity": 2,
+                "rationale": "Zgodny typ i specyfikacja przewodu: YDYp płaski 3x1,5 mm², produkt w krążku 100 m.",
+                "matchSource": "semantic",
+                "matchScore": 0.7361
+              },
+              {
+                "productId": "084e0939-3e2b-44fb-9699-bcc77e8e51b3",
+                "productName": "Puszka podtynkowa fi80 z pokrywą",
+                "productSku": "PSZ-80-PT",
+                "requestItem": "puszka podtynkowa fi80 z pokrywą – 50 szt",
+                "quantity": 50,
+                "rationale": "Dokładna zgodność typu, średnicy fi80 i wykonania z pokrywą.",
+                "matchSource": "semantic",
+                "matchScore": 0.7148
+              },
+              {
+                "productId": "a688ef16-c3fe-4de4-ae9b-05f6ce971913",
+                "productName": "Taśma izolacyjna PVC 19mm czarna",
+                "productSku": "TAS-IZO-19-BK",
+                "requestItem": "taśma izolacyjna czarna – 10 szt",
+                "quantity": 10,
+                "rationale": "Zgodny produkt: taśma elektroizolacyjna PVC w kolorze czarnym.",
+                "matchSource": "semantic",
+                "matchScore": 0.6635
+              }
+            ],
+            "unmatched": [],
+            "notes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "02-sku-mix",
+      "title": "SKU codes mixed with natural-language descriptions",
+      "caseFile": "../../suites/offer-generation/cases/02-sku-mix.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "ZL-221-415",
+              "expectedQuantity": 2,
+              "matchedSku": "ZL-221-415",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZ-12-NT",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZ-12-NT",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "CZJ-RUCH-360",
+              "expectedQuantity": 4,
+              "matchedSku": "CZJ-RUCH-360",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "MIER-MULTI-CY",
+              "expectedQuantity": 1,
+              "matchedSku": "MIER-MULTI-CY",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "OPK-KAB-200-BK",
+              "expectedQuantity": 5,
+              "matchedSku": "OPK-KAB-200-BK",
+              "generatedQuantity": 5,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 15732,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "b136600a-f6bd-48e1-b1fb-957d5876c29d",
+                "productName": "Szybkozłączka instalacyjna 5-przewodowa 4mm²",
+                "productSku": "ZL-221-415",
+                "requestItem": "2x ZL-221-415",
+                "quantity": 2,
+                "rationale": "Dopasowanie po identycznym SKU; produkt odpowiada kodowi ZL-221-415.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "36ade868-7078-463c-974d-25e96085c29b",
+                "productName": "Rozdzielnica natynkowa 12 modułów IP40",
+                "productSku": "ROZ-12-NT",
+                "requestItem": "1x ROZ-12-NT",
+                "quantity": 1,
+                "rationale": "Dopasowanie po identycznym SKU; produkt odpowiada kodowi ROZ-12-NT.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "48280012-92cd-49b0-8f5b-f84a9e324317",
+                "productName": "Czujnik ruchu 360° sufitowy",
+                "productSku": "CZJ-RUCH-360",
+                "requestItem": "czujnik ruchu sufitowy 360 stopni 4 sztuki",
+                "quantity": 4,
+                "rationale": "Ten sam typ produktu: sufitowy czujnik ruchu PIR z kątem detekcji 360 stopni, zgodny z opisem zamówienia.",
+                "matchSource": "semantic",
+                "matchScore": 0.7374
+              },
+              {
+                "productId": "82234a72-a787-43a3-ab33-bff2bc92e448",
+                "productName": "Multimetr cyfrowy",
+                "productSku": "MIER-MULTI-CY",
+                "requestItem": "jeden multimetr cyfrowy",
+                "quantity": 1,
+                "rationale": "Zgodność kategorii i nazwy: multimetr cyfrowy / miernik uniwersalny cyfrowy.",
+                "matchSource": "semantic",
+                "matchScore": 0.6764
+              },
+              {
+                "productId": "87338564-9bf0-4ff0-8133-9b9430020401",
+                "productName": "Opaski kablowe 200mm czarne 100szt",
+                "productSku": "OPK-KAB-200-BK",
+                "requestItem": "opaski kablowe 200mm 5 opakowań",
+                "quantity": 5,
+                "rationale": "Ten sam typ produktu i wymiar: opaski kablowe/zaciskowe 200 mm, opakowanie 100 sztuk.",
+                "matchSource": "semantic",
+                "matchScore": 0.6642
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Przy opaskach kablowych klient nie podał koloru; wybrano najwyżej oceniony wariant 200 mm: czarne opaski 100 szt."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "03-inflected-synonyms",
+      "title": "Inflected Polish, synonyms, and one item missing from catalog",
+      "caseFile": "../../suites/offer-generation/cases/03-inflected-synonyms.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": 1,
+          "verdicts": [
+            {
+              "expectedSku": "CZJ-ZAL-01",
+              "expectedQuantity": 6,
+              "matchedSku": "CZJ-ZAL-01",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LAT-CZO-350",
+              "expectedQuantity": 4,
+              "matchedSku": "LAT-CZO-500",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-SCH-BI",
+              "expectedQuantity": 10,
+              "matchedSku": "LACZ-SCH-BI",
+              "generatedQuantity": 10,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 20044,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "712dd691-83aa-46d6-8008-98e9b1713b9a",
+                "productName": "Czujnik zalania",
+                "productSku": "CZJ-ZAL-01",
+                "requestItem": "6 detektorów wycieku wody do kotłowni",
+                "quantity": 6,
+                "rationale": "Dopasowanie pojęciowe: opis produktu wskazuje detektor wycieku wody przeznaczony m.in. do kotłowni, więc zgadza się typ produktu i zastosowanie.",
+                "matchSource": "semantic",
+                "matchScore": 0.6784
+              },
+              {
+                "productId": "d93276ab-2b3f-4edb-9bc1-961e10365c5e",
+                "productName": "Latarka czołowa LED 500lm",
+                "productSku": "LAT-CZO-500",
+                "requestItem": "4 latarek czołowych dla ekipy",
+                "quantity": 4,
+                "rationale": "Zgodny typ produktu: latarka czołowa/czołówka warsztatowa; klient nie podał dodatkowych parametrów, więc wybrano najlepiej pasujący wariant czołowy.",
+                "matchSource": "semantic",
+                "matchScore": 0.6205
+              },
+              {
+                "productId": "79605046-342c-4602-b33b-067962f2e0cc",
+                "productName": "Łącznik schodowy biały podtynkowy",
+                "productSku": "LACZ-SCH-BI",
+                "requestItem": "10 łączników schodowych białych",
+                "quantity": 10,
+                "rationale": "Zgodny typ i specyfikacja: łącznik schodowy w kolorze białym, do sterowania oświetleniem z dwóch miejsc.",
+                "matchSource": "semantic",
+                "matchScore": 0.6938
+              }
+            ],
+            "unmatched": [
+              "3 szpule kabla koncentrycznego RG6"
+            ],
+            "notes": [
+              "Dla kabla koncentrycznego RG6 brak wiarygodnego dopasowania wśród wyników — zwrócone kandydaty to głównie kable sieciowe kat.6/6a lub inne przewody, nie kabel koncentryczny RG6."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "04-repeat-order-history",
+      "title": "Repeat order referencing customer history",
+      "caseFile": "../../suites/offer-generation/cases/04-repeat-order-history.json",
+      "runs": [
+        {
+          "score": 0.33333333333333337,
+          "itemF1": 0.33333333333333337,
+          "itemRecall": 0.2,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 10,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "RCD-25-30-2P",
+              "expectedQuantity": 2,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "ROZ-24-PT",
+              "expectedQuantity": 1,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 4,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "ZL-221-413",
+              "expectedQuantity": 20,
+              "matchedSku": "ZL-221-613",
+              "generatedQuantity": 20,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 17582,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "e1a11922-8ce8-4994-ab34-1b5858427a76",
+                "productName": "Szybkozłączka instalacyjna 3-przewodowa 6mm²",
+                "productSku": "ZL-221-613",
+                "requestItem": "20 szybkozłączek 3-przewodowych",
+                "quantity": 20,
+                "rationale": "Dopasowanie kategorii i kluczowej specyfikacji: szybkozłączka instalacyjna 3-przewodowa. Opis potwierdza złączkę typu WAGO 221 z dźwigniami dla 3 przewodów.",
+                "matchSource": "semantic",
+                "matchScore": 0.6488
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Klient prosi o powtórkę ostatniego zamówienia, ale brak dostępu do historii zamówień w tej rozmowie — należy zweryfikować ostatnie zamówienie klienta Instal-Bud Sp. z o.o. w systemie.",
+              "W zapytaniu nie podano przekroju szybkozłączki; wybrano najlepszy kandydat 3-przewodowy z katalogu."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "05-sections-merge",
+      "title": "Quantities spread across sections requiring merge",
+      "caseFile": "../../suites/offer-generation/cases/05-sections-merge.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "GNI-PT-1-BI",
+              "expectedQuantity": 35,
+              "matchedSku": "GNI-PT-1-BI",
+              "generatedQuantity": 35,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-1-BI",
+              "expectedQuantity": 18,
+              "matchedSku": "LACZ-1-BI",
+              "generatedQuantity": 18,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 3,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 3,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-E27-10-4K",
+              "expectedQuantity": 30,
+              "matchedSku": "LED-E27-10-3K",
+              "generatedQuantity": 30,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 24096,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "d115b49a-9905-49fa-8219-679389cda2ba",
+                "productName": "Gniazdo podtynkowe pojedyncze z uziemieniem białe",
+                "productSku": "GNI-PT-1-BI",
+                "requestItem": "gniazdo podtynkowe pojedyncze z uziemieniem x20 + gniazdo podtynkowe pojedyncze z uziemieniem x15",
+                "quantity": 35,
+                "rationale": "Zgodny typ produktu: gniazdo podtynkowe pojedyncze 2P+Z z uziemieniem. Zsumowano dwie pozycje z parteru i piętra.",
+                "matchSource": "semantic",
+                "matchScore": 0.6883
+              },
+              {
+                "productId": "c107db1b-f93c-4c25-abdd-695c5ae6e284",
+                "productName": "Łącznik jednobiegunowy biały podtynkowy",
+                "productSku": "LACZ-1-BI",
+                "requestItem": "łącznik jednobiegunowy biały x10 + łącznik jednobiegunowy biały x8",
+                "quantity": 18,
+                "rationale": "Dokładnie pasuje typ łącznika jednobiegunowego oraz kolor biały; produkt podtynkowy. Zsumowano dwie pozycje z parteru i piętra.",
+                "matchSource": "semantic",
+                "matchScore": 0.6644
+              },
+              {
+                "productId": "16c94117-ca77-4ca9-ab5c-6ddc549e4780",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "przewód YDYp 3x2,5 – 1 krążek + przewód YDYp 3x2,5 – 2 krążki",
+                "quantity": 3,
+                "rationale": "Zgodny przewód płaski YDYp o przekroju 3x2,5 mm², sprzedawany w krążkach 100 m. Zsumowano krążki z parteru i piętra.",
+                "matchSource": "semantic",
+                "matchScore": 0.7346
+              },
+              {
+                "productId": "2e7365bd-29ca-4eb3-a3b3-5ba3a19eea24",
+                "productName": "Żarówka LED E27 10W 3000K",
+                "productSku": "LED-E27-10-3K",
+                "requestItem": "żarówki LED E27 10W – 30 szt.",
+                "quantity": 30,
+                "rationale": "Zgodny typ, trzonek E27 oraz moc 10W; temperatura barwowa nie była wskazana w zapytaniu.",
+                "matchSource": "semantic",
+                "matchScore": 0.7121
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Dla gniazd klient nie podał koloru; wybrano wariant biały jako najbliższy typowo stosowany komplet z białymi łącznikami.",
+              "Dla żarówek LED klient nie podał temperatury barwowej; wybrano wariant 3000K spośród dostępnych produktów E27 10W."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "06-messy-site-email",
+      "title": "Long messy site email: slang, typos, abbreviations, scattered merge",
+      "caseFile": "../../suites/offer-generation/cases/06-messy-site-email.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 12,
+              "matchedSku": "WYL-B16-1P",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-63-30-4P",
+              "expectedQuantity": 2,
+              "matchedSku": "RCD-63-30-4P",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZ-36-PT",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZ-36-PT",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-LGY-16-YG",
+              "expectedQuantity": 1,
+              "matchedSku": "KAB-LGY-16-YG",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 4,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X15",
+              "expectedQuantity": 2,
+              "matchedSku": "KAB-YDYP-3X15",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-PT-2-BI",
+              "expectedQuantity": 40,
+              "matchedSku": "GNI-PT-2-BI",
+              "generatedQuantity": 40,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-SW-BI",
+              "expectedQuantity": 15,
+              "matchedSku": "LACZ-SW-BI",
+              "generatedQuantity": 15,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RAM-2-BI",
+              "expectedQuantity": 25,
+              "matchedSku": "RAM-2-BI",
+              "generatedQuantity": 25,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-HERM-IP44-BI",
+              "expectedQuantity": 8,
+              "matchedSku": "GNI-HERM-IP44-BI",
+              "generatedQuantity": 8,
+              "credit": 1
+            },
+            {
+              "expectedSku": "OPK-KAB-200-BK",
+              "expectedQuantity": 12,
+              "matchedSku": "OPK-KAB-200-BK",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LIS-ZAC-12-4",
+              "expectedQuantity": 5,
+              "matchedSku": "LIS-ZAC-12-4",
+              "generatedQuantity": 5,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TAS-IZO-19-BU",
+              "expectedQuantity": 5,
+              "matchedSku": "TAS-IZO-19-BU",
+              "generatedQuantity": 5,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TAS-IZO-19-BK",
+              "expectedQuantity": 5,
+              "matchedSku": "TAS-IZO-19-BK",
+              "generatedQuantity": 5,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LAT-CZO-500",
+              "expectedQuantity": 1,
+              "matchedSku": "LAT-CZO-500",
+              "generatedQuantity": 1,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 68735,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "2c254854-7087-4fd2-b6d8-e13a65d40e9c",
+                "productName": "Wyłącznik nadprądowy B16 1P",
+                "productSku": "WYL-B16-1P",
+                "requestItem": "wyłaczniki nadpradowe B16 jednofazowe potrzebuję 12szt",
+                "quantity": 12,
+                "rationale": "Produkt to wyłącznik nadprądowy o charakterystyce B, prądzie 16A i wykonaniu 1-biegunowym, czyli zgodny z żądanym B16 jednofazowym.",
+                "matchSource": "semantic",
+                "matchScore": 0.7274
+              },
+              {
+                "productId": "fdd4060e-7abb-4a71-a4d8-f4ba8b4fc788",
+                "productName": "Wyłącznik różnicowoprądowy 63A 30mA 4P",
+                "productSku": "RCD-63-30-4P",
+                "requestItem": "różnicówka 63A/30mA czterobiegunowa x2",
+                "quantity": 2,
+                "rationale": "Dokładnie ten sam typ zabezpieczenia: wyłącznik różnicowoprądowy 63A, 30mA, 4-biegunowy.",
+                "matchSource": "semantic",
+                "matchScore": 0.7979
+              },
+              {
+                "productId": "038b8762-6a40-4d9f-bbff-c8b9f92c6f13",
+                "productName": "Rozdzielnica podtynkowa 36 modułów IP40",
+                "productSku": "ROZ-36-PT",
+                "requestItem": "Rozdzielnica p/t 36 modułów jedna sztuka",
+                "quantity": 1,
+                "rationale": "Zgodna rozdzielnica podtynkowa, 36 modułów, z wyposażeniem do montażu instalacyjnego.",
+                "matchSource": "semantic",
+                "matchScore": 0.74
+              },
+              {
+                "productId": "f0b99c61-0d67-4b54-aef5-9695cfe93272",
+                "productName": "Przewód LgY 16mm² żółto-zielony 100m",
+                "productSku": "KAB-LGY-16-YG",
+                "requestItem": "LgY 16 żółto-zielony jedna szpula",
+                "quantity": 1,
+                "rationale": "Zgodny przewód LgY 16 mm² w kolorze żółto-zielonym; opis potwierdza szpulę 100 m.",
+                "matchSource": "semantic",
+                "matchScore": 0.7891
+              },
+              {
+                "productId": "16c94117-ca77-4ca9-ab5c-6ddc549e4780",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "YDYp 3x2,5 cztery krążki",
+                "quantity": 4,
+                "rationale": "Wybrano wariant płaski YDYp 3x2,5 mm² w krążkach 100 m, zgodny z żądanym przewodem na obwody gniazdowe.",
+                "matchSource": "semantic",
+                "matchScore": 0.7346
+              },
+              {
+                "productId": "74be9674-6457-4615-b59e-654da3ef57e1",
+                "productName": "Przewód YDYp 3x1,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X15",
+                "requestItem": "YDYp 3x1,5 dwa krążki",
+                "quantity": 2,
+                "rationale": "Wybrano wariant płaski YDYp 3x1,5 mm² w krążkach 100 m, zgodny z żądanym przewodem na oświetlenie.",
+                "matchSource": "semantic",
+                "matchScore": 0.7317
+              },
+              {
+                "productId": "25aba4a4-ffb3-40f1-8619-644ea6b03634",
+                "productName": "Gniazdo podtynkowe podwójne z uziemieniem białe",
+                "productSku": "GNI-PT-2-BI",
+                "requestItem": "gniazda p/t podwójne 40szt",
+                "quantity": 40,
+                "rationale": "Zgodne gniazdo podtynkowe podwójne w kolorze białym; kolor przyjęty zgodnie z dopiskiem klienta „wszystko w bieli”.",
+                "matchSource": "semantic",
+                "matchScore": 0.7068
+              },
+              {
+                "productId": "8afdcc16-899a-42a5-b1bf-a4f20df7869c",
+                "productName": "Łącznik świecznikowy biały podtynkowy",
+                "productSku": "LACZ-SW-BI",
+                "requestItem": "łączniki świecznikowe 15 szt",
+                "quantity": 15,
+                "rationale": "Produkt jest łącznikiem świecznikowym podtynkowym, białym, do dwóch obwodów oświetlenia; kolor zgodny z „wszystko w bieli”.",
+                "matchSource": "semantic",
+                "matchScore": 0.6936
+              },
+              {
+                "productId": "164b331c-592c-4975-9011-2a5f5a79d9a7",
+                "productName": "Ramka 2-krotna biała",
+                "productSku": "RAM-2-BI",
+                "requestItem": "ramki podwójne 25szt",
+                "quantity": 25,
+                "rationale": "Ramka 2-krotna odpowiada ramce podwójnej; wybrano kolor biały zgodnie z dopiskiem „wszystko w bieli”.",
+                "matchSource": "semantic",
+                "matchScore": 0.6216
+              },
+              {
+                "productId": "5e9d6ab7-ad7a-470a-b0a5-9153baca3213",
+                "productName": "Gniazdo natynkowe hermetyczne IP44 z klapką białe",
+                "productSku": "GNI-HERM-IP44-BI",
+                "requestItem": "gniazda hermetyczne IP44 białe 8 sztuk",
+                "quantity": 8,
+                "rationale": "Zgodne gniazdo hermetyczne/bryzgoszczelne IP44 w kolorze białym, przeznaczone do pomieszczeń wilgotnych.",
+                "matchSource": "semantic",
+                "matchScore": 0.7469
+              },
+              {
+                "productId": "87338564-9bf0-4ff0-8133-9b9430020401",
+                "productName": "Opaski kablowe 200mm czarne 100szt",
+                "productSku": "OPK-KAB-200-BK",
+                "requestItem": "trytytki 200mm czarne 10 opakowań + 2 opakowania trytytek 200 czarnych dodatkowo",
+                "quantity": 12,
+                "rationale": "Produkt to opaski zaciskowe/trytytki 200 mm w kolorze czarnym, opakowanie 100 sztuk. Zsumowano dwa wystąpienia tego samego produktu: 10 opakowań + 2 opakowania.",
+                "matchSource": "semantic",
+                "matchScore": 0.7128
+              },
+              {
+                "productId": "63f43bb4-15ba-4abb-8ea1-de234490b4b5",
+                "productName": "Listwa zaciskowa 12-torowa 4mm²",
+                "productSku": "LIS-ZAC-12-4",
+                "requestItem": "kostki 12-torowe 4mm 5szt",
+                "quantity": 5,
+                "rationale": "Opis potwierdza kostkę elektryczną/listwę zaciskową 12-torową o przekroju do 4 mm².",
+                "matchSource": "semantic",
+                "matchScore": 0.6851
+              },
+              {
+                "productId": "42232335-bfcc-4f3b-93a5-35a6a5dc6ab8",
+                "productName": "Taśma izolacyjna PVC 19mm niebieska",
+                "productSku": "TAS-IZO-19-BU",
+                "requestItem": "taśma izolacyjna niebieska i czarna po 5 szt kazdej",
+                "quantity": 5,
+                "rationale": "Wybrano niebieską taśmę izolacyjną PVC; ilość 5 sztuk wynika z zapisu „po 5 szt każdej”.",
+                "matchSource": "semantic",
+                "matchScore": 0.6559
+              },
+              {
+                "productId": "a688ef16-c3fe-4de4-ae9b-05f6ce971913",
+                "productName": "Taśma izolacyjna PVC 19mm czarna",
+                "productSku": "TAS-IZO-19-BK",
+                "requestItem": "taśma izolacyjna niebieska i czarna po 5 szt kazdej",
+                "quantity": 5,
+                "rationale": "Wybrano czarną taśmę izolacyjną PVC; ilość 5 sztuk wynika z zapisu „po 5 szt każdej”.",
+                "matchSource": "semantic",
+                "matchScore": 0.6634
+              },
+              {
+                "productId": "d93276ab-2b3f-4edb-9bc1-961e10365c5e",
+                "productName": "Latarka czołowa LED 500lm",
+                "productSku": "LAT-CZO-500",
+                "requestItem": "czołówka dla Pawła, najmocniejsza jaką macie",
+                "quantity": 1,
+                "rationale": "Produkt jest latarką czołową; wybrano wariant 500 lm jako mocniejszy z dostępnych kandydatów czołówek.",
+                "matchSource": "semantic",
+                "matchScore": 0.5035
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Dla osprzętu podtynkowego zastosowano kolor biały zgodnie z grupowym dopiskiem klienta „wszystko w bieli”.",
+              "Trytytki 200 mm czarne zostały połączone w jedną pozycję: 10 opakowań z drobnicy oraz 2 dodatkowe opakowania."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "07-variant-minefield",
+      "title": "Near-variant disambiguation in dense product families",
+      "caseFile": "../../suites/offer-generation/cases/07-variant-minefield.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "WYL-B10-1P",
+              "expectedQuantity": 6,
+              "matchedSku": "WYL-B10-1P",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 6,
+              "matchedSku": "WYL-B16-1P",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-B16-3P",
+              "expectedQuantity": 1,
+              "matchedSku": "WYL-B16-3P",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-40-30-4P",
+              "expectedQuantity": 1,
+              "matchedSku": "RCD-40-30-4P",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCBO-B16-30",
+              "expectedQuantity": 1,
+              "matchedSku": "RCBO-B16-30",
+              "generatedQuantity": 1,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 22766,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "4db1cd5e-f538-41f6-b905-faa49868e0b4",
+                "productName": "Wyłącznik nadprądowy B10 1P",
+                "productSku": "WYL-B10-1P",
+                "requestItem": "na obwody oświetleniowe wyłączniki B10 jednofazowe 6 szt",
+                "quantity": 6,
+                "rationale": "Zgodność typu produktu: wyłącznik nadprądowy o charakterystyce B, prąd 10A; jednofazowy odpowiada wykonaniu 1P.",
+                "matchSource": "semantic",
+                "matchScore": 0.7417
+              },
+              {
+                "productId": "2c254854-7087-4fd2-b6d8-e13a65d40e9c",
+                "productName": "Wyłącznik nadprądowy B16 1P",
+                "productSku": "WYL-B16-1P",
+                "requestItem": "na obwody gniazdowe B16 jednofazowe 6 szt",
+                "quantity": 6,
+                "rationale": "Zgodność typu produktu i parametrów: wyłącznik nadprądowy B16, 1-biegunowy jako odpowiednik jednofazowego.",
+                "matchSource": "semantic",
+                "matchScore": 0.7354
+              },
+              {
+                "productId": "59ca0f08-3ec8-4258-bdce-fe117d34b290",
+                "productName": "Wyłącznik nadprądowy B16 3P",
+                "productSku": "WYL-B16-3P",
+                "requestItem": "do płyty indukcyjnej jeden trójfazowy B16",
+                "quantity": 1,
+                "rationale": "Zgodność typu i parametrów: wyłącznik nadprądowy B16 w wykonaniu 3P, odpowiadający trójfazowemu zabezpieczeniu płyty indukcyjnej.",
+                "matchSource": "semantic",
+                "matchScore": 0.7554
+              },
+              {
+                "productId": "b88d267f-ce4d-42ad-8f5c-70a55f0374a8",
+                "productName": "Wyłącznik różnicowoprądowy 40A 30mA 4P",
+                "productSku": "RCD-40-30-4P",
+                "requestItem": "wyłącznik różnicowoprądowy 40A 30mA czterobiegunowy",
+                "quantity": 1,
+                "rationale": "Dokładna zgodność kategorii i parametrów: RCD 40A, prąd różnicowy 30mA, wykonanie czterobiegunowe 4P.",
+                "matchSource": "semantic",
+                "matchScore": 0.7808
+              },
+              {
+                "productId": "07ce5ff5-2401-4215-bc0d-1ce6f045931d",
+                "productName": "Wyłącznik różnicowo-nadprądowy B16 30mA 1P+N",
+                "productSku": "RCBO-B16-30",
+                "requestItem": "różnicówka z członem nadprądowym B16 do obwodu pralki",
+                "quantity": 1,
+                "rationale": "Zgodność funkcji i parametrów: wyłącznik różnicowo-nadprądowy RCBO z członem nadprądowym B16 oraz zabezpieczeniem różnicowym 30mA.",
+                "matchSource": "semantic",
+                "matchScore": 0.7906
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Przyjęto, że „jednofazowe” odpowiada wykonaniu 1P, a „trójfazowy” wykonaniu 3P."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "08-unit-conversion",
+      "title": "Quantities in meters vs catalog packaging units",
+      "caseFile": "../../suites/offer-generation/cases/08-unit-conversion.json",
+      "runs": [
+        {
+          "score": 0.5,
+          "itemF1": 0.5,
+          "itemRecall": 0.5,
+          "itemPrecision": 0.5,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 3,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 250,
+              "credit": 0.5
+            },
+            {
+              "expectedSku": "KAB-LGY-16-YG",
+              "expectedQuantity": 3,
+              "matchedSku": "KAB-LGY-16-YG",
+              "generatedQuantity": 300,
+              "credit": 0.5
+            },
+            {
+              "expectedSku": "PESZ-18-25M",
+              "expectedQuantity": 2,
+              "matchedSku": "PESZ-18-25M",
+              "generatedQuantity": 50,
+              "credit": 0.5
+            },
+            {
+              "expectedSku": "KOR-40-40",
+              "expectedQuantity": 5,
+              "matchedSku": "KOR-40-40",
+              "generatedQuantity": 10,
+              "credit": 0.5
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 16891,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "16c94117-ca77-4ca9-ab5c-6ddc549e4780",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "przewód YDYp 3x2,5 – 250 metrów",
+                "quantity": 250,
+                "rationale": "Zgodny typ przewodu: YDYp płaski, przekrój 3x2,5 mm²; opis potwierdza przewód instalacyjny PVC 450/750V.",
+                "matchSource": "semantic",
+                "matchScore": 0.7347
+              },
+              {
+                "productId": "f0b99c61-0d67-4b54-aef5-9695cfe93272",
+                "productName": "Przewód LgY 16mm² żółto-zielony 100m",
+                "productSku": "KAB-LGY-16-YG",
+                "requestItem": "LgY 16mm² żółto-zielony – 300 metrów",
+                "quantity": 300,
+                "rationale": "Zgodny typ przewodu LgY, przekrój 16 mm² oraz kolor żółto-zielony; opis potwierdza linkę jednożyłową giętką w izolacji PVC.",
+                "matchSource": "semantic",
+                "matchScore": 0.7955
+              },
+              {
+                "productId": "fadfc6fe-0a16-4c26-b3d8-13ae8f6d8b96",
+                "productName": "Peszel karbowany fi18 25m",
+                "productSku": "PESZ-18-25M",
+                "requestItem": "peszel fi18 – 50 metrów",
+                "quantity": 50,
+                "rationale": "Zgodna rura karbowana typu peszel o średnicy fi18 / 18 mm; opis potwierdza zastosowanie do prowadzenia przewodów.",
+                "matchSource": "semantic",
+                "matchScore": 0.6352
+              },
+              {
+                "productId": "c4b18964-adc2-4b0a-bbf8-f7f19af11b8e",
+                "productName": "Korytko kablowe 40x40 z pokrywą 2m",
+                "productSku": "KOR-40-40",
+                "requestItem": "korytko kablowe 40x40 – 10 metrów bieżących",
+                "quantity": 10,
+                "rationale": "Zgodne korytko/kanał kablowy PVC o wymiarze 40x40 mm; opis potwierdza wersję z pokrywą do prowadzenia przewodów.",
+                "matchSource": "semantic",
+                "matchScore": 0.7298
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Ilości w pozycjach odpowiadają metrom zamówionym przez klienta; produkty katalogowe są opisane w odcinkach/krążkach: YDYp i LgY po 100 m, peszel po 25 m, korytko po 2 m."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "09-implied-specs",
+      "title": "Specs implied by installation location, not stated",
+      "caseFile": "../../suites/offer-generation/cases/09-implied-specs.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "GNI-HERM-IP44-BI",
+              "expectedQuantity": 4,
+              "matchedSku": "GNI-HERM-IP44-SR",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-HERM-120-36",
+              "expectedQuantity": 2,
+              "matchedSku": "LED-HERM-120-36",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "CZJ-RUCH-120-IP44",
+              "expectedQuantity": 1,
+              "matchedSku": "CZJ-RUCH-180-IP44",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-PT-1-BI",
+              "expectedQuantity": 10,
+              "matchedSku": "GNI-PT-1-BI",
+              "generatedQuantity": 10,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 24712,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "250bb0c5-e4e1-48e6-a9b6-cc13752fefea",
+                "productName": "Gniazdo natynkowe hermetyczne IP44 z klapką srebrne",
+                "productSku": "GNI-HERM-IP44-SR",
+                "requestItem": "do łazienki gniazda pojedyncze 4 szt (musi wytrzymać wilgoć)",
+                "quantity": 4,
+                "rationale": "Pasuje jako pojedyncze gniazdo bryzgoszczelne IP44 z klapką, przeznaczone do pomieszczeń wilgotnych. Klient nie wskazał koloru ani typu montażu.",
+                "matchSource": "semantic",
+                "matchScore": 0.5977
+              },
+              {
+                "productId": "54022959-b78f-4807-8486-3a51450b328e",
+                "productName": "Oprawa hermetyczna LED 120cm 36W IP65",
+                "productSku": "LED-HERM-120-36",
+                "requestItem": "do garażu oprawa świetlówkowa LED 120cm 2 szt",
+                "quantity": 2,
+                "rationale": "Ten sam typ produktu: liniowa oprawa LED 120 cm; opis wskazuje zastosowanie m.in. do garaży oraz montaż natynkowy.",
+                "matchSource": "semantic",
+                "matchScore": 0.639
+              },
+              {
+                "productId": "4f4f9543-1d84-417c-95d1-71de41e4a89a",
+                "productName": "Czujnik ruchu 180° ścienny IP44",
+                "productSku": "CZJ-RUCH-180-IP44",
+                "requestItem": "nad wejście od zewnątrz czujnik ruchu na ścianę",
+                "quantity": 1,
+                "rationale": "Czujnik ruchu PIR montowany na ścianie, z IP44 odpowiednim do zastosowania przy wejściu na zewnątrz.",
+                "matchSource": "semantic",
+                "matchScore": 0.652
+              },
+              {
+                "productId": "d115b49a-9905-49fa-8219-679389cda2ba",
+                "productName": "Gniazdo podtynkowe pojedyncze z uziemieniem białe",
+                "productSku": "GNI-PT-1-BI",
+                "requestItem": "zwykłe gniazda podtynkowe pojedyncze białe do salonu 10 szt",
+                "quantity": 10,
+                "rationale": "Dokładnie odpowiada opisowi: gniazdo podtynkowe, pojedyncze, białe, z uziemieniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.6856
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Dla gniazd do łazienki dobrano wariant hermetyczny IP44; kolor i montaż warto potwierdzić z klientem, bo request nie precyzuje tych cech."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "10-customer-standard",
+      "title": "Order in the customer's house standard (context not in the request)",
+      "caseFile": "../../suites/offer-generation/cases/10-customer-standard.json",
+      "runs": [
+        {
+          "score": 0,
+          "itemF1": 0,
+          "itemRecall": 0,
+          "itemPrecision": 0,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "GNI-PT-2-SR",
+              "expectedQuantity": 12,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "LACZ-SCH-SR",
+              "expectedQuantity": 6,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            },
+            {
+              "expectedSku": "RAM-1-SR",
+              "expectedQuantity": 18,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            }
+          ],
+          "extraSkus": [
+            "GNI-PT-2-CZ",
+            "LACZ-SCH-CZ",
+            "RAM-1-CZ"
+          ],
+          "missedUnmatched": [],
+          "durationMs": 29557,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "a6ce4e25-b6b6-4628-b0f6-fc6b564d7a5b",
+                "productName": "Gniazdo podtynkowe podwójne z uziemieniem czarne",
+                "productSku": "GNI-PT-2-CZ",
+                "requestItem": "na 3 pokoje hotelowe ... na każdy pokój 4 gniazda podwójne",
+                "quantity": 12,
+                "rationale": "Dopasowanie kategorii: gniazdo podtynkowe podwójne 2x(2P+Z), zgodne z prośbą o gniazda podwójne. Ilość przeliczona: 3 pokoje × 4 szt. = 12 szt.",
+                "matchSource": "semantic",
+                "matchScore": 0.6568
+              },
+              {
+                "productId": "b849a006-85fc-4ef3-b167-071391ed14b1",
+                "productName": "Łącznik schodowy czarny podtynkowy",
+                "productSku": "LACZ-SCH-CZ",
+                "requestItem": "na 3 pokoje hotelowe ... na każdy pokój ... 2 łączniki schodowe",
+                "quantity": 6,
+                "rationale": "Dopasowanie typu produktu: łącznik schodowy podtynkowy do sterowania oświetleniem z dwóch miejsc. Wybrano wariant czarny dla spójności z pozostałym osprzętem. Ilość przeliczona: 3 pokoje × 2 szt. = 6 szt.",
+                "matchSource": "semantic",
+                "matchScore": 0.642
+              },
+              {
+                "productId": "0140c795-369d-4beb-9208-eb5db18c7736",
+                "productName": "Ramka 1-krotna czarna",
+                "productSku": "RAM-1-CZ",
+                "requestItem": "plus ramki pojedyncze do wszystkiego",
+                "quantity": 18,
+                "rationale": "Dopasowanie kategorii: ramka instalacyjna 1-krotna do osprzętu podtynkowego, zgodna z prośbą o ramki pojedyncze. Ilość przeliczona do wszystkiego: 3 pokoje × (4 gniazda + 2 łączniki) = 18 szt.",
+                "matchSource": "semantic",
+                "matchScore": 0.5681
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Klient wskazał „w naszym standardzie”, ale w zapytaniu nie podano koloru/serii. Przyjęto spójny wariant czarny na podstawie dostępnych dopasowań; warto potwierdzić standard kolorystyczny Hotelu Magnolia.",
+              "Wybrane gniazda i łączniki w opisie katalogowym mają ramkę w komplecie, a klient dodatkowo prosi o ramki pojedyncze do wszystkiego — może to oznaczać potencjalne zdublowanie ramek do potwierdzenia."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "11-bulk-rfq",
+      "title": "Bulk RFQ: 51 description-only positions across all families",
+      "caseFile": "../../suites/offer-generation/cases/11-bulk-rfq.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": 1,
+          "verdicts": [
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 24,
+              "matchedSku": "WYL-B16-1P",
+              "generatedQuantity": 24,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-B10-1P",
+              "expectedQuantity": 12,
+              "matchedSku": "WYL-B10-1P",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-C20-1P",
+              "expectedQuantity": 6,
+              "matchedSku": "WYL-C20-1P",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WYL-B25-3P",
+              "expectedQuantity": 2,
+              "matchedSku": "WYL-B25-3P",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-40-30-4P",
+              "expectedQuantity": 4,
+              "matchedSku": "RCD-40-30-4P",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-25-30-2P",
+              "expectedQuantity": 6,
+              "matchedSku": "RCD-25-30-2P",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCBO-B16-30",
+              "expectedQuantity": 3,
+              "matchedSku": "RCBO-B16-30",
+              "generatedQuantity": 3,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZL-FR-63-3P",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZL-FR-63-3P",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "STY-25-4NO",
+              "expectedQuantity": 2,
+              "matchedSku": "STY-25-4NO",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LAMP-MOD-RD",
+              "expectedQuantity": 3,
+              "matchedSku": "LAMP-MOD-RD",
+              "generatedQuantity": 3,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X15",
+              "expectedQuantity": 6,
+              "matchedSku": "KAB-YDYP-3X15",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 8,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 8,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDY-5X4",
+              "expectedQuantity": 2,
+              "matchedSku": "KAB-YDY-5X4",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-LGY-25-BU",
+              "expectedQuantity": 4,
+              "matchedSku": "KAB-LGY-25-BU",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-LGY-10-YG",
+              "expectedQuantity": 2,
+              "matchedSku": "KAB-LGY-10-YG",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-UTP-C6",
+              "expectedQuantity": 2,
+              "matchedSku": "KAB-UTP-C6",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YTDY-6X05",
+              "expectedQuantity": 1,
+              "matchedSku": "KAB-YTDY-6X05",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RUR-RL22-3M",
+              "expectedQuantity": 30,
+              "matchedSku": "RUR-RL22-3M",
+              "generatedQuantity": 30,
+              "credit": 1
+            },
+            {
+              "expectedSku": "PESZ-20-25M",
+              "expectedQuantity": 4,
+              "matchedSku": "PESZ-20-25M",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KOR-60-40",
+              "expectedQuantity": 20,
+              "matchedSku": "KOR-60-40",
+              "generatedQuantity": 20,
+              "credit": 1
+            },
+            {
+              "expectedSku": "DLA-M20",
+              "expectedQuantity": 50,
+              "matchedSku": "DLA-M20",
+              "generatedQuantity": 50,
+              "credit": 1
+            },
+            {
+              "expectedSku": "PSZ-80-PT-GL",
+              "expectedQuantity": 60,
+              "matchedSku": "PSZ-80-PT-GL",
+              "generatedQuantity": 60,
+              "credit": 1
+            },
+            {
+              "expectedSku": "PSZ-HERM-100X100",
+              "expectedQuantity": 10,
+              "matchedSku": "PSZ-HERM-100X100",
+              "generatedQuantity": 10,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZ-48-NT",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZ-48-NT",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-PAN-30120-40-4K",
+              "expectedQuantity": 16,
+              "matchedSku": "LED-PAN-30120-40-4K",
+              "generatedQuantity": 16,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-HERM-150-48",
+              "expectedQuantity": 6,
+              "matchedSku": "LED-HERM-150-48",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-E27-13-3K",
+              "expectedQuantity": 40,
+              "matchedSku": "LED-E27-13-3K",
+              "generatedQuantity": 40,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-GU10-55-4K",
+              "expectedQuantity": 25,
+              "matchedSku": "LED-GU10-55-4K",
+              "generatedQuantity": 25,
+              "credit": 1
+            },
+            {
+              "expectedSku": "NAS-LED-50-4K",
+              "expectedQuantity": 4,
+              "matchedSku": "NAS-LED-50-4K",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ZAS-LED-12-60",
+              "expectedQuantity": 3,
+              "matchedSku": "ZAS-LED-12-60",
+              "generatedQuantity": 3,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TLED-12-48-4K",
+              "expectedQuantity": 10,
+              "matchedSku": "TLED-12-48-4K",
+              "generatedQuantity": 10,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LED-DWN-12-3K",
+              "expectedQuantity": 14,
+              "matchedSku": "LED-DWN-12-3K",
+              "generatedQuantity": 14,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-PT-2-BI",
+              "expectedQuantity": 55,
+              "matchedSku": "GNI-PT-2-BI",
+              "generatedQuantity": 55,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-PT-USB-CZ",
+              "expectedQuantity": 6,
+              "matchedSku": "GNI-PT-USB-CZ",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-CEE-32-5P",
+              "expectedQuantity": 2,
+              "matchedSku": "GNI-CEE-32-5P",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-KRZ-BI",
+              "expectedQuantity": 8,
+              "matchedSku": "LACZ-KRZ-BI",
+              "generatedQuantity": 8,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-ZAL-BI",
+              "expectedQuantity": 10,
+              "matchedSku": "LACZ-ZAL-BI",
+              "generatedQuantity": 10,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RAM-3-BI",
+              "expectedQuantity": 20,
+              "matchedSku": "RAM-3-BI",
+              "generatedQuantity": 20,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ZL-221-615",
+              "expectedQuantity": 40,
+              "matchedSku": "ZL-221-615",
+              "generatedQuantity": 40,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ZL-2273-103",
+              "expectedQuantity": 100,
+              "matchedSku": "ZL-2273-103",
+              "generatedQuantity": 100,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LIS-ZAC-12-6",
+              "expectedQuantity": 10,
+              "matchedSku": "LIS-ZAC-12-6",
+              "generatedQuantity": 10,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TAS-IZO-19-RD",
+              "expectedQuantity": 12,
+              "matchedSku": "TAS-IZO-19-RD",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "OPK-KAB-300-BK",
+              "expectedQuantity": 8,
+              "matchedSku": "OPK-KAB-300-BK",
+              "generatedQuantity": 8,
+              "credit": 1
+            },
+            {
+              "expectedSku": "UCH-KAB-10",
+              "expectedQuantity": 15,
+              "matchedSku": "UCH-KAB-10",
+              "generatedQuantity": 15,
+              "credit": 1
+            },
+            {
+              "expectedSku": "CZJ-RUCH-360-IP65",
+              "expectedQuantity": 5,
+              "matchedSku": "CZJ-RUCH-360-IP65",
+              "generatedQuantity": 5,
+              "credit": 1
+            },
+            {
+              "expectedSku": "CZJ-DYM-01",
+              "expectedQuantity": 12,
+              "matchedSku": "CZJ-DYM-01",
+              "generatedQuantity": 12,
+              "credit": 1
+            },
+            {
+              "expectedSku": "PRZ-LIS-5-5",
+              "expectedQuantity": 6,
+              "matchedSku": "PRZ-LIS-5-5",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "MIER-CEG-AC",
+              "expectedQuantity": 1,
+              "matchedSku": "MIER-CEG-AC",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "WKR-PH2-VDE",
+              "expectedQuantity": 4,
+              "matchedSku": "WKR-PH2-VDE",
+              "generatedQuantity": 4,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 101154,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "2c254854-7087-4fd2-b6d8-e13a65d40e9c",
+                "productName": "Wyłącznik nadprądowy B16 1P",
+                "productSku": "WYL-B16-1P",
+                "requestItem": "Wyłącznik instalacyjny B16 230V – 24 szt",
+                "quantity": 24,
+                "rationale": "Wybrano wyłącznik nadprądowy B16 jednobiegunowy; parametr 230V wskazuje na zastosowanie jednofazowe, a charakterystyka B i prąd 16A są zgodne z zapytaniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.6808
+              },
+              {
+                "productId": "4db1cd5e-f538-41f6-b905-faa49868e0b4",
+                "productName": "Wyłącznik nadprądowy B10 1P",
+                "productSku": "WYL-B10-1P",
+                "requestItem": "Wyłącznik nadprądowy B10 jednofazowy do oświetlenia – 12 szt",
+                "quantity": 12,
+                "rationale": "Zgodny typ aparatu, charakterystyka B, prąd 10A i wykonanie jednobiegunowe/jednofazowe do obwodów oświetleniowych.",
+                "matchSource": "semantic",
+                "matchScore": 0.7031
+              },
+              {
+                "productId": "8e3accee-ccb8-4e74-9b27-8ed169ce919a",
+                "productName": "Wyłącznik nadprądowy C20 1P",
+                "productSku": "WYL-C20-1P",
+                "requestItem": "Zabezpieczenie charakterystyka C 20A jednofazowe do obwodów silnikowych – 6 szt",
+                "quantity": 6,
+                "rationale": "Dopasowanie do zabezpieczenia nadprądowego o charakterystyce C, prądzie 20A i wykonaniu 1P; właściwe dla wskazanych obwodów silnikowych.",
+                "matchSource": "semantic",
+                "matchScore": 0.6558
+              },
+              {
+                "productId": "00120a95-063d-4757-b5b5-8ca2b5931942",
+                "productName": "Wyłącznik nadprądowy B25 3P",
+                "productSku": "WYL-B25-3P",
+                "requestItem": "Zabezpieczenie trójfazowe B25 – 2 szt",
+                "quantity": 2,
+                "rationale": "Produkt ma charakterystykę B, prąd 25A i wykonanie 3-biegunowe, czyli odpowiada zabezpieczeniu trójfazowemu B25.",
+                "matchSource": "semantic",
+                "matchScore": 0.6755
+              },
+              {
+                "productId": "b88d267f-ce4d-42ad-8f5c-70a55f0374a8",
+                "productName": "Wyłącznik różnicowoprądowy 40A 30mA 4P",
+                "productSku": "RCD-40-30-4P",
+                "requestItem": "Różnicówka 40A/30mA czterobiegunowa – 4 szt",
+                "quantity": 4,
+                "rationale": "Pełna zgodność parametrów: RCD 40A, czułość 30mA, wykonanie 4-biegunowe.",
+                "matchSource": "semantic",
+                "matchScore": 0.7544
+              },
+              {
+                "productId": "ce4d6b47-013b-462f-9863-03940290ae19",
+                "productName": "Wyłącznik różnicowoprądowy 25A 30mA 2P",
+                "productSku": "RCD-25-30-2P",
+                "requestItem": "Różnicówka 25A/30mA dwubiegunowa – 6 szt",
+                "quantity": 6,
+                "rationale": "Pełna zgodność parametrów: RCD 25A, czułość 30mA, wykonanie 2-biegunowe.",
+                "matchSource": "semantic",
+                "matchScore": 0.7476
+              },
+              {
+                "productId": "07ce5ff5-2401-4215-bc0d-1ce6f045931d",
+                "productName": "Wyłącznik różnicowo-nadprądowy B16 30mA 1P+N",
+                "productSku": "RCBO-B16-30",
+                "requestItem": "Wyłącznik różnicowo-nadprądowy B16 30mA – 3 szt",
+                "quantity": 3,
+                "rationale": "To wyłącznik różnicowo-nadprądowy RCBO z charakterystyką B, prądem 16A i czułością 30mA, zgodny z zapytaniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.7647
+              },
+              {
+                "productId": "26cea2b3-1bfe-4f76-9ec6-dc89774739f8",
+                "productName": "Rozłącznik izolacyjny FR 63A 3P",
+                "productSku": "ROZL-FR-63-3P",
+                "requestItem": "Rozłącznik główny izolacyjny 63A trójbiegunowy – 1 szt",
+                "quantity": 1,
+                "rationale": "Rozłącznik izolacyjny modułowy 63A, 3P, opisany jako wyłącznik główny w rozdzielnicy — zgodny z wymaganiem.",
+                "matchSource": "semantic",
+                "matchScore": 0.7391
+              },
+              {
+                "productId": "a67ae252-3936-4698-82ff-97dc9f20198e",
+                "productName": "Stycznik modułowy 25A 4NO",
+                "productSku": "STY-25-4NO",
+                "requestItem": "Stycznik 25A z czterema stykami zwiernymi – 2 szt",
+                "quantity": 2,
+                "rationale": "Produkt ma prąd znamionowy 25A i 4 styki normalnie otwarte, czyli zwierne, zgodnie z opisem klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.7523
+              },
+              {
+                "productId": "adc02677-7d4f-47e0-b5ff-08868d0cb616",
+                "productName": "Lampka modułowa LED czerwona",
+                "productSku": "LAMP-MOD-RD",
+                "requestItem": "Kontrolka modułowa na szynę, czerwona – 3 szt",
+                "quantity": 3,
+                "rationale": "Lampka sygnalizacyjna LED na szynę DIN w kolorze czerwonym odpowiada kontrolce modułowej z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.7413
+              },
+              {
+                "productId": "74be9674-6457-4615-b59e-654da3ef57e1",
+                "productName": "Przewód YDYp 3x1,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X15",
+                "requestItem": "Przewód płaski trzy żyły po 1,5 kwadrata – 6 krążków",
+                "quantity": 6,
+                "rationale": "Przewód instalacyjny płaski YDYp 3x1,5 mm² odpowiada opisowi: trzy żyły po 1,5 mm².",
+                "matchSource": "semantic",
+                "matchScore": 0.6426
+              },
+              {
+                "productId": "16c94117-ca77-4ca9-ab5c-6ddc549e4780",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "Przewód do gniazdek 3x2,5 płaski – 8 krążków",
+                "quantity": 8,
+                "rationale": "Przewód płaski YDYp 3x2,5 mm² jest standardowym przewodem do obwodów gniazdowych i ma wymagany przekrój.",
+                "matchSource": "semantic",
+                "matchScore": 0.6462
+              },
+              {
+                "productId": "0cd5c068-0cb4-47f7-b535-0ce6aba51fd6",
+                "productName": "Przewód YDY 5x4 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDY-5X4",
+                "requestItem": "Przewód okrągły pięciożyłowy 4 mm2 – 2 krążki",
+                "quantity": 2,
+                "rationale": "Przewód okrągły YDY 5x4 mm² spełnia wymaganie pięciu żył i przekroju 4 mm².",
+                "matchSource": "semantic",
+                "matchScore": 0.6452
+              },
+              {
+                "productId": "ed41eea7-1b4d-4f3d-89ab-84bec97f318e",
+                "productName": "Przewód LgY 2,5mm² niebieski 100m",
+                "productSku": "KAB-LGY-25-BU",
+                "requestItem": "Linka 2,5 niebieska – 4 szpule",
+                "quantity": 4,
+                "rationale": "Przewód giętki LgY, czyli linka, o przekroju 2,5 mm² i kolorze niebieskim odpowiada pozycji z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.6774
+              },
+              {
+                "productId": "6bb379d8-59fb-4f52-8241-1832f1e86651",
+                "productName": "Przewód LgY 10mm² żółto-zielony 100m",
+                "productSku": "KAB-LGY-10-YG",
+                "requestItem": "LgY 10 kwadratów w kolorze uziemienia – 2 szpule",
+                "quantity": 2,
+                "rationale": "LgY 10 mm² w kolorze żółto-zielonym odpowiada przewodowi uziemiającemu wskazanemu przez klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.7537
+              },
+              {
+                "productId": "4ec040ce-22f1-4565-b9fd-89bfaf3b0138",
+                "productName": "Kabel UTP kat.6 305m",
+                "productSku": "KAB-UTP-C6",
+                "requestItem": "Skrętka komputerowa kategoria 6 – 2 kartony",
+                "quantity": 2,
+                "rationale": "Kabel sieciowy skrętka UTP kategorii 6 w kartonie 305 m odpowiada skrętce komputerowej kat. 6.",
+                "matchSource": "semantic",
+                "matchScore": 0.6699
+              },
+              {
+                "productId": "f75e39c0-5a86-43d2-9ec-4f3ed11ba644",
+                "productName": "Przewód YTDY 6x0,5 domofonowy 100m",
+                "productSku": "KAB-YTDY-6X05",
+                "requestItem": "Kabel do domofonu, sześć żył – 1 krążek",
+                "quantity": 1,
+                "rationale": "Przewód domofonowy YTDY 6x0,5 ma sześć żył i jest przeznaczony do instalacji domofonowych.",
+                "matchSource": "semantic",
+                "matchScore": 0.6833
+              },
+              {
+                "productId": "e4168cb2-efbc-418a-a15b-16ce490dd605",
+                "productName": "Rura elektroinstalacyjna RL22 3m",
+                "productSku": "RUR-RL22-3M",
+                "requestItem": "Rurki sztywne fi22 – 30 sztang",
+                "quantity": 30,
+                "rationale": "Sztywna rura elektroinstalacyjna RL o średnicy 22 mm odpowiada rurkom sztywnym fi22.",
+                "matchSource": "semantic",
+                "matchScore": 0.672
+              },
+              {
+                "productId": "d2f41961-71f6-4566-9bc9-c9692b512739",
+                "productName": "Peszel karbowany fi20 25m",
+                "productSku": "PESZ-20-25M",
+                "requestItem": "Peszel fi20 – 4 krążki",
+                "quantity": 4,
+                "rationale": "Peszel karbowany o średnicy 20 mm w krążku odpowiada wskazanemu peszlowi fi20.",
+                "matchSource": "semantic",
+                "matchScore": 0.6658
+              },
+              {
+                "productId": "808e38b9-c7f9-4564-ace9-ecf50c5ac7e2",
+                "productName": "Korytko kablowe 60x40 z pokrywą 2m",
+                "productSku": "KOR-60-40",
+                "requestItem": "Kanał kablowy 60 na 40 z pokrywą – 20 odcinków",
+                "quantity": 20,
+                "rationale": "Kanał/korytko PVC 60x40 mm z pokrywą odpowiada wymiarowi i wykonaniu z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.7079
+              },
+              {
+                "productId": "aba2833a-00c3-48a6-bbcc-90d2dbb456f2",
+                "productName": "Dławik kablowy M20",
+                "productSku": "DLA-M20",
+                "requestItem": "Dławice M20 – 50 szt",
+                "quantity": 50,
+                "rationale": "Dławnica kablowa M20 z nakrętką odpowiada pozycji „Dławice M20”.",
+                "matchSource": "semantic",
+                "matchScore": 0.7566
+              },
+              {
+                "productId": "7ac16864-d24c-4cd7-8b69-c996e47c5494",
+                "productName": "Puszka podtynkowa głęboka fi80",
+                "productSku": "PSZ-80-PT-GL",
+                "requestItem": "Puszki głębokie fi80 – 60 szt",
+                "quantity": 60,
+                "rationale": "Puszka podtynkowa pogłębiana o średnicy 80 mm odpowiada puszce głębokiej fi80.",
+                "matchSource": "semantic",
+                "matchScore": 0.7694
+              },
+              {
+                "productId": "3462967a-0ba4-403b-93cd-d6a788453116",
+                "productName": "Puszka natynkowa hermetyczna IP65 100x100",
+                "productSku": "PSZ-HERM-100X100",
+                "requestItem": "Puszki szczelne natynkowe 10x10 cm – 10 szt",
+                "quantity": 10,
+                "rationale": "Puszka natynkowa hermetyczna IP65 o wymiarze 100x100 mm odpowiada szczelnej puszce 10x10 cm.",
+                "matchSource": "semantic",
+                "matchScore": 0.6884
+              },
+              {
+                "productId": "b79e788b-26a9-4237-b8ca-0473cccd1b7f",
+                "productName": "Rozdzielnica natynkowa 48 modułów IP40",
+                "productSku": "ROZ-48-NT",
+                "requestItem": "Skrzynka natynkowa na 48 modułów – 1 szt",
+                "quantity": 1,
+                "rationale": "Rozdzielnica natynkowa na 48 modułów odpowiada skrzynce natynkowej o tej pojemności modułowej.",
+                "matchSource": "semantic",
+                "matchScore": 0.6945
+              },
+              {
+                "productId": "cbe0ff4d-41bb-4c3f-8546-35fdd5bade28",
+                "productName": "Panel LED 30x120 40W 4000K",
+                "productSku": "LED-PAN-30120-40-4K",
+                "requestItem": "Panele prostokątne 30x120 40W barwa neutralna – 16 szt",
+                "quantity": 16,
+                "rationale": "Panel LED 30x120 cm, 40W, 4000K ma wymagany wymiar, moc i neutralną barwę światła.",
+                "matchSource": "semantic",
+                "matchScore": 0.7719
+              },
+              {
+                "productId": "f0d534e2-c2c9-4366-83d2-8605d73bd937",
+                "productName": "Oprawa hermetyczna LED 150cm 48W IP65",
+                "productSku": "LED-HERM-150-48",
+                "requestItem": "Oprawy szczelne świetlówkowe LED 150 cm – 6 szt",
+                "quantity": 6,
+                "rationale": "Hermetyczna liniowa oprawa LED 150 cm IP65 odpowiada szczelnej oprawie świetlówkowej LED o długości 150 cm.",
+                "matchSource": "semantic",
+                "matchScore": 0.6627
+              },
+              {
+                "productId": "6f242b07-12ec-4eed-962d-61c9fd088eb7",
+                "productName": "Żarówka LED E27 13W 3000K",
+                "productSku": "LED-E27-13-3K",
+                "requestItem": "Żarówki E27 13W ciepłe – 40 szt",
+                "quantity": 40,
+                "rationale": "Żarówka LED E27 o mocy 13W i barwie ciepłej 3000K odpowiada wymaganym parametrom.",
+                "matchSource": "semantic",
+                "matchScore": 0.7418
+              },
+              {
+                "productId": "ebba8b0e-b123-44a7-8bd8-cda58e9b9626",
+                "productName": "Żarówka LED GU10 5,5W 4000K",
+                "productSku": "LED-GU10-55-4K",
+                "requestItem": "Żarówki GU10 5,5W barwa neutralna – 25 szt",
+                "quantity": 25,
+                "rationale": "Wybrano wariant GU10 5,5W z barwą neutralną 4000K, zgodnie z opisem klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.737
+              },
+              {
+                "productId": "183d3ee5-114d-4d0d-bbc1-4ed8290ae9a2",
+                "productName": "Naświetlacz LED 50W 4000K IP65",
+                "productSku": "NAS-LED-50-4K",
+                "requestItem": "Halogeny zewnętrzne LED 50W 4000K – 4 szt",
+                "quantity": 4,
+                "rationale": "Naświetlacz LED 50W 4000K IP65 odpowiada zewnętrznemu halogenowi LED o podanej mocy i barwie.",
+                "matchSource": "semantic",
+                "matchScore": 0.701
+              },
+              {
+                "productId": "00039776-c6d1-4f52-b843-c80b6b0f572e",
+                "productName": "Zasilacz LED 12V 60W",
+                "productSku": "ZAS-LED-12-60",
+                "requestItem": "Zasilacze 12V 60W do taśm LED – 3 szt",
+                "quantity": 3,
+                "rationale": "Zasilacz do taśm LED ma wyjście 12V DC i moc 60W, zgodnie z zapytaniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.7436
+              },
+              {
+                "productId": "6a3f24bf-dc7d-4118-8f18-40f1c6597b8a",
+                "productName": "Taśma LED 12V 4,8W/m 4000K 5m",
+                "productSku": "TLED-12-48-4K",
+                "requestItem": "Taśma LED 12V 4,8W/m neutralna – 10 rolek",
+                "quantity": 10,
+                "rationale": "Taśma LED 12V o mocy 4,8 W/m i barwie 4000K odpowiada neutralnej taśmie LED z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.7351
+              },
+              {
+                "productId": "c3922b27-69e2-4796-b9a5-2bdc6d3cea7b",
+                "productName": "Oprawa downlight LED fi12cm 3000K",
+                "productSku": "LED-DWN-12-3K",
+                "requestItem": "Oczka sufitowe wpuszczane fi12 ciepłe – 14 szt",
+                "quantity": 14,
+                "rationale": "Wpuszczana oprawa sufitowa downlight o średnicy fi12 cm i ciepłej barwie 3000K odpowiada opisowi oczka sufitowego.",
+                "matchSource": "semantic",
+                "matchScore": 0.7094
+              },
+              {
+                "productId": "25aba4a4-ffb3-40f1-8619-644ea6b03634",
+                "productName": "Gniazdo podtynkowe podwójne z uziemieniem białe",
+                "productSku": "GNI-PT-2-BI",
+                "requestItem": "Gniazda podwójne z uziemieniem białe p/t – 55 szt",
+                "quantity": 55,
+                "rationale": "Podwójne gniazdo podtynkowe z uziemieniem w kolorze białym odpowiada dokładnie pozycji klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.729
+              },
+              {
+                "productId": "b2566331-e31e-4d3a-846c-8de9bec6216c",
+                "productName": "Gniazdo podtynkowe z ładowarką USB czarne",
+                "productSku": "GNI-PT-USB-CZ",
+                "requestItem": "Gniazda z ładowarką USB czarne – 6 szt",
+                "quantity": 6,
+                "rationale": "Gniazdo podtynkowe z ładowarką USB-A+C w kolorze czarnym odpowiada wymaganemu osprzętowi.",
+                "matchSource": "semantic",
+                "matchScore": 0.6679
+              },
+              {
+                "productId": "ba7cd365-8e0f-4d4a-936c-6e3e8527bd5b",
+                "productName": "Gniazdo siłowe CEE 32A 5P natynkowe",
+                "productSku": "GNI-CEE-32-5P",
+                "requestItem": "Gniazdo siłowe 32A pięciostykowe – 2 szt",
+                "quantity": 2,
+                "rationale": "Gniazdo CEE 32A 5P ma wymagany prąd i pięć styków/biegunów.",
+                "matchSource": "semantic",
+                "matchScore": 0.7093
+              },
+              {
+                "productId": "ac95bbc9-cdca-488a-b5df-829962dd66ff",
+                "productName": "Łącznik krzyżowy biały podtynkowy",
+                "productSku": "LACZ-KRZ-BI",
+                "requestItem": "Łączniki krzyżowe białe – 8 szt",
+                "quantity": 8,
+                "rationale": "Biały łącznik krzyżowy podtynkowy odpowiada typowi i kolorowi wskazanemu w zapytaniu.",
+                "matchSource": "semantic",
+                "matchScore": 0.6815
+              },
+              {
+                "productId": "6641125d-2b44-4c3e-8540-d13ddb4af2bb",
+                "productName": "Łącznik żaluzjowy biały podtynkowy",
+                "productSku": "LACZ-ZAL-BI",
+                "requestItem": "Włączniki do rolet białe – 10 szt",
+                "quantity": 10,
+                "rationale": "Łącznik żaluzjowy służy do sterowania roletami i ma wymagany biały kolor.",
+                "matchSource": "semantic",
+                "matchScore": 0.6302
+              },
+              {
+                "productId": "6c42f910-aa38-47a8-9277-3cdc67ab0930",
+                "productName": "Ramka 3-krotna biała",
+                "productSku": "RAM-3-BI",
+                "requestItem": "Ramki potrójne białe – 20 szt",
+                "quantity": 20,
+                "rationale": "Ramka 3-krotna w kolorze białym odpowiada ramce potrójnej z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.6374
+              },
+              {
+                "productId": "554da9b7-80d3-4782-a03d-2b548f40f611",
+                "productName": "Szybkozłączka instalacyjna 5-przewodowa 6mm²",
+                "productSku": "ZL-221-615",
+                "requestItem": "Szybkozłączki 5-przewodowe do przekroju 6 mm2 – 40 szt",
+                "quantity": 40,
+                "rationale": "Szybkozłączka 5-przewodowa obsługuje przekrój do 6 mm², czyli spełnia oba kluczowe parametry.",
+                "matchSource": "semantic",
+                "matchScore": 0.7226
+              },
+              {
+                "productId": "d0eec8c7-b881-4176-afb7-2b2a4ee6e23e",
+                "productName": "Złączka do puszek 3-przewodowa 2,5mm²",
+                "productSku": "ZL-2273-103",
+                "requestItem": "Złączki wciskane do puszek na 3 przewody – 100 szt",
+                "quantity": 100,
+                "rationale": "Złączka wciskana typu WAGO 2273 do puszek, 3-przewodowa, odpowiada opisowi z zapytania.",
+                "matchSource": "semantic",
+                "matchScore": 0.7137
+              },
+              {
+                "productId": "96a9c01e-51d0-4e8b-96c5-4959b45cbd26",
+                "productName": "Listwa zaciskowa 12-torowa 6mm²",
+                "productSku": "LIS-ZAC-12-6",
+                "requestItem": "Kostki zaciskowe 6 mm2 – 10 szt",
+                "quantity": 10,
+                "rationale": "Listwa zaciskowa gwintowa, opisana jako kostka elektryczna, o przekroju do 6 mm² odpowiada pozycji klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.6873
+              },
+              {
+                "productId": "d2e92e0f-31e4-47f2-82b9-6cb34b1f6fd1",
+                "productName": "Taśma izolacyjna PVC 19mm czerwona",
+                "productSku": "TAS-IZO-19-RD",
+                "requestItem": "Izolacja czerwona – 12 szt",
+                "quantity": 12,
+                "rationale": "Czerwona taśma elektroizolacyjna PVC odpowiada potocznemu określeniu „izolacja czerwona”.",
+                "matchSource": "semantic",
+                "matchScore": 0.6437
+              },
+              {
+                "productId": "7d52ed6f-75ee-4382-b754-1a5db4187e56",
+                "productName": "Opaski kablowe 300mm czarne 100szt",
+                "productSku": "OPK-KAB-300-BK",
+                "requestItem": "Trytytki 300 mm czarne – 8 opakowań",
+                "quantity": 8,
+                "rationale": "Opaski zaciskowe, czyli trytytki, mają długość 300 mm i czarny kolor zgodnie z zapytaniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.6772
+              },
+              {
+                "productId": "6553377a-bcc1-4977-8f58-f77b85528427",
+                "productName": "Uchwyt kablowy typu flop fi10 100szt",
+                "productSku": "UCH-KAB-10",
+                "requestItem": "Uchwyty flop fi10 – 15 opakowań",
+                "quantity": 15,
+                "rationale": "Uchwyt kablowy typu flop do przewodów fi10 odpowiada wymaganemu typowi i średnicy.",
+                "matchSource": "semantic",
+                "matchScore": 0.7126
+              },
+              {
+                "productId": "fb5f1647-ee2b-4f7b-86a7-f9cf72c8b1e4",
+                "productName": "Czujnik ruchu 360° sufitowy hermetyczny IP65",
+                "productSku": "CZJ-RUCH-360-IP65",
+                "requestItem": "Czujniki ruchu sufitowe szczelne do pomieszczeń wilgotnych – 5 szt",
+                "quantity": 5,
+                "rationale": "Czujnik PIR sufitowy IP65 jest hermetyczny i przeznaczony do pomieszczeń wilgotnych, zgodnie z opisem klienta.",
+                "matchSource": "semantic",
+                "matchScore": 0.6684
+              },
+              {
+                "productId": "ccf4d51c-a0af-4b51-874e-ce7e8c1ef8a7",
+                "productName": "Czujnik dymu",
+                "productSku": "CZJ-DYM-01",
+                "requestItem": "Czujki dymu bateryjne – 12 szt",
+                "quantity": 12,
+                "rationale": "Optyczny czujnik dymu z zasilaniem bateryjnym odpowiada czujce dymu bateryjnej.",
+                "matchSource": "semantic",
+                "matchScore": 0.6933
+              },
+              {
+                "productId": "ed37a122-7bb3-4819-b1ff-ddabdb48dbdb",
+                "productName": "Przedłużacz listwowy 5m 5 gniazd",
+                "productSku": "PRZ-LIS-5-5",
+                "requestItem": "Listwy przedłużające 5 m z pięcioma gniazdami – 6 szt",
+                "quantity": 6,
+                "rationale": "Przedłużacz listwowy ma długość 5 m i pięć gniazd, zgodnie z zapytaniem.",
+                "matchSource": "semantic",
+                "matchScore": 0.7353
+              },
+              {
+                "productId": "e2ea1126-cb92-4a58-837a-c8fefd3bf58e",
+                "productName": "Miernik cęgowy AC",
+                "productSku": "MIER-CEG-AC",
+                "requestItem": "Miernik cęgowy do prądu zmiennego – 1 szt",
+                "quantity": 1,
+                "rationale": "Miernik cęgowy do pomiaru prądu AC odpowiada miernikowi cęgowemu do prądu zmiennego.",
+                "matchSource": "semantic",
+                "matchScore": 0.7077
+              },
+              {
+                "productId": "191466fa-17d4-41cc-b37f-593cb7c46810",
+                "productName": "Wkrętak izolowany PH2 VDE 1000V",
+                "productSku": "WKR-PH2-VDE",
+                "requestItem": "Wkrętaki krzyżakowe PH2 izolowane – 4 szt",
+                "quantity": 4,
+                "rationale": "Wkrętak izolowany VDE z końcówką PH2 odpowiada krzyżakowemu PH2 izolowanemu.",
+                "matchSource": "semantic",
+                "matchScore": 0.7454
+              }
+            ],
+            "unmatched": [
+              "Agregat prądotwórczy benzynowy 3 kW – 1 szt",
+              "Oprawa awaryjna LED z piktogramem EXIT – 6 szt"
+            ],
+            "notes": [
+              "Nie znaleziono wiarygodnego odpowiednika dla agregatu prądotwórczego 3 kW; wyniki dotyczyły głównie przedłużaczy i przewodów.",
+              "Nie znaleziono wiarygodnej oprawy awaryjnej LED z piktogramem EXIT; zwrócone wyniki dotyczyły zwykłych opraw LED bez funkcji awaryjnej i piktogramu."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "12-prose-amendments",
+      "title": "Flowing prose with amendments, cancellations and cross-references",
+      "caseFile": "../../suites/offer-generation/cases/12-prose-amendments.json",
+      "runs": [
+        {
+          "score": 0.9444444444444444,
+          "itemF1": 0.9444444444444444,
+          "itemRecall": 0.9444444444444444,
+          "itemPrecision": 0.9444444444444444,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "LED-HERM-120-36",
+              "expectedQuantity": 6,
+              "matchedSku": "LED-HERM-120-36",
+              "generatedQuantity": 6,
+              "credit": 1
+            },
+            {
+              "expectedSku": "CZJ-RUCH-180-IP44",
+              "expectedQuantity": 2,
+              "matchedSku": "CZJ-RUCH-180-IP44",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "GNI-PT-2-BI",
+              "expectedQuantity": 23,
+              "matchedSku": "GNI-PT-2-BI",
+              "generatedQuantity": 23,
+              "credit": 1
+            },
+            {
+              "expectedSku": "LACZ-SCH-BI",
+              "expectedQuantity": 14,
+              "matchedSku": "LACZ-SCH-BI",
+              "generatedQuantity": 14,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X15",
+              "expectedQuantity": 4,
+              "matchedSku": "KAB-YDYP-3X15",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 1,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 60,
+              "credit": 0.5
+            },
+            {
+              "expectedSku": "GNI-HERM-IP44-BI",
+              "expectedQuantity": 4,
+              "matchedSku": "GNI-HERM-IP44-BI",
+              "generatedQuantity": 4,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZ-18-PT",
+              "expectedQuantity": 2,
+              "matchedSku": "ROZ-18-PT",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "TAS-IZO-19-BU",
+              "expectedQuantity": 6,
+              "matchedSku": "TAS-IZO-19-BU",
+              "generatedQuantity": 6,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "durationMs": 45403,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "54022959-b78f-4807-8486-3a51450b328e",
+                "productName": "Oprawa hermetyczna LED 120cm 36W IP65",
+                "productSku": "LED-HERM-120-36",
+                "requestItem": "sześć opraw hermetycznych LED 120 cm",
+                "quantity": 6,
+                "rationale": "Zgodność typu produktu i wymiaru: oprawa hermetyczna LED 120 cm / 1200 mm, IP65, odpowiednia na klatkę schodową i do miejsc wilgotnych.",
+                "matchSource": "semantic",
+                "matchScore": 0.6991
+              },
+              {
+                "productId": "4f4f9543-1d84-417c-95d1-71de41e4a89a",
+                "productName": "Czujnik ruchu 180° ścienny IP44",
+                "productSku": "CZJ-RUCH-180-IP44",
+                "requestItem": "przy obu wejściach do budynku po jednym czujniku ruchu naściennym 180 stopni — montaż na zewnątrz, więc muszą wytrzymać deszcz",
+                "quantity": 2,
+                "rationale": "Ten sam typ produktu: ścienny czujnik ruchu PIR o kącie detekcji 180°. Stopień IP44 wskazuje wykonanie odporne na bryzgi/deszcz do montażu zewnętrznego.",
+                "matchSource": "semantic",
+                "matchScore": 0.6914
+              },
+              {
+                "productId": "25aba4a4-ffb3-40f1-8619-644ea6b03634",
+                "productName": "Gniazdo podtynkowe podwójne z uziemieniem białe",
+                "productSku": "GNI-PT-2-BI",
+                "requestItem": "w każdym z siedmiu mieszkań wymieniamy po trzy gniazda podwójne podtynkowe białe + w dwóch większych lokalach będą po cztery gniazda zamiast trzech",
+                "quantity": 23,
+                "rationale": "Dokładna zgodność: gniazdo podwójne, podtynkowe, białe. Ilość przeliczona po korekcie: 5 mieszkań × 3 szt. + 2 mieszkania × 4 szt. = 23 szt.",
+                "matchSource": "semantic",
+                "matchScore": 0.6933
+              },
+              {
+                "productId": "79605046-342c-4602-b33b-067962f2e0cc",
+                "productName": "Łącznik schodowy biały podtynkowy",
+                "productSku": "LACZ-SCH-BI",
+                "requestItem": "w każdym z siedmiu mieszkań wymieniamy ... po dwa łączniki schodowe w tym samym kolorze",
+                "quantity": 14,
+                "rationale": "Zgodność typu i koloru: biały łącznik schodowy podtynkowy do sterowania oświetleniem z dwóch miejsc. Ilość: 7 mieszkań × 2 szt. = 14 szt.",
+                "matchSource": "semantic",
+                "matchScore": 0.6939
+              },
+              {
+                "productId": "74be9674-6457-4615-b59e-654da3ef57e1",
+                "productName": "Przewód YDYp 3x1,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X15",
+                "requestItem": "po pół krążka przewodu płaskiego 3x1,5 na mieszkanie — proszę zaokrąglić w górę do pełnych krążków",
+                "quantity": 4,
+                "rationale": "Zgodność typu i przekroju: przewód instalacyjny płaski YDYp 3x1,5 mm². Ilość przeliczona zgodnie z prośbą: 7 × 0,5 krążka = 3,5, zaokrąglone w górę do 4 krążków.",
+                "matchSource": "semantic",
+                "matchScore": 0.6395
+              },
+              {
+                "productId": "16c94117-ca77-4ca9-ab5c-6ddc549e4780",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "60 metrów przewodu płaskiego 3x2,5",
+                "quantity": 60,
+                "rationale": "Zgodność typu i przekroju: przewód instalacyjny płaski YDYp 3x2,5 mm². Opis katalogowy wskazuje krążek 100 m, więc jednostkę sprzedaży warto potwierdzić przy wycenie 60 m.",
+                "matchSource": "semantic",
+                "matchScore": 0.654
+              },
+              {
+                "productId": "5e9d6ab7-ad7a-470a-b0a5-9153baca3213",
+                "productName": "Gniazdo natynkowe hermetyczne IP44 z klapką białe",
+                "productSku": "GNI-HERM-IP44-BI",
+                "requestItem": "cztery gniazda hermetyczne z klapką, w tym samym kolorze co te w mieszkaniach",
+                "quantity": 4,
+                "rationale": "Zgodność typu: gniazdo hermetyczne/bryzgoszczelne IP44 z klapką, kolor biały zgodny z gniazdami mieszkaniowymi.",
+                "matchSource": "semantic",
+                "matchScore": 0.7127
+              },
+              {
+                "productId": "98933790-e86f-4de6-bb7f-2fd6e938ccce",
+                "productName": "Rozdzielnica podtynkowa 18 modułów IP40",
+                "productSku": "ROZ-18-PT",
+                "requestItem": "dwie rozdzielnice podtynkowe na 18 modułów",
+                "quantity": 2,
+                "rationale": "Dokładna zgodność: rozdzielnica podtynkowa 18 modułów. Klient dopuszcza natynkową tylko jako zamiennik przy braku podtynkowych.",
+                "matchSource": "semantic",
+                "matchScore": 0.7247
+              },
+              {
+                "productId": "42232335-bfcc-4f3b-93a5-35a6a5dc6ab8",
+                "productName": "Taśma izolacyjna PVC 19mm niebieska",
+                "productSku": "TAS-IZO-19-BU",
+                "requestItem": "proszę zamienić ją na niebieską, sześć sztuk",
+                "quantity": 6,
+                "rationale": "Zgodność produktu i koloru po korekcie: taśma izolacyjna PVC niebieska zamiast wcześniej omawianej czarnej.",
+                "matchSource": "semantic",
+                "matchScore": 0.6622
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Paneli LED 60x60 nie ujęto, ponieważ klient wyraźnie napisał: „paneli proszę nie wyceniać”.",
+              "Czarna taśma izolacyjna została pominięta zgodnie z korektą klienta; wybrano taśmę niebieską.",
+              "Dla przewodu płaskiego 3x2,5 katalogowa pozycja jest krążkiem 100 m, natomiast klient zamówił 60 metrów — do potwierdzenia jednostka sprzedaży lub możliwość cięcia.",
+              "Rozdzielnica natynkowa 18 modułów może być zamiennikiem, jeśli podtynkowa nie będzie dostępna."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "06-messy-site-email",
+  "title": "Long messy site email: slang, typos, abbreviations, scattered merge",
+  "difficulty": "hard",
+  "notes": "The centerpiece hard case: 15 items buried in prose. Electrician slang (różnicówka, trytytki, kostki, czołówka), abbreviations (p/t = podtynkowy), typos (wyłaczniki nadpradowe, kazdej), inconsistent quantity formats, cable ties mentioned in two paragraphs (10 + 2 must merge to 12), and a superlative requiring catalog comparison (najmocniejsza czołówka → the 500lm one, not 350lm).",
+  "customer": {
+    "name": "Elektro-Tom Budowy",
+    "profile": "Site electrician crew, orders by email from the field, writes informally."
+  },
+  "request": "Panie Marku, przesyłam zapotrzebowanie na przyszły tydzień na budowę przy Lipowej 7.\n\nW rozdzielni głównej trzeba wymienić zabezpieczenia: wyłaczniki nadpradowe B16 jednofazowe potrzebuję 12szt, do tego różnicówka 63A/30mA czterobiegunowa x2. Rozdzielnica p/t 36 modułów jedna sztuka.\n\nDo WLZ bierzemy LgY 16 żółto-zielony jedna szpula. Na obwody gniazdowe YDYp 3x2,5 cztery krążki, na oświetlenie YDYp 3x1,5 dwa krążki.\n\nOsprzęt: gniazda p/t podwójne 40szt, łączniki świecznikowe 15 szt oraz ramki podwójne 25szt — wszystko w bieli. Do łazienek gniazda hermetyczne IP44 białe 8 sztuk.\n\nDrobnica: trytytki 200mm czarne 10 opakowań, kostki 12-torowe 4mm 5szt, taśma izolacyjna niebieska i czarna po 5 szt kazdej.\n\nAha, i jeszcze czołówka dla Pawła, najmocniejsza jaką macie. I 2 opakowania trytytek 200 czarnych dodatkowo, bo zawsze ginie.\n\nPozdrawiam, Tomek",
+  "expected": {
+    "items": [
+      { "sku": "WYL-B16-1P", "quantity": 12 },
+      { "sku": "RCD-63-30-4P", "quantity": 2 },
+      { "sku": "ROZ-36-PT", "quantity": 1 },
+      { "sku": "KAB-LGY-16-YG", "quantity": 1 },
+      { "sku": "KAB-YDYP-3X25", "quantity": 4 },
+      { "sku": "KAB-YDYP-3X15", "quantity": 2 },
+      { "sku": "GNI-PT-2-BI", "quantity": 40 },
+      { "sku": "LACZ-SW-BI", "quantity": 15 },
+      { "sku": "RAM-2-BI", "quantity": 25 },
+      { "sku": "GNI-HERM-IP44-BI", "quantity": 8 },
+      { "sku": "OPK-KAB-200-BK", "quantity": 12 },
+      { "sku": "LIS-ZAC-12-4", "quantity": 5 },
+      { "sku": "TAS-IZO-19-BU", "quantity": 5 },
+      { "sku": "TAS-IZO-19-BK", "quantity": 5 },
+      { "sku": "LAT-CZO-500", "quantity": 1 }
+    ],
+    "unmatched": []
+  }
+}

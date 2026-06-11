@@ -1,0 +1,25 @@
+{
+  "id": "12-prose-amendments",
+  "title": "Flowing prose with amendments, cancellations and cross-references",
+  "difficulty": "hard",
+  "notes": "No list structure — everything is narrative, and later sentences override earlier ones. Required reasoning: per-unit multiplication (7 apartments × 3 double sockets, ×2 stair switches), a trailing correction that changes the socket math (2 larger apartments get 4 instead of 3 → 5×3+2×4=23, NOT 21), a cancelled item that must NOT be quoted (LED panels), a substitution (black tape replaced by blue — black must not appear), a color cross-reference ('w tym samym kolorze co te w mieszkaniach' → white hermetic sockets), a conditional fallback that must NOT trigger (podtynkowe 18-module boards exist in the catalog, so natynkowe is wrong), per-apartment cable allocation with aggregate round-up (7 × 0.5 coil = 3.5 → 4; apartment count chosen so the rounding instruction is meaningful and the aggregate reading is unambiguous), and meters-to-coil conversion (60m → 1 coil of 100m).",
+  "customer": {
+    "name": "AW-Instal Adam Wiśniewski",
+    "profile": "Renovation electrician, dictates orders as stream-of-thought emails after phone calls, often with corrections at the end."
+  },
+  "request": "Dzień dobry Panie Marku,\n\nw nawiązaniu do naszej rozmowy telefonicznej przesyłam zamówienie na remont kamienicy przy Rynku 12. Na klatce schodowej wieszamy sześć opraw hermetycznych LED 120 cm, a przy obu wejściach do budynku po jednym czujniku ruchu naściennym 180 stopni — montaż na zewnątrz, więc muszą wytrzymać deszcz. W każdym z siedmiu mieszkań wymieniamy po trzy gniazda podwójne podtynkowe białe oraz po dwa łączniki schodowe w tym samym kolorze. Na okablowanie liczymy po pół krążka przewodu płaskiego 3x1,5 na mieszkanie — proszę zaokrąglić w górę do pełnych krążków — a do zasilania piwnicy dodatkowo 60 metrów przewodu płaskiego 3x2,5. W piwnicy będą też cztery gniazda hermetyczne z klapką, w tym samym kolorze co te w mieszkaniach. Do rozdziału obwodów planujemy dwie rozdzielnice podtynkowe na 18 modułów; gdyby akurat podtynkowych nie było na stanie, mogą być natynkowe. Kolega sugerował jeszcze panele LED 60x60 na strych, ale właściciel ostatecznie się nie zgodził, więc paneli proszę nie wyceniać. A, i jeszcze jedno: przez telefon mówiłem o taśmie izolacyjnej czarnej, ale jednak proszę zamienić ją na niebieską, sześć sztuk. I ostatnia korekta co do gniazd w mieszkaniach: w dwóch większych lokalach będą po cztery gniazda zamiast trzech, proszę przeliczyć całość.\n\nPozdrawiam,\nAdam Wiśniewski, AW-Instal",
+  "expected": {
+    "items": [
+      { "sku": "LED-HERM-120-36", "quantity": 6 },
+      { "sku": "CZJ-RUCH-180-IP44", "quantity": 2 },
+      { "sku": "GNI-PT-2-BI", "quantity": 23 },
+      { "sku": "LACZ-SCH-BI", "quantity": 14 },
+      { "sku": "KAB-YDYP-3X15", "quantity": 4 },
+      { "sku": "KAB-YDYP-3X25", "quantity": 1 },
+      { "sku": "GNI-HERM-IP44-BI", "quantity": 4 },
+      { "sku": "ROZ-18-PT", "quantity": 2 },
+      { "sku": "TAS-IZO-19-BU", "quantity": 6 }
+    ],
+    "unmatched": []
+  }
+}

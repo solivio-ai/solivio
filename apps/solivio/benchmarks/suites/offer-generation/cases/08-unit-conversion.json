@@ -1,0 +1,20 @@
+{
+  "id": "08-unit-conversion",
+  "title": "Quantities in meters vs catalog packaging units",
+  "difficulty": "hard",
+  "notes": "The customer orders in meters; the catalog sells packaging units (100m coils, 25m rolls, 2m sections). Expected quantities are package counts rounded up: 250m YDYp → 3 coils, 300m LgY → 3 coils, 50m peszel → 2 rolls, 10m korytko → 5 sections. The failure mode partial credit catches: right product, quantity copied as meters.",
+  "customer": {
+    "name": "PHU Elektryk-Bis",
+    "profile": "Installer who thinks in meters of cable, not in coils."
+  },
+  "request": "Proszę o wycenę: przewód YDYp 3x2,5 – 250 metrów, LgY 16mm² żółto-zielony – 300 metrów, peszel fi18 – 50 metrów, oraz korytko kablowe 40x40 – 10 metrów bieżących.",
+  "expected": {
+    "items": [
+      { "sku": "KAB-YDYP-3X25", "quantity": 3 },
+      { "sku": "KAB-LGY-16-YG", "quantity": 3 },
+      { "sku": "PESZ-18-25M", "quantity": 2 },
+      { "sku": "KOR-40-40", "quantity": 5 }
+    ],
+    "unmatched": []
+  }
+}
