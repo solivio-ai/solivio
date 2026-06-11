@@ -23,6 +23,15 @@ const SUITES = {
   "offer-generation": () => import("./suites/offer-generation/suite"),
 };
 
+// NaN here would silently produce zero jobs and an all-zero history entry.
+function parsePositiveInt(name: string, value: string): number {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    throw new Error(`--${name} must be a positive integer, got "${value}"`);
+  }
+  return parsed;
+}
+
 async function main() {
   const { values: args } = parseArgs({
     options: {
@@ -34,8 +43,8 @@ async function main() {
       model: { type: "string" },
     },
   });
-  const runsPerCase = Number.parseInt(args.runs ?? "1", 10);
-  const concurrency = Number.parseInt(args.concurrency ?? "4", 10);
+  const runsPerCase = parsePositiveInt("runs", args.runs ?? "1");
+  const concurrency = parsePositiveInt("concurrency", args.concurrency ?? "4");
   const suiteLoader = SUITES[args.suite as keyof typeof SUITES];
   if (!suiteLoader) {
     throw new Error(`Unknown suite "${args.suite}". Available: ${Object.keys(SUITES).join(", ")}`);
