@@ -1,0 +1,21 @@
+{
+  "id": "04-repeat-order-history",
+  "title": "Repeat order referencing customer history",
+  "difficulty": "expert",
+  "notes": "KNOWN GAP CASE: the expected offer requires resolving 'powtórka ostatniego zamówienia' from the customer's order history, which the agent should eventually fetch from the database itself. The customer's last order (2026-05-12) was: WYL-B16-1P x10, RCD-25-30-2P x2, ROZ-24-PT x1, KAB-YDYP-3X25 x4 — once an orders table exists, this case should seed it with that order. Today this case scores low; it measures progress on history-awareness.",
+  "customer": {
+    "name": "Instal-Bud Sp. z o.o.",
+    "profile": "Construction subcontractor, orders the same site kit for each new building stage."
+  },
+  "request": "Dzień dobry, poproszę powtórkę ostatniego zamówienia, dodatkowo 20 szybkozłączek 3-przewodowych.",
+  "expected": {
+    "items": [
+      { "sku": "WYL-B16-1P", "quantity": 10 },
+      { "sku": "RCD-25-30-2P", "quantity": 2 },
+      { "sku": "ROZ-24-PT", "quantity": 1 },
+      { "sku": "KAB-YDYP-3X25", "quantity": 4 },
+      { "sku": "ZL-221-413", "quantity": 20, "altSkus": ["ZL-221-613"] }
+    ],
+    "unmatched": []
+  }
+}

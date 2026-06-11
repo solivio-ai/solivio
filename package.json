@@ -38,6 +38,7 @@
     "db:generate": "yarn workspace @solivio/app db:generate",
     "db:migrate": "yarn workspace @solivio/app db:migrate",
     "db:studio": "yarn workspace @solivio/app db:studio",
+    "benchmark": "yarn workspace @solivio/app benchmark",
     "volt": "volt"
   },
   "devDependencies": {
