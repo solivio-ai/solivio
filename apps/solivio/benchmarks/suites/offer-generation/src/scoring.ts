@@ -83,7 +83,7 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
 
   const credit = verdicts.reduce((sum, v) => sum + v.credit, 0);
   const expectedCount = benchCase.expected.items.length;
-  const generatedCount = generated.items.length;
+  const generatedCount = generatedBySku.size; // deduplicated, consistent with the map used for matching
 
   const itemRecall = expectedCount === 0 ? 1 : credit / expectedCount;
   const itemPrecision =
