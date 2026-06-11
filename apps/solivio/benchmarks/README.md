@@ -7,6 +7,49 @@ headline number with committable per-case evidence.
 This is **not** a CI test. It is a baseline for iterating on agent
 correctness and comparing models/implementations over time.
 
+## Latest results
+
+<!-- benchmark-latest:start -->
+Latest run: **2026-06-11 11:29** — full data: [`results/offer-generation/2026-06-11-11-29-51__openai-gpt-5.5.json`](results/offer-generation/2026-06-11-11-29-51__openai-gpt-5.5.json)
+
+| | |
+|---|---|
+| **Overall score** | **81.5%** (macro mean over 12 cases) |
+| Model | `openai/gpt-5.5` |
+| Embedding model | `text-embedding-3-large` |
+| Runs per case | 1 |
+| Git commit | `f21f09d` |
+| Case set | `d5b0c5b49792` (scores only comparable within the same case set) |
+
+### Scores by difficulty
+
+| Tier | Score | Cases |
+|---|---|---|
+| basic | 100.0% | 2 |
+| realistic | 100.0% | 2 |
+| hard | 90.7% | 6 |
+| expert | 16.7% | 2 |
+
+### Per-case scores
+
+| Case | Tier | Score (mean) | Stddev | Notes |
+|---|---|---|---|---|
+| [01-simple-explicit](suites/offer-generation/cases/01-simple-explicit.json) | basic | 100.0% | ±0.0% | Simple explicit list with quantities |
+| [02-sku-mix](suites/offer-generation/cases/02-sku-mix.json) | basic | 100.0% | ±0.0% | SKU codes mixed with natural-language descriptions |
+| [03-inflected-synonyms](suites/offer-generation/cases/03-inflected-synonyms.json) | realistic | 100.0% | ±0.0% | Inflected Polish, synonyms, and one item missing from catalog |
+| [04-repeat-order-history](suites/offer-generation/cases/04-repeat-order-history.json) | expert | 33.3% | ±0.0% | Repeat order referencing customer history |
+| [05-sections-merge](suites/offer-generation/cases/05-sections-merge.json) | realistic | 100.0% | ±0.0% | Quantities spread across sections requiring merge |
+| [06-messy-site-email](suites/offer-generation/cases/06-messy-site-email.json) | hard | 100.0% | ±0.0% | Long messy site email: slang, typos, abbreviations, scattered merge |
+| [07-variant-minefield](suites/offer-generation/cases/07-variant-minefield.json) | hard | 100.0% | ±0.0% | Near-variant disambiguation in dense product families |
+| [08-unit-conversion](suites/offer-generation/cases/08-unit-conversion.json) | hard | 50.0% | ±0.0% | Quantities in meters vs catalog packaging units |
+| [09-implied-specs](suites/offer-generation/cases/09-implied-specs.json) | hard | 100.0% | ±0.0% | Specs implied by installation location, not stated |
+| [10-customer-standard](suites/offer-generation/cases/10-customer-standard.json) | expert | 0.0% | ±0.0% | Order in the customer's house standard (context not in the request) |
+| [11-bulk-rfq](suites/offer-generation/cases/11-bulk-rfq.json) | hard | 100.0% | ±0.0% | Bulk RFQ: 51 description-only positions across all families |
+| [12-prose-amendments](suites/offer-generation/cases/12-prose-amendments.json) | hard | 94.4% | ±0.0% | Flowing prose with amendments, cancellations and cross-references |
+
+For a detailed per-run markdown report (verdict tables for every case), run `yarn benchmark:report --file results/offer-generation/2026-06-11-11-29-51__openai-gpt-5.5.json`.
+<!-- benchmark-latest:end -->
+
 ## Structure
 
 Each benchmarked agent gets a **suite** under `suites/<name>/` that owns
@@ -31,6 +74,10 @@ yarn benchmark --difficulty hard,expert   # only the difficult tiers
 yarn benchmark --model openai/gpt-5.4-mini   # compare a different model
 yarn benchmark --concurrency 8
 yarn benchmark --suite offer-generation   # explicit suite (the default)
+
+yarn benchmark:report                     # render MD from the latest .json result
+yarn benchmark:report --file benchmarks/results/offer-generation/<run>.json
+yarn benchmark:readme                     # refresh "Latest results" above from the latest .json
 ```
 
 Requires `.env.local` with `DATABASE_URL` and `OPENAI_API_KEY` (same as
@@ -48,9 +95,10 @@ single runs carry LLM nondeterminism noise.
    (deletes strays, embeds new/changed rows with the production format).
 3. Calls the real `generateOfferWithAgent` — full tool loop and vector
    search — once per case per run, in parallel.
-4. Scores deterministically and writes reports to `results/`
-   (`.md` human report + `.json` full data). Commit results you want to
-   reference.
+4. Scores deterministically and writes a `.json` result (single source of
+   truth) to `results/<suite>/`. Markdown is rendered from it on demand via
+   `yarn benchmark:report`; `yarn benchmark:readme` refreshes the **Latest
+   results** section of this README. Commit results you want to reference.
 5. Appends one line per run to `results/history.jsonl` (timestamp, commit,
    model, case-set hash, overall + per-case scores) and prints a comparison
    against the previous run. The case-set hash covers the catalog and the

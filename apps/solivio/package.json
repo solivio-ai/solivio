@@ -12,7 +12,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
     "db:studio": "drizzle-kit studio",
-    "benchmark": "tsx --conditions=react-server benchmarks/run.ts"
+    "benchmark": "tsx --conditions=react-server benchmarks/run.ts",
+    "benchmark:report": "tsx benchmarks/report.ts",
+    "benchmark:readme": "tsx benchmarks/readme.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",

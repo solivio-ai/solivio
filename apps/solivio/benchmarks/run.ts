@@ -139,9 +139,7 @@ async function main() {
   const slug = `${stamp}__${model.replace(/[^a-zA-Z0-9.-]+/g, "-")}`;
   mkdirSync(resultsDir, { recursive: true });
   const jsonPath = path.join(resultsDir, `${slug}.json`);
-  const mdPath = path.join(resultsDir, `${slug}.md`);
   writeFileSync(jsonPath, `${JSON.stringify(suite.buildJsonReport(meta, results), null, 2)}\n`);
-  writeFileSync(mdPath, suite.buildMarkdownReport(meta, results));
 
   const overall = suite.buildJsonReport(meta, results).aggregate;
   console.log(`\nOverall score: ${(overall.meanScore * 100).toFixed(1)}%`);
@@ -176,7 +174,10 @@ async function main() {
   }
   appendHistory(historyPath, entry);
 
-  console.log(`\nReports written:\n  ${mdPath}\n  ${jsonPath}`);
+  console.log(`\nResult written: ${jsonPath}`);
+  console.log(
+    "Render markdown: yarn benchmark:report · refresh README summary: yarn benchmark:readme",
+  );
 
   process.exit(0); // the pg pool keeps the event loop alive
 }
