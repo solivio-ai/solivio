@@ -375,13 +375,17 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
       createdAt: offers.createdAt,
       updatedAt: offers.updatedAt,
       itemCount: sql<number>`COUNT(DISTINCT ${offerItems.id})`.mapWith(Number),
-      unmatchedCount: sql<number>`COUNT(DISTINCT ${offerUnmatchedItems.id})`.mapWith(Number),
+      // Correlated subquery instead of a second LEFT JOIN: joining both child
+      // tables on offers.id would fan out to N×M rows and inflate the SUMs.
+      unmatchedCount: sql<number>`(
+        SELECT COUNT(*) FROM ${offerUnmatchedItems}
+        WHERE ${offerUnmatchedItems.offerId} = ${offers.id}
+      )`.mapWith(Number),
       totalNet: sql<number>`COALESCE(SUM(${offerItems.totalNet}), 0)`.mapWith(Number),
       totalGross: sql<number>`COALESCE(SUM(${offerItems.totalGross}), 0)`.mapWith(Number),
     })
     .from(offers)
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
-    .leftJoin(offerUnmatchedItems, eq(offerUnmatchedItems.offerId, offers.id))
     .where(ne(offers.status, OFFER_STATUS.IMPORTED))
     .groupBy(offers.id)
     .orderBy(desc(offers.createdAt))
