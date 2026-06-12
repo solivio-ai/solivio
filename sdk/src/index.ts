@@ -1,8 +1,8 @@
 // ── Module definition ───────────────────────────────────────────────────────
 
 // ── Capability surfaces ──────────────────────────────────────────────────────
-export type { AgentTool } from "./agent-tool.js";
-export { defineAgentTool } from "./agent-tool.js";
+export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.js";
+export { AGENT_IDS, defineAgentTool } from "./agent-tool.js";
 export type {
   DefineModuleConfig,
   ModuleContributions,
@@ -12,6 +12,8 @@ export { defineModule } from "./define-module.js";
 // ── Entity DTOs ──────────────────────────────────────────────────────────────
 export type {
   CustomerInput,
+  OfferImportInput,
+  OfferImportLineItem,
   OfferItemView,
   OfferSnapshot,
   OfferSnapshotLineItem,
@@ -28,6 +30,7 @@ export type {
   ImportRowError,
   ImportStatus,
   ImportTarget,
+  OfferImporterDefinition,
   ProductImporterDefinition,
 } from "./importer.js";
 // ── Module context (the seam to shared infrastructure) ───────────────────────
@@ -45,9 +48,12 @@ export type {
   BulkAddResult,
   CoreServices,
   OfferDeleteResult,
+  OfferHistoryService,
   OfferLineItemInput,
   OfferMutationResult,
   OfferService,
+  PastOffer,
+  PastOfferLineItem,
   ProductSearchOptions,
   ProductService,
 } from "./services.js";

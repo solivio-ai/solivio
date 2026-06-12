@@ -2,10 +2,13 @@
   "modules": [
     { "package": "@solivio/module-csv-products", "options": {} },
     { "package": "@solivio/module-csv-customers", "options": {} },
-    { "package": "@solivio/module-offer-tools", "options": {} }
+    { "package": "@solivio/module-csv-orders", "options": {} },
+    { "package": "@solivio/module-offer-tools", "options": {} },
+    { "package": "@solivio/module-order-history", "options": {} }
   ],
   "slots": {
     "product.importer": "csv-products/csv-products",
-    "customer.importer": "csv-customers/csv-customers"
+    "customer.importer": "csv-customers/csv-customers",
+    "offer.importer": "csv-orders/csv-orders"
   }
 }

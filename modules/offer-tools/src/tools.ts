@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { AgentTool, CoreServices } from "@solivio/sdk";
+import type { AgentTool, AgentToolContext, CoreServices } from "@solivio/sdk";
 import { defineAgentTool } from "@solivio/sdk";
 
 /**
@@ -13,6 +13,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const searchProducts = defineAgentTool({
     name: "search_products",
+    agents: ["chat-agent"],
     description:
       "Search the product catalog using a natural-language query and return the best semantic matches. Use this to discover product IDs before adding them to an offer.",
     parameters: z.object({
@@ -28,7 +29,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
         .optional()
         .describe("Maximum number of results to return (default 5, max 20)"),
     }),
-    execute: async (input) => {
+    execute: async (input, _ctx: AgentToolContext) => {
       const matches = await products.search(input.query, {
         limit: input.limit ?? 10,
         minSimilarity: 0.2,
@@ -39,6 +40,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const addProduct = defineAgentTool({
     name: "add_product_to_offer",
+    agents: ["chat-agent"],
     description:
       "Add a product to an offer by its exact UUID. Only call this after you have resolved the product ID — use search_products first if the user gave a name or description instead of an ID.",
     parameters: z.object({
@@ -54,7 +56,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
         .optional()
         .describe("Brief explanation of why this product matches the requirement"),
     }),
-    execute: async (input) => {
+    execute: async (input, _ctx: AgentToolContext) => {
       const result = await offers.addProduct(input.offerId, {
         productId: input.productId,
         quantity: input.quantity,
@@ -76,6 +78,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const updateLineItem = defineAgentTool({
     name: "update_offer_line_item",
+    agents: ["chat-agent"],
     description:
       "Update the quantity of a specific line item in an offer. Use this when the user asks to change how many units of a product are in the offer.",
     parameters: z.object({
@@ -83,7 +86,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
       offerProductId: z.string().uuid().describe("ID of the line item to update"),
       quantity: z.number().int().positive().describe("New quantity for the line item"),
     }),
-    execute: async (input) => {
+    execute: async (input, _ctx: AgentToolContext) => {
       const result = await offers.updateLineItem(
         input.offerId,
         input.offerProductId,
@@ -102,13 +105,14 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const removeLineItem = defineAgentTool({
     name: "remove_offer_line_item",
+    agents: ["chat-agent"],
     description:
       "Remove a product line item from an offer. Use this when the user asks to remove or delete a product from the offer.",
     parameters: z.object({
       offerId: z.string().uuid().describe("ID of the offer to remove the line item from"),
       offerProductId: z.string().uuid().describe("ID of the line item to remove"),
     }),
-    execute: async (input) => {
+    execute: async (input, _ctx: AgentToolContext) => {
       const result = await offers.removeLineItem(input.offerId, input.offerProductId);
       switch (result.status) {
         case "ok":
@@ -123,6 +127,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const proposeProducts = defineAgentTool({
     name: "propose_products_for_requirements",
+    agents: ["chat-agent"],
     description:
       "Given a list of natural-language product requirements, search the catalog for the best match for each one and return a structured proposal. Use this when the user describes multiple product needs at once, or when the user asks you to suggest or propose products without immediately adding them. Present the results to the user before adding anything.",
     parameters: z.object({
@@ -138,7 +143,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
         .optional()
         .describe("Maximum number of catalog matches to return per requirement (default 3, max 5)"),
     }),
-    execute: async (input) => {
+    execute: async (input, _ctx: AgentToolContext) => {
       const resultsMap = await products.searchBatch(input.requirements, {
         limit: input.limit ?? 3,
         minSimilarity: 0.6,
@@ -154,6 +159,7 @@ export function createOfferTools(services: CoreServices): AgentTool[] {
 
   const bulkAdd = defineAgentTool({
     name: "bulk_add_products",
+    agents: ["chat-agent"],
     description:
       "Add multiple products to an offer in a single call. Use this after propose_products_for_requirements when the user confirms which products to add, or when adding several products at once from resolved product UUIDs.",
     parameters: z.object({

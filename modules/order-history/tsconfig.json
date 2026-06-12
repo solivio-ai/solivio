@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@solivio/sdk": ["../../sdk/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

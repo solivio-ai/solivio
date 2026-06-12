@@ -1,9 +1,10 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import type { MatchSource, Offer, OfferStatus } from "@solivio/domain";
+import { OFFER_STATUS } from "@solivio/domain";
 
 import { db } from "../database/db";
 import { customers, offerItems, offers, products, requests, users } from "../database/schema";
@@ -23,6 +24,7 @@ export type InsertOfferData = {
   unmatched: string[];
   discountPercent?: number;
   discountAmount?: number;
+  createdAt?: Date;
 };
 
 export type InsertOfferItemData = {
@@ -306,9 +308,120 @@ export async function getRecentOffers(limit: number = 100, tx: Tx = db) {
     .leftJoin(customers, eq(customers.id, offers.customerId))
     .leftJoin(requests, eq(requests.id, offers.requestId))
     .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .where(ne(offers.status, OFFER_STATUS.IMPORTED))
     .groupBy(offers.id, customers.name, requests.rawText)
     .orderBy(desc(offers.createdAt))
     .limit(limit);
+}
+
+export async function findRecentOffersByCustomer(
+  customerId: string,
+  { limit = 10 }: { limit?: number } = {},
+  tx: Tx = db,
+): Promise<OfferRow[]> {
+  const HISTORY_STATUSES = [OFFER_STATUS.IMPORTED, OFFER_STATUS.ACCEPTED] as const;
+
+  const offerIds = await tx
+    .select({ id: offers.id })
+    .from(offers)
+    .where(and(eq(offers.customerId, customerId), inArray(offers.status, [...HISTORY_STATUSES])))
+    .orderBy(desc(offers.createdAt))
+    .limit(limit);
+
+  if (offerIds.length === 0) return [];
+
+  const ids = offerIds.map((r) => r.id);
+
+  const rows = await tx
+    .select({
+      offerId: offers.id,
+      name: offers.name,
+      status: offers.status,
+      currency: offers.currency,
+      notes: offers.notes,
+      unmatched: offers.unmatched,
+      discountPercent: offers.discountPercent,
+      discountAmount: offers.discountAmount,
+      createdAt: offers.createdAt,
+      updatedAt: offers.updatedAt,
+      customerId: offers.customerId,
+      customerName: customers.name,
+      requestId: offers.requestId,
+      clientRequest: requests.rawText,
+      userId: offers.userId,
+      userName: sql<null>`null`,
+      itemId: offerItems.id,
+      itemProductId: offerItems.productId,
+      itemProductSku: products.sku,
+      itemName: offerItems.name,
+      itemDescription: offerItems.description,
+      itemQuantity: offerItems.quantity,
+      itemUnitPriceNet: offerItems.unitPriceNet,
+      itemVatRate: offerItems.vatRate,
+      itemUnitGrossPrice: offerItems.unitGrossPrice,
+      itemTotalNet: offerItems.totalNet,
+      itemTotalGross: offerItems.totalGross,
+      itemRequestItem: offerItems.requestItem,
+      itemRationale: offerItems.rationale,
+      itemMatchSource: offerItems.matchSource,
+      itemMatchScore: offerItems.matchScore,
+      itemPosition: offerItems.position,
+    })
+    .from(offers)
+    .leftJoin(customers, eq(customers.id, offers.customerId))
+    .leftJoin(requests, eq(requests.id, offers.requestId))
+    .leftJoin(offerItems, eq(offerItems.offerId, offers.id))
+    .leftJoin(products, eq(products.id, offerItems.productId))
+    .where(inArray(offers.id, ids))
+    .orderBy(desc(offers.createdAt), offerItems.position, offerItems.id);
+
+  const map = new Map<string, OfferRow>();
+  for (const row of rows) {
+    if (!map.has(row.offerId)) {
+      map.set(row.offerId, {
+        id: row.offerId,
+        name: row.name,
+        customerId: row.customerId,
+        customerName: row.customerName,
+        requestId: row.requestId,
+        clientRequest: row.clientRequest,
+        userId: row.userId,
+        userName: null,
+        status: row.status,
+        currency: row.currency,
+        notes: row.notes,
+        unmatched: row.unmatched,
+        discountPercent: row.discountPercent,
+        discountAmount: row.discountAmount,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+        items: [],
+      });
+    }
+    if (row.itemId) {
+      map.get(row.offerId)!.items.push({
+        id: row.itemId,
+        productId: row.itemProductId,
+        productSku: row.itemProductSku,
+        name: row.itemName!,
+        description: row.itemDescription!,
+        quantity: row.itemQuantity!,
+        unitPriceNet: row.itemUnitPriceNet!,
+        vatRate: row.itemVatRate!,
+        unitGrossPrice: row.itemUnitGrossPrice!,
+        totalNet: row.itemTotalNet!,
+        totalGross: row.itemTotalGross!,
+        requestItem: row.itemRequestItem!,
+        rationale: row.itemRationale!,
+        matchSource: row.itemMatchSource as MatchSource | null,
+        matchScore: row.itemMatchScore,
+        position: row.itemPosition!,
+      });
+    }
+  }
+
+  // Preserve newest-first order from the initial id query.
+  return ids.map((id) => map.get(id)).filter((r): r is OfferRow => r !== undefined);
 }
 
 // ── Domain mapping helper ──────────────────────────────────────────────────────

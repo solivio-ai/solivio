@@ -5558,6 +5558,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-csv-orders@workspace:modules/csv-orders-importer":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-csv-orders@workspace:modules/csv-orders-importer"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    typescript: "npm:^6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/module-csv-products@workspace:modules/csv-products-importer":
   version: 0.0.0-use.local
   resolution: "@solivio/module-csv-products@workspace:modules/csv-products-importer"
@@ -5570,6 +5579,16 @@ __metadata:
 "@solivio/module-offer-tools@workspace:modules/offer-tools":
   version: 0.0.0-use.local
   resolution: "@solivio/module-offer-tools@workspace:modules/offer-tools"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.3.6"
+  languageName: unknown
+  linkType: soft
+
+"@solivio/module-order-history@workspace:modules/order-history":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-order-history@workspace:modules/order-history"
   dependencies:
     "@solivio/sdk": "workspace:*"
     typescript: "npm:^6.0.3"

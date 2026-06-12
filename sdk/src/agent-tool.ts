@@ -10,16 +10,48 @@
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
+/** Named agents that modules may contribute tools to. */
+export type AgentId =
+  | "chat-agent"
+  | "offer-generation-agent"
+  | "requirement-extraction-agent"
+  | "validation-agent"
+  | "offer-name-agent";
+
+export const AGENT_IDS: AgentId[] = [
+  "chat-agent",
+  "offer-generation-agent",
+  "requirement-extraction-agent",
+  "validation-agent",
+  "offer-name-agent",
+];
+
+/**
+ * Request-scoped data the core fills before calling a tool's execute.
+ * Modules must not ask the LLM to supply these — the core injects them.
+ */
+export interface AgentToolContext {
+  /** DB id of the customer in scope for this request. Null when unknown. */
+  customerId?: string | null;
+  /** DB id of the offer being reviewed, if applicable. */
+  offerId?: string | null;
+}
+
 export interface AgentTool<
   TParams extends StandardSchemaV1 = StandardSchemaV1,
   TOutput extends StandardSchemaV1 = StandardSchemaV1,
 > {
   name: string;
   description: string;
+  /** Which named agents this tool should be wired into. */
+  agents: AgentId[];
   parameters: TParams;
   /** Optional output schema. When omitted, the core does not constrain output. */
   outputSchema?: TOutput;
-  execute: (input: StandardSchemaV1.InferOutput<TParams>) => Promise<unknown>;
+  execute: (
+    input: StandardSchemaV1.InferOutput<TParams>,
+    context: AgentToolContext,
+  ) => Promise<unknown>;
 }
 
 /**
@@ -31,9 +63,13 @@ export interface AgentTool<
 export function defineAgentTool<TParams extends StandardSchemaV1>(tool: {
   name: string;
   description: string;
+  agents: AgentId[];
   parameters: TParams;
   outputSchema?: StandardSchemaV1;
-  execute: (input: StandardSchemaV1.InferOutput<TParams>) => Promise<unknown>;
+  execute: (
+    input: StandardSchemaV1.InferOutput<TParams>,
+    context: AgentToolContext,
+  ) => Promise<unknown>;
 }): AgentTool {
   return tool as AgentTool;
 }

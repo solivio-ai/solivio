@@ -1,6 +1,7 @@
 import "server-only";
 
-import type { CoreServices, OfferService, ProductService } from "@solivio/sdk";
+import type { CoreServices, OfferHistoryService, OfferService, ProductService } from "@solivio/sdk";
+import { offerHistoryService } from "@/server/offers/offerHistoryService";
 import {
   addProductToOffer,
   bulkAddProductsToOffer,
@@ -69,4 +70,6 @@ const offers: OfferService = {
   },
 };
 
-export const coreServices: CoreServices = { products, offers };
+const history: OfferHistoryService = offerHistoryService;
+
+export const coreServices: CoreServices = { products, offers, history };

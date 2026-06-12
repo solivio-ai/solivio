@@ -2,6 +2,7 @@ export const OFFER_STATUS = {
   DRAFT: "draft",
   ACCEPTED: "accepted",
   REJECTED: "rejected",
+  IMPORTED: "imported",
 } as const;
 
 export type OfferStatus = (typeof OFFER_STATUS)[keyof typeof OFFER_STATUS];

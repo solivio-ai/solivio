@@ -22,7 +22,7 @@ export const offerProductPathParamsSchema = z
 // ── Enums ──────────────────────────────────────────────────────────────────────
 
 export const offerStatusSchema = z
-  .enum([OFFER_STATUS.DRAFT, OFFER_STATUS.ACCEPTED, OFFER_STATUS.REJECTED])
+  .enum([OFFER_STATUS.DRAFT, OFFER_STATUS.ACCEPTED, OFFER_STATUS.REJECTED, OFFER_STATUS.IMPORTED])
   .meta({ id: "OfferStatus" });
 
 export const matchSourceSchema = z
@@ -163,7 +163,7 @@ export const updateOfferRequestSchema = z
     name: z.string().min(1).optional(),
     customerId: z.string().uuid().nullable().optional(),
     customerName: z.string().nullable().optional(),
-    status: offerStatusSchema.optional(),
+    status: z.enum(["draft", "accepted", "rejected"]).optional(),
     currency: z.string().optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
     unmatched: z.array(z.string()).optional(),

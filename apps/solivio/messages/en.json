@@ -6,6 +6,7 @@
       "newOffer": "New Offer",
       "catalogUpload": "Catalog Upload",
       "customerUpload": "Customer Upload",
+      "orderUpload": "Order Upload",
       "users": "Users",
       "adminGroup": "Admin"
     },
@@ -486,14 +487,14 @@
       "label": "Chat thread",
       "newChat": "Start new chat"
     },
-    "welcome": "I can explain this offer, summarize the client request, review product matches, and suggest improvements.",
+    "welcome": "I can explain this offer, suggest improvements, and help with repeat orders using this customer's order history.",
     "input": {
       "placeholder": "Tell the AI what to change or ask..."
     },
     "suggestions": {
       "summarize": "Summarize client request",
       "mostExpensive": "List 3 most expensive items in offer",
-      "upsell": "Suggest additional products for upsell"
+      "upsell": "Show customer's recent orders"
     },
     "errors": {
       "loadThreads": "Could not load chat threads.",
@@ -639,6 +640,27 @@
         "import": "Import"
       },
       "importDone": "Saved {count, plural, one {# customer} other {# customers}}.",
+      "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
+      "importError": "Import failed."
+    }
+  },
+  "OfferImport": {
+    "page": {
+      "title": "Import historical orders",
+      "description": "Upload a CSV file with historical orders to import them as read-only offers."
+    },
+    "card": {
+      "title": "Order upload",
+      "description": "Pick a CSV file with order reference, customer name, and line items. Imported orders are read-only historical records.",
+      "chooseFile": "Choose a file",
+      "pickAnother": "Click to pick another file",
+      "dropOne": "or drop one onto this field",
+      "readError": "Failed to read the file.",
+      "importAction": {
+        "saving": "Importing...",
+        "import": "Import"
+      },
+      "importDone": "Saved {count, plural, one {# order} other {# orders}}.",
       "importRowErrors": "{count, plural, one {# row} other {# rows}} could not be imported.",
       "importError": "Import failed."
     }
