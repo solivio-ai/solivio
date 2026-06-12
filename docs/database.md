@@ -77,12 +77,6 @@ yarn db:up        # start the database container
 yarn db:down      # stop it
 ```
 
-Verify pgvector:
-
-```bash
-docker compose exec -T db psql -U solivio -d solivio -c "CREATE EXTENSION IF NOT EXISTS vector; SELECT extversion FROM pg_extension WHERE extname = 'vector';"
-```
-
 The API health endpoint (`curl http://localhost:3000/api/health`) reports the live
 PostgreSQL and pgvector versions. For a disposable local database created with an older
 major:

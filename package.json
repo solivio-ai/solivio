@@ -22,7 +22,7 @@
     "dev": "yarn generate && concurrently -k -n gen,app \"tsx scripts/generate/index.mts --watch\" \"yarn workspace @solivio/app dev\"",
     "generate": "tsx scripts/generate/index.mts",
     "docs:dev": "yarn workspace @solivio/docs dev",
-    "docs:build": "yarn workspace @solivio/docs build",
+    "docs:build": "yarn generate && yarn workspace @solivio/docs build",
     "openapi:generate": "yarn workspace @solivio/docs openapi:generate",
     "build": "yarn generate && yarn workspace @solivio/app build && yarn workspace @solivio/docs build",
     "check": "biome check . && tsx scripts/check-boundaries.mts",
