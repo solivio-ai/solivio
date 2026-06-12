@@ -14,7 +14,7 @@ type CatalogProduct = { sku: string; name: string; description: string };
 // placeholder price row.
 const PLACEHOLDER_PRICE = { priceNet: 100, priceGross: 123, vatRate: 23, currency: "PLN" };
 
-/** Creates the benchmark database and pgvector extension if missing. */
+/** Creates the benchmark database if missing; migrations create extensions and schema. */
 export async function ensureBenchmarkDatabase(adminUrl: string, benchmarkUrl: string) {
   // Decode %xx like the pg connection string parser does, so the name we
   // create matches the one the benchmark connection will open.
@@ -29,15 +29,6 @@ export async function ensureBenchmarkDatabase(adminUrl: string, benchmarkUrl: st
     }
   } finally {
     await admin.end();
-  }
-
-  // The docker init script only installs pgvector in the default database.
-  const bench = new Client({ connectionString: benchmarkUrl });
-  await bench.connect();
-  try {
-    await bench.query("CREATE EXTENSION IF NOT EXISTS vector");
-  } finally {
-    await bench.end();
   }
 }
 
