@@ -30,14 +30,15 @@ modules may not import app internals or other modules at runtime.
 Fast unit tests live beside the file that owns the behavior and run with:
 
 ```bash
-yarn test:unit
+yarn test
 yarn test:watch
 ```
 
 Use Vitest (`test`, `describe`, `expect`, `vi`) for module and package unit
 tests. The root `vitest.config.ts` runs in the Node environment and resolves
 the `react-server` package condition so server module files that import Next's
-`server-only` marker can be loaded outside Next.
+`server-only` marker can be loaded outside Next. Generator tests use the same
+Vitest setup under `scripts/generate/__tests__/`.
 
 Recommended layout:
 
@@ -107,12 +108,12 @@ fully parallel. Do not depend on external services; CI runs with
 ## Choosing a Layer
 
 - Parser, mapper, schema, importer, deterministic service branch: colocated
-  `*.test.{ts,tsx}` run by `yarn test:unit`.
+  `*.test.{ts,tsx}` run by `yarn test`.
 - Runtime accessors, event emission, service dependency, auth guard behavior:
-  `yarn test:unit` with `installTestRuntime()`.
+  `yarn test` with `installTestRuntime()`.
 - SQL, migration, transaction, pgvector, repository behavior: future integration
   test against Postgres.
 - Generated app-router wiring, auth/session behavior, pages, and cross-module
   user journeys: Playwright E2E.
 - Module graph, generated artifacts, import boundaries, table prefixes:
-  `yarn generate --check`, `yarn check`, `yarn db:check`, generator tests.
+  `yarn generate --check`, `yarn check`, `yarn db:check`, generator tests through `yarn test`.

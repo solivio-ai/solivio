@@ -44,10 +44,8 @@
     "overlay": "node scripts/overlay.mjs",
     "seed": "tsx scripts/seed.mts",
     "create-module": "node scripts/create-module.mjs",
-    "test": "yarn test:unit && yarn test:generator",
-    "test:unit": "vitest run",
+    "test": "vitest run",
     "test:watch": "vitest",
-    "test:generator": "node --import tsx --test scripts/generate/__tests__/*.test.mts",
     "ensure:local-env": "node scripts/ensure-local-env.mjs",
     "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test",
     "validate:all": "yarn ensure:local-env && yarn install --immutable && yarn dedupe --check && yarn validate && yarn db:check && yarn workspace @solivio/app build && yarn workspace @solivio/docs build && yarn setup && yarn e2e"

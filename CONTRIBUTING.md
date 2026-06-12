@@ -44,7 +44,7 @@ Reading path before your first change:
 ## Before Opening a Pull Request
 
 ```bash
-yarn validate   # generate --check + biome/boundaries + typecheck + unit/generator tests
+yarn validate   # generate --check + biome/boundaries + typecheck + all fast Vitest tests
 yarn db:check   # migration journals match schemas (needs the database up)
 yarn e2e        # Playwright against http://localhost:3000
 ```

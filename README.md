@@ -145,7 +145,7 @@ Useful commands:
 ```bash
 yarn check                       # Biome lint + format check
 yarn biome check --write .       # auto-fix lint + format (run after every change)
-yarn test                        # unit/module tests + generator tests
+yarn test                        # all fast Vitest tests
 yarn typecheck
 yarn e2e
 yarn docs:dev
@@ -162,14 +162,13 @@ Fast unit and module tests live beside the production files they exercise
 (`*.test.ts` or `*.test.tsx`) and use Vitest:
 
 ```bash
-yarn test:unit
-yarn test:watch
 yarn test
+yarn test:watch
 ```
 
 Use these for deterministic module behavior, importers, service branches, and
-runtime-backed tests with faked SDK services. The testing strategy lives in
-`docs/testing.md`.
+runtime-backed tests with faked SDK services. Generator tests use the same
+Vitest setup. The testing strategy lives in `docs/testing.md`.
 
 ## 🧪 End-to-End Tests
 

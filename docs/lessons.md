@@ -26,7 +26,7 @@ Newest first. One entry per lesson:
 
 **Context:** Testing docs initially recorded intermediate decisions: root test placement, module-level placement, and research notes.
 **Rule:** Prefer colocated `*.test.ts` beside production files under `modules/<id>/src/`; keep shared harness utilities in root `tests/support/`; keep task-router docs operational and compact.
-**Applies to:** `modules/*/src/**/*.test.ts`, `tests/support/`, `docs/testing.md`, `vitest.config.ts`, `yarn test:unit`.
+**Applies to:** `modules/*/src/**/*.{test,spec}.{ts,tsx}`, `scripts/generate/__tests__/`, `tests/support/`, `docs/testing.md`, `vitest.config.ts`, `yarn test`.
 
 ### 2026-06-12 — Keep pg-boss queue names v12-safe
 
