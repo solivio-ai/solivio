@@ -51,6 +51,9 @@ modules/
       server/
         service.ts
         service.test.ts
+      components/
+        Widget.tsx
+        Widget.test.tsx
 tests/
   support/
     runtime.ts
@@ -104,7 +107,7 @@ fully parallel. Do not depend on external services; CI runs with
 ## Choosing a Layer
 
 - Parser, mapper, schema, importer, deterministic service branch: colocated
-  `*.test.ts` run by `yarn test:unit`.
+  `*.test.{ts,tsx}` run by `yarn test:unit`.
 - Runtime accessors, event emission, service dependency, auth guard behavior:
   `yarn test:unit` with `installTestRuntime()`.
 - SQL, migration, transaction, pgvector, repository behavior: future integration

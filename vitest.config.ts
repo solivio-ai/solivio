@@ -9,9 +9,9 @@ export default defineConfig({
   test: {
     environment: "node",
     include: [
-      "modules/*/src/**/*.{test,spec}.ts",
-      "packages/*/src/**/*.{test,spec}.ts",
-      "sdk/src/**/*.{test,spec}.ts",
+      "modules/*/src/**/*.{test,spec}.{ts,tsx}",
+      "packages/*/src/**/*.{test,spec}.{ts,tsx}",
+      "sdk/src/**/*.{test,spec}.{ts,tsx}",
     ],
     exclude: ["**/node_modules/**", "**/.next/**", "**/dist/**"],
     restoreMocks: true,

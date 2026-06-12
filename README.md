@@ -159,7 +159,7 @@ formatting, and applies safe lint fixes so `yarn check` stays green in CI.
 ## 🧪 Tests
 
 Fast unit and module tests live beside the production files they exercise
-(`*.test.ts`) and use Vitest:
+(`*.test.ts` or `*.test.tsx`) and use Vitest:
 
 ```bash
 yarn test:unit

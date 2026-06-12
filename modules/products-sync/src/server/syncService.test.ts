@@ -12,6 +12,15 @@ import type { SyncRunRow } from "./syncService.ts";
 import { runProductsSync } from "./syncService.ts";
 
 type ProductsSyncRun = SyncRunRow;
+type DrizzleEqChunk = {
+  constructor?: { name?: string };
+  encoder?: { constructor?: { name?: string } };
+  name?: string;
+  value?: unknown;
+};
+type DrizzleEqPredicate = {
+  queryChunks?: DrizzleEqChunk[];
+};
 
 describe("products-sync service", () => {
   afterEach(() => {
@@ -168,10 +177,11 @@ function createProductsSyncDb() {
       }),
       update: () => ({
         set: (patch: Partial<ProductsSyncRun>) => ({
-          where: () => ({
+          where: (predicate: DrizzleEqPredicate) => ({
             returning: async () => {
-              const run = runs.at(-1);
-              if (!run) throw new Error("No products-sync run exists to update");
+              const runId = runIdFromPredicate(predicate);
+              const run = runs.find((candidate) => candidate.id === runId);
+              if (!run) throw new Error(`No products-sync run "${runId}" exists to update`);
               Object.assign(run, patch);
               return [run];
             },
@@ -187,4 +197,19 @@ function createProductsSyncDb() {
       }),
     } as unknown as SolivioRuntime["db"],
   };
+}
+
+function runIdFromPredicate(predicate: DrizzleEqPredicate): string {
+  const chunks = predicate.queryChunks ?? [];
+  const column = chunks.find((chunk) => chunk.constructor?.name === "PgUUID");
+  const param = chunks.find((chunk) => chunk.constructor?.name === "Param");
+
+  if (column?.name !== "id" || param?.encoder?.constructor?.name !== "PgUUID") {
+    throw new Error("Products-sync DB fake only supports where(eq(productsSyncRuns.id, runId))");
+  }
+  if (typeof param.value !== "string") {
+    throw new Error("Products-sync DB fake expected a string run id predicate");
+  }
+
+  return param.value;
 }

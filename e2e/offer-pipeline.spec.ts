@@ -1,8 +1,10 @@
+import { randomUUID } from "node:crypto";
+
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
 test("quick offer flow persists, accepts, and locks accepted offers", async ({ page }) => {
-  const accountId = `e2ep${Date.now().toString(36)}`;
+  const accountId = `e2ep${randomUUID().replaceAll("-", "").slice(0, 12)}`;
   await signUp(page, accountId);
 
   const sku = `PIPE-${accountId}`;
