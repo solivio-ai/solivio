@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
-test("quick offer flow persists, accepts, and locks line item edits", async ({ page }) => {
+test("quick offer flow persists, accepts, and locks accepted offers", async ({ page }) => {
   const accountId = `e2ep${Date.now().toString(36)}`;
   await signUp(page, accountId);
 
@@ -56,14 +56,23 @@ test("quick offer flow persists, accepts, and locks line item edits", async ({ p
     data: { status: "accepted" },
   });
   await expect(acceptResponse).toBeOK();
-  expect(await acceptResponse.json()).toMatchObject({ offer: { status: "accepted" } });
+  const acceptedBody = (await acceptResponse.json()) as {
+    offer: { id: string; status: string };
+  };
+  expect(acceptedBody).toMatchObject({ offer: { id: offer.id, status: "accepted" } });
 
-  const lockedEditResponse = await page.request.patch(
-    `/api/offers/${offer.id}/products/${lineItem.id}`,
-    { data: { quantity: 3 } },
-  );
-  expect(lockedEditResponse.status()).toBe(403);
-  expect(await lockedEditResponse.json()).toMatchObject({
+  const acceptedReadResponse = await page.request.get(`/api/offers/${acceptedBody.offer.id}`);
+  await expect(acceptedReadResponse).toBeOK();
+  expect(await acceptedReadResponse.json()).toMatchObject({
+    offer: { id: offer.id, status: "accepted" },
+  });
+
+  const lockedMutationResponse = await page.request.patch(`/api/offers/${acceptedBody.offer.id}`, {
+    data: { name: "Late edit" },
+  });
+  const lockedMutationText = await lockedMutationResponse.text();
+  expect(lockedMutationResponse.status(), lockedMutationText).toBe(403);
+  expect(JSON.parse(lockedMutationText)).toMatchObject({
     error: { code: "offer_locked" },
   });
 });
