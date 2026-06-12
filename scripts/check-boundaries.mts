@@ -9,6 +9,8 @@
  *     modules (`@solivio/module-*`), app internals (`@/...`), or `@solivio/app`.
  *     Cross-module calls go through `getService()`/events; cross-module data
  *     through id references.
+ *     Colocated test files may additionally import shared helpers from
+ *     root `tests/support/`.
  *  2. Handwritten app code (apps/solivio/src/**) may NOT import
  *     `@solivio/module-*` directly — module code reaches the app only through
  *     the generated registries (`@/generated/*`). Generated files (marked with
@@ -45,6 +47,8 @@ function walk(dir: string): string[] {
 
 const TYPE_ONLY_SERVICE_IMPORT =
   /import\s+type\s[^;]*from\s*["']@solivio\/module-[a-z-]+\/services\.ts["'];?/g;
+const TEST_FILE_PATTERN = /\.(test|spec)\.(ts|tsx|mts)$/;
+const TEST_SUPPORT_DIR = path.join(repoRoot, "tests/support");
 
 function importsOf(filePath: string): string[] {
   // Type-only imports of another module's services.ts are the sanctioned way
@@ -61,6 +65,14 @@ function importsOf(filePath: string): string[] {
 function isGenerated(filePath: string): boolean {
   const firstLine = fs.readFileSync(filePath, "utf8").split("\n", 1)[0] ?? "";
   return firstLine.includes("@generated");
+}
+
+function isTestFile(filePath: string): boolean {
+  return TEST_FILE_PATTERN.test(filePath);
+}
+
+function isTestSupportImport(resolved: string): boolean {
+  return resolved === TEST_SUPPORT_DIR || resolved.startsWith(`${TEST_SUPPORT_DIR}${path.sep}`);
 }
 
 const errors: string[] = [];
@@ -86,7 +98,10 @@ if (fs.existsSync(modulesDir)) {
           // Relative imports must stay inside the module — `../../apps/...`
           // would silently bypass the package-name rules below.
           const resolved = path.resolve(path.dirname(filePath), specifier);
-          if (!resolved.startsWith(moduleDir + path.sep)) {
+          if (
+            !resolved.startsWith(moduleDir + path.sep) &&
+            !(isTestFile(filePath) && isTestSupportImport(resolved))
+          ) {
             errors.push(`${rel(filePath)}: relative import escapes the module ("${specifier}")`);
           }
           continue;

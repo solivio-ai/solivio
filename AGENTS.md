@@ -7,7 +7,7 @@ The sections below are the quick reference. They summarize the boundaries; the d
 ## Always
 
 - Match the task to the **Task Router** below and read the relevant `docs/` guide before researching or coding. A task can match multiple rows — read all of them.
-- Run `yarn check` before handing work back (Biome + the module boundary checker); add `yarn typecheck` whenever TypeScript, API contracts, server code, or React behavior changes. Auto-fix formatting first with `yarn biome check --write .`. For a full repo health check before handoff, run the single command: `yarn validate:all`.
+- Run `yarn check` and `yarn test` before handing work back; add `yarn typecheck` whenever TypeScript, API contracts, server code, or React behavior changes. Auto-fix formatting first with `yarn biome check --write .`. For a full repo health check before handoff, run the single command: `yarn validate:all`.
 - Run `yarn generate` after changing module files or `solivio.config.ts` — the generated registries and app-router stubs are how module code reaches the app. (`yarn dev` keeps a generator watcher running for you.)
 - Keep feature code in modules (`modules/<id>/src/`); modules depend only on `@solivio/sdk` and the shared packages (`@solivio/ui`, `@solivio/theme`, `@solivio/domain`), and reach shared infrastructure only through `@solivio/sdk/runtime` accessors.
 - Read each module's own `AGENTS.md` (e.g. `modules/customers/AGENTS.md`) before changing it; `modules/products-sync` is the reference example exercising every module surface.
@@ -42,10 +42,12 @@ Choose the smallest relevant set for the change:
 
 ```bash
 yarn validate:all            # full repo health/handoff suite: env, immutable install, validate, db:check, build, setup, e2e
-yarn validate                # fast PR gate: generate --check + biome/boundaries + typecheck + generator tests
+yarn validate                # the PR gate: generate --check + biome/boundaries + typecheck + unit/generator tests
 yarn biome check --write .   # format, sort imports, apply safe lint fixes
 yarn generate                # regenerate module wiring (add --check to validate only)
 yarn check                   # Biome quality gate + module boundary checker (CI runs this)
+yarn test                    # unit/module tests + generator tests
+yarn test:unit               # fast Node tests under tests/
 yarn typecheck               # when TS, API contracts, server code, or React behavior changes
 yarn test:generator          # unit tests for scripts/generate (run after touching it)
 yarn dedupe --check          # verify lockfile deduplication after dependency changes (`yarn dedupe` fixes it)
@@ -71,6 +73,7 @@ Before research or coding, match the task to a row and read the linked guide. A 
 | Operator overlays — running custom modules without forking (`yarn overlay`) | `docs/codegen.md` → Config resolution + public guide `apps/docs/.../guides/extending.md` |
 | Building/publishing images, deployment | `docs/publishing.md` + this file → **Build** / **Deploy** |
 | Product scope and what the MVP includes | `docs/mvp-scope.md` |
+| Testing strategy, unit/module tests, E2E scope, or CI validation | `docs/testing.md` |
 | Why a load-bearing technical decision was made | `docs/adr/` |
 
 ## Working with Subagents
@@ -105,7 +108,7 @@ yarn biome check --write .   # formats, sorts imports, and applies safe lint fix
 yarn check                   # Biome + scripts/check-boundaries.mts (module import boundaries)
 ```
 
-Use `yarn check` as the single repository quality gate. It includes the module boundary checker: modules may not import other modules or app internals, and handwritten app code may not import `@solivio/module-*` directly (only the generated registries do).
+Use `yarn check` as the single repository quality gate. It includes the module boundary checker: modules may not import other modules or app internals, and handwritten app code may not import `@solivio/module-*` directly (only the generated registries do). Use `yarn test` for fast unit/module and generator tests.
 
 Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes. Run `yarn db:check` after schema work.
 

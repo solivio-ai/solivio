@@ -145,6 +145,7 @@ Useful commands:
 ```bash
 yarn check                       # Biome lint + format check
 yarn biome check --write .       # auto-fix lint + format (run after every change)
+yarn test                        # unit/module tests + generator tests
 yarn typecheck
 yarn e2e
 yarn docs:dev
@@ -154,6 +155,21 @@ yarn db:down
 
 Run `yarn biome check --write .` before committing — it sorts imports, normalises
 formatting, and applies safe lint fixes so `yarn check` stays green in CI.
+
+## 🧪 Tests
+
+Fast unit and module tests live beside the production files they exercise
+(`*.test.ts`) and use Vitest:
+
+```bash
+yarn test:unit
+yarn test:watch
+yarn test
+```
+
+Use these for deterministic module behavior, importers, service branches, and
+runtime-backed tests with faked SDK services. The testing strategy lives in
+`docs/testing.md`.
 
 ## 🧪 End-to-End Tests
 

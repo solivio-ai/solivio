@@ -22,6 +22,12 @@ Newest first. One entry per lesson:
 
 ## Lessons
 
+### 2026-06-12 — Keep testing guidance colocated and concise
+
+**Context:** Testing docs initially recorded intermediate decisions: root test placement, module-level placement, and research notes.
+**Rule:** Prefer colocated `*.test.ts` beside production files under `modules/<id>/src/`; keep shared harness utilities in root `tests/support/`; keep task-router docs operational and compact.
+**Applies to:** `modules/*/src/**/*.test.ts`, `tests/support/`, `docs/testing.md`, `vitest.config.ts`, `yarn test:unit`.
+
 ### 2026-06-12 — Keep pg-boss queue names v12-safe
 
 **Context:** `pg-boss` 12 validates queue names more strictly. Existing job names such as `products-sync.run` are valid, but the old persistent-subscriber prefix `subscriber:<id>` used a colon and would fail once a persistent subscriber was registered.

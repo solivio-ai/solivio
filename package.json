@@ -44,9 +44,12 @@
     "overlay": "node scripts/overlay.mjs",
     "seed": "tsx scripts/seed.mts",
     "create-module": "node scripts/create-module.mjs",
+    "test": "yarn test:unit && yarn test:generator",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
     "test:generator": "node --import tsx --test scripts/generate/__tests__/*.test.mts",
     "ensure:local-env": "node scripts/ensure-local-env.mjs",
-    "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test:generator",
+    "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test",
     "validate:all": "yarn ensure:local-env && yarn install --immutable && yarn dedupe --check && yarn validate && yarn db:check && yarn workspace @solivio/app build && yarn workspace @solivio/docs build && yarn setup && yarn e2e"
   },
   "devDependencies": {
@@ -64,6 +67,7 @@
     "lightningcss-darwin-arm64": "^1.32.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.6",
     "zod": "^4.4.3"
   },
   "packageManager": "yarn@4.14.1"
