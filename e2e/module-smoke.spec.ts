@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
 /**
@@ -27,8 +28,7 @@ test("a signed-in admin reaches the module customers upload page", async ({ page
 
   // Module-owned admin page renders inside the protected shell (signup role
   // is admin in the demo/CI configuration).
-  await page.goto("/admin/customers/upload");
-  await expect(page.getByRole("heading", { name: "Import customers" })).toBeVisible();
+  await expectGeneratedPageHeading(page, "/admin/customers/upload", "Import customers");
 });
 
 test("products-sync runs against an external source and records a run", async ({ page }) => {
@@ -72,8 +72,7 @@ test("products-sync runs against an external source and records a run", async ({
   expect(run.imported).toBe(2);
 
   // The run shows up on the module admin page.
-  await page.goto("/admin/products-sync");
-  await expect(page.getByRole("heading", { name: "Products Sync" })).toBeVisible();
+  await expectGeneratedPageHeading(page, "/admin/products-sync", "Products Sync");
   await expect(page.getByText("data:application/json").first()).toBeVisible();
 });
 
@@ -100,6 +99,33 @@ test("historical orders import creates read-only imported offers", async ({ page
   expect(body.count).toBe(1);
 
   // The module admin upload page renders.
-  await page.goto("/admin/offers/upload");
-  await expect(page.getByRole("heading", { name: "Import historical orders" })).toBeVisible();
+  await expectGeneratedPageHeading(page, "/admin/offers/upload", "Import historical orders");
 });
+
+async function expectGeneratedPageHeading(page: Page, pathname: string, heading: string) {
+  const response = await page.goto(pathname);
+
+  if (!response) throw new Error(`No document response while navigating to ${pathname}`);
+
+  expect(response.status(), `${pathname} responded with ${response.status()}`).toBeLessThan(400);
+  expect(new URL(page.url()).pathname, `${pathname} should not redirect`).toBe(pathname);
+
+  try {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible({ timeout: 15_000 });
+  } catch (error) {
+    const title = await page.title().catch(() => "");
+    const body = await page
+      .locator("body")
+      .innerText({ timeout: 1_000 })
+      .catch(() => "");
+    const details = [
+      `Expected heading "${heading}" on ${pathname}.`,
+      `Current URL: ${page.url()}`,
+      `Status: ${response.status()}`,
+      `Title: ${title}`,
+      `Body excerpt: ${body.slice(0, 1_000)}`,
+    ].join("\n");
+
+    throw new Error(`${details}\n\n${error instanceof Error ? error.message : String(error)}`);
+  }
+}

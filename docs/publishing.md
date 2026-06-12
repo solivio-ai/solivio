@@ -26,8 +26,9 @@ Repository setup still needs to be enabled once in GitHub:
 3. Set the custom domain to `solivio.ai`.
 4. Enable HTTPS after GitHub provisions the certificate.
 
-The docs build runs OpenAPI generation first, so the workflow only needs
-`yarn install --immutable` and `yarn docs:build`.
+The root docs build runs module wiring first and then the docs workspace runs
+OpenAPI generation, so the workflow only needs `yarn install --immutable` and
+`yarn docs:build`.
 
 ## DNS For solivio.ai
 
@@ -62,9 +63,8 @@ Avoid wildcard records for `*.solivio.ai`.
 For any other static host:
 
 1. Install from the repository root with `yarn install`.
-2. Generate the API contract with `yarn openapi:generate`.
-3. Build the docs workspace with `yarn docs:build`.
-4. Publish `apps/docs/dist`.
+2. Build the docs from the repository root with `yarn docs:build`.
+3. Publish `apps/docs/dist`.
 
 ## API Contract
 
