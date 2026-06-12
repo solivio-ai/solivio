@@ -22,23 +22,22 @@ yarn typecheck
 yarn db:check
 ```
 
-`yarn check` includes the module boundary checker. It must stay fast and strict:
-modules may not import app internals or other modules at runtime.
+`yarn check` includes the module boundary checker. Modules may not import app
+internals or other modules at runtime.
 
 ### Unit and module tests
 
-Fast unit tests live beside the file that owns the behavior and run with:
+Unit tests live beside the file that owns the behavior and run with:
 
 ```bash
 yarn test
 yarn test:watch
 ```
 
-Use Vitest (`test`, `describe`, `expect`, `vi`) for module and package unit
-tests. The root `vitest.config.ts` runs in the Node environment and resolves
-the `react-server` package condition so server module files that import Next's
-`server-only` marker can be loaded outside Next. Generator tests use the same
-Vitest setup under `scripts/generate/__tests__/`.
+Use Vitest (`test`, `describe`, `expect`, `vi`) for deterministic unit tests.
+The root `vitest.config.ts` runs in the Node environment and resolves the
+`react-server` package condition so server module files that import Next's
+`server-only` marker can be loaded outside Next.
 
 Recommended layout:
 
@@ -116,4 +115,4 @@ fully parallel. Do not depend on external services; CI runs with
 - Generated app-router wiring, auth/session behavior, pages, and cross-module
   user journeys: Playwright E2E.
 - Module graph, generated artifacts, import boundaries, table prefixes:
-  `yarn generate --check`, `yarn check`, `yarn db:check`, generator tests through `yarn test`.
+  `yarn generate --check`, `yarn check`, `yarn db:check`, `yarn test`.

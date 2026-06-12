@@ -42,11 +42,11 @@ Choose the smallest relevant set for the change:
 
 ```bash
 yarn validate:all            # full repo health/handoff suite: env, immutable install, validate, db:check, build, setup, e2e
-yarn validate                # the PR gate: generate --check + biome/boundaries + typecheck + all fast Vitest tests
+yarn validate                # the PR gate: generate --check + biome/boundaries + typecheck + Vitest
 yarn biome check --write .   # format, sort imports, apply safe lint fixes
 yarn generate                # regenerate module wiring (add --check to validate only)
 yarn check                   # Biome quality gate + module boundary checker (CI runs this)
-yarn test                    # all fast Vitest tests, including generator tests
+yarn test                    # Vitest suite
 yarn typecheck               # when TS, API contracts, server code, or React behavior changes
 yarn dedupe --check          # verify lockfile deduplication after dependency changes (`yarn dedupe` fixes it)
 yarn db:check                # journals match schemas (core + every module journal)
@@ -106,7 +106,7 @@ yarn biome check --write .   # formats, sorts imports, and applies safe lint fix
 yarn check                   # Biome + scripts/check-boundaries.mts (module import boundaries)
 ```
 
-Use `yarn check` as the single repository quality gate. It includes the module boundary checker: modules may not import other modules or app internals, and handwritten app code may not import `@solivio/module-*` directly (only the generated registries do). Use `yarn test` for the full fast Vitest suite, including module/package/SDK and generator tests.
+Use `yarn check` as the single repository quality gate. It includes the module boundary checker: modules may not import other modules or app internals, and handwritten app code may not import `@solivio/module-*` directly (only the generated registries do). Use `yarn test` for the Vitest suite.
 
 Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes. Run `yarn db:check` after schema work.
 

@@ -4,7 +4,7 @@
 
 ## Checklist
 
-- [ ] `yarn validate` passes (biome + boundaries + generate --check + typecheck + all fast Vitest tests)
+- [ ] `yarn validate` passes (biome + boundaries + generate --check + typecheck + Vitest)
 - [ ] `yarn db:check` passes (run `yarn setup` first) — required when schemas/migrations changed
 - [ ] `yarn e2e` passes locally
 - [ ] Feature code lives in a module (`modules/<id>/`), not in `apps/solivio` (see `docs/module-system.md`)
