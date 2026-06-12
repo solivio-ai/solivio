@@ -258,7 +258,7 @@ declare module "@solivio/sdk" {
 `emitEvent(name, payload)` (from `@solivio/sdk/runtime`) runs **non-persistent
 subscribers inline** in-process (errors logged, never thrown into the emitter) and
 enqueues **persistent subscribers** (`persistent: true`) on the pg-boss queue
-(`subscriber:<id>`, at-least-once with retries). Subscribers live one per file under
+(`subscriber.<id>`, at-least-once with retries). Subscribers live one per file under
 `src/subscribers/`, default-exported via `defineSubscriber`.
 
 Jobs live one per file under `src/jobs/`, default-exported via `defineJob`. A job name

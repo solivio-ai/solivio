@@ -21,7 +21,7 @@
     "@solivio/ui": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "server-only": "^0.0.1",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "next": "*",
@@ -29,10 +29,10 @@
     "react": "*"
   },
   "devDependencies": {
-    "@types/react": "^19.2.14",
-    "lucide-react": "^1.11.0",
-    "next": "^16.2.4",
-    "next-intl": "^4.9.2",
+    "@types/react": "^19.2.17",
+    "lucide-react": "^1.17.0",
+    "next": "^16.2.9",
+    "next-intl": "^4.13.0",
     "typescript": "^6.0.3"
   }
 }

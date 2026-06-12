@@ -45,24 +45,26 @@
     "seed": "tsx scripts/seed.mts",
     "create-module": "node scripts/create-module.mjs",
     "test:generator": "node --import tsx --test scripts/generate/__tests__/*.test.mts",
-    "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test:generator"
+    "ensure:local-env": "node scripts/ensure-local-env.mjs",
+    "validate": "yarn generate --check && yarn check && yarn typecheck && yarn test:generator",
+    "validate:all": "yarn ensure:local-env && yarn install --immutable && yarn dedupe --check && yarn validate && yarn db:check && yarn workspace @solivio/app build && yarn workspace @solivio/docs build && yarn setup && yarn e2e"
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
-    "@biomejs/biome": "2.4.13",
-    "@playwright/test": "^1.59.1",
-    "@tailwindcss/oxide-darwin-arm64": "4.2.4",
-    "@types/node": "^24.12.2",
+    "@biomejs/biome": "2.4.16",
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/oxide-darwin-arm64": "4.3.0",
+    "@types/node": "^25.9.3",
     "@types/pg": "^8.20.0",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@voltagent/cli": "^0.1.21",
-    "chokidar": "^4.0.3",
-    "concurrently": "^9.2.0",
+    "chokidar": "^5.0.0",
+    "concurrently": "^10.0.3",
     "lightningcss-darwin-arm64": "^1.32.0",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "packageManager": "yarn@4.14.1"
 }

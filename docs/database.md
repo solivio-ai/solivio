@@ -89,4 +89,8 @@ yarn db:up
 
 Note: pg-boss (the jobs/events engine, `adr/0004`) keeps its queue tables in the same
 database under its own schema; it manages them itself — they are not part of any
-Drizzle journal.
+Drizzle journal. Major pg-boss upgrades still need an operational migration check:
+`PgBoss.start()` applies supported pg-boss-managed migrations, but unsupported old
+queue schema versions may need the managed schema recreated. If queue contents are
+disposable, reset only the queue schema with `DROP SCHEMA IF EXISTS pgboss CASCADE`
+and let pg-boss create the current schema on next boot.
