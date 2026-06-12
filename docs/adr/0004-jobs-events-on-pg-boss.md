@@ -24,7 +24,7 @@ scheduling; pg-boss manages its own tables outside the Drizzle journals.
 - **In-process subscribers** (default) run inline at emit time; errors are logged,
   never thrown into the emitter. Cheap, immediate, lost on crash.
 - **Persistent subscribers** (`persistent: true` in `defineSubscriber`) are delivered
-  through a pg-boss queue per subscriber (`subscriber:<id>`) — at-least-once, with
+  through a pg-boss queue per subscriber (`subscriber.<id>`) — at-least-once, with
   retries.
 
 **Jobs** are files under `src/jobs/` (`defineJob`): a module-prefixed name, a handler,

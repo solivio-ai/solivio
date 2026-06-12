@@ -7,7 +7,7 @@ The sections below are the quick reference. They summarize the boundaries; the d
 ## Always
 
 - Match the task to the **Task Router** below and read the relevant `docs/` guide before researching or coding. A task can match multiple rows — read all of them.
-- Run `yarn check` before handing work back (Biome + the module boundary checker); add `yarn typecheck` whenever TypeScript, API contracts, server code, or React behavior changes. Auto-fix formatting first with `yarn biome check --write .`.
+- Run `yarn check` before handing work back (Biome + the module boundary checker); add `yarn typecheck` whenever TypeScript, API contracts, server code, or React behavior changes. Auto-fix formatting first with `yarn biome check --write .`. For a full repo health check before handoff, run the single command: `yarn validate:all`.
 - Run `yarn generate` after changing module files or `solivio.config.ts` — the generated registries and app-router stubs are how module code reaches the app. (`yarn dev` keeps a generator watcher running for you.)
 - Keep feature code in modules (`modules/<id>/src/`); modules depend only on `@solivio/sdk` and the shared packages (`@solivio/ui`, `@solivio/theme`, `@solivio/domain`), and reach shared infrastructure only through `@solivio/sdk/runtime` accessors.
 - Read each module's own `AGENTS.md` (e.g. `modules/customers/AGENTS.md`) before changing it; `modules/products-sync` is the reference example exercising every module surface.
@@ -41,12 +41,14 @@ The sections below are the quick reference. They summarize the boundaries; the d
 Choose the smallest relevant set for the change:
 
 ```bash
-yarn validate                # the PR gate: biome + boundaries + generate --check + typecheck + generator tests
+yarn validate:all            # full repo health/handoff suite: env, immutable install, validate, db:check, build, setup, e2e
+yarn validate                # fast PR gate: generate --check + biome/boundaries + typecheck + generator tests
 yarn biome check --write .   # format, sort imports, apply safe lint fixes
 yarn generate                # regenerate module wiring (add --check to validate only)
 yarn check                   # Biome quality gate + module boundary checker (CI runs this)
 yarn typecheck               # when TS, API contracts, server code, or React behavior changes
 yarn test:generator          # unit tests for scripts/generate (run after touching it)
+yarn dedupe --check          # verify lockfile deduplication after dependency changes (`yarn dedupe` fixes it)
 yarn db:check                # journals match schemas (core + every module journal)
 yarn e2e                     # Playwright against http://localhost:3000 (yarn setup first)
 ```
@@ -106,6 +108,8 @@ yarn check                   # Biome + scripts/check-boundaries.mts (module impo
 Use `yarn check` as the single repository quality gate. It includes the module boundary checker: modules may not import other modules or app internals, and handwritten app code may not import `@solivio/module-*` directly (only the generated registries do).
 
 Run `yarn typecheck` as well whenever TypeScript, API contracts, server code, or React component behavior changes. Run `yarn db:check` after schema work.
+
+For final handoff or whenever you want to know whether the repository is healthy, use `yarn validate:all` instead of composing separate commands. It creates the ignored local validation env if missing, verifies the lockfile, checks formatting and generated wiring, runs the static gates, checks database drift, builds the app and docs, prepares the local database, and runs Playwright. It should not rewrite tracked source files; use `yarn biome check --write .` and `yarn generate` separately when you intentionally want fixes.
 
 Playwright e2e tests use the normal local app path: `yarn setup` prepares Postgres, module wiring, and migrations, and `yarn e2e` runs against `http://localhost:3000` while starting `yarn dev` if needed. Do not add separate e2e setup scripts. CI (`.github/workflows/quality.yml`) runs `yarn generate`, `yarn check`, `yarn typecheck`, `yarn db:check`, prepares `.env.local`, runs `yarn setup`, and then runs `yarn e2e`.
 

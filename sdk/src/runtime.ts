@@ -162,7 +162,7 @@ export async function emitEvent<E extends EventName>(name: E, payload: Events[E]
     if (subscriber.event !== name) continue;
     if (subscriber.persistent) {
       if (rt.enqueue) {
-        await rt.enqueue(`subscriber:${subscriber.id}`, payload);
+        await rt.enqueue(`subscriber.${subscriber.id}`, payload);
         continue;
       }
       // Queue not wired yet (event emitted during boot, before the jobs

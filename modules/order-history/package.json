@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@solivio/sdk": "workspace:*",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "typescript": "^6.0.3"
