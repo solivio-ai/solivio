@@ -1,6 +1,8 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    const { loadModules } = await import("./src/server/modules/registry");
-    await loadModules();
+    const { bootModuleRuntime } = await import("./src/server/runtime/boot");
+    const runtime = bootModuleRuntime();
+    const { startJobEngine } = await import("./src/server/runtime/jobs");
+    runtime.enqueue = await startJobEngine();
   }
 }

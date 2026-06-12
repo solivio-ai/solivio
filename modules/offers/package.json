@@ -1,0 +1,46 @@
+{
+  "name": "@solivio/module-offers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offers: drafts, line items, revisions, PDF, generation agents, and offer UI.",
+  "type": "module",
+  "solivio": {
+    "module": true
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.53",
+    "@ai-sdk/react": "^3.0.170",
+    "@react-pdf/renderer": "^4.5.1",
+    "@solivio/domain": "workspace:*",
+    "@solivio/sdk": "workspace:*",
+    "@solivio/ui": "workspace:*",
+    "@voltagent/core": "^2.7.3",
+    "ai": "^6.0.168",
+    "decimal.js": "^10.6.0",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.11.0",
+    "react-pdf": "^10.4.1",
+    "react-resizable-panels": "^4.10.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "next": "*",
+    "next-intl": "*",
+    "react": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "next": "^16.2.4",
+    "next-intl": "^4.9.2",
+    "typescript": "^6.0.3"
+  }
+}

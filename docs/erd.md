@@ -9,18 +9,18 @@ This document is the canonical ERD for the offering pipeline. Stack-level detail
 ```mermaid
 erDiagram
     customers ||--o{ offers : "has"
-    customers ||--o{ requests : "submits"
-    requests ||--o{ offers : "converts to"
+    customers ||--o{ customers_requests : "submits"
+    customers_requests ||--o{ offers : "converts to"
     users ||--o{ offers : "owns"
 
-    offers ||--o{ offer_items : "contains"
-    offers ||--o{ offer_revisions : "snapshots"
+    offers ||--o{ offers_items : "contains"
+    offers ||--o{ offers_revisions : "snapshots"
     offers ||--o{ offer_chat_threads : "discussion"
 
     offer_chat_threads ||--o{ offer_chat_messages : "messages"
 
-    products ||--o{ offer_items : "matched as"
-    products ||--o{ product_prices : "priced as"
+    catalog_products ||--o{ offers_items : "matched as"
+    catalog_products ||--o{ catalog_product_prices : "priced as"
 
     customers {
         uuid id PK
@@ -38,7 +38,7 @@ erDiagram
         timestamptz updated_at
     }
 
-    requests {
+    customers_requests {
         uuid id PK
         uuid customer_id FK "nullable"
         text raw_text
@@ -63,7 +63,7 @@ erDiagram
         timestamptz updated_at
     }
 
-    offer_items {
+    offers_items {
         uuid id PK
         uuid offer_id FK
         uuid product_id FK "nullable"
@@ -84,7 +84,7 @@ erDiagram
         timestamptz updated_at
     }
 
-    offer_revisions {
+    offers_revisions {
         uuid id PK
         uuid offer_id FK
         int revision_number
@@ -111,7 +111,7 @@ erDiagram
         timestamptz updated_at
     }
 
-    products {
+    catalog_products {
         uuid id PK
         text sku
         text source
@@ -122,7 +122,7 @@ erDiagram
         timestamptz updated_at
     }
 
-    product_prices {
+    catalog_product_prices {
         uuid id PK
         uuid product_id FK
         text currency
@@ -150,14 +150,14 @@ All domain tables are plural. The Better Auth table conventionally named `user` 
 - `semantic` → cosine similarity of the picked candidate
 - `manual` → `null`
 
-### Computed totals (`offer_items`)
+### Computed totals (`offers_items`)
 Computed in the application service layer on write, persisted as plain numeric columns:
 - `unit_gross_price = unit_price_net * (1 + vat_rate / 100)`
 - `total_net = quantity * unit_price_net`
 - `total_gross = quantity * unit_price_net * (1 + vat_rate / 100)`
 
 ### Currency
-`offers.currency` is authoritative for the whole offer. All items inherit it. `offer_items` does not carry a `currency` column.
+`offers.currency` is authoritative for the whole offer. All items inherit it. `offers_items` does not carry a `currency` column.
 
 ### Discount
 `offers.discount_percent` and `offers.discount_amount` are mutually exclusive at the service layer: only one of them is non-zero per offer. The other column stores `0`.
@@ -172,9 +172,9 @@ Renamed Better Auth table. The full auth schema also includes `sessions`, `accou
 Initial set: `draft`, `accepted`, `rejected`.
 
 ### Nullability
-- `requests.customer_id` — nullable (request may arrive before customer match)
+- `customers_requests.customer_id` — nullable (request may arrive before customer match)
 - `offers.customer_id` — nullable (draft can exist before customer is set)
 - `offers.request_id` — nullable (offer may be created without a tracked request)
 - `offers.user_id` — nullable (system-created offers without a salesperson owner)
-- `offer_items.product_id` — nullable (custom items without catalog product)
-- `offer_revisions.accepted_at` — non-null on the locked accepted revision only
+- `offers_items.product_id` — nullable (custom items without catalog product)
+- `offers_revisions.accepted_at` — non-null on the locked accepted revision only

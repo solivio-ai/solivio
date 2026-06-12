@@ -8,10 +8,9 @@ import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import { getModelFor } from "../../../src/server/agents/modelConfig";
-import type { GeneratedOffer } from "../../../src/server/agents/offerGenerationAgent";
-import { generateOfferWithAgent } from "../../../src/server/agents/offerGenerationAgent";
-import { getDefaultEmbeddingModel } from "../../../src/server/products/embeddingConfig";
+import type { Services } from "@solivio/sdk";
+import { getAi, getService } from "@solivio/sdk/runtime";
+
 import { syncCatalog } from "../../src/setup";
 import { buildJsonReport, buildMarkdownReport } from "./src/report";
 import type { CaseScore } from "./src/scoring";
@@ -19,7 +18,10 @@ import { scoreCase } from "./src/scoring";
 import type { BenchmarkCase } from "./src/types";
 import { benchmarkCaseSchema, catalogFileSchema } from "./src/types";
 
-export type { BenchmarkCase, CaseScore, GeneratedOffer };
+/** The agent's structured output, as typed by the offers service contract. */
+export type GeneratedOffer = Awaited<ReturnType<Services["offers"]["generateOffer"]>>;
+
+export type { BenchmarkCase, CaseScore };
 export { buildJsonReport, buildMarkdownReport };
 
 const casesDir = path.join(import.meta.dirname, "cases");
@@ -64,11 +66,14 @@ export function fingerprint(cases: BenchmarkCase[]): string {
 }
 
 export function modelInfo() {
-  return { model: getModelFor("offerGeneration"), embeddingModel: getDefaultEmbeddingModel() };
+  return { model: getAi().modelFor("offerGeneration"), embeddingModel: getAi().embeddingModelId() };
 }
 
 export async function runCase(benchCase: BenchmarkCase): Promise<GeneratedOffer> {
-  return generateOfferWithAgent(benchCase.request, benchCase.customer.name);
+  return getService("offers").generateOffer({
+    request: benchCase.request,
+    customerName: benchCase.customer.name,
+  });
 }
 
 export const emptyOutput: GeneratedOffer = { items: [], unmatched: [], notes: [] };

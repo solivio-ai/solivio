@@ -4,18 +4,18 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@solivio/ui/components/button.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
+import { Label } from "@solivio/ui/components/label.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+} from "@solivio/ui/components/select.tsx";
+import { Separator } from "@solivio/ui/components/separator.tsx";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@solivio/ui/components/sheet.tsx";
 import { isAdmin } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 

@@ -1,191 +1,78 @@
 ---
 title: Modules
-description: Configure and add Solivio modules in a deployment without rebuilding the app.
+description: How Solivio modules work and how a deployment chooses which ones run.
 ---
 
-Solivio's behaviour is extended by **modules** — self-contained units that add
-capabilities such as catalog importers and assistant tools. Modules are
-**pre-built bundles loaded at startup**, so you change what a deployment can do
-by editing one config file and providing the bundle — never by rebuilding the
-app.
+Solivio is a **modular monolith**: almost every feature — the product catalog,
+customers, offers, the review chat, CSV import, external sync — is a module
+under `modules/` in the repository. Modules are TypeScript source packages
+**compiled into the app at build time**: a generator (`yarn generate`) reads
+the deployment manifest `solivio.config.ts`, discovers each enabled module's
+pages, API routes, services, events, jobs, translations, and database
+migrations by file convention, and wires them into the Next.js app.
 
-The published image ships a **starter pack** of first-party modules, so a stock
-deployment works end to end with no module configuration at all:
+The published image ships with the first-party module set enabled:
 
-- `@solivio/module-csv-products` — imports a product catalog from CSV.
-- `@solivio/module-offer-tools` — the offer-review assistant's catalog and
-  offer-editing tools.
+- `catalog` — products, prices, embeddings, and semantic search.
+- `customers` — customers and intake requests.
+- `offers` — offer drafts, line items, revisions, PDF rendering, and all
+  offer-facing UI including the dashboard.
+- `offer-chat` — the offer-review assistant (threads, messages, streaming).
+- `csv-import` — CSV importer capabilities for products and customers.
+- `products-sync` — scheduled sync of products from an external source.
 
-This guide is for operators running Solivio. To *build* a module, see the
-**Development** section.
+## Enabling and configuring modules
 
-## How modules load
+`solivio.config.ts` at the repository root is the single source of truth:
 
-At startup the app:
+```ts
+import { defineConfig } from "@solivio/sdk/config";
 
-1. Reads the deployment manifest `solivio.config.json` (path set by
-   `SOLIVIO_CONFIG_PATH`).
-2. For each listed module, resolves its bundle at
-   `${SOLIVIO_MODULES_DIR}/<package>/index.mjs` and loads it.
-3. Registers the capabilities each module contributes.
-
-A missing bundle, a duplicate name, or an unresolved slot **fails the boot with
-an explicit error** — the app never starts in a half-configured state.
-
-In the published image these are preset, and the starter-pack bundles are baked
-in:
-
-| Variable | Default in image | Purpose |
-| --- | --- | --- |
-| `SOLIVIO_CONFIG_PATH` | `/app/solivio.config.json` | Location of the deployment manifest. |
-| `SOLIVIO_MODULES_DIR` | `/app/modules-dist` | Directory holding module bundles, one folder per package. |
-
-## The config file
-
-`solivio.config.json` is the single source of truth for which modules load. The
-default shipped in the image is:
-
-```json
-{
-  "modules": [
-    { "package": "@solivio/module-csv-products", "options": {} },
-    { "package": "@solivio/module-offer-tools", "options": {} }
+export default defineConfig({
+  modules: [
+    "catalog",
+    "customers",
+    "offers",
+    "offer-chat",
+    "csv-import",
+    ["products-sync", { sourceUrl: "https://example.com/products.json", cron: "0 3 * * *" }],
   ],
-  "slots": {
-    "product.importer": "csv-products/csv-products"
-  }
-}
+  slots: {
+    "product.importer": "csv-import/csv-products",
+    "customer.importer": "csv-import/csv-customers",
+  },
+});
 ```
 
-| Field | Description |
-| --- | --- |
-| `modules[].package` | Package name of a module bundle present under `SOLIVIO_MODULES_DIR`. |
-| `modules[].options` | Optional settings passed to that module (each module validates its own). |
-| `slots` | Binds an exclusive capability to one provider — see below. |
+- Entries are in-tree directory names (`modules/<id>`) or npm package names
+  for out-of-tree modules.
+- The `[name, { …options }]` form passes options, validated against the
+  module's schema at generate time.
+- `slots` bind exclusive capabilities (e.g. which importer handles the
+  `product` target) when more than one module provides them.
 
-Listing a module is all it takes to activate the additive capabilities it
-contributes (for example, assistant tools).
+Changing the config requires regenerating and rebuilding the image — that is
+the deliberate trade of the build-time model: modules get the full surface
+(pages, API routes, database tables, translations) instead of being limited to
+runtime-loadable plugins.
 
-## Capability slots
+## Custom modules without forking
 
-Some capabilities are **exclusive**: a deployment runs exactly one of them even
-if several modules could provide it. The product importer is the first such
-slot. Bind it with `"<target>.importer": "<moduleId>/<importerName>"`:
+Operators run their own modules from a separate repository linked into a
+stock checkout with `yarn overlay link` — no fork, conflict-free base
+updates. See **[Extending Solivio](/guides/extending/)** for the full
+workflow, including npm-published modules.
 
-```json
-"slots": { "product.importer": "csv-products/csv-products" }
-```
+## Database migrations
 
-If only one module provides an importer for a target, it is the implicit default
-and the slot entry is optional. When more than one is loaded, the slot must
-choose, or the boot fails with a message telling you to set it.
+Each module owns its tables and ships its own migration journal
+(`modules/<id>/src/data/migrations`). The app image applies the core journal
+and every enabled module's journal in order on startup, so enabling a module
+with tables needs no manual database work.
 
-## Module options and secrets
+## Building a module
 
-Non-secret settings go in a module's `options` object:
-
-```json
-{ "package": "@acme/solivio-module-odoo", "options": { "baseUrl": "https://erp.example.com" } }
-```
-
-Secrets are supplied through environment variables, never the config file. Each
-module reads namespaced variables of the form
-`SOLIVIO_MOD_<MODULE_ID>_<KEY>`, where the module id is upper-cased and dashes
-become underscores. For a module with id `odoo` needing an API key:
-
-```bash
-SOLIVIO_MOD_ODOO_API_KEY=...
-```
-
-Each module's docs state which options and secrets it expects.
-
-## Add a module to a deployment
-
-Both methods below provide a **pre-built bundle plus a config entry**. Neither
-rebuilds the application.
-
-### Method A — layer onto the published image (recommended)
-
-Create a thin image that copies your module bundle and config onto the stock
-image. This only adds files; it does not run an application build.
-
-```dockerfile
-FROM ghcr.io/solivio-ai/solivio-app:latest
-
-# A self-contained module bundle: <package>/index.mjs (+ package.json).
-COPY ./my-modules/@acme/solivio-module-odoo \
-     /app/modules-dist/@acme/solivio-module-odoo
-
-# Your manifest must list the starter-pack modules you keep, plus the new one.
-COPY ./solivio.config.json /app/solivio.config.json
-```
-
-```bash
-docker build -t my-solivio-app .
-```
-
-Point your Compose stack at `my-solivio-app` instead of the published image and
-redeploy.
-
-### Method B — mount a modules directory
-
-Keep all bundles you want on the host and mount them as the modules root, along
-with your config. Because `SOLIVIO_MODULES_DIR` is a single directory, the
-mounted folder must contain **every** module you enable, including the
-starter-pack bundles you still use.
-
-```yaml
-services:
-  app:
-    image: ghcr.io/solivio-ai/solivio-app:latest
-    environment:
-      SOLIVIO_MODULES_DIR: /modules
-      SOLIVIO_CONFIG_PATH: /solivio.config.json
-    volumes:
-      - ./modules:/modules:ro
-      - ./solivio.config.json:/solivio.config.json:ro
-```
-
-To start from the shipped set, copy it out of a container first:
-
-```bash
-docker rm -f solivio-tmp 2>/dev/null || true   # in case a previous run left it
-docker create --name solivio-tmp ghcr.io/solivio-ai/solivio-app:latest
-docker cp solivio-tmp:/app/modules-dist ./modules
-docker cp solivio-tmp:/app/solivio.config.json ./solivio.config.json
-docker rm solivio-tmp
-```
-
-Add your bundle under `./modules/<package>/`, list it in
-`./solivio.config.json`, and redeploy.
-
-## Verify
-
-After redeploying, confirm a clean start:
-
-```bash
-docker compose logs -f app
-curl -fsS https://<APP_HOST>/api/health
-```
-
-If a module is misconfigured the app logs a clear reason and stops. Common
-messages:
-
-| Message | Cause |
-| --- | --- |
-| `Failed to load module bundle "<pkg>" from <path>` | The package isn't present under `SOLIVIO_MODULES_DIR`, or the path is wrong. |
-| `Duplicate module ids across modules: …` (also `agent tool names …`, `importer names …`) | Two enabled modules collide on the same id/tool/importer name; remove or replace one. |
-| `Slot "product.importer" is bound to "…", but no loaded module provides it` | The slot value doesn't match a loaded module/importer; fix the binding or enable the module. |
-| `No product importer is loaded. Add a module that provides one.` | No enabled module contributes a product importer; add one to `modules[]`. |
-| `Multiple importers are loaded; set slots["product.importer"] in solivio.config.json.` | More than one provider; pick one in `slots`. |
-
-## Where module bundles come from
-
-- **Starter pack** — shipped inside the published image; nothing to install.
-- **External modules** — distributed as npm packages built into a single
-  self-contained ESM bundle (`index.mjs`). Obtain the built bundle (from the
-  author, an npm package, or your own build), place it under
-  `SOLIVIO_MODULES_DIR`, and enable it in the config.
-
-Module authoring — the SDK, capability surfaces, and how bundles are produced —
-is covered in the **Development** section and the project's `contracts.md`.
+Module authoring (anatomy, services, events, jobs, UI, boundaries) is
+documented in the repository: `docs/module-system.md` and `docs/codegen.md`,
+with `modules/products-sync` as the reference example exercising every module
+surface.

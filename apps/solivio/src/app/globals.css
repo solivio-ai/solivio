@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@solivio/theme";
+/* Tailwind @source directives for enabled module sources (yarn generate). */
+@import "../generated/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -11,8 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
+} from "@solivio/ui/components/dropdown-menu.tsx";
+import { SidebarMenuButton } from "@solivio/ui/components/sidebar.tsx";
 import { authClient, useSession } from "@/lib/auth-client";
 
 import { ChangePasswordDialog } from "./ChangePasswordDialog";

@@ -15,16 +15,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from "@solivio/ui/components/alert-dialog.tsx";
+import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@solivio/ui/components/dropdown-menu.tsx";
 import {
   Empty,
   EmptyContent,
@@ -32,8 +32,8 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
+} from "@solivio/ui/components/empty.tsx";
+import { Input } from "@solivio/ui/components/input.tsx";
 import {
   Pagination,
   PaginationContent,
@@ -42,14 +42,14 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@solivio/ui/components/pagination.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@solivio/ui/components/select.tsx";
 import {
   Table,
   TableBody,
@@ -57,7 +57,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@solivio/ui/components/table.tsx";
 import { isAdmin } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 

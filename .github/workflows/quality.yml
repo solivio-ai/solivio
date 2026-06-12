@@ -25,11 +25,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Generate module wiring
+        run: yarn generate
+
       - name: Check formatting, lint rules, and imports
         run: yarn check
 
       - name: Typecheck
         run: yarn typecheck
+
+      - name: Generator unit tests
+        run: yarn test:generator
 
       - name: Check database schema drift
         run: yarn db:check
@@ -44,6 +50,7 @@ jobs:
           AUTH_SIGNUP_ENABLED=true
           AUTH_CREDENTIALS_ENABLED=true
           AUTH_SSO_ENABLED=false
+          AUTH_SIGNUP_DEFAULT_ROLE=admin
           EOF
 
       - name: Install Playwright browser

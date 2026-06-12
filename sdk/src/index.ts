@@ -1,27 +1,16 @@
-// ── Module definition ───────────────────────────────────────────────────────
+/// <reference path="./ambient.d.ts" />
 
-// ── Capability surfaces ──────────────────────────────────────────────────────
-export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.js";
-export { AGENT_IDS, defineAgentTool } from "./agent-tool.js";
-export type {
-  DefineModuleConfig,
-  ModuleContributions,
-  ModuleFactory,
-} from "./define-module.js";
-export { defineModule } from "./define-module.js";
-// ── Entity DTOs ──────────────────────────────────────────────────────────────
+// ── Module definition ─────────────────────────────────────────────────────────
+export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.ts";
+export { AGENT_IDS, defineAgentTool } from "./agent-tool.ts";
+// ── Entity DTOs (import surface for importer capabilities) ────────────────────
 export type {
   CustomerInput,
   OfferImportInput,
   OfferImportLineItem,
-  OfferItemView,
-  OfferSnapshot,
-  OfferSnapshotLineItem,
-  OfferView,
   ProductInput,
   ProductMatch,
-} from "./entities/index.js";
-export type { EventSubscriber } from "./event-subscriber.js";
+} from "./entities/index.ts";
 export type {
   AnyImporterDefinition,
   CustomerImporterDefinition,
@@ -32,31 +21,27 @@ export type {
   ImportTarget,
   OfferImporterDefinition,
   ProductImporterDefinition,
-} from "./importer.js";
-// ── Module context (the seam to shared infrastructure) ───────────────────────
+} from "./importer.ts";
+export type { AnyJobDefinition, JobDefinition } from "./job.ts";
+export { defineJob } from "./job.ts";
+export type { ModuleManifest } from "./module.ts";
+export { defineModule } from "./module.ts";
+// ── Shared infrastructure types ───────────────────────────────────────────────
+export type { AiClientFactory, Logger } from "./module-context.ts";
 export type {
-  AiClientFactory,
-  ConfigResolver,
-  EventBus,
-  Logger,
-  ModuleContext,
-} from "./module-context.js";
-export type { RendererDefinition } from "./renderer.js";
-// ── Canonical core services ──────────────────────────────────────────────────
+  CoreUsersService,
+  EventName,
+  Events,
+  ServiceName,
+  Services,
+} from "./registries.ts";
+export type { AnySubscriberDefinition, SubscriberDefinition } from "./subscriber.ts";
+export { defineSubscriber } from "./subscriber.ts";
+// ── UI contributions ──────────────────────────────────────────────────────────
+export type { NavEntry } from "./ui/nav.ts";
 export type {
-  BulkAddItemResult,
-  BulkAddResult,
-  CoreServices,
-  OfferDeleteResult,
-  OfferHistoryService,
-  OfferLineItemInput,
-  OfferMutationResult,
-  OfferService,
-  PastOffer,
-  PastOfferLineItem,
-  ProductSearchOptions,
-  ProductService,
-} from "./services.js";
-export type { TestContextOverrides } from "./testing.js";
-// ── Testing ──────────────────────────────────────────────────────────────────
-export { createTestContext } from "./testing.js";
+  SlotContribution,
+  SlotContributions,
+  SlotId,
+  SlotPropsMap,
+} from "./ui/slots.ts";

@@ -1,0 +1,26 @@
+{
+  "nav": {
+    "upload": "Import klientów"
+  },
+  "import": {
+    "page": {
+      "title": "Importuj klientów",
+      "description": "Prześlij plik klientów, aby szybciej tworzyć oferty."
+    },
+    "card": {
+      "title": "Import klientów",
+      "description": "Wybierz plik CSV z co najmniej kolumną nazwy klienta. Istniejące nazwy zostaną użyte automatycznie.",
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub przeciągnij plik tutaj",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "saving": "Importowanie...",
+        "import": "Importuj"
+      },
+      "importDone": "Zapisano {count, plural, one {# klienta} few {# klientów} many {# klientów} other {# klientów}}.",
+      "importRowErrors": "{count, plural, one {# wiersza} few {# wierszy} many {# wierszy} other {# wierszy}} nie udało się zaimportować.",
+      "importError": "Import nie powiódł się."
+    }
+  }
+}

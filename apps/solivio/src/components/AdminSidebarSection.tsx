@@ -1,10 +1,14 @@
 "use client";
 
-import { Building2, ChevronRight, History, Package, Users } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@solivio/ui/components/collapsible.tsx";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,22 +16,21 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@solivio/ui/components/sidebar.tsx";
+import { navRegistry } from "@/generated/nav";
 
 interface AdminSidebarSectionProps {
   pathname: string;
   onNavigate: () => void;
 }
 
-const adminItems = [
-  { labelKey: "users", href: "/admin/users", icon: Users },
-  { labelKey: "catalogUpload", href: "/admin/products/upload", icon: Package },
-  { labelKey: "customerUpload", href: "/admin/customers/upload", icon: Building2 },
-  { labelKey: "orderUpload", href: "/admin/offers/upload", icon: History },
-] as const;
+const adminItems = [{ labelKey: "users", href: "/admin/users", icon: Users }] as const;
+
+const moduleAdminItems = navRegistry.filter((entry) => entry.section === "admin");
 
 export function AdminSidebarSection({ pathname, onNavigate }: AdminSidebarSectionProps) {
   const t = useTranslations("AppSidebar");
+  const tModules = useTranslations();
 
   return (
     <Collapsible defaultOpen={false} className="group/admin-section">
@@ -52,6 +55,20 @@ export function AdminSidebarSection({ pathname, onNavigate }: AdminSidebarSectio
                     <SidebarMenuButton asChild isActive={pathname === href} tooltip={label}>
                       <Link href={href} onClick={onNavigate}>
                         <Icon size={16} aria-hidden="true" />
+                        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+              {moduleAdminItems.map((entry) => {
+                const label = tModules(`${entry.moduleId}.${entry.labelKey}`);
+                const Icon = entry.icon;
+                return (
+                  <SidebarMenuItem key={entry.id}>
+                    <SidebarMenuButton asChild isActive={pathname === entry.href} tooltip={label}>
+                      <Link href={entry.href} onClick={onNavigate}>
+                        <Icon className="size-4" aria-hidden="true" />
                         <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                       </Link>
                     </SidebarMenuButton>

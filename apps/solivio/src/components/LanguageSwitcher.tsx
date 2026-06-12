@@ -4,10 +4,15 @@ import { Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@solivio/ui/components/select.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@solivio/ui/components/tooltip.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 import { defaultLocale, isLocale, localeCookieName, locales } from "@/i18n/locales";
-import { cn } from "@/lib/utils";
 
 const cookieMaxAgeSeconds = 60 * 60 * 24 * 365;
 

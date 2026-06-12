@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "sync": "Synchronizacja produktów"
+  },
+  "page": {
+    "title": "Synchronizacja produktów",
+    "description": "Pobiera produkty ze skonfigurowanego źródła zewnętrznego do katalogu.",
+    "runNow": "Uruchom teraz",
+    "running": "Trwa…",
+    "runFailed": "Synchronizacja nie powiodła się.",
+    "empty": "Brak uruchomień synchronizacji.",
+    "columns": {
+      "startedAt": "Rozpoczęto",
+      "status": "Status",
+      "imported": "Zaimportowano",
+      "source": "Źródło"
+    },
+    "status": {
+      "succeeded": "Powodzenie",
+      "failed": "Niepowodzenie",
+      "running": "W trakcie"
+    }
+  }
+}

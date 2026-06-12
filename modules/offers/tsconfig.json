@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@solivio/slots": ["../../apps/solivio/src/generated/slots.tsx"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

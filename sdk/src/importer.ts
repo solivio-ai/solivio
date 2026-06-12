@@ -7,7 +7,7 @@
  * by target and owns persistence, deduplication, and indexing.
  */
 
-import type { CustomerInput, OfferImportInput, ProductInput } from "./entities/index.js";
+import type { CustomerInput, OfferImportInput, ProductInput } from "./entities/index.ts";
 
 /** Canonical entity an importer produces. The core routes records by target. */
 export type ImportTarget = "product" | "customer" | "offer";
@@ -43,7 +43,7 @@ export interface ImporterDefinition<TPayload = unknown, TRecord = unknown> {
   run: (payload: TPayload) => Promise<ImportResult<TRecord>>;
 }
 
-export type AnyImporterDefinition = ImporterDefinition<never, unknown>;
+export type AnyImporterDefinition = ImporterDefinition<unknown, unknown>;
 export type ProductImporterDefinition = ImporterDefinition<unknown, ProductInput>;
 export type CustomerImporterDefinition = ImporterDefinition<unknown, CustomerInput>;
 export type OfferImporterDefinition = ImporterDefinition<unknown, OfferImportInput>;

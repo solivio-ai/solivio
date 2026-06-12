@@ -116,13 +116,25 @@ Start from source:
 
 ```bash
 yarn install
-cp apps/solivio/.env.example apps/solivio/.env.local   # set BETTER_AUTH_SECRET
+cp apps/solivio/.env.example apps/solivio/.env.local
 yarn setup
 yarn dev
 ```
 
+Environment notes:
+
+- `BETTER_AUTH_SECRET` — any non-trivial string works locally; generate a
+  strong one (`openssl rand -base64 32`) for production only.
+- `OPENAI_API_KEY` — optional. Without it the AI agents are unavailable and
+  products import without embeddings (semantic search disabled, text search
+  still works); everything else runs. The demo path needs no external services.
+
 Open the app at `http://localhost:3000` and create the first user from the
-login screen.
+login screen. Load example data to explore with content:
+
+```bash
+yarn seed     # imports example products and customers from examples/import/
+```
 
 People who only want to run the ready app image can use the Docker quick start
 in the docs. It uses the public GHCR image `ghcr.io/solivio-ai/solivio-app`,

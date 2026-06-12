@@ -2,10 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@solivio/sdk": ["../../sdk/src/index.ts"]
+      "@solivio/sdk": ["../../sdk/src/index.ts"],
+      "@solivio/slots": ["./src/generated/slots.tsx"]
     },
     "plugins": [
       {

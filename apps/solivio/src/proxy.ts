@@ -2,7 +2,16 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import publicRoutes from "@/generated/public-routes.json";
+
 const PUBLIC_FILE = /\.[^/]+$/;
+
+/** "/offers/[offerId]" → /^\/offers\/[^/]+\/?$/ */
+const toPattern = (route: string): RegExp =>
+  new RegExp(`^${route.replaceAll(/\[[^/\]]+\]/g, "[^/]+")}/?$`);
+
+const publicPagePatterns = publicRoutes.pages.map(toPattern);
+const publicApiPatterns = publicRoutes.api.map(toPattern);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,12 +21,21 @@ export function proxy(request: NextRequest) {
   const isApiRoute = pathname.startsWith("/api/");
   const isLoginRoute = pathname === "/login" || pathname.startsWith("/login/");
   const isPublicFile = PUBLIC_FILE.test(pathname);
+  const isPublicModuleRoute = (isApiRoute ? publicApiPatterns : publicPagePatterns).some(
+    (pattern) => pattern.test(pathname),
+  );
 
-  if (isApiRoute && !isAuthApiRoute && !isHealthRoute && !hasSessionCookie) {
+  if (
+    isApiRoute &&
+    !isAuthApiRoute &&
+    !isHealthRoute &&
+    !isPublicModuleRoute &&
+    !hasSessionCookie
+  ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!isApiRoute && !isLoginRoute && !isPublicFile && !hasSessionCookie) {
+  if (!isApiRoute && !isLoginRoute && !isPublicFile && !isPublicModuleRoute && !hasSessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

@@ -12,6 +12,7 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    // App messages deep-merged with module namespaces by `yarn generate`.
+    messages: (await import(`../generated/messages/${locale}.json`)).default,
   };
 });

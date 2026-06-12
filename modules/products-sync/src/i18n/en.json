@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "sync": "Products Sync"
+  },
+  "page": {
+    "title": "Products Sync",
+    "description": "Pulls products from the configured external source into the catalog.",
+    "runNow": "Run now",
+    "running": "Running…",
+    "runFailed": "Sync failed.",
+    "empty": "No sync runs yet.",
+    "columns": {
+      "startedAt": "Started",
+      "status": "Status",
+      "imported": "Imported",
+      "source": "Source"
+    },
+    "status": {
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "running": "Running"
+    }
+  }
+}

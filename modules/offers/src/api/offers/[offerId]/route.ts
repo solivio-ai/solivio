@@ -1,0 +1,191 @@
+import { NextResponse } from "next/server";
+import type { z } from "zod";
+
+import type { Offer } from "@solivio/domain";
+import { CustomerSelectionError, OFFER_STATUS } from "@solivio/domain";
+import { getAuth } from "@solivio/sdk/runtime";
+
+import {
+  errorResponseSchema,
+  offerResponseSchema,
+  updateOfferRequestSchema,
+} from "../../../contracts/index.ts";
+import { getOfferDraft, updateOfferDraft } from "../../../server/offerDraftStore.ts";
+import { deleteOffer, getOffer, updateOfferMeta } from "../../../server/offerService.ts";
+
+function asDraftPatch(data: z.infer<typeof updateOfferRequestSchema>) {
+  return {
+    status: data.status,
+    name: data.name,
+    customerId: data.customerId,
+    customerName: data.customerName,
+    unmatched: data.unmatched,
+    discountPercent: data.discountPercent,
+    discountAmount: data.discountAmount,
+  };
+}
+
+export const runtime = "nodejs";
+
+type RouteContext = {
+  params: Promise<{
+    offerId: string;
+  }>;
+};
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+export async function GET(_request: Request, context: RouteContext) {
+  const auth = await getAuth().requireAuth();
+  if (auth.response) return auth.response;
+
+  const { offerId } = await context.params;
+
+  const offer = isUuid(offerId)
+    ? ((await getOffer(offerId)) ?? getOfferDraft(offerId))
+    : getOfferDraft(offerId);
+
+  if (!offer) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`,
+        },
+      }),
+      { status: 404 },
+    );
+  }
+
+  return NextResponse.json(offerResponseSchema.parse({ offer }));
+}
+
+export async function PATCH(request: Request, context: RouteContext) {
+  const auth = await getAuth().requireAuth();
+  if (auth.response) return auth.response;
+
+  const { offerId } = await context.params;
+  const input = updateOfferRequestSchema.safeParse(await request.json().catch(() => ({})));
+
+  if (!input.success) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "invalid_request",
+          message: "Request body must match the offer update contract.",
+          issues: input.error.issues.map((issue) => issue.message),
+        },
+      }),
+      { status: 400 },
+    );
+  }
+
+  const hasPersistedPatch =
+    input.data.status !== undefined ||
+    input.data.name !== undefined ||
+    input.data.customerId !== undefined ||
+    input.data.customerName !== undefined ||
+    input.data.discountPercent !== undefined ||
+    input.data.discountAmount !== undefined ||
+    input.data.unmatched !== undefined ||
+    input.data.notes !== undefined ||
+    input.data.currency !== undefined;
+
+  let offer: Offer | null;
+  try {
+    offer =
+      isUuid(offerId) && hasPersistedPatch
+        ? await updateOfferMeta(
+            offerId,
+            {
+              status: input.data.status,
+              name: input.data.name,
+              customerId: input.data.customerId,
+              customerName: input.data.customerName,
+              currency: input.data.currency,
+              discountPercent: input.data.discountPercent,
+              discountAmount: input.data.discountAmount,
+              notes: input.data.notes,
+              unmatched: input.data.unmatched,
+            },
+            auth.session.user.id,
+          )
+        : updateOfferDraft(offerId, asDraftPatch(input.data));
+  } catch (error) {
+    if (error instanceof CustomerSelectionError) {
+      return NextResponse.json(
+        errorResponseSchema.parse({
+          error: {
+            code: error.code,
+            message: error.message,
+          },
+        }),
+        { status: 400 },
+      );
+    }
+    throw error;
+  }
+
+  if (!offer) {
+    const existing = isUuid(offerId) ? await getOffer(offerId) : null;
+    if (existing?.status === OFFER_STATUS.ACCEPTED || existing?.status === OFFER_STATUS.IMPORTED) {
+      return NextResponse.json(
+        errorResponseSchema.parse({
+          error: {
+            code: "offer_locked",
+            message: "This offer is locked and cannot be modified.",
+          },
+        }),
+        { status: 403 },
+      );
+    }
+
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`,
+        },
+      }),
+      { status: 404 },
+    );
+  }
+
+  return NextResponse.json(offerResponseSchema.parse({ offer }));
+}
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  const auth = await getAuth().requireAuth();
+  if (auth.response) return auth.response;
+
+  const { offerId } = await context.params;
+
+  if (!isUuid(offerId)) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`,
+        },
+      }),
+      { status: 404 },
+    );
+  }
+
+  const deleted = await deleteOffer(offerId);
+  if (!deleted) {
+    return NextResponse.json(
+      errorResponseSchema.parse({
+        error: {
+          code: "offer_not_found",
+          message: `Offer '${offerId}' was not found.`,
+        },
+      }),
+      { status: 404 },
+    );
+  }
+
+  return new NextResponse(null, { status: 204 });
+}

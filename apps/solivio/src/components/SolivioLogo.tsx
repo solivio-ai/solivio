@@ -1,6 +1,6 @@
 import Image, { type ImageProps } from "next/image";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 type SolivioLogoProps = Omit<ImageProps, "alt" | "src"> & {
   alt?: string;

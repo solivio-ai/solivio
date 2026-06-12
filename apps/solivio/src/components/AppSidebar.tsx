@@ -1,15 +1,11 @@
 "use client";
 
-import { FileText, LayoutDashboard, Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { AdminSidebarSection } from "@/components/AdminSidebarSection";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { SolivioLogo } from "@/components/SolivioLogo";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Button } from "@/components/ui/button";
+import { Button } from "@solivio/ui/components/button.tsx";
 import {
   Sidebar,
   SidebarContent,
@@ -23,20 +19,22 @@ import {
   SidebarRail,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@solivio/ui/components/sidebar.tsx";
+import { AdminSidebarSection } from "@/components/AdminSidebarSection";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SolivioLogo } from "@/components/SolivioLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/features/auth/components/UserMenu";
+import { navRegistry } from "@/generated/nav";
 import { isAdmin } from "@/lib/auth";
 import { useSession } from "@/lib/auth-client";
 
-const navItems = [
-  { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
-  { labelKey: "offers", href: "/offers", icon: FileText },
-  { labelKey: "newOffer", href: "/offers/new", icon: Plus },
-] as const;
+const moduleNavItems = navRegistry.filter((entry) => (entry.section ?? "main") === "main");
 
 export function AppSidebar() {
   const pathname = usePathname();
   const t = useTranslations("AppSidebar");
+  const tModules = useTranslations();
   const { isMobile, setOpenMobile } = useSidebar();
   const { data: session } = useSession();
 
@@ -85,15 +83,14 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
-              {navItems.map(({ labelKey, href, icon: Icon }) => {
-                const active = pathname === href;
-                const label = t(`nav.${labelKey}`);
-
+              {moduleNavItems.map((entry) => {
+                const label = tModules(`${entry.moduleId}.${entry.labelKey}`);
+                const Icon = entry.icon;
                 return (
-                  <SidebarMenuItem key={href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={label}>
-                      <Link href={href} onClick={closeMobileSidebar}>
-                        <Icon size={16} aria-hidden="true" />
+                  <SidebarMenuItem key={entry.id}>
+                    <SidebarMenuButton asChild isActive={pathname === entry.href} tooltip={label}>
+                      <Link href={entry.href} onClick={closeMobileSidebar}>
+                        <Icon className="size-4" aria-hidden="true" />
                         <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                       </Link>
                     </SidebarMenuButton>

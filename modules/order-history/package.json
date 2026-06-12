@@ -2,19 +2,16 @@
   "name": "@solivio/module-order-history",
   "version": "0.1.0",
   "private": true,
-  "description": "Order history recall tool — lets agents answer repeat-order requests using past orders.",
+  "description": "Agent tools recalling a customer's past orders from offer history.",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+  "solivio": {
+    "module": true
   },
-  "files": [
-    "dist"
-  ],
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
