@@ -4,6 +4,8 @@ import { Agent } from "@voltagent/core";
 import { Output } from "ai";
 import { z } from "zod";
 
+import type { OfferUnmatchedItem } from "@solivio/domain";
+
 import { getModelFor } from "./modelConfig.ts";
 import { voltOpsClient } from "./voltOpsClient.ts";
 
@@ -17,7 +19,7 @@ Rules:
 - Check quantities match what was requested (or note if unclear).
 - Brand substitutions are acceptable unless the customer explicitly named a brand.
 - Functional equivalents count as a match (e.g. "push-in connector" matched by any brand's push-in connector).
-- If a product is in "unmatched" (not found in catalog), treat it as missing.
+- If a product is in "unmatched" (not found in catalog), treat it as missing. Each unmatched entry includes a reason why the catalog could not satisfy that fragment.
 
 Output fields — use them STRICTLY as defined:
 - "missingRequirements": ONLY items that have NO matching product in the offer at all. If a product is present in the offer, do NOT put it here, even if imperfect.
@@ -50,7 +52,7 @@ type OfferItem = {
 export async function validateOfferWithAgent(
   clientRequest: string,
   items: OfferItem[],
-  unmatched: string[],
+  unmatched: OfferUnmatchedItem[],
 ): Promise<OfferValidationResult> {
   const agent = new Agent({
     name: "offer-validation-agent",
@@ -65,7 +67,7 @@ export async function validateOfferWithAgent(
 
   const unmatchedSummary =
     unmatched.length > 0
-      ? `\nNot found in catalog (unmatched):\n${unmatched.map((u) => `- ${u}`).join("\n")}`
+      ? `\nNot found in catalog (unmatched):\n${unmatched.map((u) => `- ${u.item}${u.reason ? ` — ${u.reason}` : ""}`).join("\n")}`
       : "";
 
   const message = [

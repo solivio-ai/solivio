@@ -91,7 +91,6 @@ type OfferRow = {
   productCount?: number;
   unmatchedCount?: number;
   notesCount?: number;
-  unmatched?: string[];
   notes?: string[];
   totalNet?: number;
   discountPercent?: number;
@@ -174,7 +173,7 @@ function normalizeOffer(offer: OfferRow, t: T): NormalizedOfferRow {
     status: offer.status,
     createdAt,
     productCount: offer.productCount ?? 0,
-    unmatchedCount: offer.unmatchedCount ?? offer.unmatched?.length ?? 0,
+    unmatchedCount: offer.unmatchedCount ?? 0,
     notesCount: offer.notesCount ?? offer.notes?.length ?? 0,
     totalPrice:
       typeof offer.totalNet === "number"

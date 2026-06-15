@@ -1,6 +1,11 @@
 import "server-only";
 
-import type { Offer, OfferItem } from "@solivio/domain";
+import type {
+  Offer,
+  OfferItem,
+  OfferUnmatchedItem,
+  OfferUnmatchedItemInput,
+} from "@solivio/domain";
 
 type OfferStore = Map<string, Offer>;
 
@@ -28,7 +33,7 @@ export function updateOfferDraft(
     customerName?: string | null;
     clientRequest?: string | null;
     items?: Array<Partial<OfferItem> & { productId: string | null; name: string }>;
-    unmatched?: string[];
+    unmatched?: OfferUnmatchedItem[] | OfferUnmatchedItemInput[];
     discountPercent?: number;
     discountAmount?: number;
   },
@@ -74,7 +79,14 @@ export function updateOfferDraft(
     name: update.name ?? offer.name,
     customerName: update.customerName !== undefined ? update.customerName : offer.customerName,
     clientRequest: update.clientRequest !== undefined ? update.clientRequest : offer.clientRequest,
-    unmatched: update.unmatched ?? offer.unmatched,
+    unmatched: update.unmatched
+      ? update.unmatched.map((entry, index) => ({
+          id: "id" in entry && entry.id ? entry.id : crypto.randomUUID(),
+          item: entry.item,
+          reason: entry.reason,
+          position: "position" in entry ? entry.position : index,
+        }))
+      : offer.unmatched,
     discountPercent: update.discountPercent ?? offer.discountPercent,
     discountAmount: update.discountAmount ?? offer.discountAmount,
     items: nextItems,

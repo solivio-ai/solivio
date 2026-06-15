@@ -154,10 +154,15 @@ export function OfferRevisionModal({
                 {snapshot.unmatched.length > 0 && (
                   <div className="grid gap-1.5 pt-1 border-t border-foreground/10">
                     <span className="text-xs text-muted-foreground">{tModal("unmatched")}</span>
-                    {snapshot.unmatched.map((item, i) => (
+                    {snapshot.unmatched.map((entry, i) => (
                       <Alert key={i} variant="warning" className="text-xs py-2 px-2.5">
                         <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-                        <AlertDescription>{item}</AlertDescription>
+                        <AlertDescription className="grid gap-0.5">
+                          <span>{entry.item}</span>
+                          {entry.reason ? (
+                            <span className="text-muted-foreground">{entry.reason}</span>
+                          ) : null}
+                        </AlertDescription>
                       </Alert>
                     ))}
                   </div>

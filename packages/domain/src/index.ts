@@ -6,7 +6,14 @@ export {
   customerNamesMatch,
   normalizeCustomerName,
 } from "./models/customer-selection";
-export type { MatchSource, Offer, OfferItem, OfferStatus } from "./models/offer";
+export type {
+  MatchSource,
+  Offer,
+  OfferItem,
+  OfferStatus,
+  OfferUnmatchedItem,
+  OfferUnmatchedItemInput,
+} from "./models/offer";
 export { OFFER_STATUS } from "./models/offer";
 export type {
   OfferRevision,

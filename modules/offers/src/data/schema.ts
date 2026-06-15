@@ -34,7 +34,6 @@ export const offers = pgTable(
       .notNull()
       .default(0),
     notes: text("notes").array().notNull().default([]),
-    unmatched: text("unmatched").array().notNull().default([]),
     ...timestamps,
   },
   (table) => [
@@ -80,6 +79,21 @@ export const offerItems = pgTable(
     ...timestamps,
   },
   (table) => [index("offers_items_offer_id_idx").on(table.offerId)],
+);
+
+export const offerUnmatchedItems = pgTable(
+  "offers_unmatched_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    offerId: uuid("offer_id")
+      .notNull()
+      .references(() => offers.id, { onDelete: "cascade" }),
+    item: text("item").notNull(),
+    reason: text("reason").notNull().default(""),
+    position: integer("position").notNull().default(0),
+    ...timestamps,
+  },
+  (table) => [index("offers_unmatched_items_offer_id_idx").on(table.offerId)],
 );
 
 export const offerRevisions = pgTable(

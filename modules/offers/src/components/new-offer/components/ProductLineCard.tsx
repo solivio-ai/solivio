@@ -156,9 +156,11 @@ export function ProductLineCard({
       {hasDetails ? (
         <Accordion type="single" collapsible className="mt-1">
           <AccordionItem value="details" className="border-none">
-            <AccordionTrigger className="py-1.5 text-xs text-muted-foreground hover:no-underline">
-              {tProducts("details")}
-            </AccordionTrigger>
+            <div className="w-fit">
+              <AccordionTrigger className="py-1.5 text-xs gap-2 text-muted-foreground hover:no-underline">
+                {tProducts("details")}
+              </AccordionTrigger>
+            </div>
             <AccordionContent className="grid gap-2 pb-0">
               {line.availability ? (
                 <div className="flex items-center gap-2">

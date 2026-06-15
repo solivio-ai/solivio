@@ -68,6 +68,27 @@ export const offerItemSchema = z
     description: "A product line item included in an offer.",
   });
 
+export const offerUnmatchedItemInputSchema = z
+  .object({
+    item: z.string().min(1),
+    reason: z.string(),
+  })
+  .strict()
+  .meta({
+    id: "OfferUnmatchedItemInput",
+    description: "Unmatched fragment before persistence (no row id).",
+  });
+
+export const offerUnmatchedItemSchema = offerUnmatchedItemInputSchema
+  .extend({
+    id: z.uuid(),
+    position: z.number().int().nonnegative().optional(),
+  })
+  .meta({
+    id: "OfferUnmatchedItem",
+    description: "Persisted unmatched request fragment. reason may be empty for legacy rows.",
+  });
+
 // ── Offer ──────────────────────────────────────────────────────────────────────
 
 export const offerSchema = z
@@ -82,7 +103,7 @@ export const offerSchema = z
     discountPercent: z.number().min(0).max(100),
     discountAmount: z.number().nonnegative(),
     notes: z.array(z.string()),
-    unmatched: z.array(z.string()),
+    unmatched: z.array(offerUnmatchedItemSchema),
     items: z.array(offerItemSchema),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
@@ -165,7 +186,7 @@ export const updateOfferRequestSchema = z
     status: z.enum(["draft", "accepted", "rejected"]).optional(),
     currency: z.string().optional(),
     items: z.array(updateOfferItemRequestSchema).optional(),
-    unmatched: z.array(z.string()).optional(),
+    unmatched: z.array(offerUnmatchedItemInputSchema).optional(),
     notes: z.array(z.string()).optional(),
     discountPercent: z.number().min(0).max(100).optional(),
     discountAmount: z.number().nonnegative().optional(),

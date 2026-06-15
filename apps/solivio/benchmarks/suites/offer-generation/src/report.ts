@@ -26,6 +26,11 @@ export type BenchmarkMeta = {
 
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
+// Committed result files written before unmatched entries carried a reason
+// store plain strings; render both shapes.
+const formatUnmatched = (u: string | { item: string; reason: string }) =>
+  typeof u === "string" ? u : u.reason ? `${u.item} (${u.reason})` : u.item;
+
 export function aggregate(results: CaseResult[]) {
   const caseMeans = results.map((r) => mean(r.runs.map((run) => run.score.score)));
   const tiers: Partial<Record<Difficulty, { mean: number; caseCount: number }>> = {};
@@ -168,7 +173,9 @@ export function buildMarkdownReport(report: JsonReport): string {
       }
       if (run.generated.unmatched.length > 0) {
         lines.push("");
-        lines.push(`Agent reported unmatched: ${run.generated.unmatched.join("; ")}`);
+        lines.push(
+          `Agent reported unmatched: ${run.generated.unmatched.map(formatUnmatched).join("; ")}`,
+        );
       }
       lines.push("");
     }

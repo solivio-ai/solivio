@@ -4,7 +4,7 @@ import type { BenchmarkCase } from "./types";
 // Kept structural so this module stays importable without the server-only agent code.
 export type GeneratedOfferLike = {
   items: Array<{ productSku: string; quantity: number }>;
-  unmatched: string[];
+  unmatched: Array<{ item: string; reason: string }>;
 };
 
 export type ItemVerdict = {
@@ -104,7 +104,7 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
 
   const expectedUnmatched = benchCase.expected.unmatched;
   const missedUnmatched = expectedUnmatched.filter(
-    (fragment) => !generated.unmatched.some((u) => fragmentsOverlap(fragment, u)),
+    (fragment) => !generated.unmatched.some((u) => fragmentsOverlap(fragment, u.item)),
   );
   const unmatchedRecall =
     expectedUnmatched.length === 0

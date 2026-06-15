@@ -1,4 +1,4 @@
-import type { MatchSource, OfferStatus } from "./offer";
+import type { MatchSource, OfferStatus, OfferUnmatchedItemInput } from "./offer";
 
 export type OfferRevisionSnapshotItem = {
   productId: string | null;
@@ -29,7 +29,7 @@ export type OfferRevisionSnapshot = {
   discountPercent: number;
   discountAmount: number;
   notes: string[];
-  unmatched: string[];
+  unmatched: OfferUnmatchedItemInput[];
   items: OfferRevisionSnapshotItem[];
 };
 

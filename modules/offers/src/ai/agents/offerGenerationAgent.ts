@@ -6,21 +6,11 @@ import { z } from "zod";
 
 import { getAgentTools, getService } from "@solivio/sdk/runtime";
 
+import { offerUnmatchedItemInputSchema } from "../../contracts/offer.ts";
+import { getAppLocaleLanguage } from "../../server/appLocale.ts";
 import { CONTEXT_KEY_CUSTOMER_ID, toVoltagentTool } from "./agentToolAdapter.ts";
 import { getModelFor } from "./modelConfig.ts";
 import { voltOpsClient } from "./voltOpsClient.ts";
-
-const LOCALE_LANGUAGE_MAP: Record<string, string> = {
-  pl: "Polish",
-  en: "English",
-  de: "German",
-  fr: "French",
-};
-
-function getRationaleLanguage(): string {
-  const locale = (process.env.APP_LOCALE ?? "pl").toLowerCase().split("-")[0];
-  return LOCALE_LANGUAGE_MAP[locale] ?? "Polish";
-}
 
 const OFFER_AGENT_INSTRUCTIONS = `
 You generate a structured offer from a customer request. The catalog can span any industry
@@ -59,21 +49,26 @@ Workflow:
 5. Map results to the offer schema.
 
 Rules:
-- For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise unmatched.
+- For "sku" fragments: if exact match exists (similarity = 1.0) — use it. Otherwise add to "unmatched" with a reason (e.g. SKU not found in catalog).
 - For "description" fragments: search_products returns up to 10 candidates ranked by vector similarity (which is unreliable for technical terms in inflected languages — DO NOT trust the similarity number alone). YOU rerank by reading BOTH the product name AND the product description:
     * Pick the candidate whose name+description together form the closest semantic match to the requestFragment (same product type, same category, matching specs).
     * The catalog name may be terse or generic — the description often contains the discriminating details (variants, sizes, "for upper and lower", "set of N", supported standards, etc.). ALWAYS read the description before deciding.
     * Example: requestFragment "łyżki plastikowe góra dół" — name "Łyżki wyciskowe plastikowe" lacks "góra/dół", but description "do wykonywania wycisku górnego oraz dolnego" confirms the match. ACCEPT it.
     * A request for "listwa zaciskowa" should match "Listwa zaciskowa ..." even if it's at position 5 with similarity 0.54.
     * Catalogs often use synonyms for the same concept ("leak detector" / "flood sensor", "torch" / "flashlight", "czujnik wycieku" / "czujnik zalania"). Match on concept, not lexeme.
-    * If NONE of the 10 candidates is plausibly the requested product (different category entirely, even after reading descriptions), put requestFragment in "unmatched".
+    * If NONE of the 10 candidates is plausibly the requested product (different category entirely, even after reading descriptions), add the requestFragment to "unmatched" with a reason explaining the category mismatch or lack of fit.
 - Never add multiple products for the same request fragment. Pick exactly ONE.
 - Use the "id" field (UUID) as productId — never use SKU as productId.
 - Each product id appears in "items" AT MOST ONCE. When multiple fragments map to the same product id, decide:
     * MERGE — if the fragments express the SAME product intent (same product type AND the same identifying specs such as size, capacity, voltage, port count, model number, color, material), combine them into ONE item with quantity = SUM of all fragment quantities. This handles requests where the customer lists the same item under different sections, headings, or rooms (e.g., "Room 1: gauze x10, Room 2: gauze x10" → ONE item with quantity 20). Note the merge in rationale (e.g., "summed across 3 mentions in the request").
-    * SPLIT — if the fragments differ in identifying specs (e.g., "size XS" vs "size S", "5ml" vs "10ml", "24-port" vs "48-port", "M10" vs "M12") but only one catalog product matches both, keep ONE item for the first fragment and add the others to "unmatched". The salesperson must see that the catalog lacks the requested variant; do NOT silently sum quantities across distinct variants.
+    * SPLIT — if the fragments differ in identifying specs (e.g., "size XS" vs "size S", "5ml" vs "10ml", "24-port" vs "48-port", "M10" vs "M12") but only one catalog product matches both, keep ONE item for the first fragment and add the others to "unmatched" with a reason that the catalog lacks the requested variant/spec. Do NOT silently sum quantities across distinct variants.
+- unmatched: each entry is an object with "item" (verbatim customer fragment) and "reason" (1–2 sentences in ${getAppLocaleLanguage()} explaining why no catalog product was selected). Never leave "reason" empty.
+  Examples:
+    * SKU miss: item "WG-9999", reason "SKU WG-9999 was not found in the catalog."
+    * Semantic miss: item "czujnik CO2 przemysłowy", reason "Top search results are smoke detectors and temperature sensors; none match an industrial CO2 sensor."
+    * SPLIT variant: item "rękawiczki nitrylowe XS x5op", reason "Catalog only has size M; requested size XS is not available."
 - requestItem: VERBATIM copy of the customer's text for this product, INCLUDING the quantity, units, and any size/spec notation EXACTLY as the customer wrote it ("strzykawki 5ml luerlock x1op", "rękawiczki nitrylowe XS x5op", "śruba M10 nierdzewna 50szt"). Do NOT clean it up, do NOT translate, do NOT lemmatize, do NOT drop quantity — quantity-stripping rules apply ONLY to the search query, never to requestItem. For a merged item, concatenate the original fragments separated by " + " so the salesperson sees every mention (e.g., "kompresy x10op (Gab 1) + kompresy x10op (Gab 3) + kompresy x10op (Gab 4)") — preserve original wording of each.
-- Write rationale in ${getRationaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
+- Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
@@ -109,7 +104,9 @@ const fragmentKindSchema = z
 
 const agentOutputSchema = z.object({
   items: z.array(offerItemSchema),
-  unmatched: z.array(z.string()).describe("requestFragment values with no catalog match"),
+  unmatched: z
+    .array(offerUnmatchedItemInputSchema)
+    .describe("Request fragments with no acceptable catalog match and why"),
   notes: z.array(z.string()).describe("Additional notes or substitutions"),
 });
 

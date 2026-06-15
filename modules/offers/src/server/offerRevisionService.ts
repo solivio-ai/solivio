@@ -9,8 +9,10 @@ import { db } from "@solivio/sdk/runtime";
 import { offerItems, offers } from "../data/schema.ts";
 import type { InsertOfferItemData } from "./offerRepository.ts";
 import {
+  deleteOfferUnmatchedByOfferId,
   findOfferById,
   insertOfferItems,
+  insertOfferUnmatchedItems,
   lockOfferForUpdate,
   touchOffer,
 } from "./offerRepository.ts";
@@ -57,7 +59,7 @@ export async function saveRevision(
     discountPercent: row.discountPercent,
     discountAmount: row.discountAmount,
     notes: row.notes,
-    unmatched: row.unmatched,
+    unmatched: row.unmatched.map(({ item, reason }) => ({ item, reason })),
     items: row.items.map((item, index) => ({
       productId: item.productId,
       sku: item.productSku,
@@ -108,59 +110,74 @@ export async function restoreRevision(
   const { snapshot } = revisionRow;
 
   let blocked = false;
-  await db.transaction(async (tx) => {
-    const locked = await lockOfferForUpdate(offerId, tx);
-    if (
-      !locked ||
-      locked.status === OFFER_STATUS.ACCEPTED ||
-      locked.status === OFFER_STATUS.IMPORTED
-    ) {
-      blocked = true;
-      return;
-    }
+  await db.transaction(
+    async (tx) => {
+      const locked = await lockOfferForUpdate(offerId, tx);
+      if (
+        !locked ||
+        locked.status === OFFER_STATUS.ACCEPTED ||
+        locked.status === OFFER_STATUS.IMPORTED
+      ) {
+        blocked = true;
+        return;
+      }
 
-    await tx.delete(offerItems).where(eq(offerItems.offerId, offerId));
+      await tx.delete(offerItems).where(eq(offerItems.offerId, offerId));
+      await deleteOfferUnmatchedByOfferId(offerId, tx);
 
-    if (snapshot.items.length > 0) {
-      const items: InsertOfferItemData[] = snapshot.items.map((item) => ({
-        offerId,
-        productId: item.productId,
-        name: item.name,
-        description: item.description,
-        quantity: item.quantity,
-        unitPriceNet: item.unitPriceNet,
-        vatRate: item.vatRate,
-        unitGrossPrice: item.unitGrossPrice,
-        totalNet: item.totalNet,
-        totalGross: item.totalGross,
-        requestItem: item.requestItem,
-        rationale: item.rationale,
-        matchSource: item.matchSource,
-        matchScore: item.matchScore,
-        position: item.position,
-      }));
-      await insertOfferItems(items, tx);
-    }
+      if (snapshot.items.length > 0) {
+        const items: InsertOfferItemData[] = snapshot.items.map((item) => ({
+          offerId,
+          productId: item.productId,
+          name: item.name,
+          description: item.description,
+          quantity: item.quantity,
+          unitPriceNet: item.unitPriceNet,
+          vatRate: item.vatRate,
+          unitGrossPrice: item.unitGrossPrice,
+          totalNet: item.totalNet,
+          totalGross: item.totalGross,
+          requestItem: item.requestItem,
+          rationale: item.rationale,
+          matchSource: item.matchSource,
+          matchScore: item.matchScore,
+          position: item.position,
+        }));
+        await insertOfferItems(items, tx);
+      }
 
-    await tx
-      .update(offers)
-      .set({
-        name: snapshot.name,
-        customerId: snapshot.customerId,
-        requestId: snapshot.requestId,
-        currency: snapshot.currency,
-        notes: snapshot.notes,
-        unmatched: snapshot.unmatched,
-        discountPercent: snapshot.discountPercent ?? 0,
-        discountAmount: snapshot.discountAmount ?? 0,
-        status: OFFER_STATUS.DRAFT,
-        userId,
-        updatedAt: new Date(),
-      })
-      .where(eq(offers.id, offerId));
+      if (snapshot.unmatched.length > 0) {
+        await insertOfferUnmatchedItems(
+          snapshot.unmatched.map((entry, index) => ({
+            offerId,
+            item: entry.item,
+            reason: entry.reason,
+            position: index,
+          })),
+          tx,
+        );
+      }
 
-    await saveRevision(offerId, userId, null, tx);
-  });
+      await tx
+        .update(offers)
+        .set({
+          name: snapshot.name,
+          customerId: snapshot.customerId,
+          requestId: snapshot.requestId,
+          currency: snapshot.currency,
+          notes: snapshot.notes,
+          discountPercent: snapshot.discountPercent ?? 0,
+          discountAmount: snapshot.discountAmount ?? 0,
+          status: OFFER_STATUS.DRAFT,
+          userId,
+          updatedAt: new Date(),
+        })
+        .where(eq(offers.id, offerId));
+
+      await saveRevision(offerId, userId, null, tx);
+    },
+    { isolationLevel: "repeatable read" },
+  );
 
   if (blocked) return null;
 

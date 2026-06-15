@@ -7,6 +7,7 @@ import {
   offerPathParamsSchema,
   offerSchema,
   offerStatusSchema,
+  offerUnmatchedItemInputSchema,
 } from "./offer.ts";
 
 export const offerRevisionPathParamsSchema = z
@@ -53,7 +54,7 @@ export const offerRevisionSnapshotSchema = z
     discountPercent: z.number().min(0).max(100).default(0),
     discountAmount: z.number().nonnegative().default(0),
     notes: z.array(z.string()),
-    unmatched: z.array(z.string()),
+    unmatched: z.array(offerUnmatchedItemInputSchema),
     items: z.array(offerRevisionSnapshotItemSchema),
   })
   .strict()

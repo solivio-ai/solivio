@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { Offer } from "@solivio/domain";
+import type { Offer, OfferUnmatchedItem } from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
 import { Button } from "@solivio/ui/components/button.tsx";
 
@@ -61,6 +61,10 @@ function toUpdateItems(lines: DraftLine[]) {
   }));
 }
 
+function toUnmatchedPayload(entries: OfferUnmatchedItem[]) {
+  return entries.map(({ item, reason }) => ({ item, reason }));
+}
+
 async function parseOfferResponse(response: Response): Promise<Offer> {
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
@@ -92,9 +96,11 @@ export function OfferBuilder({
   const [validateState, setValidateState] = useState<"idle" | "loading">("idle");
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [matchingUnmatchedItem, setMatchingUnmatchedItem] = useState<string | null>(null);
+  const [matchingUnmatchedEntry, setMatchingUnmatchedEntry] = useState<OfferUnmatchedItem | null>(
+    null,
+  );
   const [lines, setLines] = useState<DraftLine[]>(() => toDraftLines(offer));
-  const [unmatched, setUnmatched] = useState<string[]>(() => offer.unmatched ?? []);
+  const [unmatched, setUnmatched] = useState<OfferUnmatchedItem[]>(() => offer.unmatched ?? []);
   const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(() => new Set());
   const [actionBarCompact, setActionBarCompact] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -328,15 +334,15 @@ export function OfferBuilder({
     }
   }
 
-  async function removeUnmatched(item: string) {
-    const nextUnmatched = unmatched.filter((u) => u !== item);
+  async function removeUnmatched(unmatchedId: string) {
+    const nextUnmatched = unmatched.filter((u) => u.id !== unmatchedId);
     setUnmatched(nextUnmatched);
     markSaving();
     try {
       const response = await fetch(`/api/offers/${offer.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ unmatched: nextUnmatched }),
+        body: JSON.stringify({ unmatched: toUnmatchedPayload(nextUnmatched) }),
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
@@ -347,21 +353,21 @@ export function OfferBuilder({
     }
   }
 
-  function handleManuallyMatch(item: string) {
-    setMatchingUnmatchedItem(item);
+  function handleManuallyMatch(entry: OfferUnmatchedItem) {
+    setMatchingUnmatchedEntry(entry);
   }
 
   async function handleConfirmMatch(product: ProductSearchMatch, quantity: number) {
-    const item = matchingUnmatchedItem;
-    if (!item) return;
-    setMatchingUnmatchedItem(null);
+    const unmatchedEntry = matchingUnmatchedEntry;
+    if (!unmatchedEntry) return;
+    setMatchingUnmatchedEntry(null);
 
     const existing = lines.find((line) => line.productId === product.id);
 
     if (existing) {
       const ok = await persistQuantity(existing, quantity);
       if (ok) {
-        await removeUnmatched(item);
+        await removeUnmatched(unmatchedEntry.id);
       }
       return;
     }
@@ -372,10 +378,10 @@ export function OfferBuilder({
       name: product.name,
       description: product.description,
       quantity,
-      requestItem: item,
+      requestItem: unmatchedEntry.item,
       unitPrice: 0,
       currency: "PLN",
-      rationale: item,
+      rationale: unmatchedEntry.item,
       source: "database",
     };
 
@@ -390,13 +396,13 @@ export function OfferBuilder({
         body: JSON.stringify({
           productId: product.id,
           quantity,
-          requestItem: item,
+          requestItem: unmatchedEntry.item,
         }),
       });
       const nextOffer = await parseOfferResponse(response);
       syncOffer(nextOffer);
       markSaved();
-      await removeUnmatched(item);
+      await removeUnmatched(unmatchedEntry.id);
     } catch {
       setLines((current) => current.filter((line) => line.productId !== product.id));
       markSaveError({ kind: "add-product", product, quantity });
@@ -414,7 +420,7 @@ export function OfferBuilder({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: nextStatus,
-          unmatched,
+          unmatched: toUnmatchedPayload(unmatched),
           items: toUpdateItems(nextLines),
         }),
       });
@@ -497,7 +503,7 @@ export function OfferBuilder({
         commitQuantity={commitQuantity}
         pendingProductIds={pendingProductIds}
         removeProduct={(productId) => void removeProduct(productId)}
-        removeUnmatched={(item) => void removeUnmatched(item)}
+        removeUnmatched={(id) => void removeUnmatched(id)}
         onManuallyMatch={handleManuallyMatch}
         updateQuantity={updateQuantity}
         status={status}
@@ -528,11 +534,11 @@ export function OfferBuilder({
       />
 
       <ProductMatchDialog
-        open={matchingUnmatchedItem !== null}
+        open={matchingUnmatchedEntry !== null}
         onOpenChange={(open) => {
-          if (!open) setMatchingUnmatchedItem(null);
+          if (!open) setMatchingUnmatchedEntry(null);
         }}
-        unmatchedItem={matchingUnmatchedItem ?? ""}
+        unmatchedItem={matchingUnmatchedEntry?.item ?? ""}
         onConfirm={(product, qty) => void handleConfirmMatch(product, qty)}
       />
 
