@@ -17,6 +17,7 @@ export default defineConfig({
     "csv-import",
     "order-history",
     "products-sync",
+    "knowledge-base",
   ],
   slots: {
     "product.importer": "csv-import/csv-products",

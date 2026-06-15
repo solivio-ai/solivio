@@ -5807,6 +5807,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-knowledge-base@workspace:modules/knowledge-base":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-knowledge-base@workspace:modules/knowledge-base"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.17"
+    drizzle-orm: "npm:^0.45.2"
+    lucide-react: "npm:^1.17.0"
+    next: "npm:^16.2.9"
+    next-intl: "npm:^4.13.0"
+    server-only: "npm:^0.0.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.4.3"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/module-offer-chat@workspace:modules/offer-chat":
   version: 0.0.0-use.local
   resolution: "@solivio/module-offer-chat@workspace:modules/offer-chat"

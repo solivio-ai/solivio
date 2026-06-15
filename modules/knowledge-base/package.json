@@ -1,0 +1,37 @@
+{
+  "name": "@solivio/module-knowledge-base",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Structured internal knowledge base with RAG retrieval for AI agents.",
+  "type": "module",
+  "solivio": {
+    "module": true
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@solivio/sdk": "workspace:*",
+    "@solivio/ui": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.17.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "next": "*",
+    "next-intl": "*",
+    "react": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "next": "^16.2.9",
+    "next-intl": "^4.13.0",
+    "typescript": "^6.0.3"
+  }
+}
