@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import { test } from "node:test";
+import { expect, test } from "vitest";
 
 import type { ModuleModel } from "../discover.mts";
 import { scanExports } from "../discover.mts";
@@ -43,8 +42,8 @@ export const metadata = { title: "x" };
 export async function GET() {}
 export { foo as bar };
 `);
-  assert.equal(result.hasDefault, true);
-  assert.deepEqual(result.named.sort(), ["GET", "bar", "metadata"]);
+  expect(result.hasDefault).toBe(true);
+  expect(result.named.sort()).toEqual(["GET", "bar", "metadata"]);
 });
 
 test("scanExports separates segment config (inlined into stubs, never re-exported)", () => {
@@ -54,8 +53,8 @@ export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 export async function POST() {}
 `);
-  assert.deepEqual(result.named, ["POST"]);
-  assert.deepEqual(result.segmentConfig, {
+  expect(result.named).toEqual(["POST"]);
+  expect(result.segmentConfig).toEqual({
     runtime: '"nodejs"',
     maxDuration: "300",
     dynamic: '"force-dynamic"',
@@ -64,7 +63,7 @@ export async function POST() {}
 
 test("scanExports handles typed const exports", () => {
   const result = scanExports(`export const nav: NavEntry[] = [];`);
-  assert.deepEqual(result.named, ["nav"]);
+  expect(result.named).toEqual(["nav"]);
 });
 
 test("validate flags page collisions between modules", async () => {
@@ -93,7 +92,9 @@ test("validate flags page collisions between modules", async () => {
     ],
   });
   const errors = validate([a, b], { modules: [] }, process.cwd());
-  assert.ok(errors.some((error) => error.includes('Page collision at "/dash"')));
+  expect(errors).toEqual(
+    expect.arrayContaining([expect.stringContaining('Page collision at "/dash"')]),
+  );
 });
 
 test("validate flags unknown dependsOn and cycles", async () => {
@@ -101,11 +102,13 @@ test("validate flags unknown dependsOn and cycles", async () => {
   const a = moduleModel({ id: "a", dependsOn: ["b"] });
   const b = moduleModel({ id: "b", packageName: "@solivio/module-b", dependsOn: ["a"] });
   const errors = validate([a, b], { modules: [] }, process.cwd());
-  assert.ok(errors.some((error) => error.includes("Cyclic dependsOn")));
+  expect(errors).toEqual(expect.arrayContaining([expect.stringContaining("Cyclic dependsOn")]));
   const unknown = validate(
     [moduleModel({ id: "a", dependsOn: ["ghost"] })],
     { modules: [] },
     process.cwd(),
   );
-  assert.ok(unknown.some((error) => error.includes('unknown/disabled module "ghost"')));
+  expect(unknown).toEqual(
+    expect.arrayContaining([expect.stringContaining('unknown/disabled module "ghost"')]),
+  );
 });

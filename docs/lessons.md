@@ -22,6 +22,18 @@ Newest first. One entry per lesson:
 
 ## Lessons
 
+### 2026-06-12 — Write Durable Docs
+
+**Context:** Persistent docs described recent implementation steps instead of the stable project rule.
+**Rule:** State the current command, boundary, or convention. Avoid historical rationale, redundant qualifiers, and task-specific details unless they are needed to operate the project.
+**Applies to:** `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, `.github/pull_request_template.md`, `docs/`.
+
+### 2026-06-12 — Keep testing guidance colocated and concise
+
+**Context:** Testing docs initially recorded intermediate decisions: root test placement, module-level placement, and research notes.
+**Rule:** Prefer colocated `*.test.{ts,tsx}` beside production files; keep shared harness utilities in `tests/support/`; keep testing docs operational and compact.
+**Applies to:** `modules/*/src/`, `packages/*/src/`, `sdk/src/`, `tests/support/`, `docs/testing.md`, `vitest.config.ts`, `yarn test`.
+
 ### 2026-06-12 — Keep pg-boss queue names v12-safe
 
 **Context:** `pg-boss` 12 validates queue names more strictly. Existing job names such as `products-sync.run` are valid, but the old persistent-subscriber prefix `subscriber:<id>` used a colon and would fail once a persistent subscriber was registered.
@@ -31,7 +43,7 @@ Newest first. One entry per lesson:
 ### 2026-06-12 — Prefer the full health command over ad hoc validation
 
 **Context:** Agents were manually composing several validation commands and then documenting `validate:all` as if it were mainly for dependency upgrades. The real need is a general, repeatable "is the repo healthy?" command.
-**Rule:** Use and describe `yarn validate:all` as the full repo health and handoff command. Keep it from rewriting tracked source files; run fix commands like `yarn biome check --write .` and `yarn generate` separately when changes are intentional. Keep `yarn validate` as the faster static PR gate, and keep individual commands only for targeted feedback while actively editing.
+**Rule:** Use and describe `yarn validate:all` as the full repo health and handoff command. Keep it from rewriting tracked source files; run fix commands like `yarn biome check --write .` and `yarn generate` separately when changes are intentional. Keep `yarn validate` as the PR gate, and keep individual commands only for targeted feedback while actively editing.
 **Applies to:** `AGENTS.md`, `package.json` scripts, and final validation guidance.
 
 ### 2026-06-12 — Dependency upgrades need package-manager hygiene

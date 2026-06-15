@@ -34,8 +34,8 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
-      - name: Generator unit tests
-        run: yarn test:generator
+      - name: Vitest suite
+        run: yarn test
 
       - name: Check database schema drift
         run: yarn db:check
