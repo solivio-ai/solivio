@@ -177,7 +177,10 @@ export function AddNodeDialog({
           <Button variant="outline" onClick={handleClose} disabled={saving}>
             {t("cancel")}
           </Button>
-          <Button onClick={handleSubmit} disabled={saving || !title.trim() || (type === "article" && !body.trim())}>
+          <Button
+            onClick={handleSubmit}
+            disabled={saving || !title.trim() || (type === "article" && !body.trim())}
+          >
             {saving ? t("creating") : t("create")}
           </Button>
         </DialogFooter>

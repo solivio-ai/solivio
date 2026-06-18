@@ -152,7 +152,7 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
         <nav className="flex-1 overflow-y-auto px-2 pb-2">
           {displaySpaces.map((space) =>
             managing ? (
-              <div
+              <li
                 key={space.id}
                 draggable
                 onDragStart={() => handleDragStart(space.id)}
@@ -182,7 +182,7 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
                 >
                   <Trash2 size={13} />
                 </button>
-              </div>
+              </li>
             ) : (
               <Link
                 key={space.id}
@@ -291,7 +291,10 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
         parentId={null}
         parentPosition={null}
         onClose={() => setAddNodeOpen(false)}
-        onCreated={() => { setAddNodeOpen(false); router.refresh(); }}
+        onCreated={() => {
+          setAddNodeOpen(false);
+          router.refresh();
+        }}
       />
     </div>
   );

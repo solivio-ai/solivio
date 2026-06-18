@@ -53,7 +53,15 @@ export function NewSpaceDialog({ open, onClose }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { if (!o) { reset(); onClose(); } }}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) {
+          reset();
+          onClose();
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
@@ -76,7 +84,14 @@ export function NewSpaceDialog({ open, onClose }: Props) {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => { reset(); onClose(); }} disabled={loading}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              reset();
+              onClose();
+            }}
+            disabled={loading}
+          >
             {t("cancel")}
           </Button>
           <Button onClick={handleCreate} disabled={!name.trim() || loading}>

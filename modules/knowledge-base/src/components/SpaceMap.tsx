@@ -154,7 +154,9 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
   // declared before useNodesState/useEdgesState.
   const nodesRef = useRef<Node<ArticleNodeData>[]>([]);
   const edgesRef = useRef<Edge[]>([]);
-  const setNodesRef = useRef<((fn: (nds: Node<ArticleNodeData>[]) => Node<ArticleNodeData>[]) => void) | null>(null);
+  const setNodesRef = useRef<
+    ((fn: (nds: Node<ArticleNodeData>[]) => Node<ArticleNodeData>[]) => void) | null
+  >(null);
   const setEdgesRef = useRef<((fn: (eds: Edge[]) => Edge[]) => void) | null>(null);
   const [addNodeState, setAddNodeState] = useState<AddNodeState | null>(null);
 
@@ -177,7 +179,9 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
       }
     }
     setNodesRef.current?.((nds) => nds.filter((n) => !toDelete.has(n.id)));
-    setEdgesRef.current?.((eds) => eds.filter((e) => !toDelete.has(e.source) && !toDelete.has(e.target)));
+    setEdgesRef.current?.((eds) =>
+      eds.filter((e) => !toDelete.has(e.source) && !toDelete.has(e.target)),
+    );
     fetch(`/api/knowledge-base/articles/${id}`, { method: "DELETE" });
   }, []);
 
