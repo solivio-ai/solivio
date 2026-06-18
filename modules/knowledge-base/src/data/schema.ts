@@ -10,9 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { timestamps } from "@solivio/sdk/db";
-
-import { halfvec } from "./halfvec.ts";
+import { halfvec, timestamps } from "@solivio/sdk/db";
 
 // ---------------------------------------------------------------------------
 // Spaces — top-level navigation units, each owns a dedicated map canvas.

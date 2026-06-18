@@ -1,8 +1,6 @@
 import { index, numeric, pgTable, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "@solivio/sdk/db";
-
-import { halfvec } from "./halfvec.ts";
+import { halfvec, timestamps } from "@solivio/sdk/db";
 
 export const products = pgTable(
   "catalog_products",
