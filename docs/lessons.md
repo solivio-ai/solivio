@@ -22,6 +22,12 @@ Newest first. One entry per lesson:
 
 ## Lessons
 
+### 2026-06-18 — Use AlertDialog for destructive confirmations, not window.confirm()
+
+**Context:** Space deletion used `window.confirm()` for a "are you sure?" prompt. The user requested a proper dialog instead.
+**Rule:** Never use `window.confirm()`, `window.alert()`, or `window.prompt()` for user-facing confirmations. Use `AlertDialog` from `@solivio/ui/components/alert-dialog.tsx` with a title, description, cancel, and destructive action button.
+**Applies to:** Any destructive action (delete, reset, bulk operations) across all modules and the app shell.
+
 ### 2026-06-12 — Write Durable Docs
 
 **Context:** Persistent docs described recent implementation steps instead of the stable project rule.

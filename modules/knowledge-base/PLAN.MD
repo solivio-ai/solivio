@@ -25,31 +25,36 @@ Deliverable: `yarn db:check` passes, module registers, no UI yet.
 
 ---
 
-## Phase 2 — Map View (PoC)
+## Phase 2 — Map View (PoC) - DONE
 
 Goal: something on the screen to react to. Raw interactive canvas with the real data — good enough to feel the UX, not production-ready.
+
+**Libraries (decided):**
+- `@xyflow/react` v12 — canvas, pan/zoom, node rendering, edge drawing, free drag placement
+- `elkjs` — auto-layout engine (layered algorithm); called only when user triggers "Auto-layout"; async so it won't block the UI. Dagre was considered but elkjs handles variable tile sizes and typed cross-link edge routing better — matters once users freely add connections between articles.
 
 **Navigation model** (from concept design — interpreted loosely; sources section deferred to Phase 7 adapters):
 - Left sidebar: spaces list only (no sources section yet — external adapters are out of scope for this ticket); clicking a space switches to its dedicated map
 - Each space is its own map canvas — not a section within a shared canvas
 - `+ New space` available in the sidebar at all times, opens a name/color/icon picker, creates the space and navigates into its (empty) map immediately
-- Top bar: Map | List toggle, Filter, Auto-layout, `+ Add document`
+- Top bar: Map | List toggle, Auto-layout button, `+ Add document`
 
-- Single page `/knowledge-base` — sidebar + main canvas area
+- Single page `/knowledge-base` — sidebar + main React Flow canvas area
 - Space map canvas (PoC tier):
-  - Pan + zoom (CSS transform or minimal SVG approach)
-  - Article tiles: title, type badge (Article / Directive / Template), body preview, updated timestamp
-  - Sub-grouping nodes (mid-level folders within a space, e.g. "LVD 2014/35/EU → 7 articles")
-  - Connection edges between nodes (SVG lines)
+  - Pan + zoom + free node drag (React Flow built-in)
+  - Article tiles: custom RF node component — title, type badge (Article / Directive / Template), body preview, updated timestamp
+  - Parent-child hierarchy visible via edge style distinction (vs. typed cross-links)
+  - Connection edges: React Flow edges, straight for PoC
   - Click tile → article detail drawer (title + body, read-only)
+  - "Auto-layout" button → runs elkjs layered algorithm, updates all node positions, saves to DB
+  - Drag node → position saved to DB on drop
 - `+ New space` in sidebar → creates empty space, navigates into it immediately
 - Seeded with a handful of hardcoded articles across 2 spaces so there's something to compare
 - Nav entry + sidebar icon (`src/nav.tsx`)
 
 Exploration questions to answer after this phase:
-- Does CSS/SVG scale well enough or do we need a canvas library (e.g. React Flow, d3)?
-- Should sub-groups be first-class article nodes or a visual-only grouping layer?
-- How should connections look — straight lines, curves, arrows, colored by type?
+- Should sub-groups (parent articles with children) get a visually distinct node style, or just a regular tile?
+- What connection types warrant visible edge style differences in the PoC vs. Phase 6?
 - What information density lands on the tile vs. behind a click?
 
 ---
@@ -97,7 +102,7 @@ Goal: turn the PoC into something shippable and distinctive.
 
 Informed by what Phase 2 exploration revealed. Likely work (to be confirmed):
 
-- Layout algorithm: auto-arrange by hierarchy + manual drag to override; tile positions persisted per space
+- Layout algorithm: elkjs already in place from Phase 2; tune algorithm options (spacing, layering, edge routing style) for the polished result
 - Connection rendering: curved bezier edges, color/style by connection type, directional arrows
 - Tile design: richer card (body preview, source badge, connection count chips, tag pills, type badge)
 - Space color/icon picker + rename inline in sidebar

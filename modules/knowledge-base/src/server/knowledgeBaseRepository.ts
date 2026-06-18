@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 
 import { db } from "@solivio/sdk/runtime";
 
@@ -21,7 +21,10 @@ export type ConnectionRow = typeof knowledgeBaseConnections.$inferSelect;
 // ---------------------------------------------------------------------------
 
 export async function findAllSpaces(): Promise<SpaceRow[]> {
-  return db.select().from(knowledgeBaseSpaces).orderBy(knowledgeBaseSpaces.createdAt);
+  return db
+    .select()
+    .from(knowledgeBaseSpaces)
+    .orderBy(asc(knowledgeBaseSpaces.sortOrder), asc(knowledgeBaseSpaces.createdAt));
 }
 
 export async function findSpaceById(id: string): Promise<SpaceRow | null> {
@@ -41,8 +44,41 @@ export async function insertSpace(input: {
   origin?: string;
   externalId?: string;
 }): Promise<SpaceRow> {
-  const rows = await db.insert(knowledgeBaseSpaces).values(input).returning();
+  const existing = await db.select({ id: knowledgeBaseSpaces.id }).from(knowledgeBaseSpaces);
+  const rows = await db
+    .insert(knowledgeBaseSpaces)
+    .values({ ...input, sortOrder: existing.length })
+    .returning();
   return rows[0]!;
+}
+
+export async function updateSpace(
+  id: string,
+  input: Partial<Pick<typeof knowledgeBaseSpaces.$inferInsert, "name" | "color" | "description">>,
+): Promise<SpaceRow | null> {
+  const rows = await db
+    .update(knowledgeBaseSpaces)
+    .set({ ...input, updatedAt: new Date() })
+    .where(eq(knowledgeBaseSpaces.id, id))
+    .returning();
+  return rows[0] ?? null;
+}
+
+export async function deleteSpace(id: string): Promise<void> {
+  await db.delete(knowledgeBaseSpaces).where(eq(knowledgeBaseSpaces.id, id));
+}
+
+export async function updateSpaceSortOrders(
+  updates: Array<{ id: string; sortOrder: number }>,
+): Promise<void> {
+  await Promise.all(
+    updates.map(({ id, sortOrder }) =>
+      db
+        .update(knowledgeBaseSpaces)
+        .set({ sortOrder, updatedAt: new Date() })
+        .where(eq(knowledgeBaseSpaces.id, id)),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -134,6 +170,34 @@ export async function findConnectionsByArticle(articleId: string): Promise<Conne
     .select()
     .from(knowledgeBaseConnections)
     .where(eq(knowledgeBaseConnections.fromId, articleId));
+}
+
+export async function findConnectionsBySpace(spaceId: string): Promise<ConnectionRow[]> {
+  return db
+    .select({
+      id: knowledgeBaseConnections.id,
+      fromId: knowledgeBaseConnections.fromId,
+      toId: knowledgeBaseConnections.toId,
+      type: knowledgeBaseConnections.type,
+      createdAt: knowledgeBaseConnections.createdAt,
+      updatedAt: knowledgeBaseConnections.updatedAt,
+    })
+    .from(knowledgeBaseConnections)
+    .innerJoin(knowledgeBaseArticles, eq(knowledgeBaseConnections.fromId, knowledgeBaseArticles.id))
+    .where(eq(knowledgeBaseArticles.spaceId, spaceId));
+}
+
+export async function updateArticlePositions(
+  updates: Array<{ id: string; x: number; y: number }>,
+): Promise<void> {
+  await Promise.all(
+    updates.map(({ id, x, y }) =>
+      db
+        .update(knowledgeBaseArticles)
+        .set({ positionX: x, positionY: y, updatedAt: new Date() })
+        .where(eq(knowledgeBaseArticles.id, id)),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------

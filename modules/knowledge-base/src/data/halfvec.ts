@@ -1,8 +1,7 @@
 import { customType } from "drizzle-orm/pg-core";
 
 /**
- * pgvector half-precision vector custom type.
- * Copied from modules/catalog/src/data/halfvec.ts — candidate for extraction
+ * TODO move
  * to @solivio/domain when a third module needs it.
  */
 export const halfvec = customType<{

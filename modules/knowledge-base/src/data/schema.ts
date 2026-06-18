@@ -1,5 +1,14 @@
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
-import { index, integer, pgTable, real, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgTable,
+  real,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@solivio/sdk/db";
 
@@ -17,10 +26,11 @@ export const knowledgeBaseSpaces = pgTable("knowledge_base_spaces", {
   description: text("description"),
   color: text("color"),
   icon: text("icon"),
+  sortOrder: integer("sort_order").notNull().default(0),
   // source metadata — null for manually created spaces
   origin: text("origin"),
   externalId: text("external_id"),
-  syncedAt: timestamps.createdAt, // reuse timestamp type; nullable via default override below
+  syncedAt: timestamp("synced_at", { withTimezone: true }),
   ...timestamps,
 });
 
@@ -37,12 +47,12 @@ export const knowledgeBaseArticles = pgTable(
       .notNull()
       .references(() => knowledgeBaseSpaces.id, { onDelete: "cascade" }),
     parentId: uuid("parent_id").references((): AnyPgColumn => knowledgeBaseArticles.id, {
-      onDelete: "set null",
+      onDelete: "cascade",
     }),
     title: text("title").notNull(),
     body: text("body").notNull().default(""),
     type: text("type")
-      .$type<"article" | "directive" | "template" | "policy" | "note">()
+      .$type<"article" | "directory" | "directive" | "template" | "policy" | "note">()
       .notNull()
       .default("article"),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -51,7 +61,7 @@ export const knowledgeBaseArticles = pgTable(
     // source metadata — null for manually created articles
     origin: text("origin"),
     externalId: text("external_id"),
-    syncedAt: timestamps.createdAt,
+    syncedAt: timestamp("synced_at", { withTimezone: true }),
     ...timestamps,
   },
   (table) => [

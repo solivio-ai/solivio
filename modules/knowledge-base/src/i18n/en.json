@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "knowledgeBase": "Knowledge Base"
+  },
+  "page": {
+    "title": "Knowledge Base",
+    "emptySpaces": {
+      "title": "No spaces yet",
+      "description": "Create your first space to start organising knowledge.",
+      "button": "Create space"
+    }
+  },
+  "shell": {
+    "spaces": "Spaces",
+    "newSpace": "New space",
+    "loadingMap": "Loading map…",
+    "emptySpace": "This space is empty.",
+    "addFirst": "Add first item",
+    "manage": {
+      "button": "Manage spaces",
+      "done": "Done",
+      "deleteTitle": "Delete space?",
+      "deleteDesc": "This will permanently delete \"{name}\" and all its articles. This cannot be undone.",
+      "deleteCancel": "Cancel",
+      "deleteConfirm": "Delete"
+    }
+  },
+  "dialog": {
+    "title": "New space",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Product Regulations",
+    "colorLabel": "Color",
+    "cancel": "Cancel",
+    "creating": "Creating…",
+    "create": "Create"
+  },
+  "editSpace": {
+    "title": "Edit space",
+    "nameLabel": "Name",
+    "colorLabel": "Color",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save"
+  },
+  "drawer": {
+    "noContent": "No content yet.",
+    "updated": "Updated"
+  },
+  "map": {
+    "autoLayout": "Auto-layout",
+    "removeConnection": "Remove connection"
+  },
+  "node": {
+    "delete": "Delete"
+  },
+  "addNode": {
+    "title": "Add node",
+    "addChild": "Add child",
+    "type": {
+      "article": {
+        "label": "Article",
+        "desc": "Text content with a title"
+      },
+      "directory": {
+        "label": "Directory",
+        "desc": "Groups related nodes together"
+      }
+    },
+    "nameLabel": "Title",
+    "namePlaceholderArticle": "e.g. Getting Started",
+    "namePlaceholderDirectory": "e.g. Products",
+    "bodyLabel": "Content",
+    "descLabel": "Description",
+    "bodyPlaceholder": "Write the article content…",
+    "descPlaceholder": "Brief description (optional)",
+    "optional": "optional",
+    "cancel": "Cancel",
+    "creating": "Creating…",
+    "create": "Create"
+  }
+}

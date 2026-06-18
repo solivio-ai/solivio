@@ -8,6 +8,7 @@ import {
   findArticleById,
   findArticlesBySpace,
   findConnectionsByArticle,
+  findConnectionsBySpace,
   findRootArticlesBySpace,
   findSpaceById,
   findTagsByArticle,
@@ -15,6 +16,7 @@ import {
   insertSpace,
   setArticleTags,
   updateArticle,
+  updateArticlePositions,
   upsertFromImport,
 } from "./server/knowledgeBaseRepository.ts";
 
@@ -58,6 +60,10 @@ export interface KnowledgeBaseService {
   findConnectionsByArticle(
     articleId: string,
   ): Promise<Array<{ id: string; fromId: string; toId: string; type: string }>>;
+  listConnectionsBySpace(
+    spaceId: string,
+  ): Promise<Array<{ id: string; fromId: string; toId: string; type: string }>>;
+  updateArticlePositions(updates: Array<{ id: string; x: number; y: number }>): Promise<void>;
 
   upsertFromImport(payload: ImportPayload): Promise<{
     spacesUpserted: number;
@@ -91,6 +97,8 @@ function createKnowledgeBaseService(): KnowledgeBaseService {
 
     findTagsByArticle: (articleId) => findTagsByArticle(articleId),
     findConnectionsByArticle: (articleId) => findConnectionsByArticle(articleId),
+    listConnectionsBySpace: (spaceId) => findConnectionsBySpace(spaceId),
+    updateArticlePositions: (updates) => updateArticlePositions(updates),
 
     upsertFromImport: (payload) => upsertFromImport(payload),
   };

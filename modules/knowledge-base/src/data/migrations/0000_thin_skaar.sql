@@ -18,6 +18,7 @@ CREATE TABLE "knowledge_base_articles" (
 	"position_y" real,
 	"origin" text,
 	"external_id" text,
+	"synced_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -47,15 +48,17 @@ CREATE TABLE "knowledge_base_spaces" (
 	"description" text,
 	"color" text,
 	"icon" text,
+	"sort_order" integer DEFAULT 0 NOT NULL,
 	"origin" text,
 	"external_id" text,
+	"synced_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "knowledge_base_article_tags" ADD CONSTRAINT "knowledge_base_article_tags_article_id_knowledge_base_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "knowledge_base_articles" ADD CONSTRAINT "knowledge_base_articles_space_id_knowledge_base_spaces_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."knowledge_base_spaces"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "knowledge_base_articles" ADD CONSTRAINT "knowledge_base_articles_parent_id_knowledge_base_articles_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "knowledge_base_articles" ADD CONSTRAINT "knowledge_base_articles_parent_id_knowledge_base_articles_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "knowledge_base_connections" ADD CONSTRAINT "knowledge_base_connections_from_id_knowledge_base_articles_id_fk" FOREIGN KEY ("from_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "knowledge_base_connections" ADD CONSTRAINT "knowledge_base_connections_to_id_knowledge_base_articles_id_fk" FOREIGN KEY ("to_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "knowledge_base_embeddings" ADD CONSTRAINT "knowledge_base_embeddings_article_id_knowledge_base_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."knowledge_base_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

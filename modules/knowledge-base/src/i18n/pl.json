@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "knowledgeBase": "Baza Wiedzy"
+  },
+  "page": {
+    "title": "Baza Wiedzy",
+    "emptySpaces": {
+      "title": "Brak przestrzeni",
+      "description": "Utwórz pierwszą przestrzeń, aby zacząć organizować wiedzę.",
+      "button": "Utwórz przestrzeń"
+    }
+  },
+  "shell": {
+    "spaces": "Przestrzenie",
+    "newSpace": "Nowa przestrzeń",
+    "loadingMap": "Ładowanie mapy…",
+    "emptySpace": "Ta przestrzeń jest pusta.",
+    "addFirst": "Dodaj pierwszy element",
+    "manage": {
+      "button": "Zarządzaj przestrzeniami",
+      "done": "Gotowe",
+      "deleteTitle": "Usunąć przestrzeń?",
+      "deleteDesc": "Spowoduje to trwałe usunięcie \"{name}\" wraz ze wszystkimi elementami. Tej operacji nie można cofnąć.",
+      "deleteCancel": "Anuluj",
+      "deleteConfirm": "Usuń"
+    }
+  },
+  "dialog": {
+    "title": "Nowa przestrzeń",
+    "nameLabel": "Nazwa",
+    "namePlaceholder": "np. Regulacje produktów",
+    "colorLabel": "Kolor",
+    "cancel": "Anuluj",
+    "creating": "Tworzenie…",
+    "create": "Utwórz"
+  },
+  "editSpace": {
+    "title": "Edytuj przestrzeń",
+    "nameLabel": "Nazwa",
+    "colorLabel": "Kolor",
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie…",
+    "save": "Zapisz"
+  },
+  "drawer": {
+    "noContent": "Brak treści.",
+    "updated": "Zaktualizowano"
+  },
+  "map": {
+    "autoLayout": "Porządkuj układ",
+    "removeConnection": "Usuń połączenie"
+  },
+  "node": {
+    "delete": "Usuń"
+  },
+  "addNode": {
+    "title": "Dodaj węzeł",
+    "addChild": "Dodaj",
+    "type": {
+      "article": {
+        "label": "Artykuł",
+        "desc": "Treść tekstowa z tytułem"
+      },
+      "directory": {
+        "label": "Katalog",
+        "desc": "Grupuje powiązane węzły"
+      }
+    },
+    "nameLabel": "Tytuł",
+    "namePlaceholderArticle": "np. Pierwsze kroki",
+    "namePlaceholderDirectory": "np. Produkty",
+    "bodyLabel": "Treść",
+    "descLabel": "Opis",
+    "bodyPlaceholder": "Napisz treść artykułu…",
+    "descPlaceholder": "Krótki opis (opcjonalnie)",
+    "optional": "opcjonalnie",
+    "cancel": "Anuluj",
+    "creating": "Tworzenie…",
+    "create": "Utwórz"
+  }
+}
