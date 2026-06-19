@@ -224,6 +224,13 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
     [spaceId],
   );
 
+  const onSelectionDragStop = useCallback(
+    (_: unknown, selectedNodes: Node[]) => {
+      persistPositions(spaceId, selectedNodes);
+    },
+    [spaceId],
+  );
+
   const isValidConnection = useCallback(
     (connection: Edge | Connection) => {
       // Only one parent per node.
@@ -366,6 +373,7 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
           onEdgeMouseLeave={onEdgeMouseLeave}
           onPaneClick={onPaneClick}
           onNodeDragStop={onNodeDragStop}
+          onSelectionDragStop={onSelectionDragStop}
           isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}
           selectionOnDrag
