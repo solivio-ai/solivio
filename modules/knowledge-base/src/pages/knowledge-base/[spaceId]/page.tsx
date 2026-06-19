@@ -11,7 +11,7 @@ import {
   findSpaceById,
 } from "../../../server/knowledgeBaseRepository.ts";
 
-type Props = { params: Promise<{ spaceId: string }> };
+type Props = { params: Promise<{ spaceId: string }>; searchParams: Promise<{ view?: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { spaceId } = await params;
@@ -19,8 +19,9 @@ export async function generateMetadata({ params }: Props) {
   return { title: space?.name ?? "Knowledge Base" };
 }
 
-export default async function SpacePage({ params }: Props) {
-  const { spaceId } = await params;
+export default async function SpacePage({ params, searchParams }: Props) {
+  const [{ spaceId }, { view }] = await Promise.all([params, searchParams]);
+  const initialView = view === "list" ? "list" : "map";
 
   const [spaceRows, space, articleRows, connectionRows] = await Promise.all([
     findAllSpaces(),
@@ -66,6 +67,7 @@ export default async function SpacePage({ params }: Props) {
         activeSpaceId={spaceId}
         articles={articles}
         connections={connections}
+        initialView={initialView}
       />
     </AppPage>
   );

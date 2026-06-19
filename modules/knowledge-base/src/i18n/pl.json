@@ -25,6 +25,10 @@
       "deleteConfirm": "Usuń"
     }
   },
+  "viewToggle": {
+    "map": "Mapa",
+    "list": "Lista"
+  },
   "dialog": {
     "title": "Nowa przestrzeń",
     "nameLabel": "Nazwa",
@@ -53,8 +57,23 @@
   "node": {
     "delete": "Usuń"
   },
+  "list": {
+    "allArticles": "Wszystkie artykuły",
+    "add": "Dodaj",
+    "edit": "Edytuj",
+    "addChild": "Dodaj podrzędny",
+    "delete": "Usuń",
+    "empty": "Brak artykułów.",
+    "searchPlaceholder": "Szukaj artykułów…",
+    "noResults": "Brak artykułów pasujących do wyszukiwania.",
+    "deleteTitle": "Usunąć element?",
+    "deleteDesc": "Spowoduje to trwałe usunięcie \"{title}\" wraz ze wszystkimi elementami podrzędnymi. Tej operacji nie można cofnąć.",
+    "deleteCancel": "Anuluj",
+    "deleteConfirm": "Usuń"
+  },
   "addNode": {
-    "title": "Dodaj węzeł",
+    "title": "Dodaj",
+    "editTitle": "Edytuj",
     "addChild": "Dodaj",
     "type": {
       "article": {
@@ -76,6 +95,8 @@
     "optional": "opcjonalnie",
     "cancel": "Anuluj",
     "creating": "Tworzenie…",
-    "create": "Utwórz"
+    "saving": "Zapisywanie…",
+    "create": "Utwórz",
+    "save": "Zapisz"
   }
 }

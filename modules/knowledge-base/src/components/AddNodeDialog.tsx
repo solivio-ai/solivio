@@ -2,7 +2,7 @@
 
 import { FileText, Folder } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@solivio/ui/components/button.tsx";
 import {
@@ -28,6 +28,10 @@ type Props = {
   parentPosition: { x: number; y: number } | null;
   onClose: () => void;
   onCreated: (article: MapArticle) => void;
+  // Edit mode — when articleId is provided the dialog PATCHes instead of POSTing
+  articleId?: string;
+  initialValues?: { title: string; body: string; type: NodeType };
+  onUpdated?: (article: MapArticle) => void;
 };
 
 const TYPE_OPTIONS: { value: NodeType; icon: React.ElementType }[] = [
@@ -42,13 +46,37 @@ export function AddNodeDialog({
   parentPosition,
   onClose,
   onCreated,
+  articleId,
+  initialValues,
+  onUpdated,
 }: Props) {
   const t = useTranslations("knowledge-base.addNode");
-  const [type, setType] = useState<NodeType>("article");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [description, setDescription] = useState("");
+  const isEdit = !!articleId;
+
+  const [type, setType] = useState<NodeType>(initialValues?.type ?? "article");
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [body, setBody] = useState(
+    initialValues?.type !== "directory" ? (initialValues?.body ?? "") : "",
+  );
+  const [description, setDescription] = useState(
+    initialValues?.type === "directory" ? (initialValues?.body ?? "") : "",
+  );
   const [saving, setSaving] = useState(false);
+
+  // Re-populate form whenever the dialog opens (handles opening for different articles)
+  useEffect(() => {
+    if (open) {
+      setType(initialValues?.type ?? "article");
+      setTitle(initialValues?.title ?? "");
+      if (initialValues?.type === "directory") {
+        setBody("");
+        setDescription(initialValues.body ?? "");
+      } else {
+        setBody(initialValues?.body ?? "");
+        setDescription("");
+      }
+    }
+  }, [open, initialValues?.type, initialValues?.title, initialValues?.body]);
 
   const reset = () => {
     setType("article");
@@ -64,35 +92,60 @@ export function AddNodeDialog({
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
-    if (type === "article" && !body.trim()) return;
+    if (type === "article" && !isEdit && !body.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/knowledge-base/spaces/${spaceId}/articles`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: title.trim(),
-          body: type === "article" ? body : description,
-          type,
-          parentId,
-          ...(parentPosition
-            ? { positionX: parentPosition.x, positionY: parentPosition.y + 220 }
-            : {}),
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to create");
-      const row = await res.json();
-      onCreated({
-        id: row.id,
-        spaceId: row.spaceId,
-        parentId: row.parentId,
-        title: row.title,
-        body: row.body,
-        type: row.type,
-        positionX: row.positionX,
-        positionY: row.positionY,
-        updatedAt: row.updatedAt,
-      });
+      const payload = {
+        title: title.trim(),
+        body: type === "article" ? body : description,
+        type,
+      };
+
+      if (isEdit) {
+        const res = await fetch(`/api/knowledge-base/articles/${articleId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error("Failed to update");
+        const row = await res.json();
+        onUpdated?.({
+          id: row.id,
+          spaceId: row.spaceId,
+          parentId: row.parentId,
+          title: row.title,
+          body: row.body,
+          type: row.type,
+          positionX: row.positionX,
+          positionY: row.positionY,
+          updatedAt: row.updatedAt,
+        });
+      } else {
+        const res = await fetch(`/api/knowledge-base/spaces/${spaceId}/articles`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...payload,
+            parentId,
+            ...(parentPosition
+              ? { positionX: parentPosition.x, positionY: parentPosition.y + 220 }
+              : {}),
+          }),
+        });
+        if (!res.ok) throw new Error("Failed to create");
+        const row = await res.json();
+        onCreated({
+          id: row.id,
+          spaceId: row.spaceId,
+          parentId: row.parentId,
+          title: row.title,
+          body: row.body,
+          type: row.type,
+          positionX: row.positionX,
+          positionY: row.positionY,
+          updatedAt: row.updatedAt,
+        });
+      }
       reset();
     } finally {
       setSaving(false);
@@ -103,7 +156,7 @@ export function AddNodeDialog({
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{isEdit ? t("editTitle") : t("title")}</DialogTitle>
         </DialogHeader>
 
         {/* Type choice cards */}
@@ -161,7 +214,7 @@ export function AddNodeDialog({
             <div className="grid gap-1.5">
               <Label htmlFor="add-node-desc">
                 {t("descLabel")}{" "}
-                <span className="text-muted-foreground text-xs">({t("optional")})</span>
+                <span className="text-xs text-muted-foreground">({t("optional")})</span>
               </Label>
               <Input
                 id="add-node-desc"
@@ -179,9 +232,9 @@ export function AddNodeDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={saving || !title.trim() || (type === "article" && !body.trim())}
+            disabled={saving || !title.trim() || (!isEdit && type === "article" && !body.trim())}
           >
-            {saving ? t("creating") : t("create")}
+            {saving ? (isEdit ? t("saving") : t("creating")) : isEdit ? t("save") : t("create")}
           </Button>
         </DialogFooter>
       </DialogContent>

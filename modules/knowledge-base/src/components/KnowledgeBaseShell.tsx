@@ -1,11 +1,20 @@
 "use client";
 
-import { GripVertical, Plus, PlusCircle, Settings, Trash2, X } from "lucide-react";
+import {
+  GripVertical,
+  LayoutDashboard,
+  List,
+  Plus,
+  PlusCircle,
+  Settings,
+  Trash2,
+  X,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   AlertDialog,
@@ -23,6 +32,7 @@ import { cn } from "@solivio/ui/lib/utils.ts";
 import type { MapArticle, MapConnection, MapSpace } from "../lib/mapTypes.ts";
 import { AddNodeDialog } from "./AddNodeDialog.tsx";
 import { ArticleDrawer } from "./ArticleDrawer.tsx";
+import { ArticleListView } from "./ArticleListView.tsx";
 import { EditSpaceDialog } from "./EditSpaceDialog.tsx";
 import { NewSpaceDialog } from "./NewSpaceDialog.tsx";
 
@@ -45,26 +55,77 @@ type Props = {
   activeSpaceId: string;
   articles: MapArticle[];
   connections: MapConnection[];
+  initialView?: "map" | "list";
 };
 
-export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connections }: Props) {
+export function KnowledgeBaseShell({
+  spaces,
+  activeSpaceId,
+  articles,
+  connections,
+  initialView = "map",
+}: Props) {
   const t = useTranslations("knowledge-base.shell");
+  const tToggle = useTranslations("knowledge-base.viewToggle");
+  const tList = useTranslations("knowledge-base.list");
   const router = useRouter();
+
+  // ── View toggle ────────────────────────────────────────────────────────────
+  const [view, setView] = useState<"map" | "list">(initialView);
+
+  // Sync from sessionStorage on mount so navigating between spaces keeps the mode.
+  useEffect(() => {
+    const stored = sessionStorage.getItem("kb_view");
+    if (stored === "map" || stored === "list") setView(stored);
+  }, []);
+
+  const handleViewChange = (v: "map" | "list") => {
+    setView(v);
+    sessionStorage.setItem("kb_view", v);
+    router.push(`?view=${v}`, { scroll: false });
+  };
+
+  // ── Shared state ───────────────────────────────────────────────────────────
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const selectedArticle = selectedArticleId
+    ? (articles.find((a) => a.id === selectedArticleId) ?? null)
+    : null;
+
+  // ── Space management ───────────────────────────────────────────────────────
   const [newSpaceOpen, setNewSpaceOpen] = useState(false);
   const [managing, setManaging] = useState(false);
   const [localSpaces, setLocalSpaces] = useState<MapSpace[]>(spaces);
-  const [addNodeOpen, setAddNodeOpen] = useState(false);
   const [editingSpace, setEditingSpace] = useState<MapSpace | null>(null);
   const [deletingSpace, setDeletingSpace] = useState<MapSpace | null>(null);
   const draggedId = useRef<string | null>(null);
   const dragOverId = useRef<string | null>(null);
 
-  const selectedArticle = selectedArticleId
-    ? (articles.find((a) => a.id === selectedArticleId) ?? null)
-    : null;
+  // ── Map-view add node ──────────────────────────────────────────────────────
+  const [addNodeOpen, setAddNodeOpen] = useState(false);
 
-  // ── Drag-to-reorder ────────────────────────────────────────────────────────
+  // ── List-view add / edit / delete node ────────────────────────────────────
+  const [listAddParentId, setListAddParentId] = useState<string | null>(null);
+  const [listAddOpen, setListAddOpen] = useState(false);
+  const [deletingArticle, setDeletingArticle] = useState<MapArticle | null>(null);
+
+  const handleListAdd = (parentId: string | null) => {
+    setListAddParentId(parentId);
+    setListAddOpen(true);
+  };
+
+  const handleListDelete = (article: MapArticle) => {
+    setDeletingArticle(article);
+  };
+
+  const confirmDeleteArticle = async () => {
+    if (!deletingArticle) return;
+    const id = deletingArticle.id;
+    setDeletingArticle(null);
+    await fetch(`/api/knowledge-base/articles/${id}`, { method: "DELETE" });
+    router.refresh();
+  };
+
+  // ── Drag-to-reorder spaces ─────────────────────────────────────────────────
 
   const handleDragStart = (id: string) => {
     draggedId.current = id;
@@ -129,9 +190,9 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
   const displaySpaces = managing ? localSpaces : spaces;
 
   return (
-    <div className="flex min-h-0 overflow-hidden rounded-lg border border-border bg-card">
+    <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-card md:flex-row">
       {/* Spaces sidebar */}
-      <aside className="flex w-52 shrink-0 flex-col border-r border-border bg-muted/30">
+      <aside className="flex max-h-48 flex-col border-b border-border bg-muted/30 md:max-h-none md:w-52 md:shrink-0 md:border-b-0 md:border-r">
         <div className="flex items-center justify-between px-3 py-3">
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t("spaces")}
@@ -149,7 +210,7 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
           )}
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2 pb-2">
+        <nav className="overflow-y-auto px-2 pb-2 md:flex-1">
           {displaySpaces.map((space) =>
             managing ? (
               <li
@@ -234,26 +295,62 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
         </div>
       </aside>
 
-      {/* Canvas */}
-      <div className="relative min-h-0 flex-1">
-        {articles.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4">
-            <p className="text-sm text-muted-foreground">{t("emptySpace")}</p>
-            <Button onClick={() => setAddNodeOpen(true)} className="gap-2">
-              <PlusCircle size={16} />
-              {t("addFirst")}
+      {/* Main content */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {/* View toggle header */}
+        <div className="flex shrink-0 items-center justify-end border-b border-border px-4 py-2">
+          <div className="flex gap-0.5 rounded-md border border-border bg-muted p-0.5">
+            <Button
+              variant={view === "map" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 gap-1.5 px-3 text-xs"
+              onClick={() => handleViewChange("map")}
+            >
+              <LayoutDashboard size={13} />
+              {tToggle("map")}
+            </Button>
+            <Button
+              variant={view === "list" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 gap-1.5 px-3 text-xs"
+              onClick={() => handleViewChange("list")}
+            >
+              <List size={13} />
+              {tToggle("list")}
             </Button>
           </div>
-        ) : (
-          <SpaceMap
-            articles={articles}
-            connections={connections}
-            spaceId={activeSpaceId}
-            onArticleClick={setSelectedArticleId}
-          />
-        )}
+        </div>
+
+        {/* Canvas / List */}
+        <div className="relative min-h-0 flex-1">
+          {view === "list" ? (
+            <ArticleListView
+              articles={articles}
+              selectedArticleId={selectedArticleId}
+              onArticleClick={setSelectedArticleId}
+              onAdd={handleListAdd}
+              onDelete={handleListDelete}
+            />
+          ) : articles.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center gap-4">
+              <p className="text-sm text-muted-foreground">{t("emptySpace")}</p>
+              <Button onClick={() => setAddNodeOpen(true)} className="gap-2">
+                <PlusCircle size={16} />
+                {t("addFirst")}
+              </Button>
+            </div>
+          ) : (
+            <SpaceMap
+              articles={articles}
+              connections={connections}
+              spaceId={activeSpaceId}
+              onArticleClick={setSelectedArticleId}
+            />
+          )}
+        </div>
       </div>
 
+      {/* Delete space dialog */}
       <AlertDialog open={!!deletingSpace} onOpenChange={(o) => !o && setDeletingSpace(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -266,6 +363,24 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
             <AlertDialogCancel>{t("manage.deleteCancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDeleteSpace}>
               {t("manage.deleteConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete article dialog (list view) */}
+      <AlertDialog open={!!deletingArticle} onOpenChange={(o) => !o && setDeletingArticle(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tList("deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tList("deleteDesc", { title: deletingArticle?.title ?? "" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tList("deleteCancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteArticle}>
+              {tList("deleteConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -285,6 +400,8 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
           setEditingSpace(null);
         }}
       />
+
+      {/* Map-view: add root node (empty space button) */}
       <AddNodeDialog
         open={addNodeOpen}
         spaceId={activeSpaceId}
@@ -293,6 +410,19 @@ export function KnowledgeBaseShell({ spaces, activeSpaceId, articles, connection
         onClose={() => setAddNodeOpen(false)}
         onCreated={() => {
           setAddNodeOpen(false);
+          router.refresh();
+        }}
+      />
+
+      {/* List-view: add node */}
+      <AddNodeDialog
+        open={listAddOpen}
+        spaceId={activeSpaceId}
+        parentId={listAddParentId}
+        parentPosition={null}
+        onClose={() => setListAddOpen(false)}
+        onCreated={() => {
+          setListAddOpen(false);
           router.refresh();
         }}
       />

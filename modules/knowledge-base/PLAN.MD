@@ -14,7 +14,7 @@ Goal: a working schema, module scaffold, and the canonical JSON format that ever
   - `knowledge_base_articles` — article node (space_id, parent_id, title, body markdown, type: `article|directive|template|...`, position metadata for map layout, source metadata)
   - `knowledge_base_connections` — typed links between articles (from_id, to_id, type: `related|prerequisite|contradicts|...`)
   - `knowledge_base_tags` — flat tags on articles (m2m join)
-  - `knowledge_base_embeddings` — embedding vector per article (article_id, model, halfvec column via the custom `halfvec` Drizzle type from `modules/catalog/src/data/halfvec.ts`) — stubbed now, populated in Phase 4
+  - `knowledge_base_embeddings` — embedding vector per article (article_id, model, halfvec column via the shared `halfvec` type from `@solivio/sdk/db`) — stubbed now, populated in Phase 4
 - Migration (`src/data/migrations/0000_init.sql`) via `yarn db:generate knowledge-base`
 - Canonical JSON import format definition (TypeScript types + Zod schema in `src/lib/importSchema.ts`): mirrors the DB shape so Confluence/Notion adapters just need to map to this format
 - Basic `KnowledgeBaseService` stub in `src/services.ts`: `listCategories`, `listArticles`, `findArticleById`, `upsertFromImport`, `createSpace`
@@ -59,56 +59,71 @@ Exploration questions to answer after this phase:
 
 ---
 
-## Phase 3 — List View + Article Editor
+## Phase 3 — List View - DONE
 
-Goal: the classic mode is fully usable; inline editing works so users can annotate on the fly.
+Goal: a classic tree-browsing and editing mode alongside the map.
 
-- List/tree view: space → folder hierarchy, expand/collapse, breadcrumb, search/filter bar
-- Article detail page (or panel): full markdown render, metadata sidebar (source, tags, connections)
-- Basic editor: title, body (markdown textarea or simple rich text), parent picker, connection manager, tag picker
-- Create / edit / delete article with optimistic UI
-- Mode toggle persisted in URL (`?view=map|list`)
-
----
-
-## Phase 4 — JSON Importer + Background Jobs
-
-Goal: real data in, structured the way future adapters will use.
-
-- Importer capability (`src/ai/importers.ts`) — accepts the canonical JSON format from Phase 1; maps to `upsertFromImport`; designed so Confluence/Notion/Drive adapters just need to produce that JSON
-- Import job (`src/jobs/import.ts`): validates → upserts spaces/articles/connections/tags → generates embeddings (pgvector via `getAi().embeddingModelId()`) → emits `knowledge-base.import.completed`
-- Upload UI: file picker in the list view header, progress/status feedback
-- Embedding generation wired into every article save (create/edit) as well
-- `yarn db:generate knowledge-base` for embedding column migration
+- Mode toggle persisted in URL (`?view=map|list`); `map` is default
+- List/tree view: space → folder/article hierarchy, collapsible rows, indent per depth
+- Article detail panel (slide-in or right column): full body, type, updated timestamp
+- Create article / directory — reuse `AddNodeDialog` from the map view; trigger from a toolbar `+` button in the list header
+- Edit article — TODO: removed for now; needs UX rethink (inline editing? side panel? reuse map dialog differently?)
+- Delete article — with `AlertDialog` confirmation; optimistic removal; cascades children in UI (same BFS approach as map)
+- Breadcrumb trail when navigating deep into a directory
 
 ---
 
-## Phase 5 — Agent Tools (RAG)
+## Phase 4 — Processing Pipeline (Chunking + Embeddings)
 
-Goal: agents can discover and retrieve knowledge.
+Goal: articles indexed and ready for high-quality RAG retrieval.
 
-- `src/ai/tools.ts` — contributes to the global agent-tool registry:
-  - `search_knowledge_base(query, opts)` — hybrid: embedding similarity + keyword fallback, returns ranked article excerpts
-  - `browse_knowledge_base(spaceId?, parentId?)` — structural browse, returns article tree with summaries; lets an agent find where to look before pulling content
-  - `get_article(articleId)` — full article body + connections
-- Agent context hint wired into the offer-chat agent (via the merged registry) so the chat agent knows the KB exists and when to reach for it
-- `docs/agents.md` updated with the new `knowledge_base_search` / `knowledge_base_browse` tools
+- **Chunking job** (`src/jobs/chunkArticle.ts`): triggered on article create/update; strategy to be decided during implementation (heading-based split is the baseline to try first, then evaluate overlap/fixed-size)
+  - Stores chunks in a new `knowledge_base_chunks` table (`article_id`, `chunk_index`, `text`, `heading_path`)
+  - Each article update invalidates and replaces its chunks
+- **Embedding job** (`src/jobs/embedChunks.ts`): triggered after chunking; generates halfvec embeddings for each chunk via `getAi().embeddingModelId()`; stores in `knowledge_base_embeddings` (repurposed to reference chunks, not articles directly)
+- Both jobs are persistent subscribers (`persistent: true`) — queue-backed, retry-safe, visible in the job engine
+- Schema migration for `knowledge_base_chunks`; `knowledge_base_embeddings` updated to point at chunk `id` instead of `article_id`
+- `yarn db:generate knowledge-base` for the new tables
+- Emit `knowledge-base.article.indexed` after both jobs complete for a given article
 
 ---
 
-## Phase 6 — Map View Polish
+## Phase 5 — RAG Tool + Benchmark Suite
 
-Goal: turn the PoC into something shippable and distinctive.
+Goal: agents can retrieve relevant knowledge; retrieval quality is measurable and improvable.
 
-Informed by what Phase 2 exploration revealed. Likely work (to be confirmed):
+**Benchmark first.** Before implementing retrieval, build the benchmark suite so every subsequent change can be measured:
 
-- Layout algorithm: elkjs already in place from Phase 2; tune algorithm options (spacing, layering, edge routing style) for the polished result
-- Connection rendering: curved bezier edges, color/style by connection type, directional arrows
-- Tile design: richer card (body preview, source badge, connection count chips, tag pills, type badge)
-- Space color/icon picker + rename inline in sidebar
-- Full-text search highlight on map tiles
-- Keyboard navigation + accessibility pass
-- Performance: virtualize off-screen tiles for large spaces
+- New suite `suites/knowledge-base/` in `apps/solivio/benchmarks/` following the `offer-generation` pattern
+- **Fixture corpus**: a realistic multi-space knowledge base (product policies, installation guides, regulatory notes, contradictory/overlapping articles) committed as seed JSON — complex enough to expose ranking failures
+- **Cases** with difficulty tiers:
+  - `basic` — explicit keyword match; exact article should rank first
+  - `realistic` — paraphrased query; synonym/inflection variation; correct article still top-3
+  - `hard` — multi-hop: answer requires combining two articles; ambiguous query where the wrong article would be plausible
+  - `expert` — cross-space retrieval; query targets an article only identifiable from its context (parent directory, connections), not its own text
+- **Scoring**: deterministic — no LLM-as-judge; per query: recall@k (did the right article appear in top-k results?), precision@k, MRR; overall = macro mean across cases; case-set hash guards cross-run comparability
+- Target baselines to aim for before shipping: basic ≥ 100%, realistic ≥ 90%, hard ≥ 70%, expert tracked but not gated
+
+**Agent tools** (implemented against a passing benchmark):
+
+- `src/ai/tools.ts`:
+  - `search_knowledge_base(query, spaceId?)` — hybrid: chunk-level embedding similarity + keyword fallback; returns ranked article excerpts with source breadcrumb
+  - `browse_knowledge_base(spaceId?, parentId?)` — structural browse returning article tree with title/type/description; lets the agent locate where to look before pulling content
+  - `get_article(articleId)` — full article body + connections + tags
+- Agent context hint wired into `offer-chat` so the agent knows the KB exists and when to reach for it
+- `docs/agents.md` updated with the new tools
+
+---
+
+## Phase 6 — JSON Importer
+
+Goal: bulk-load a knowledge base from a structured JSON file; path for Confluence/Notion/Drive adapters.
+
+- Canonical JSON format finalised in `src/lib/importSchema.ts` (Zod schema); mirrors the DB shape — spaces → articles tree with connections and tags
+- Importer capability (`src/ai/importers.ts`) — accepts the canonical JSON; maps to `upsertFromImport`; idempotent on `externalId` so re-imports update rather than duplicate
+- Import job (`src/jobs/import.ts`): validates → upserts spaces/articles/connections/tags → enqueues chunking + embedding jobs per article → emits `knowledge-base.import.completed`
+- Upload UI: file picker in the list-view header (Phase 3); progress/status feedback via job events
+- Design for adapter reuse: Confluence/Notion/Drive adapters only need to produce the canonical JSON; the import job and chunking pipeline are shared
 
 ---
 

@@ -25,6 +25,10 @@
       "deleteConfirm": "Delete"
     }
   },
+  "viewToggle": {
+    "map": "Map",
+    "list": "List"
+  },
   "dialog": {
     "title": "New space",
     "nameLabel": "Name",
@@ -53,8 +57,23 @@
   "node": {
     "delete": "Delete"
   },
+  "list": {
+    "allArticles": "All articles",
+    "add": "Add",
+    "edit": "Edit",
+    "addChild": "Add child",
+    "delete": "Delete",
+    "empty": "No articles yet.",
+    "searchPlaceholder": "Search articles…",
+    "noResults": "No articles match your search.",
+    "deleteTitle": "Delete article?",
+    "deleteDesc": "This will permanently delete \"{title}\" and all its children. This cannot be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete"
+  },
   "addNode": {
-    "title": "Add node",
+    "title": "Add",
+    "editTitle": "Edit",
     "addChild": "Add child",
     "type": {
       "article": {
@@ -76,6 +95,8 @@
     "optional": "optional",
     "cancel": "Cancel",
     "creating": "Creating…",
-    "create": "Create"
+    "saving": "Saving…",
+    "create": "Create",
+    "save": "Save"
   }
 }
