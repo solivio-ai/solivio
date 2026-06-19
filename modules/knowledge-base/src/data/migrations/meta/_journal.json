@@ -8,6 +8,20 @@
       "when": 1781513517986,
       "tag": "0000_thin_skaar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781862780198,
+      "tag": "0001_stale_purifiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781864275340,
+      "tag": "0002_dry_morgan_stark",
+      "breakpoints": true
     }
   ]
 }

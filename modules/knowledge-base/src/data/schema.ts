@@ -53,6 +53,7 @@ export const knowledgeBaseArticles = pgTable(
       .$type<"article" | "directory" | "directive" | "template" | "policy" | "note">()
       .notNull()
       .default("article"),
+    format: text("format").$type<"markdown" | "plain" | "csv">().notNull().default("plain"),
     sortOrder: integer("sort_order").notNull().default(0),
     positionX: real("position_x"),
     positionY: real("position_y"),
@@ -114,17 +115,39 @@ export const knowledgeBaseArticleTags = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// Embeddings — one halfvec row per article; populated by the import job and
-// article save handler (Phase 4). Separate table keeps the articles table lean
-// and allows model swaps without touching article rows.
+// Chunks — article body split into retrieval-sized pieces (≈800 chars each).
+// heading_path is the breadcrumb of markdown headings above the chunk
+// (e.g. "Installation > Wiring"); null for plain-text and CSV chunks.
+// Deleting an article cascades here, and deleting a chunk cascades to its
+// embedding row — no manual cleanup needed in job code.
+// ---------------------------------------------------------------------------
+export const knowledgeBaseChunks = pgTable(
+  "knowledge_base_chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    articleId: uuid("article_id")
+      .notNull()
+      .references(() => knowledgeBaseArticles.id, { onDelete: "cascade" }),
+    chunkIndex: integer("chunk_index").notNull(),
+    text: text("text").notNull(),
+    headingPath: text("heading_path"),
+    ...timestamps,
+  },
+  (table) => [index("knowledge_base_chunks_article_id_idx").on(table.articleId)],
+);
+
+// ---------------------------------------------------------------------------
+// Embeddings — one halfvec row per chunk; populated by the embedChunks job.
+// Keyed by chunk_id so deleting/replacing chunks automatically cleans up the
+// corresponding vectors via cascade.
 // ---------------------------------------------------------------------------
 export const knowledgeBaseEmbeddings = pgTable(
   "knowledge_base_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    articleId: uuid("article_id")
+    chunkId: uuid("chunk_id")
       .notNull()
-      .references(() => knowledgeBaseArticles.id, { onDelete: "cascade" })
+      .references(() => knowledgeBaseChunks.id, { onDelete: "cascade" })
       .unique(),
     model: text("model").notNull(),
     vector: halfvec("vector", { dimensions: 3072 }),

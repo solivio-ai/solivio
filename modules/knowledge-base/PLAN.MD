@@ -73,16 +73,56 @@ Goal: a classic tree-browsing and editing mode alongside the map.
 
 ---
 
-## Phase 4 — Processing Pipeline (Chunking + Embeddings)
+## Phase 4 — Processing Pipeline (Chunking + Embeddings) - DONE
 
-Goal: articles indexed and ready for high-quality RAG retrieval.
+Goal: articles indexed and ready for high-quality RAG retrieval. The pipeline must handle very large sources (50 k+ words) and remain format-agnostic so plain text, CSV, and future formats slot in without touching job code.
 
-- **Chunking job** (`src/jobs/chunkArticle.ts`): triggered on article create/update; strategy to be decided during implementation (heading-based split is the baseline to try first, then evaluate overlap/fixed-size)
-  - Stores chunks in a new `knowledge_base_chunks` table (`article_id`, `chunk_index`, `text`, `heading_path`)
-  - Each article update invalidates and replaces its chunks
-- **Embedding job** (`src/jobs/embedChunks.ts`): triggered after chunking; generates halfvec embeddings for each chunk via `getAi().embeddingModelId()`; stores in `knowledge_base_embeddings` (repurposed to reference chunks, not articles directly)
-- Both jobs are persistent subscribers (`persistent: true`) — queue-backed, retry-safe, visible in the job engine
-- Schema migration for `knowledge_base_chunks`; `knowledge_base_embeddings` updated to point at chunk `id` instead of `article_id`
+### Schema changes
+
+- **`knowledge_base_articles`** — add `format` column: `"markdown" | "plain" | "csv"`, default `"markdown"`; determines which chunking strategy is used
+- **`knowledge_base_chunks`** (new table): `id`, `article_id`, `chunk_index` (int), `text`, `heading_path` (nullable — populated by markdown/structured chunkers, null for plain text)
+- **`knowledge_base_embeddings`** — repurpose to reference `chunk_id` instead of `article_id` (`article_id` column removed; `chunk_id` FK added)
+- Add HNSW index on `knowledge_base_embeddings.embedding` (mirror `catalog_products` pattern)
+- `yarn db:generate knowledge-base` for all of the above
+
+### Chunking strategy
+
+Format-agnostic via a **`Chunker` interface** in `src/lib/chunking/`:
+
+```
+src/lib/chunking/
+  index.ts      — getChunker(format): Chunker factory
+  markdown.ts   — MarkdownTextSplitter from @langchain/textsplitters; preserves heading_path
+  plainText.ts  — RecursiveCharacterTextSplitter from @langchain/textsplitters
+  csv.ts        — row/semantic chunker (TODO: implement when CSV articles land)
+```
+
+Chunk size target: ~800 characters / ~150 tokens; overlap: ~100 characters. Fits comfortably within the 8 k context window of `text-embedding-3-large` while keeping chunk count manageable (~125 chunks for a 50 k-word article).
+
+Add `@langchain/textsplitters` as a dependency (standalone, no LLM deps, ~15 kB).
+
+### Job pipeline
+
+```
+knowledge-base.article.created / .updated  (persistent subscriber)
+  → enqueueJob("knowledge-base.chunkArticle", { articleId })
+
+knowledge-base.chunkArticle  (src/jobs/chunkArticle.ts)
+  1. Load article (body + format)
+  2. getChunker(format).split(body)  →  chunks[]
+  3. DELETE existing chunks for articleId; INSERT new rows
+  4. enqueueJob("knowledge-base.embedChunks", { articleId })
+
+knowledge-base.embedChunks  (src/jobs/embedChunks.ts)
+  1. Load all chunks for articleId
+  2. embedMany(chunk texts, getAi().embeddingModelId())  →  vectors
+     (Vercel AI SDK auto-batches; single API call for ~125 chunks)
+  3. Upsert embeddings into knowledge_base_embeddings (keyed by chunk_id)
+  4. emit("knowledge-base.article.indexed", { articleId })
+```
+
+Both jobs: `persistent: true` — queue-backed, retry-safe (retryLimit: 3), visible in the job engine.
+
 - `yarn db:generate knowledge-base` for the new tables
 - Emit `knowledge-base.article.indexed` after both jobs complete for a given article
 

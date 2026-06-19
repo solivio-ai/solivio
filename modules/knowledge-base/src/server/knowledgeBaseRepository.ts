@@ -1,13 +1,15 @@
 import "server-only";
 
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 
-import { db } from "@solivio/sdk/runtime";
+import { db, emitEvent } from "@solivio/sdk/runtime";
 
 import {
   knowledgeBaseArticles,
   knowledgeBaseArticleTags,
+  knowledgeBaseChunks,
   knowledgeBaseConnections,
+  knowledgeBaseEmbeddings,
   knowledgeBaseSpaces,
 } from "../data/schema.ts";
 import type { ImportPayload } from "../lib/importSchema.ts";
@@ -114,7 +116,12 @@ export async function insertArticle(
   input: typeof knowledgeBaseArticles.$inferInsert,
 ): Promise<ArticleRow> {
   const rows = await db.insert(knowledgeBaseArticles).values(input).returning();
-  return rows[0]!;
+  const article = rows[0]!;
+  await emitEvent("knowledge-base.article.created", {
+    articleId: article.id,
+    spaceId: article.spaceId,
+  });
+  return article;
 }
 
 export async function updateArticle(
@@ -131,7 +138,15 @@ export async function updateArticle(
     .set({ ...input, updatedAt: new Date() })
     .where(eq(knowledgeBaseArticles.id, id))
     .returning();
-  return rows[0] ?? null;
+  const article = rows[0] ?? null;
+  // Only re-index when content changes; skip position-only updates (drag on map).
+  if (article && (input.body !== undefined || input.title !== undefined)) {
+    await emitEvent("knowledge-base.article.updated", {
+      articleId: article.id,
+      spaceId: article.spaceId,
+    });
+  }
+  return article;
 }
 
 export async function deleteArticle(id: string): Promise<void> {
@@ -335,4 +350,58 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
   }
 
   return { spacesUpserted, articlesUpserted, errors };
+}
+
+// ---------------------------------------------------------------------------
+// Chunks
+// ---------------------------------------------------------------------------
+
+export type ChunkRow = typeof knowledgeBaseChunks.$inferSelect;
+
+export async function replaceChunks(
+  articleId: string,
+  chunks: Array<{ text: string; headingPath: string | null }>,
+): Promise<ChunkRow[]> {
+  await db.delete(knowledgeBaseChunks).where(eq(knowledgeBaseChunks.articleId, articleId));
+  if (chunks.length === 0) return [];
+  const rows = await db
+    .insert(knowledgeBaseChunks)
+    .values(
+      chunks.map((c, i) => ({
+        articleId,
+        chunkIndex: i,
+        text: c.text,
+        headingPath: c.headingPath,
+      })),
+    )
+    .returning();
+  return rows;
+}
+
+export async function findChunksByArticle(articleId: string): Promise<ChunkRow[]> {
+  return db
+    .select()
+    .from(knowledgeBaseChunks)
+    .where(eq(knowledgeBaseChunks.articleId, articleId))
+    .orderBy(asc(knowledgeBaseChunks.chunkIndex));
+}
+
+// ---------------------------------------------------------------------------
+// Embeddings
+// ---------------------------------------------------------------------------
+
+export async function upsertEmbeddings(
+  entries: Array<{ chunkId: string; model: string; vector: number[] }>,
+): Promise<void> {
+  if (entries.length === 0) return;
+  // Delete stale embeddings for all affected chunks, then insert fresh ones.
+  await db.delete(knowledgeBaseEmbeddings).where(
+    inArray(
+      knowledgeBaseEmbeddings.chunkId,
+      entries.map((e) => e.chunkId),
+    ),
+  );
+  await db
+    .insert(knowledgeBaseEmbeddings)
+    .values(entries.map((e) => ({ chunkId: e.chunkId, model: e.model, vector: e.vector })));
 }
