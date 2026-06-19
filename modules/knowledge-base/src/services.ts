@@ -19,6 +19,8 @@ import {
   updateArticlePositions,
   upsertFromImport,
 } from "./server/knowledgeBaseRepository.ts";
+import type { ArticleSearchMatch } from "./server/knowledgeBaseSearchService.ts";
+import { searchArticles } from "./server/knowledgeBaseSearchService.ts";
 
 export type { ArticleRow, SpaceRow };
 
@@ -70,6 +72,11 @@ export interface KnowledgeBaseService {
     articlesUpserted: number;
     errors: number;
   }>;
+
+  searchArticles(
+    query: string,
+    options?: { spaceId?: string; limit?: number; minSimilarity?: number },
+  ): Promise<ArticleSearchMatch[]>;
 }
 
 declare module "@solivio/sdk" {
@@ -101,6 +108,7 @@ function createKnowledgeBaseService(): KnowledgeBaseService {
     updateArticlePositions: (updates) => updateArticlePositions(updates),
 
     upsertFromImport: (payload) => upsertFromImport(payload),
+    searchArticles: (query, options) => searchArticles(query, options),
   };
 }
 

@@ -31,6 +31,12 @@ const INSTRUCTIONS = [
   "After a tool call succeeds, confirm the change to the user in plain language.",
 
   "When the user refers to past orders, previous purchases, 'same as last time', or asks what this customer usually orders, call recall_order_history first to retrieve their history before responding.",
+
+  "For questions about product compatibility, installation procedures, technical specifications, policies, or sales guidance — use the knowledge base tools, not the product catalog.",
+  "Before searching the knowledge base, call browse_knowledge_base to identify the relevant space, then call search_knowledge_base with the spaceId to scope the results.",
+  "If search_knowledge_base returns relevant articles, call get_article to retrieve the full content before answering.",
+  "Never use search_knowledge_base for product lookup — use search_products for that.",
+
   "If no offer context is provided, answer as a general Solivio assistant.",
   "Keep answers concise, practical, and focused on helping a salesperson review the draft.",
 ].join(" ");

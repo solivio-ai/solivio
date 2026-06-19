@@ -85,12 +85,8 @@
           "name": "knowledge_base_article_tags_article_id_knowledge_base_articles_id_fk",
           "tableFrom": "knowledge_base_article_tags",
           "tableTo": "knowledge_base_articles",
-          "columnsFrom": [
-            "article_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["article_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -240,12 +236,8 @@
           "name": "knowledge_base_articles_space_id_knowledge_base_spaces_id_fk",
           "tableFrom": "knowledge_base_articles",
           "tableTo": "knowledge_base_spaces",
-          "columnsFrom": [
-            "space_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["space_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -253,12 +245,8 @@
           "name": "knowledge_base_articles_parent_id_knowledge_base_articles_id_fk",
           "tableFrom": "knowledge_base_articles",
           "tableTo": "knowledge_base_articles",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -341,12 +329,8 @@
           "name": "knowledge_base_chunks_article_id_knowledge_base_articles_id_fk",
           "tableFrom": "knowledge_base_chunks",
           "tableTo": "knowledge_base_articles",
-          "columnsFrom": [
-            "article_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["article_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -466,12 +450,8 @@
           "name": "knowledge_base_connections_from_id_knowledge_base_articles_id_fk",
           "tableFrom": "knowledge_base_connections",
           "tableTo": "knowledge_base_articles",
-          "columnsFrom": [
-            "from_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["from_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -479,12 +459,8 @@
           "name": "knowledge_base_connections_to_id_knowledge_base_articles_id_fk",
           "tableFrom": "knowledge_base_connections",
           "tableTo": "knowledge_base_articles",
-          "columnsFrom": [
-            "to_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["to_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -562,12 +538,8 @@
           "name": "knowledge_base_embeddings_chunk_id_knowledge_base_chunks_id_fk",
           "tableFrom": "knowledge_base_embeddings",
           "tableTo": "knowledge_base_chunks",
-          "columnsFrom": [
-            "chunk_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chunk_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -577,9 +549,7 @@
         "knowledge_base_embeddings_chunk_id_unique": {
           "name": "knowledge_base_embeddings_chunk_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "chunk_id"
-          ]
+          "columns": ["chunk_id"]
         }
       },
       "policies": {},

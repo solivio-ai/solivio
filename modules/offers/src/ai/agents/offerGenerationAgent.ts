@@ -69,6 +69,11 @@ Rules:
     * SPLIT variant: item "rękawiczki nitrylowe XS x5op", reason "Catalog only has size M; requested size XS is not available."
 - requestItem: VERBATIM copy of the customer's text for this product, INCLUDING the quantity, units, and any size/spec notation EXACTLY as the customer wrote it ("strzykawki 5ml luerlock x1op", "rękawiczki nitrylowe XS x5op", "śruba M10 nierdzewna 50szt"). Do NOT clean it up, do NOT translate, do NOT lemmatize, do NOT drop quantity — quantity-stripping rules apply ONLY to the search query, never to requestItem. For a merged item, concatenate the original fragments separated by " + " so the salesperson sees every mention (e.g., "kompresy x10op (Gab 1) + kompresy x10op (Gab 3) + kompresy x10op (Gab 4)") — preserve original wording of each.
 - Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
+
+Knowledge base:
+- After matching products, you may call browse_knowledge_base then search_knowledge_base to check for known compatibility issues, required accessories, or technical constraints between matched products.
+- If the knowledge base returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide").
+- Do NOT use knowledge base tools for product lookup — use search_products only for that.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
