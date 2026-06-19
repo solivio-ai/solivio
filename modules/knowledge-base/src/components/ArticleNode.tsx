@@ -35,7 +35,7 @@ export function ArticleNode({ data, selected }: NodeProps<Node<ArticleNodeData>>
 
   return (
     <>
-      <NodeToolbar isVisible={hovered || selected} position={Position.Bottom} offset={6}>
+      <NodeToolbar isVisible={hovered} position={Position.Bottom} offset={6}>
         <div
           role="toolbar"
           className="flex gap-1.5"

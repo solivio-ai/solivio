@@ -5,6 +5,7 @@ import {
   Background,
   BackgroundVariant,
   Controls,
+  MiniMap,
   Panel,
   ReactFlow,
   ReactFlowProvider,
@@ -101,11 +102,10 @@ async function runElkLayout<T extends Record<string, unknown>>(
   const graph = {
     id: "root",
     layoutOptions: {
-      "elk.algorithm": "layered",
+      "elk.algorithm": "mrtree",
       "elk.direction": "DOWN",
       "elk.spacing.nodeNode": "60",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "100",
-      "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+      "elk.mrtree.compaction": "true",
     },
     children: nodes.map((n) => ({ id: n.id, width: NODE_WIDTH, height: NODE_HEIGHT })),
     edges: edges.map((e) => ({ id: e.id, sources: [e.source], targets: [e.target] })),
@@ -368,6 +368,8 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
           onNodeDragStop={onNodeDragStop}
           isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}
+          selectionOnDrag
+          panOnDrag={[1, 2]}
           fitView
           fitViewOptions={{ padding: 0.2 }}
           proOptions={{ hideAttribution: true }}
@@ -379,8 +381,17 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
             color="hsl(var(--border))"
           />
           <Controls
+            position="top-left"
             showInteractive={false}
             className="!rounded-md !border !border-border !bg-card !shadow-sm"
+          />
+          <MiniMap
+            position="bottom-left"
+            zoomable
+            pannable
+            nodeColor="hsl(var(--muted-foreground))"
+            maskColor="hsl(var(--background) / 0.7)"
+            className="!rounded-md !border !border-border !bg-card"
           />
           <Panel position="top-right">
             <Button
