@@ -1,6 +1,38 @@
 {
   "nav": {
-    "knowledgeBase": "Baza Wiedzy"
+    "knowledgeBase": "Baza Wiedzy",
+    "upload": "Import KB"
+  },
+  "import": {
+    "page": {
+      "title": "Import bazy wiedzy",
+      "description": "Wgraj plik JSON, aby zaimportować przestrzenie i artykuły do bazy wiedzy."
+    },
+    "card": {
+      "title": "Wgrywanie bazy wiedzy",
+      "description": "Wybierz plik JSON i zaimportuj go. Artykuły są dzielone na fragmenty i indeksowane w tle.",
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub upuść plik w tym miejscu",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "queuing": "Kolejkowanie...",
+        "import": "Importuj"
+      },
+      "importDone": "Dodano do kolejki {spaces, plural, one {# przestrzeń} other {# przestrzenie}}.",
+      "importError": "Import nie powiódł się."
+    },
+    "runs": {
+      "title": "Ostatnie importy",
+      "colStatus": "Status",
+      "colSpaces": "Przestrzenie",
+      "colArticles": "Artykuły",
+      "colErrors": "Błędy",
+      "colStarted": "Rozpoczęto",
+      "running": "W toku",
+      "completed": "Zakończono",
+      "failed": "Błąd"
+    }
   },
   "page": {
     "title": "Baza Wiedzy",

@@ -10,7 +10,7 @@
 import type { CustomerInput, OfferImportInput, ProductInput } from "./entities/index.ts";
 
 /** Canonical entity an importer produces. The core routes records by target. */
-export type ImportTarget = "product" | "customer" | "offer";
+export type ImportTarget = "product" | "customer" | "offer" | "knowledge-base";
 
 /** `success` — all rows parsed; `partial` — some rows failed; `failed` — no records produced. */
 export type ImportStatus = "success" | "partial" | "failed";

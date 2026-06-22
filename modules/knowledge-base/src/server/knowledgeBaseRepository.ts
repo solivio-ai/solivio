@@ -10,6 +10,7 @@ import {
   knowledgeBaseChunks,
   knowledgeBaseConnections,
   knowledgeBaseEmbeddings,
+  knowledgeBaseImportRuns,
   knowledgeBaseSpaces,
 } from "../data/schema.ts";
 import type { ImportPayload } from "../lib/importSchema.ts";
@@ -224,10 +225,12 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
   spacesUpserted: number;
   articlesUpserted: number;
   errors: number;
+  spaceIds: string[];
 }> {
   let spacesUpserted = 0;
   let articlesUpserted = 0;
   let errors = 0;
+  const spaceIds: string[] = [];
 
   for (const spaceInput of payload.spaces) {
     // Upsert space by externalId+origin when available, else always insert.
@@ -268,12 +271,18 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
       space = await insertSpace({ ...spaceInput, origin: payload.origin });
     }
     spacesUpserted++;
+    spaceIds.push(space.id);
 
-    // Two-pass article upsert: first create/update all rows, then wire parentId
-    // and connections using the externalId→dbId map.
+    // Single-pass article upsert: flattenArticles guarantees parents come before
+    // children, so parentId is always resolvable from the map by the time a
+    // child is processed. parentId and connections are wired inline.
     const externalIdToDbId = new Map<string, string>();
 
     for (const articleInput of spaceInput.articles) {
+      const parentDbId = articleInput.parentExternalId
+        ? (externalIdToDbId.get(articleInput.parentExternalId) ?? null)
+        : null;
+
       try {
         let article: ArticleRow;
         if (articleInput.externalId) {
@@ -282,6 +291,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
             .from(knowledgeBaseArticles)
             .where(
               and(
+                eq(knowledgeBaseArticles.spaceId, space.id),
                 eq(knowledgeBaseArticles.origin, payload.origin),
                 eq(knowledgeBaseArticles.externalId, articleInput.externalId),
               ),
@@ -293,6 +303,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
               body: articleInput.body,
               type: articleInput.type,
               sortOrder: articleInput.sortOrder,
+              parentId: parentDbId ?? undefined,
             }))!;
           } else {
             article = await insertArticle({
@@ -303,6 +314,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
               sortOrder: articleInput.sortOrder,
               origin: payload.origin,
               externalId: articleInput.externalId,
+              parentId: parentDbId ?? undefined,
             });
           }
           externalIdToDbId.set(articleInput.externalId, article.id);
@@ -314,6 +326,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
             type: articleInput.type,
             sortOrder: articleInput.sortOrder,
             origin: payload.origin,
+            parentId: parentDbId ?? undefined,
           });
         }
         await setArticleTags(article.id, articleInput.tags);
@@ -323,17 +336,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
       }
     }
 
-    // Second pass: wire parentId
-    for (const articleInput of spaceInput.articles) {
-      if (!articleInput.externalId || !articleInput.parentExternalId) continue;
-      const articleDbId = externalIdToDbId.get(articleInput.externalId);
-      const parentDbId = externalIdToDbId.get(articleInput.parentExternalId);
-      if (articleDbId && parentDbId) {
-        await updateArticle(articleDbId, { parentId: parentDbId });
-      }
-    }
-
-    // Third pass: connections
+    // Second pass: connections
     for (const articleInput of spaceInput.articles) {
       if (!articleInput.externalId) continue;
       const fromDbId = externalIdToDbId.get(articleInput.externalId);
@@ -349,7 +352,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
     }
   }
 
-  return { spacesUpserted, articlesUpserted, errors };
+  return { spacesUpserted, articlesUpserted, errors, spaceIds };
 }
 
 // ---------------------------------------------------------------------------
@@ -404,4 +407,43 @@ export async function upsertEmbeddings(
   await db
     .insert(knowledgeBaseEmbeddings)
     .values(entries.map((e) => ({ chunkId: e.chunkId, model: e.model, vector: e.vector })));
+}
+
+// ---------------------------------------------------------------------------
+// Import runs
+// ---------------------------------------------------------------------------
+
+export type ImportRunRow = typeof knowledgeBaseImportRuns.$inferSelect;
+
+export async function createImportRun(origin: string): Promise<ImportRunRow> {
+  const rows = await db
+    .insert(knowledgeBaseImportRuns)
+    .values({ origin, status: "running" })
+    .returning();
+  return rows[0]!;
+}
+
+export async function completeImportRun(
+  id: string,
+  result: { spacesCount: number; articlesUpserted: number; errors: number },
+): Promise<void> {
+  await db
+    .update(knowledgeBaseImportRuns)
+    .set({ status: "completed", finishedAt: new Date(), ...result })
+    .where(eq(knowledgeBaseImportRuns.id, id));
+}
+
+export async function failImportRun(id: string, errorMessage: string): Promise<void> {
+  await db
+    .update(knowledgeBaseImportRuns)
+    .set({ status: "failed", finishedAt: new Date(), errorMessage })
+    .where(eq(knowledgeBaseImportRuns.id, id));
+}
+
+export async function listImportRuns(limit = 20): Promise<ImportRunRow[]> {
+  return db
+    .select()
+    .from(knowledgeBaseImportRuns)
+    .orderBy(knowledgeBaseImportRuns.startedAt)
+    .limit(limit);
 }

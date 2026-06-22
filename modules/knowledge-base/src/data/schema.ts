@@ -115,6 +115,22 @@ export const knowledgeBaseArticleTags = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// Import runs — one row per knowledge-base.import job execution so the admin
+// page can show live status without polling the job queue directly.
+// ---------------------------------------------------------------------------
+export const knowledgeBaseImportRuns = pgTable("knowledge_base_import_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  status: text("status").$type<"running" | "completed" | "failed">().notNull().default("running"),
+  origin: text("origin").notNull().default("json-import"),
+  spacesCount: integer("spaces_count").notNull().default(0),
+  articlesUpserted: integer("articles_upserted").notNull().default(0),
+  errors: integer("errors").notNull().default(0),
+  errorMessage: text("error_message"),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+});
+
+// ---------------------------------------------------------------------------
 // Chunks — article body split into retrieval-sized pieces (≈800 chars each).
 // heading_path is the breadcrumb of markdown headings above the chunk
 // (e.g. "Installation > Wiring"); null for plain-text and CSV chunks.

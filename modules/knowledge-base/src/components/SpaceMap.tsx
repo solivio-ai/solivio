@@ -11,6 +11,7 @@ import {
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import { LayoutDashboard, Plus, Unlink } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -195,6 +196,7 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
   setNodesRef.current = setNodes;
   setEdgesRef.current = setEdges;
 
+  const { fitView } = useReactFlow();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [edgeMenu, setEdgeMenu] = useState<EdgeMenu | null>(null);
   const autoLayoutRan = useRef(false);
@@ -202,20 +204,44 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
   useEffect(() => {
     if (autoLayoutRan.current) return;
     const needsLayout = articles.some((a) => a.positionX === null);
-    if (!needsLayout) return;
     autoLayoutRan.current = true;
-    runElkLayout(initNodes, initEdges).then((laidOut) => {
-      setNodes(laidOut);
-      persistPositions(spaceId, laidOut);
-    });
+    if (needsLayout) {
+      runElkLayout(initNodes, initEdges).then((laidOut) => {
+        setNodes(laidOut);
+        persistPositions(spaceId, laidOut);
+        fitView({ padding: 0.2, duration: 300 });
+      });
+    } else {
+      fitView({ padding: 0.2, duration: 300 });
+    }
   }, []); // intentionally empty — runs once on mount only
 
+  // Re-fit when switching between spaces (component is reused, not remounted).
+  useEffect(() => {
+    fitView({ padding: 0.2, duration: 300 });
+  }, [spaceId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleAutoLayout = useCallback(() => {
+    // Mark nodes as transitioning so CSS can animate the transform.
+    setNodes((nds) =>
+      nds.map((n) => ({ ...n, style: { ...n.style, transition: "transform 400ms ease" } })),
+    );
     runElkLayout(nodes, edges).then((laidOut) => {
-      setNodes(laidOut);
+      setNodes(
+        laidOut.map((n) => ({ ...n, style: { ...n.style, transition: "transform 400ms ease" } })),
+      );
       persistPositions(spaceId, laidOut);
+      setTimeout(() => {
+        setNodes((nds) =>
+          nds.map((n) => {
+            const { transition: _, ...rest } = n.style ?? {};
+            return { ...n, style: rest };
+          }),
+        );
+        fitView({ padding: 0.2, duration: 300 });
+      }, 420);
     });
-  }, [nodes, edges, spaceId, setNodes]);
+  }, [nodes, edges, spaceId, setNodes, fitView]);
 
   const onNodeDragStop = useCallback(
     (_: unknown, node: Node) => {
@@ -378,14 +404,12 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
           nodeTypes={nodeTypes}
           selectionOnDrag
           panOnDrag={[1, 2]}
-          fitView
-          fitViewOptions={{ padding: 0.2 }}
           proOptions={{ hideAttribution: true }}
         >
           <Background
             variant={BackgroundVariant.Dots}
             gap={20}
-            size={1}
+            size={2}
             color="hsl(var(--border))"
           />
           <Controls

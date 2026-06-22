@@ -1,6 +1,38 @@
 {
   "nav": {
-    "knowledgeBase": "Knowledge Base"
+    "knowledgeBase": "Knowledge Base",
+    "upload": "Import KB"
+  },
+  "import": {
+    "page": {
+      "title": "Import knowledge base",
+      "description": "Upload a JSON file to import spaces and articles into the knowledge base."
+    },
+    "card": {
+      "title": "Knowledge base upload",
+      "description": "Pick a JSON file and import it. Articles are chunked and indexed in the background.",
+      "chooseFile": "Choose a file",
+      "pickAnother": "Click to pick another file",
+      "dropOne": "or drop one onto this field",
+      "readError": "Failed to read the file.",
+      "importAction": {
+        "queuing": "Queuing...",
+        "import": "Import"
+      },
+      "importDone": "Queued {spaces, plural, one {# space} other {# spaces}} for indexing.",
+      "importError": "Import failed."
+    },
+    "runs": {
+      "title": "Recent imports",
+      "colStatus": "Status",
+      "colSpaces": "Spaces",
+      "colArticles": "Articles",
+      "colErrors": "Errors",
+      "colStarted": "Started",
+      "running": "Running",
+      "completed": "Completed",
+      "failed": "Failed"
+    }
   },
   "page": {
     "title": "Knowledge Base",
