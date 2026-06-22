@@ -71,8 +71,10 @@ Rules:
 - Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 
 Knowledge base:
-- After matching products, you may call browse_knowledge_base then search_knowledge_base to check for known compatibility issues, required accessories, or technical constraints between matched products.
-- If the knowledge base returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide").
+- After matching products, call browse_knowledge_base (no arguments) to see all available spaces and their nested article trees. The KB is company-specific — it may contain installation requirements, compatibility rules, regulations, required accessories, or any other structured company knowledge.
+- Read the space tree. If any space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId and a query about the relevant concern. Results include full article bodies.
+- If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide").
+- If no space in the browse result looks relevant to the current request, skip the KB entirely.
 - Do NOT use knowledge base tools for product lookup — use search_products only for that.
 `.trim();
 

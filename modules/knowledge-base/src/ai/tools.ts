@@ -16,8 +16,8 @@ const searchKnowledgeBase = defineAgentTool({
   name: "search_knowledge_base",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "Search the knowledge base for compatibility information, installation guides, policies, technical specifications, and sales playbook content. " +
-    "Use this when the user asks how products work together, how to install something, what policies apply, or needs context beyond the product catalog. " +
+    "Search the knowledge base using semantic similarity. Returns matching articles with their full body content — no need to call get_article separately. " +
+    "Always call browse_knowledge_base FIRST to identify the relevant space, then pass its spaceId here to scope the search. " +
     "Do NOT use this for product lookup — use search_products for that.",
   parameters: z.object({
     query: z
@@ -29,7 +29,7 @@ const searchKnowledgeBase = defineAgentTool({
       .uuid()
       .optional()
       .describe(
-        "Restrict search to a specific knowledge base space. Use browse_knowledge_base first to identify the right space.",
+        "Restrict search to a specific knowledge base space. Identify the right space with browse_knowledge_base first.",
       ),
     limit: z
       .number()
@@ -58,22 +58,64 @@ const searchKnowledgeBase = defineAgentTool({
   },
 });
 
+type ArticleNode = { id: string; title: string; type: string; children: ArticleNode[] };
+
+function buildArticleTree(
+  articles: Array<{ id: string; title: string; type: string; parentId: string | null }>,
+  maxDepth?: number,
+): ArticleNode[] {
+  const nodeMap = new Map<string, ArticleNode>();
+  const roots: ArticleNode[] = [];
+
+  for (const a of articles) {
+    nodeMap.set(a.id, { id: a.id, title: a.title, type: a.type, children: [] });
+  }
+  for (const a of articles) {
+    const node = nodeMap.get(a.id)!;
+    if (a.parentId && nodeMap.has(a.parentId)) {
+      nodeMap.get(a.parentId)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  if (maxDepth === undefined) return roots;
+
+  function prune(nodes: ArticleNode[], depth: number): ArticleNode[] {
+    return nodes.map((n) => ({
+      ...n,
+      children: depth >= maxDepth! ? [] : prune(n.children, depth + 1),
+    }));
+  }
+  return prune(roots, 1);
+}
+
 const browseKnowledgeBase = defineAgentTool({
   name: "browse_knowledge_base",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "Returns the structure of the knowledge base — spaces and their article trees (titles and types only, no body content). " +
-    "Use this to orient yourself before searching: identify which space is relevant, then pass its spaceId to search_knowledge_base to scope the search.",
+    "CALL THIS FIRST before searching the knowledge base. Returns the full nested article tree for each space (titles and types, no body content). " +
+    "Use the tree to identify which space is relevant, then pass its spaceId to search_knowledge_base to scope the search. " +
+    "Skipping this step means searching blindly across all spaces and getting worse results.",
   parameters: z.object({
     spaceId: z
       .string()
       .uuid()
       .optional()
-      .describe("Return the tree for a single space. Omit to list all spaces with their trees."),
+      .describe("Return the tree for a single space only. Omit to list all spaces."),
+    depth: z
+      .number()
+      .int()
+      .min(1)
+      .max(5)
+      .optional()
+      .describe(
+        "Maximum nesting depth to return (default: all levels). Use 2 for a compact overview of a large space.",
+      ),
   }),
   execute: async (input) => {
     const log = getLogger("knowledge-base");
-    log.info("browse_knowledge_base called", { spaceId: input.spaceId });
+    log.info("browse_knowledge_base called", { spaceId: input.spaceId, depth: input.depth });
     const spaces = input.spaceId
       ? await findSpaceById(input.spaceId).then((s) => (s ? [s] : []))
       : await findAllSpaces();
@@ -85,12 +127,7 @@ const browseKnowledgeBase = defineAgentTool({
           spaceId: space.id,
           spaceName: space.name,
           spaceDescription: space.description,
-          articles: articles.map((a) => ({
-            id: a.id,
-            title: a.title,
-            type: a.type,
-            parentId: a.parentId,
-          })),
+          articles: buildArticleTree(articles, input.depth),
         };
       }),
     );
@@ -108,7 +145,7 @@ const getArticle = defineAgentTool({
   agents: ["offer-generation-agent", "chat-agent"],
   description:
     "Retrieve the full body of a knowledge base article by its ID. " +
-    "Use this after search_knowledge_base identifies a relevant article and you need the complete content to answer the user.",
+    "search_knowledge_base already returns full article bodies, so use this only when you have an article ID from browse_knowledge_base and want its content directly.",
   parameters: z.object({
     articleId: z.string().uuid().describe("ID of the article to retrieve"),
   }),

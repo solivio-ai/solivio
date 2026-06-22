@@ -16,6 +16,7 @@ import {
 export type ArticleSearchMatch = {
   articleId: string;
   articleTitle: string;
+  articleBody: string;
   spaceId: string;
   spaceName: string;
   headingPath: string | null;
@@ -53,6 +54,7 @@ export async function searchArticles(
     .select({
       articleId: knowledgeBaseArticles.id,
       articleTitle: knowledgeBaseArticles.title,
+      articleBody: knowledgeBaseArticles.body,
       spaceId: knowledgeBaseArticles.spaceId,
       spaceName: knowledgeBaseSpaces.name,
       headingPath: knowledgeBaseChunks.headingPath,
