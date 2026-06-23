@@ -209,16 +209,16 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
       runElkLayout(initNodes, initEdges).then((laidOut) => {
         setNodes(laidOut);
         persistPositions(spaceId, laidOut);
-        fitView({ padding: 0.2, duration: 300 });
+        fitView({ padding: 0.2 });
       });
     } else {
-      fitView({ padding: 0.2, duration: 300 });
+      fitView({ padding: 0.2 });
     }
   }, []); // intentionally empty — runs once on mount only
 
   // Re-fit when switching between spaces (component is reused, not remounted).
   useEffect(() => {
-    fitView({ padding: 0.2, duration: 300 });
+    fitView({ padding: 0.2 });
   }, [spaceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAutoLayout = useCallback(() => {

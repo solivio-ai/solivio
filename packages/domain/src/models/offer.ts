@@ -34,6 +34,14 @@ export type OfferItem = {
   } | null;
 };
 
+export type OfferKbArticle = {
+  articleId: string;
+  articleTitle: string;
+  spaceId: string;
+  spaceName: string;
+  relevance: string;
+};
+
 export type Offer = {
   id: string;
   customerId: string | null;
@@ -45,6 +53,7 @@ export type Offer = {
   discountPercent: number;
   discountAmount: number;
   notes: string[];
+  kbArticles: OfferKbArticle[];
   unmatched: OfferUnmatchedItem[];
   items: OfferItem[];
   createdAt: string;

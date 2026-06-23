@@ -206,6 +206,7 @@
         "customerRequest": "Zapytanie klienta",
         "reviewChecks": "Weryfikacja",
         "notes": "Notatki",
+        "kbArticles": "Źródła z bazy wiedzy",
         "checks": {
           "allPriced": "Wszystkie pozycje mają ceny",
           "missingPrice": "{count, plural, one {# pozycja wymaga ceny} few {# pozycje wymagają ceny} many {# pozycji wymaga ceny} other {# pozycji wymaga ceny}}",

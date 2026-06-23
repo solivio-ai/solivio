@@ -514,6 +514,7 @@ export function OfferBuilder({
         discount={discount}
         discountPercent={discountPercent}
         notes={offer.notes}
+        kbArticles={offer.kbArticles}
         requestText={requestText}
         setDiscountPercent={onDiscountPercentChange}
         status={status}

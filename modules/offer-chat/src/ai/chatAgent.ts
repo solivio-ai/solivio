@@ -33,7 +33,7 @@ const INSTRUCTIONS = [
   "When the user refers to past orders, previous purchases, 'same as last time', or asks what this customer usually orders, call recall_order_history first to retrieve their history before responding.",
 
   "When the user asks anything that might involve company-specific knowledge — procedures, policies, technical details, regulations, installation, compatibility, or any structured company data — use the knowledge base tools.",
-  "Always start with browse_knowledge_base (no arguments) to see all available spaces and their nested article trees. Read the tree to decide which space is relevant. If no space looks relevant, skip the KB entirely.",
+  "Always start with browse_knowledge_base to see all available spaces and their nested article trees. Read the tree to decide which space is relevant. If no space looks relevant, skip the KB entirely.",
   "After identifying the relevant space, call search_knowledge_base with that spaceId. The results include full article body content — no further tool calls needed to answer from them.",
   "Call get_article only when you have a specific article ID from browse_knowledge_base and want its content directly, without searching.",
   "Never use search_knowledge_base without first calling browse_knowledge_base — searching without space context returns worse results.",

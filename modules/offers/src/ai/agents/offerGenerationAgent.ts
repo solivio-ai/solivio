@@ -70,11 +70,11 @@ Rules:
 - requestItem: VERBATIM copy of the customer's text for this product, INCLUDING the quantity, units, and any size/spec notation EXACTLY as the customer wrote it ("strzykawki 5ml luerlock x1op", "rękawiczki nitrylowe XS x5op", "śruba M10 nierdzewna 50szt"). Do NOT clean it up, do NOT translate, do NOT lemmatize, do NOT drop quantity — quantity-stripping rules apply ONLY to the search query, never to requestItem. For a merged item, concatenate the original fragments separated by " + " so the salesperson sees every mention (e.g., "kompresy x10op (Gab 1) + kompresy x10op (Gab 3) + kompresy x10op (Gab 4)") — preserve original wording of each.
 - Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 
-Knowledge base:
-- After matching products, call browse_knowledge_base (no arguments) to see all available spaces and their nested article trees. The KB is company-specific — it may contain installation requirements, compatibility rules, regulations, required accessories, or any other structured company knowledge.
+Baza Wiedzy / Knowledge Base:
+- After matching products, call browse_knowledge_base to see all available spaces and their nested article trees. The Baza Wiedzy is company-specific — it may contain installation requirements, compatibility rules, regulations, required accessories, or any other structured company knowledge.
 - Read the space tree. If any space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId and a query about the relevant concern. Results include full article bodies.
-- If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide").
-- If no space in the browse result looks relevant to the current request, skip the KB entirely.
+- If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide") AND add the article to kbArticles.
+- If no space in the browse result looks relevant to the current request, skip the Baza Wiedzy entirely.
 - Do NOT use knowledge base tools for product lookup — use search_products only for that.
 `.trim();
 
@@ -109,12 +109,29 @@ const fragmentKindSchema = z
     "How the fragment was looked up: 'sku' for exact SKU match, 'description' for semantic search",
   );
 
+const kbArticleSchema = z.object({
+  articleId: z.string().uuid().describe("ID of the Baza Wiedzy article"),
+  articleTitle: z.string().describe("Title of the Baza Wiedzy article"),
+  spaceId: z.string().uuid().describe("ID of the Baza Wiedzy space containing this article"),
+  spaceName: z.string().describe("Name of the Baza Wiedzy space"),
+  relevance: z
+    .string()
+    .describe(
+      "One sentence: how this article affected the offer (changed product selection, surfaced a warning, informed a requirement, etc.)",
+    ),
+});
+
 const agentOutputSchema = z.object({
   items: z.array(offerItemSchema),
   unmatched: z
     .array(offerUnmatchedItemInputSchema)
     .describe("Request fragments with no acceptable catalog match and why"),
   notes: z.array(z.string()).describe("Additional notes or substitutions"),
+  kbArticles: z
+    .array(kbArticleSchema)
+    .describe(
+      "Baza Wiedzy articles whose content actually influenced this offer. Only include articles that changed a product selection, added a warning, or informed a requirement. Leave empty if Baza Wiedzy was not consulted or returned no relevant findings.",
+    ),
 });
 
 export type GeneratedOffer = z.infer<typeof agentOutputSchema>;

@@ -91,6 +91,16 @@ export const offerUnmatchedItemSchema = offerUnmatchedItemInputSchema
 
 // ── Offer ──────────────────────────────────────────────────────────────────────
 
+export const offerKbArticleSchema = z
+  .object({
+    articleId: z.string().uuid(),
+    articleTitle: z.string(),
+    spaceId: z.string().uuid(),
+    spaceName: z.string(),
+    relevance: z.string(),
+  })
+  .meta({ id: "OfferKbArticle", description: "Knowledge base article referenced during offer generation." });
+
 export const offerSchema = z
   .object({
     id: z.string().meta({ examples: ["offer-demo-001"] }),
@@ -103,6 +113,7 @@ export const offerSchema = z
     discountPercent: z.number().min(0).max(100),
     discountAmount: z.number().nonnegative(),
     notes: z.array(z.string()),
+    kbArticles: z.array(offerKbArticleSchema).optional().default([]),
     unmatched: z.array(offerUnmatchedItemSchema),
     items: z.array(offerItemSchema),
     createdAt: z.string().datetime(),

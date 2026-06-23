@@ -56,6 +56,7 @@ type Props = {
   articles: MapArticle[];
   connections: MapConnection[];
   initialView?: "map" | "list";
+  initialArticleId?: string;
 };
 
 export function KnowledgeBaseShell({
@@ -64,6 +65,7 @@ export function KnowledgeBaseShell({
   articles,
   connections,
   initialView = "map",
+  initialArticleId,
 }: Props) {
   const t = useTranslations("knowledge-base.shell");
   const tToggle = useTranslations("knowledge-base.viewToggle");
@@ -86,7 +88,9 @@ export function KnowledgeBaseShell({
   };
 
   // ── Shared state ───────────────────────────────────────────────────────────
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
+    initialArticleId ?? null,
+  );
   const selectedArticle = selectedArticleId
     ? (articles.find((a) => a.id === selectedArticleId) ?? null)
     : null;

@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import { productPrices, products } from "../modules/catalog/src/data/schema.ts";
@@ -23,8 +23,13 @@ import { csvProductImporter } from "../modules/csv-import/src/lib/productImporte
 import { customers } from "../modules/customers/src/data/schema.ts";
 import {
   knowledgeBaseArticles,
+  knowledgeBaseConnections,
   knowledgeBaseSpaces,
 } from "../modules/knowledge-base/src/data/schema.ts";
+import {
+  flattenPayload,
+  importPayloadSchema,
+} from "../modules/knowledge-base/src/lib/importSchema.ts";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -111,123 +116,154 @@ for (const row of customerResult.records) {
 console.log(`✓ ${createdCustomers} customers seeded (${customerResult.records.length} in file)`);
 
 // ── Knowledge Base ─────────────────────────────────────────────────────────────
-const mainSpace = await db
-  .insert(knowledgeBaseSpaces)
-  .values({ name: "Main", description: "General company knowledge", color: "#134E4A" })
-  .onConflictDoNothing()
-  .returning({ id: knowledgeBaseSpaces.id });
+const kbRaw = JSON.parse(read("knowledge-base-example.json"));
+const kbParsed = importPayloadSchema.safeParse(kbRaw);
+if (!kbParsed.success) {
+  console.error("KB example file failed to parse:", kbParsed.error.issues.length, "issues");
+  process.exit(1);
+}
+const kbPayload = flattenPayload(kbParsed.data);
 
-const regulationsSpace = await db
-  .insert(knowledgeBaseSpaces)
-  .values({
-    name: "Regulations & Standards",
-    description: "Legal requirements and compliance standards",
-    color: "#F6C215",
-  })
-  .onConflictDoNothing()
-  .returning({ id: knowledgeBaseSpaces.id });
+let kbSpaceCount = 0;
+let kbArticleCount = 0;
+// Global map used for cross-space connection wiring in the second pass.
+const globalExternalIdToDbId = new Map<string, string>();
 
-if (mainSpace[0]) {
-  const sid = mainSpace[0].id;
-  const [onboarding] = await db
-    .insert(knowledgeBaseArticles)
-    .values({
-      spaceId: sid,
-      title: "Getting Started",
-      body: "Welcome to the Solivio knowledge base. This space contains general company knowledge shared across all teams.",
-      type: "article",
-      sortOrder: 0,
-    })
-    .onConflictDoNothing()
-    .returning({ id: knowledgeBaseArticles.id });
+for (const spaceInput of kbPayload.spaces) {
+  const existingSpace = spaceInput.externalId
+    ? (
+        await db
+          .select({ id: knowledgeBaseSpaces.id })
+          .from(knowledgeBaseSpaces)
+          .where(
+            and(
+              eq(knowledgeBaseSpaces.origin, "seed"),
+              eq(knowledgeBaseSpaces.externalId, spaceInput.externalId),
+            ),
+          )
+          .limit(1)
+      )[0]
+    : undefined;
 
-  if (onboarding) {
+  let spaceId: string;
+  if (existingSpace) {
+    spaceId = existingSpace.id;
     await db
-      .insert(knowledgeBaseArticles)
-      .values([
-        {
-          spaceId: sid,
-          parentId: onboarding.id,
-          title: "Discount Policy",
-          body: "Standard discounts are capped at 15% without manager approval. Volume discounts above 10k PLN require sign-off from Sales Lead.",
-          type: "policy",
-          sortOrder: 1,
-        },
-        {
-          spaceId: sid,
-          parentId: onboarding.id,
-          title: "Offer Template",
-          body: "Use this template for all outbound offers. Include: product summary, pricing breakdown, validity date (30 days), and contact details.",
-          type: "template",
-          sortOrder: 2,
-        },
-      ])
-      .onConflictDoNothing();
+      .update(knowledgeBaseSpaces)
+      .set({
+        name: spaceInput.name,
+        description: spaceInput.description,
+        color: spaceInput.color,
+        updatedAt: new Date(),
+      })
+      .where(eq(knowledgeBaseSpaces.id, spaceId));
+  } else {
+    const [inserted] = await db
+      .insert(knowledgeBaseSpaces)
+      .values({
+        name: spaceInput.name,
+        description: spaceInput.description,
+        color: spaceInput.color,
+        icon: spaceInput.icon,
+        origin: "seed",
+        externalId: spaceInput.externalId,
+        sortOrder: kbSpaceCount,
+      })
+      .returning({ id: knowledgeBaseSpaces.id });
+    spaceId = inserted!.id;
   }
+  kbSpaceCount++;
 
-  await db
-    .insert(knowledgeBaseArticles)
-    .values({
-      spaceId: sid,
-      title: "Sales Process",
-      body: "Our standard sales process: 1. Receive customer request. 2. Extract requirements with AI. 3. Match products. 4. Generate offer draft. 5. Review and send.",
-      type: "directive",
-      sortOrder: 10,
-    })
-    .onConflictDoNothing();
+  for (const articleInput of spaceInput.articles) {
+    const parentId = articleInput.parentExternalId
+      ? (globalExternalIdToDbId.get(articleInput.parentExternalId) ?? null)
+      : null;
+
+    let articleId: string;
+
+    if (articleInput.externalId) {
+      const existing = (
+        await db
+          .select({ id: knowledgeBaseArticles.id })
+          .from(knowledgeBaseArticles)
+          .where(
+            and(
+              eq(knowledgeBaseArticles.spaceId, spaceId),
+              eq(knowledgeBaseArticles.origin, "seed"),
+              eq(knowledgeBaseArticles.externalId, articleInput.externalId),
+            ),
+          )
+          .limit(1)
+      )[0];
+
+      if (existing) {
+        articleId = existing.id;
+        await db
+          .update(knowledgeBaseArticles)
+          .set({
+            title: articleInput.title,
+            body: articleInput.body,
+            type: articleInput.type,
+            parentId,
+            updatedAt: new Date(),
+          })
+          .where(eq(knowledgeBaseArticles.id, articleId));
+      } else {
+        const [ins] = await db
+          .insert(knowledgeBaseArticles)
+          .values({
+            spaceId,
+            title: articleInput.title,
+            body: articleInput.body,
+            type: articleInput.type,
+            sortOrder: articleInput.sortOrder,
+            origin: "seed",
+            externalId: articleInput.externalId,
+            parentId,
+          })
+          .returning({ id: knowledgeBaseArticles.id });
+        articleId = ins!.id;
+      }
+      globalExternalIdToDbId.set(articleInput.externalId, articleId);
+    } else {
+      const [ins] = await db
+        .insert(knowledgeBaseArticles)
+        .values({
+          spaceId,
+          title: articleInput.title,
+          body: articleInput.body,
+          type: articleInput.type,
+          sortOrder: articleInput.sortOrder,
+          origin: "seed",
+          parentId,
+        })
+        .returning({ id: knowledgeBaseArticles.id });
+      articleId = ins!.id;
+    }
+    kbArticleCount++;
+    // suppress unused-variable warning — articleId used by connections pass below
+    void articleId;
+  }
 }
 
-if (regulationsSpace[0]) {
-  const sid = regulationsSpace[0].id;
-  const [ceRoot] = await db
-    .insert(knowledgeBaseArticles)
-    .values({
-      spaceId: sid,
-      title: "CE Marking Requirements",
-      body: "All products sold in the EU must carry a CE mark. This declares conformity with EU health, safety, and environmental requirements.",
-      type: "directive",
-      sortOrder: 0,
-    })
-    .onConflictDoNothing()
-    .returning({ id: knowledgeBaseArticles.id });
-
-  if (ceRoot) {
-    await db
-      .insert(knowledgeBaseArticles)
-      .values([
-        {
-          spaceId: sid,
-          parentId: ceRoot.id,
-          title: "Low Voltage Directive",
-          body: "LVD 2014/35/EU applies to electrical equipment operating between 50–1000V AC or 75–1500V DC. Requires Declaration of Conformity.",
-          type: "article",
-          sortOrder: 1,
-        },
-        {
-          spaceId: sid,
-          parentId: ceRoot.id,
-          title: "EMC Directive",
-          body: "Directive 2014/30/EU covers electromagnetic compatibility. Products must not cause interference and must have adequate immunity.",
-          type: "article",
-          sortOrder: 2,
-        },
-      ])
-      .onConflictDoNothing();
+// Second pass: wire connections after all articles are inserted (cross-space refs need global map).
+for (const spaceInput of kbPayload.spaces) {
+  for (const articleInput of spaceInput.articles) {
+    if (!articleInput.externalId || !articleInput.connections.length) continue;
+    const fromDbId = globalExternalIdToDbId.get(articleInput.externalId);
+    if (!fromDbId) continue;
+    for (const conn of articleInput.connections) {
+      const toDbId = globalExternalIdToDbId.get(conn.toExternalId);
+      if (!toDbId) continue;
+      await db
+        .insert(knowledgeBaseConnections)
+        .values({ fromId: fromDbId, toId: toDbId, type: conn.type })
+        .onConflictDoNothing();
+    }
   }
-
-  await db
-    .insert(knowledgeBaseArticles)
-    .values({
-      spaceId: sid,
-      title: "GDPR Data Handling",
-      body: "Customer data is processed under GDPR Article 6(1)(b) — contract performance. Retention: 5 years after last transaction. Erasure requests handled within 30 days.",
-      type: "policy",
-      sortOrder: 10,
-    })
-    .onConflictDoNothing();
 }
 
-console.log("✓ knowledge base seeded (2 spaces with example articles)");
+console.log(`✓ ${kbSpaceCount} KB spaces, ${kbArticleCount} articles seeded`);
 
 console.log("\nSign in and open the dashboard — try /offers/new or the product search.");
 process.exit(0);

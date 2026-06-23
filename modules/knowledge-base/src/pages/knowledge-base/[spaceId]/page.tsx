@@ -11,7 +11,10 @@ import {
   findSpaceById,
 } from "../../../server/knowledgeBaseRepository.ts";
 
-type Props = { params: Promise<{ spaceId: string }>; searchParams: Promise<{ view?: string }> };
+type Props = {
+  params: Promise<{ spaceId: string }>;
+  searchParams: Promise<{ view?: string; article?: string }>;
+};
 
 export async function generateMetadata({ params }: Props) {
   const { spaceId } = await params;
@@ -20,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function SpacePage({ params, searchParams }: Props) {
-  const [{ spaceId }, { view }] = await Promise.all([params, searchParams]);
+  const [{ spaceId }, { view, article }] = await Promise.all([params, searchParams]);
   const initialView = view === "list" ? "list" : "map";
 
   const [spaceRows, space, articleRows, connectionRows] = await Promise.all([
@@ -68,6 +71,7 @@ export default async function SpacePage({ params, searchParams }: Props) {
         articles={articles}
         connections={connections}
         initialView={initialView}
+        initialArticleId={article}
       />
     </AppPage>
   );

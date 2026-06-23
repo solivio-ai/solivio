@@ -35,6 +35,7 @@ export async function POST(request: Request) {
 
   const generated: GeneratedOffer = {
     notes: [t("offer.note")],
+    kbArticles: [],
     unmatched: [],
     items: items.map((i) => ({
       productId: i.productId,

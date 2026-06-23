@@ -76,7 +76,7 @@ export async function runCase(benchCase: BenchmarkCase): Promise<GeneratedOffer>
   });
 }
 
-export const emptyOutput: GeneratedOffer = { items: [], unmatched: [], notes: [] };
+export const emptyOutput: GeneratedOffer = { items: [], unmatched: [], notes: [], kbArticles: [] };
 
 export function score(benchCase: BenchmarkCase, generated: GeneratedOffer): CaseScore {
   return scoreCase(benchCase, generated);

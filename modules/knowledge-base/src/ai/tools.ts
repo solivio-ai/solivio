@@ -8,7 +8,6 @@ import {
   findAllSpaces,
   findArticleById,
   findArticlesBySpace,
-  findSpaceById,
 } from "../server/knowledgeBaseRepository.ts";
 import { searchArticles } from "../server/knowledgeBaseSearchService.ts";
 
@@ -94,31 +93,14 @@ const browseKnowledgeBase = defineAgentTool({
   name: "browse_knowledge_base",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "CALL THIS FIRST before searching the knowledge base. Returns the full nested article tree for each space (titles and types, no body content). " +
-    "Use the tree to identify which space is relevant, then pass its spaceId to search_knowledge_base to scope the search. " +
-    "Skipping this step means searching blindly across all spaces and getting worse results.",
-  parameters: z.object({
-    spaceId: z
-      .string()
-      .uuid()
-      .optional()
-      .describe("Return the tree for a single space only. Omit to list all spaces."),
-    depth: z
-      .number()
-      .int()
-      .min(1)
-      .max(5)
-      .optional()
-      .describe(
-        "Maximum nesting depth to return (default: all levels). Use 2 for a compact overview of a large space.",
-      ),
-  }),
-  execute: async (input) => {
+    "Returns all knowledge base spaces with their full nested article trees (titles and types only, no body content). " +
+    "Call this first — with no arguments — to see what spaces exist and identify which one is relevant. " +
+    "Then pass the spaceId from the result to search_knowledge_base to scope the search.",
+  parameters: z.object({}),
+  execute: async (_input) => {
     const log = getLogger("knowledge-base");
-    log.info("browse_knowledge_base called", { spaceId: input.spaceId, depth: input.depth });
-    const spaces = input.spaceId
-      ? await findSpaceById(input.spaceId).then((s) => (s ? [s] : []))
-      : await findAllSpaces();
+    log.info("browse_knowledge_base called");
+    const spaces = await findAllSpaces();
 
     const tree = await Promise.all(
       spaces.map(async (space) => {
@@ -127,14 +109,17 @@ const browseKnowledgeBase = defineAgentTool({
           spaceId: space.id,
           spaceName: space.name,
           spaceDescription: space.description,
-          articles: buildArticleTree(articles, input.depth),
+          articles: buildArticleTree(articles),
         };
       }),
     );
 
+    function countNodes(nodes: ArticleNode[]): number {
+      return nodes.reduce((n, a) => n + 1 + countNodes(a.children), 0);
+    }
     log.info("browse_knowledge_base returned", {
       spaces: tree.length,
-      totalArticles: tree.reduce((n, s) => n + s.articles.length, 0),
+      totalArticles: tree.reduce((n, s) => n + countNodes(s.articles), 0),
     });
     return { spaces: tree };
   },

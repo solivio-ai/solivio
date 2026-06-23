@@ -206,6 +206,7 @@
         "customerRequest": "Customer request",
         "reviewChecks": "Review checks",
         "notes": "Notes",
+        "kbArticles": "Knowledge base sources",
         "checks": {
           "allPriced": "All lines have prices",
           "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",
