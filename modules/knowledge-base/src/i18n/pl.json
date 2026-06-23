@@ -78,10 +78,14 @@
     "saving": "Zapisywanie…",
     "save": "Zapisz"
   },
+  "offerSlot": {
+    "title": "Źródła z Bazy Wiedzy"
+  },
   "drawer": {
     "noContent": "Brak treści.",
     "updated": "Zaktualizowano",
-    "loading": "Ładowanie…"
+    "loading": "Ładowanie…",
+    "viewInKb": "Pokaż w Bazie Wiedzy"
   },
   "map": {
     "autoLayout": "Porządkuj układ",

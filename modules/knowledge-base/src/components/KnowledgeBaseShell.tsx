@@ -390,7 +390,11 @@ export function KnowledgeBaseShell({
         </AlertDialogContent>
       </AlertDialog>
 
-      <ArticleDrawer article={selectedArticle} onClose={() => setSelectedArticleId(null)} />
+      <ArticleDrawer
+        article={selectedArticle}
+        onClose={() => setSelectedArticleId(null)}
+        spaceName={spaces.find((s) => s.id === activeSpaceId)?.name}
+      />
       <NewSpaceDialog open={newSpaceOpen} onClose={() => setNewSpaceOpen(false)} />
       <EditSpaceDialog
         space={editingSpace}

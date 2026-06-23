@@ -99,7 +99,10 @@ export const offerKbArticleSchema = z
     spaceName: z.string(),
     relevance: z.string(),
   })
-  .meta({ id: "OfferKbArticle", description: "Knowledge base article referenced during offer generation." });
+  .meta({
+    id: "OfferKbArticle",
+    description: "Knowledge base article referenced during offer generation.",
+  });
 
 export const offerSchema = z
   .object({

@@ -94,39 +94,37 @@
           "body": "## Rekomendowane zestawy produktów\n\nPoniższe artykuły opisują typowe kombinacje produktów do konkretnych zastosowań instalacyjnych. Każdy zestaw zawiera:\n- wymagane elementy składowe\n- dobór wg klasy cenowej\n- krytyczne ostrzeżenia kompatybilnościowe\n- typowe błędy przy zamawianiu\n\nUżywaj tych zestawów jako checklisty przy tworzeniu oferty — szczególnie zwróć uwagę na sekcje oznaczone ⚠️.",
           "children": [
             {
-          "externalId": "zestaw-oswietlenie-zewnetrzne",
-          "title": "Oświetlenie zewnętrzne — kompletny zestaw sterowania",
-          "type": "article",
-          "tags": ["oświetlenie zewnętrzne", "czujnik zmierzchowy", "programator", "zestaw"],
-          "connections": [
-            { "toExternalId": "klasy-zmierzchowe", "type": "related" },
-            { "toExternalId": "klasy-programatory", "type": "related" }
-          ],
-          "body": "## Oświetlenie zewnętrzne — kompletny zestaw\n\nDo pełnej automatyzacji zewnętrznego oświetlenia potrzebne są dwa urządzenia sterujące:\n1. **Czujnik zmierzchowy** — włącza oświetlenie automatycznie po zmroku\n2. **Programator czasowy** — wyłącza oświetlenie o zadanej godzinie nocnej (np. 23:00), oszczędzając energię\n\nPołączone szeregowo (czujnik → programator → oświetlenie): włączenie po zmroku, wyłączenie o wybranej godzinie.\n\n### Rekomendowane zestawy\n\n**Zestaw budżetowy (DIN):**\n- Czujnik: OSPEL OP-0371X (IV-012-00371) — 66,11 PLN\n- Programator: ORNO OR-1928E (IV-023-01928) — 94,16 PLN\n\n**Zestaw standard (natynkowy):**\n- Czujnik: Schneider SE-0335Z (IV-012-00335) — 112,98 PLN\n- Programator: ORNO OR-1928E (IV-023-01928) — 94,16 PLN\n\n**Zestaw premium (duże obwody, obiekty komercyjne):**\n- Czujnik: ABB AB-0277D (IV-012-00277) — 115,90 PLN (16 A)\n- Programator: FINDER FN-1752P (IV-023-01752) — 136,52 PLN (IP54)\n\n### Ważne przy dobieraniu\n- **Prąd:** Sprawdź łączny pobór obwodu. Przy > 6 A konieczny czujnik 16 A (ABB AB-0277D) lub przekaźnik pośredni\n- **IP:** Obydwa urządzenia muszą mieć odpowiednie IP do miejsca montażu\n- **Połączenie szeregowe:** Czujnik zmierzchowy i programator mogą mieć różny typ montażu — to jest OK"
+              "externalId": "zestaw-oswietlenie-zewnetrzne",
+              "title": "Oświetlenie zewnętrzne — kompletny zestaw sterowania",
+              "type": "article",
+              "tags": ["oświetlenie zewnętrzne", "czujnik zmierzchowy", "programator", "zestaw"],
+              "connections": [
+                { "toExternalId": "klasy-zmierzchowe", "type": "related" },
+                { "toExternalId": "klasy-programatory", "type": "related" }
+              ],
+              "body": "## Oświetlenie zewnętrzne — kompletny zestaw\n\nDo pełnej automatyzacji zewnętrznego oświetlenia potrzebne są dwa urządzenia sterujące:\n1. **Czujnik zmierzchowy** — włącza oświetlenie automatycznie po zmroku\n2. **Programator czasowy** — wyłącza oświetlenie o zadanej godzinie nocnej (np. 23:00), oszczędzając energię\n\nPołączone szeregowo (czujnik → programator → oświetlenie): włączenie po zmroku, wyłączenie o wybranej godzinie.\n\n### Rekomendowane zestawy\n\n**Zestaw budżetowy (DIN):**\n- Czujnik: OSPEL OP-0371X (IV-012-00371) — 66,11 PLN\n- Programator: ORNO OR-1928E (IV-023-01928) — 94,16 PLN\n\n**Zestaw standard (natynkowy):**\n- Czujnik: Schneider SE-0335Z (IV-012-00335) — 112,98 PLN\n- Programator: ORNO OR-1928E (IV-023-01928) — 94,16 PLN\n\n**Zestaw premium (duże obwody, obiekty komercyjne):**\n- Czujnik: ABB AB-0277D (IV-012-00277) — 115,90 PLN (16 A)\n- Programator: FINDER FN-1752P (IV-023-01752) — 136,52 PLN (IP54)\n\n### Ważne przy dobieraniu\n- **Prąd:** Sprawdź łączny pobór obwodu. Przy > 6 A konieczny czujnik 16 A (ABB AB-0277D) lub przekaźnik pośredni\n- **IP:** Obydwa urządzenia muszą mieć odpowiednie IP do miejsca montażu\n- **Połączenie szeregowe:** Czujnik zmierzchowy i programator mogą mieć różny typ montażu — to jest OK"
             },
             {
-          "externalId": "zestaw-ogrzewanie-podlogowe",
-          "title": "Ogrzewanie podłogowe — termostat i wymagane akcesoria",
-          "type": "article",
-          "tags": ["ogrzewanie podłogowe", "termostat", "transformator", "24V", "zestaw"],
-          "connections": [
-            { "toExternalId": "klasy-termostaty", "type": "related" }
-          ],
-          "body": "## Ogrzewanie podłogowe — kompletny zestaw\n\n⚠️ **KRYTYCZNY BŁĄD PRZY ZAMAWIANIU:** Termostaty ORNO OR-0797X i FINDER FN-0842B wymagają zasilania **24 V AC/DC**. Podłączenie bezpośrednio do sieci 230 V spowoduje natychmiastowe uszkodzenie urządzenia.\n\n### Zestawy wg instalacji\n\n**Standard — obwód 24 V (centralny panel):**\n- Termostat: ORNO OR-0797X (IV-014-00797) — 112,36 PLN\n- **Transformator 24 V — wymagany** (moc ≥ suma poboru siłowników × 1,3)\n- Siłowniki termiczne (dobierać osobno)\n\n**Przemysł/przetarg (EMC wymagane):**\n- Termostat: FINDER FN-0842B (IV-014-00842) — 149,80 PLN\n- **Transformator 24 V — wymagany**\n\n**Premium — bezpośrednio 230 V (bez transformatora):**\n- Termostat: Schneider SE-0840B (IV-014-00840) — 173,50 PLN\n- Brak transformatora — zasilanie z sieci 230 V\n- Uwaga: brak RoHS — nie stosować gdy RoHS wymagany\n\n### Kiedy 24 V, kiedy 230 V\n- **24 V (ORNO/FINDER):** Istniejąca instalacja 24 V, centralny panel z wieloma siłownikami, wymagania EMC\n- **230 V (Schneider):** Nowa instalacja, brak dostępnego 24 V, hotel/mieszkanie (widoczna obudowa)\n\n**Pomijanie transformatora w ofercie to jeden z najczęstszych błędów przy zamawianiu termostatów 24 V.**"
-        },
-        {
-          "externalId": "zestaw-monitoring-cctv",
-          "title": "Monitoring CCTV — kamera IP i zasilanie",
-          "type": "article",
-          "tags": ["monitoring", "kamera IP", "CCTV", "zasilacz", "PoE", "zestaw"],
-          "body": "## System monitoringu CCTV — elementy zestawu\n\n### Minimalne elementy do działającego systemu\n1. **Kamera IP** (np. DSC DC-2693M)\n2. **Zasilanie** — switch PoE lub zasilacz dedykowany 12 V DC\n3. **Rejestrator NVR** lub rozwiązanie chmurowe (przy małych instalacjach opcjonalne)\n4. **Okablowanie** Cat5e/Cat6 (do 100 m dla PoE)\n\n### PoE vs zasilacz dedykowany\n\n**PoE (Power over Ethernet) — preferowane:**\n- Jedno okablowanie dla sygnału i zasilania\n- Ułatwia instalację i serwis\n- Wymaga switcha PoE lub injektora PoE\n\n**Zasilacz dedykowany 12 V:**\n- Gdy kamera nie obsługuje PoE lub brak switcha PoE\n- Napięcie zasilacza **musi** odpowiadać wymaganiom kamery (sprawdzić specyfikację)\n- Zasilacze ORNO dostępne w katalogu — dobrać odpowiednią moc\n\n### Typowe błędy\n- Zamówienie kamery bez zasilacza lub switcha PoE — kamera nie zadziała\n- Niezgodność napięcia zasilacza — uszkodzenie kamery\n- Zbyt słaby zasilacz przy wielu kamerach — sprawdzić łączny pobór mocy\n\n**Przy tworzeniu oferty z kamerami:** Zawsze dołączyć zasilacz lub switch PoE — nie zostawiać klienta z kamerą bez zasilania."
-        },
-        {
-          "externalId": "zestaw-wideodomofon",
-          "title": "Wideodomofon — kompletny zestaw",
-          "type": "article",
-          "tags": ["wideodomofon", "bramofon", "zestaw"],
-          "body": "## Wideodomofon — elementy zestawu\n\n### Minimalne elementy\n1. **Panel zewnętrzny** (kaseta z kamerą i przyciskiem)\n2. **Monitor wewnętrzny** (z ekranem i przyciskiem otwarcia)\n3. **Zasilacz** — zwykle 12–18 V DC (sprawdzić czy w zestawie czy osobno)\n4. **Elektrozaczep lub zamek elektryczny** — jeśli klient chce zdalnie otwierać\n\n### Zestawy w katalogu\n- Jednorodzinny: ORNO OR-3942A — panel + monitor + zasilacz w komplecie\n- Wielorodzinny: URMET UR-4358K — system modułowy dla wielu lokali\n\n### Ważne przy dobieraniu\n- **Liczba lokali:** Zestawy jednorodzinne = 1 monitor. Wiele mieszkań → system wieloabonentowy\n- **Kabel:** Sprawdzić w dokumentacji — zwykle 2-żyłowy lub Cat5/Cat6 zależnie od systemu\n- **Otwieranie bramy:** Jeśli klient chce zdalnie otwierać — upewnić się, że elektrozaczep jest w ofercie\n\n**Typowy błąd:** Zamówienie samego monitora lub samego panelu — system działa tylko w komplecie."
+              "externalId": "zestaw-ogrzewanie-podlogowe",
+              "title": "Ogrzewanie podłogowe — termostat i wymagane akcesoria",
+              "type": "article",
+              "tags": ["ogrzewanie podłogowe", "termostat", "transformator", "24V", "zestaw"],
+              "connections": [{ "toExternalId": "klasy-termostaty", "type": "related" }],
+              "body": "## Ogrzewanie podłogowe — kompletny zestaw\n\n⚠️ **KRYTYCZNY BŁĄD PRZY ZAMAWIANIU:** Termostaty ORNO OR-0797X i FINDER FN-0842B wymagają zasilania **24 V AC/DC**. Podłączenie bezpośrednio do sieci 230 V spowoduje natychmiastowe uszkodzenie urządzenia.\n\n### Zestawy wg instalacji\n\n**Standard — obwód 24 V (centralny panel):**\n- Termostat: ORNO OR-0797X (IV-014-00797) — 112,36 PLN\n- **Transformator 24 V — wymagany** (moc ≥ suma poboru siłowników × 1,3)\n- Siłowniki termiczne (dobierać osobno)\n\n**Przemysł/przetarg (EMC wymagane):**\n- Termostat: FINDER FN-0842B (IV-014-00842) — 149,80 PLN\n- **Transformator 24 V — wymagany**\n\n**Premium — bezpośrednio 230 V (bez transformatora):**\n- Termostat: Schneider SE-0840B (IV-014-00840) — 173,50 PLN\n- Brak transformatora — zasilanie z sieci 230 V\n- Uwaga: brak RoHS — nie stosować gdy RoHS wymagany\n\n### Kiedy 24 V, kiedy 230 V\n- **24 V (ORNO/FINDER):** Istniejąca instalacja 24 V, centralny panel z wieloma siłownikami, wymagania EMC\n- **230 V (Schneider):** Nowa instalacja, brak dostępnego 24 V, hotel/mieszkanie (widoczna obudowa)\n\n**Pomijanie transformatora w ofercie to jeden z najczęstszych błędów przy zamawianiu termostatów 24 V.**"
+            },
+            {
+              "externalId": "zestaw-monitoring-cctv",
+              "title": "Monitoring CCTV — kamera IP i zasilanie",
+              "type": "article",
+              "tags": ["monitoring", "kamera IP", "CCTV", "zasilacz", "PoE", "zestaw"],
+              "body": "## System monitoringu CCTV — elementy zestawu\n\n### Minimalne elementy do działającego systemu\n1. **Kamera IP** (np. DSC DC-2693M)\n2. **Zasilanie** — switch PoE lub zasilacz dedykowany 12 V DC\n3. **Rejestrator NVR** lub rozwiązanie chmurowe (przy małych instalacjach opcjonalne)\n4. **Okablowanie** Cat5e/Cat6 (do 100 m dla PoE)\n\n### PoE vs zasilacz dedykowany\n\n**PoE (Power over Ethernet) — preferowane:**\n- Jedno okablowanie dla sygnału i zasilania\n- Ułatwia instalację i serwis\n- Wymaga switcha PoE lub injektora PoE\n\n**Zasilacz dedykowany 12 V:**\n- Gdy kamera nie obsługuje PoE lub brak switcha PoE\n- Napięcie zasilacza **musi** odpowiadać wymaganiom kamery (sprawdzić specyfikację)\n- Zasilacze ORNO dostępne w katalogu — dobrać odpowiednią moc\n\n### Typowe błędy\n- Zamówienie kamery bez zasilacza lub switcha PoE — kamera nie zadziała\n- Niezgodność napięcia zasilacza — uszkodzenie kamery\n- Zbyt słaby zasilacz przy wielu kamerach — sprawdzić łączny pobór mocy\n\n**Przy tworzeniu oferty z kamerami:** Zawsze dołączyć zasilacz lub switch PoE — nie zostawiać klienta z kamerą bez zasilania."
+            },
+            {
+              "externalId": "zestaw-wideodomofon",
+              "title": "Wideodomofon — kompletny zestaw",
+              "type": "article",
+              "tags": ["wideodomofon", "bramofon", "zestaw"],
+              "body": "## Wideodomofon — elementy zestawu\n\n### Minimalne elementy\n1. **Panel zewnętrzny** (kaseta z kamerą i przyciskiem)\n2. **Monitor wewnętrzny** (z ekranem i przyciskiem otwarcia)\n3. **Zasilacz** — zwykle 12–18 V DC (sprawdzić czy w zestawie czy osobno)\n4. **Elektrozaczep lub zamek elektryczny** — jeśli klient chce zdalnie otwierać\n\n### Zestawy w katalogu\n- Jednorodzinny: ORNO OR-3942A — panel + monitor + zasilacz w komplecie\n- Wielorodzinny: URMET UR-4358K — system modułowy dla wielu lokali\n\n### Ważne przy dobieraniu\n- **Liczba lokali:** Zestawy jednorodzinne = 1 monitor. Wiele mieszkań → system wieloabonentowy\n- **Kabel:** Sprawdzić w dokumentacji — zwykle 2-żyłowy lub Cat5/Cat6 zależnie od systemu\n- **Otwieranie bramy:** Jeśli klient chce zdalnie otwierać — upewnić się, że elektrozaczep jest w ofercie\n\n**Typowy błąd:** Zamówienie samego monitora lub samego panelu — system działa tylko w komplecie."
             }
           ]
         }
@@ -189,7 +187,13 @@
           "externalId": "projekt-acme",
           "title": "Acme Corporation — automatyka biurowca 6-piętrowego",
           "type": "article",
-          "tags": ["Acme Corporation", "biurowiec", "automatyka", "czujniki dźwiękowe", "termostaty"],
+          "tags": [
+            "Acme Corporation",
+            "biurowiec",
+            "automatyka",
+            "czujniki dźwiękowe",
+            "termostaty"
+          ],
           "connections": [
             { "toExternalId": "klasy-dzwiekowe", "type": "related" },
             { "toExternalId": "zestaw-ogrzewanie-podlogowe", "type": "related" }
@@ -200,7 +204,14 @@
           "externalId": "projekt-umbrella",
           "title": "Umbrella Ltd — rozbudowa systemu bezpieczeństwa",
           "type": "article",
-          "tags": ["Umbrella Ltd", "alarm", "monitoring", "czujnik zalania", "bezpieczeństwo", "farmaceutyczny"],
+          "tags": [
+            "Umbrella Ltd",
+            "alarm",
+            "monitoring",
+            "czujnik zalania",
+            "bezpieczeństwo",
+            "farmaceutyczny"
+          ],
           "connections": [
             { "toExternalId": "klasy-zalanie", "type": "related" },
             { "toExternalId": "zestaw-monitoring-cctv", "type": "related" },
@@ -212,4 +223,3 @@
     }
   ]
 }
-

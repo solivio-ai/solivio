@@ -78,10 +78,14 @@
     "saving": "Saving…",
     "save": "Save"
   },
+  "offerSlot": {
+    "title": "Knowledge base sources"
+  },
   "drawer": {
     "noContent": "No content yet.",
     "updated": "Updated",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "viewInKb": "View in Knowledge Base"
   },
   "map": {
     "autoLayout": "Auto-layout",

@@ -165,4 +165,9 @@ const getArticle = defineAgentTool({
   },
 });
 
-export const tools: AgentTool[] = [searchKnowledgeBase, browseKnowledgeBase, listArticles, getArticle];
+export const tools: AgentTool[] = [
+  searchKnowledgeBase,
+  browseKnowledgeBase,
+  listArticles,
+  getArticle,
+];
