@@ -1,40 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import type { OfferKbArticle } from "@solivio/domain";
 import { Badge } from "@solivio/ui/components/badge.tsx";
+import { Button } from "@solivio/ui/components/button.tsx";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@solivio/ui/components/sheet.tsx";
 
-import type { MapArticle } from "../lib/mapTypes.ts";
-
 type Props = {
-  article: MapArticle | null;
+  article: OfferKbArticle | null;
   onClose: () => void;
 };
 
-export function ArticleDrawer({ article, onClose }: Props) {
-  const t = useTranslations("knowledge-base.drawer");
-  const [fullBody, setFullBody] = useState<string | null>(null);
+export function KbArticleDrawer({ article, onClose }: Props) {
+  const t = useTranslations("offers.newOffer.review.summary.kbDrawer");
+  const [body, setBody] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!article) {
-      setFullBody(null);
+      setBody(null);
       return;
     }
     let cancelled = false;
     setLoading(true);
-    setFullBody(null);
-    fetch(`/api/knowledge-base/articles/${article.id}`)
+    setBody(null);
+    fetch(`/api/knowledge-base/articles/${article.articleId}`)
       .then((r) => r.json())
       .then((data) => {
-        if (!cancelled) setFullBody(data.body ?? "");
+        if (!cancelled) setBody(data.body ?? "");
       })
       .catch(() => {
-        if (!cancelled) setFullBody(article.body);
+        if (!cancelled) setBody("");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -42,9 +44,7 @@ export function ArticleDrawer({ article, onClose }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [article?.id]);
-
-  const body = fullBody ?? article?.body ?? "";
+  }, [article?.articleId]);
 
   return (
     <Sheet open={!!article} onOpenChange={(open) => !open && onClose()}>
@@ -52,19 +52,29 @@ export function ArticleDrawer({ article, onClose }: Props) {
         {article && (
           <>
             <SheetHeader>
-              <SheetTitle className="pr-8 leading-snug">{article.title}</SheetTitle>
-              <Badge variant="outline" className="w-fit capitalize mt-2">
-                {article.type}
-              </Badge>
+              <SheetTitle className="pr-8 leading-snug">{article.articleTitle}</SheetTitle>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="outline" className="text-xs">
+                  {article.spaceName}
+                </Badge>
+              </div>
+              <Button variant="outline" size="sm" asChild className="mt-2">
+                <Link href={`/knowledge-base/${article.spaceId}?article=${article.articleId}`}>
+                  <ExternalLink size={13} />
+                  {t("viewInKb")}
+                </Link>
+              </Button>
             </SheetHeader>
+
             <div className="px-4 pb-4 text-sm text-muted-foreground">
-              {article.updatedAt && (
-                <p className="mb-3 text-xs text-muted-foreground/60">
-                  {t("updated")} {new Date(article.updatedAt).toLocaleDateString()}
+              {article.relevance && (
+                <p className="mb-4 text-xs italic text-muted-foreground/70 border-l-2 border-border pl-3">
+                  {article.relevance}
                 </p>
               )}
+
               {loading ? (
-                <p className="text-muted-foreground/50 animate-pulse">{t("loading")}</p>
+                <p className="animate-pulse text-muted-foreground/50">Loading…</p>
               ) : body ? (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -122,7 +132,7 @@ export function ArticleDrawer({ article, onClose }: Props) {
                   {body}
                 </ReactMarkdown>
               ) : (
-                <p className="leading-relaxed">{t("noContent")}</p>
+                <p>No content.</p>
               )}
             </div>
           </>

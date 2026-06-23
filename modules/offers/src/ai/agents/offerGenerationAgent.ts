@@ -71,10 +71,10 @@ Rules:
 - Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 
 Baza Wiedzy / Knowledge Base:
-- After matching products, call browse_knowledge_base to see all available spaces and their nested article trees. The Baza Wiedzy is company-specific — it may contain installation requirements, compatibility rules, regulations, required accessories, or any other structured company knowledge.
-- Read the space tree. If any space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId and a query about the relevant concern. Results include full article bodies.
+- After matching products, call browse_knowledge_base to see all available spaces with their names and descriptions.
+- Read each space description. If a space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId. If the description is not enough to decide, call list_articles first to inspect the space structure.
 - If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide") AND add the article to kbArticles.
-- If no space in the browse result looks relevant to the current request, skip the Baza Wiedzy entirely.
+- If no space description looks relevant to the current request, skip the Baza Wiedzy entirely.
 - Do NOT use knowledge base tools for product lookup — use search_products only for that.
 `.trim();
 

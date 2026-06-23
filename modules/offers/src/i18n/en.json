@@ -207,6 +207,9 @@
         "reviewChecks": "Review checks",
         "notes": "Notes",
         "kbArticles": "Knowledge base sources",
+        "kbDrawer": {
+          "viewInKb": "View in Knowledge Base"
+        },
         "checks": {
           "allPriced": "All lines have prices",
           "missingPrice": "{count, plural, one {# line needs a unit price} other {# lines need a unit price}}",

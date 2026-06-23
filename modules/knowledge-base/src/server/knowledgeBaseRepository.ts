@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db, emitEvent } from "@solivio/sdk/runtime";
 
@@ -96,6 +96,34 @@ export async function findArticlesBySpace(spaceId: string): Promise<ArticleRow[]
     .orderBy(knowledgeBaseArticles.sortOrder, knowledgeBaseArticles.createdAt);
 }
 
+const MAP_BODY_PREVIEW_LENGTH = 150;
+
+/** Lightweight variant for map/list views — truncates body in the DB query. */
+export async function findArticlesBySpaceForMap(spaceId: string): Promise<ArticleRow[]> {
+  const rows = await db
+    .select({
+      id: knowledgeBaseArticles.id,
+      spaceId: knowledgeBaseArticles.spaceId,
+      parentId: knowledgeBaseArticles.parentId,
+      title: knowledgeBaseArticles.title,
+      body: sql<string>`LEFT(${knowledgeBaseArticles.body}, ${MAP_BODY_PREVIEW_LENGTH})`,
+      type: knowledgeBaseArticles.type,
+      format: knowledgeBaseArticles.format,
+      sortOrder: knowledgeBaseArticles.sortOrder,
+      positionX: knowledgeBaseArticles.positionX,
+      positionY: knowledgeBaseArticles.positionY,
+      origin: knowledgeBaseArticles.origin,
+      externalId: knowledgeBaseArticles.externalId,
+      syncedAt: knowledgeBaseArticles.syncedAt,
+      createdAt: knowledgeBaseArticles.createdAt,
+      updatedAt: knowledgeBaseArticles.updatedAt,
+    })
+    .from(knowledgeBaseArticles)
+    .where(eq(knowledgeBaseArticles.spaceId, spaceId))
+    .orderBy(knowledgeBaseArticles.sortOrder, knowledgeBaseArticles.createdAt);
+  return rows as ArticleRow[];
+}
+
 export async function findRootArticlesBySpace(spaceId: string): Promise<ArticleRow[]> {
   return db
     .select()
@@ -151,7 +179,15 @@ export async function updateArticle(
 }
 
 export async function deleteArticle(id: string): Promise<void> {
+  const rows = await db
+    .select({ spaceId: knowledgeBaseArticles.spaceId })
+    .from(knowledgeBaseArticles)
+    .where(eq(knowledgeBaseArticles.id, id))
+    .limit(1);
   await db.delete(knowledgeBaseArticles).where(eq(knowledgeBaseArticles.id, id));
+  if (rows[0]) {
+    await emitEvent("knowledge-base.article.deleted", { spaceId: rows[0].spaceId });
+  }
 }
 
 // ---------------------------------------------------------------------------

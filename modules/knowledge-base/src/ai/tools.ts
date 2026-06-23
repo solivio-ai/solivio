@@ -93,35 +93,45 @@ const browseKnowledgeBase = defineAgentTool({
   name: "browse_knowledge_base",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "Returns all knowledge base spaces with their full nested article trees (titles and types only, no body content). " +
-    "Call this first — with no arguments — to see what spaces exist and identify which one is relevant. " +
-    "Then pass the spaceId from the result to search_knowledge_base to scope the search.",
+    "Returns all Baza Wiedzy spaces with their names and descriptions. " +
+    "Call this first — with no arguments — to see what spaces exist and pick the relevant one. " +
+    "Then call list_articles with the spaceId to inspect its structure, or go straight to search_knowledge_base to query it.",
   parameters: z.object({}),
   execute: async (_input) => {
     const log = getLogger("knowledge-base");
     log.info("browse_knowledge_base called");
     const spaces = await findAllSpaces();
+    log.info("browse_knowledge_base returned", { spaces: spaces.length });
+    return {
+      spaces: spaces.map((s) => ({
+        spaceId: s.id,
+        spaceName: s.name,
+        spaceDescription: s.description ?? "",
+      })),
+    };
+  },
+});
 
-    const tree = await Promise.all(
-      spaces.map(async (space) => {
-        const articles = await findArticlesBySpace(space.id);
-        return {
-          spaceId: space.id,
-          spaceName: space.name,
-          spaceDescription: space.description,
-          articles: buildArticleTree(articles),
-        };
-      }),
-    );
-
+const listArticles = defineAgentTool({
+  name: "list_articles",
+  agents: ["offer-generation-agent", "chat-agent"],
+  description:
+    "Returns the full article tree (titles and types only, no body content) for a specific Baza Wiedzy space. " +
+    "Use this when the space description is not enough to decide whether to search — inspect the structure first. " +
+    "Do NOT use this to read article content; use search_knowledge_base or get_article for that.",
+  parameters: z.object({
+    spaceId: z.string().uuid().describe("ID of the space to list articles for"),
+  }),
+  execute: async (input) => {
+    const log = getLogger("knowledge-base");
+    log.info("list_articles called", { spaceId: input.spaceId });
+    const articles = await findArticlesBySpace(input.spaceId);
+    const tree = buildArticleTree(articles);
     function countNodes(nodes: ArticleNode[]): number {
       return nodes.reduce((n, a) => n + 1 + countNodes(a.children), 0);
     }
-    log.info("browse_knowledge_base returned", {
-      spaces: tree.length,
-      totalArticles: tree.reduce((n, s) => n + countNodes(s.articles), 0),
-    });
-    return { spaces: tree };
+    log.info("list_articles returned", { spaceId: input.spaceId, articles: countNodes(tree) });
+    return { articles: tree };
   },
 });
 
@@ -155,4 +165,4 @@ const getArticle = defineAgentTool({
   },
 });
 
-export const tools: AgentTool[] = [searchKnowledgeBase, browseKnowledgeBase, getArticle];
+export const tools: AgentTool[] = [searchKnowledgeBase, browseKnowledgeBase, listArticles, getArticle];

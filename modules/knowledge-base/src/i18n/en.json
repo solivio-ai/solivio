@@ -80,7 +80,8 @@
   },
   "drawer": {
     "noContent": "No content yet.",
-    "updated": "Updated"
+    "updated": "Updated",
+    "loading": "Loading…"
   },
   "map": {
     "autoLayout": "Auto-layout",

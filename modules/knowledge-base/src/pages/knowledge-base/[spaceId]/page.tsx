@@ -6,7 +6,7 @@ import { KnowledgeBaseShell } from "../../../components/KnowledgeBaseShell.tsx";
 import type { MapArticle, MapConnection, MapSpace } from "../../../lib/mapTypes.ts";
 import {
   findAllSpaces,
-  findArticlesBySpace,
+  findArticlesBySpaceForMap,
   findConnectionsBySpace,
   findSpaceById,
 } from "../../../server/knowledgeBaseRepository.ts";
@@ -29,7 +29,7 @@ export default async function SpacePage({ params, searchParams }: Props) {
   const [spaceRows, space, articleRows, connectionRows] = await Promise.all([
     findAllSpaces(),
     findSpaceById(spaceId),
-    findArticlesBySpace(spaceId),
+    findArticlesBySpaceForMap(spaceId),
     findConnectionsBySpace(spaceId),
   ]);
 

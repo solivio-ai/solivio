@@ -80,7 +80,8 @@
   },
   "drawer": {
     "noContent": "Brak treści.",
-    "updated": "Zaktualizowano"
+    "updated": "Zaktualizowano",
+    "loading": "Ładowanie…"
   },
   "map": {
     "autoLayout": "Porządkuj układ",

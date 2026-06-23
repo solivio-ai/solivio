@@ -19,6 +19,18 @@ const patchSchema = z.object({
   type: z.enum(["article", "directory"]).optional(),
 });
 
+export async function GET(_request: Request, { params }: RouteParams) {
+  await getAuth().requireAuth();
+  const { articleId } = await params;
+  const article = await findArticleById(articleId);
+  if (!article) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({
+    ...article,
+    createdAt: article.createdAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
+  });
+}
+
 export async function PATCH(request: Request, { params }: RouteParams) {
   await getAuth().requireAuth();
   const { articleId } = await params;
