@@ -1,0 +1,32 @@
+---
+import type { LandingContent } from "../../landing/content";
+
+interface Props {
+  page: LandingContent;
+}
+
+const { page } = Astro.props;
+---
+
+<section class="border-t border-border bg-muted/35 px-4 py-6 sm:px-6 lg:px-14">
+  <div class="mx-auto grid max-w-[94rem] gap-5 lg:grid-cols-[minmax(0,1fr)_auto]">
+    <div class="grid gap-3">
+      <h2 class="text-sm font-semibold text-foreground">{page.stack.title}</h2>
+      <ul class="flex flex-wrap gap-2">
+        {page.stack.items.map((item) => (
+          <li class="inline-flex h-8 items-center rounded-lg border border-border bg-background px-3 text-sm font-semibold text-muted-foreground shadow-sm">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:min-w-[32rem]">
+      {page.metrics.items.map((item) => (
+        <div class="rounded-lg border border-border bg-background p-3 shadow-sm">
+          <dt class="text-xl font-semibold leading-7 text-foreground">{item.value}</dt>
+          <dd class="text-sm leading-5 text-muted-foreground">{item.label}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

@@ -1,0 +1,38 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { type LandingLabels, ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+---
+
+<section class="border-t border-border bg-muted/30 px-4 py-16 sm:px-6 lg:px-14 lg:py-24">
+  <div class="mx-auto grid max-w-[94rem] gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+    <div class="grid content-start gap-4" data-reveal>
+      <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Operator" : "Operator"}</p>
+      <h2 class={ui.sectionTitleClass}>{page.operator.title}</h2>
+      <p class={ui.sectionLeadClass}>{page.operator.body}</p>
+      <a class={ui.textLinkClass} href="/guides/deployment/">
+        {labels.operatorLink}
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+      </a>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2" data-reveal data-reveal-delay="120">
+      {
+        page.operator.items.map((item, index) => (
+          <article class="grid grid-cols-[auto_1fr] gap-3 rounded-lg border border-border bg-background p-4 shadow-sm transition-transform hover:-translate-y-1">
+            <span class={ui.iconTileClass}>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3 class={ui.h3Class}>{item.title}</h3>
+              <p class={ui.bodyTextClass}>{item.body}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

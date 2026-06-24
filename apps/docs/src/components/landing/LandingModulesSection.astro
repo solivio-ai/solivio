@@ -1,0 +1,47 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { type LandingLabels, ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+const isPolish = page.locale === "pl";
+---
+
+<section class={ui.sectionClass}>
+  <div class="mx-auto max-w-[94rem]">
+    <div class="mb-10 grid gap-5 md:grid-cols-[minmax(0,0.8fr)_auto] md:items-end" data-reveal>
+      <div class="grid max-w-3xl gap-3">
+        <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Moduły" : "Modules"}</p>
+        <h2 class={ui.sectionTitleClass}>{page.modules.title}</h2>
+        <p class={ui.sectionLeadClass}>{page.modules.body}</p>
+      </div>
+      <a class={ui.buttonOutlineClass} href={page.modules.link.href}>
+        {page.modules.link.label}
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+      </a>
+    </div>
+    <div class="overflow-hidden rounded-lg border border-border bg-background" data-reveal>
+      <div class="hidden grid-cols-[minmax(10rem,0.4fr)_minmax(0,1fr)_8rem] border-b border-border bg-muted/45 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground md:grid">
+        <span>{isPolish ? "Moduł" : "Module"}</span>
+        <span>{isPolish ? "Co wnosi" : "What it contributes"}</span>
+        <span>{labels.moduleStatus}</span>
+      </div>
+      {page.modules.items.map((item, index) => (
+        <article class="grid gap-3 border-b border-border px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/35 md:grid-cols-[minmax(10rem,0.4fr)_minmax(0,1fr)_8rem] md:items-center">
+          <h3 class="font-semibold text-foreground">{item.title}</h3>
+          <p class={ui.bodyTextClass}>{item.body}</p>
+          <span class:list={[
+            "w-fit rounded-md border px-2 py-1 text-xs font-semibold",
+            index < 3 ? "border-primary/45 bg-primary/15 text-foreground" : "border-secondary/25 bg-accent text-secondary dark:border-primary/25 dark:bg-primary/10 dark:text-primary",
+          ]}>
+            {index < 3 ? (isPolish ? "Rdzeń" : "Core") : (isPolish ? "Rozszerzenie" : "Extension")}
+          </span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

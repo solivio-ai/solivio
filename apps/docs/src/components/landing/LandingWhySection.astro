@@ -1,0 +1,41 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+}
+
+const { page } = Astro.props;
+---
+
+<section class={ui.sectionClass}>
+  <div class="mx-auto max-w-[94rem]">
+    <div class={`${ui.sectionHeaderClass} mb-10`} data-reveal>
+      <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Dlaczego" : "Why"}</p>
+      <h2 class={ui.sectionTitleClass}>{page.why.title}</h2>
+      <p class={ui.sectionLeadClass}>{page.why.body}</p>
+    </div>
+    <div class="grid gap-3 md:grid-cols-3" data-reveal>
+      {page.why.items.map((item, index) => (
+        <article class="group grid gap-4 rounded-lg border border-border bg-background p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-secondary/35">
+          <span class="flex size-11 items-center justify-center rounded-lg bg-accent text-secondary group-hover:bg-primary group-hover:text-primary-foreground dark:bg-primary/10 dark:text-primary">
+            {index === 0 && (
+              <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>
+            )}
+            {index === 1 && (
+              <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12" /><path d="M18 9v12" /><path d="M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /><path d="M18 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /></svg>
+            )}
+            {index === 2 && (
+              <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            )}
+          </span>
+          <div>
+            <h3 class={ui.h3Class}>{item.title}</h3>
+            <p class={`${ui.bodyTextClass} mt-1`}>{item.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

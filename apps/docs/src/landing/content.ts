@@ -114,7 +114,7 @@ export const siteOrigin = "https://solivio.ai";
 export const githubUrl = "https://github.com/solivio-ai/solivio";
 export const deraveUrl = "https://derave.dev";
 export const deraveReferralUrl = (locale: LandingLocale, placement: string) => {
-  const url = new URL(deraveUrl);
+  const url = new URL(locale === "en" ? "/en/" : "/", deraveUrl);
 
   url.searchParams.set("utm_source", "solivio.ai");
   url.searchParams.set("utm_medium", "referral");
@@ -145,7 +145,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     hero: {
       h1: "From raw B2B inquiry to",
       h1Highlight: "draft quote",
-      body: "Solivio is an open-source, self-hosted quoting system for B2B teams. It connects CRM, ERP, ecommerce, catalogs, inboxes, spreadsheets, and documents, then turns that context into draft offers for review. Use hosted AI providers or local model endpoints depending on the deployment.",
+      body: "Solivio is an open-source, self-hosted quoting system for B2B teams. It turns requests, catalogs, CRM/ERP context, and documents into draft offers ready for sales review.",
       facts: [
         "MIT licensed - clone and run",
         "Run cloud AI or local models on-prem",
@@ -410,7 +410,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     hero: {
       h1: "Od surowego zapytania B2B do",
       h1Highlight: "szkicu oferty",
-      body: "Solivio to open-source'owy, samodzielnie hostowany system do szkiców ofert B2B. Łączy CRM, ERP, e-commerce, katalogi, skrzynki, arkusze i dokumenty, a potem zamienia ten kontekst w szkice ofert do sprawdzenia. Możesz użyć dostawcy AI w chmurze albo lokalnych modeli.",
+      body: "Solivio to open-source'owy, samodzielnie hostowany system ofertowania B2B. Zamienia zapytania, katalogi, kontekst z CRM/ERP i dokumenty w szkice ofert gotowe do weryfikacji.",
       facts: [
         "Licencja MIT - sklonuj i uruchom",
         "AI w chmurze albo lokalne modele on-prem",
