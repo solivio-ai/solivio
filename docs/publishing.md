@@ -6,57 +6,24 @@ Markdown under `apps/docs/src/content/docs/guides`. The site root is a landing
 page, guides live under `/guides`, and generated API reference pages live under
 `/api`.
 
-## GitHub Pages Deployment
+## Cloudflare Workers Deployment
 
-The repository includes `.github/workflows/docs-pages.yml`. On every push to
-`main` that changes docs, API contracts, package metadata, or the workflow
-itself, GitHub Actions builds `apps/docs` and deploys `apps/docs/dist` to GitHub
-Pages.
+Docs are hosted through Cloudflare Workers Builds connected to GitHub. Pushes to
+`main` deploy production, and each pull request gets a docs preview environment
+that updates as commits are pushed.
 
 The docs site is configured with `site: "https://solivio.ai"` in
-`apps/docs/astro.config.mjs`. The docs public folder also includes:
-
-- `CNAME`, containing `solivio.ai`.
-- `.nojekyll`, so GitHub Pages serves Astro assets such as `/_astro`.
-
-Repository setup still needs to be enabled once in GitHub:
-
-1. Open `Settings -> Pages` for `solivio-ai/solivio`.
-2. Set the build and deployment source to `GitHub Actions`.
-3. Set the custom domain to `solivio.ai`.
-4. Enable HTTPS after GitHub provisions the certificate.
+`apps/docs/astro.config.mjs`.
 
 The root docs build runs module wiring first and then the docs workspace runs
-OpenAPI generation, so the workflow only needs `yarn install --immutable` and
-`yarn docs:build`.
+OpenAPI generation. Keep the Cloudflare build pointed at the repository root,
+running `yarn docs:build`, with `apps/docs/dist` served as the static asset
+output.
 
 ## DNS For solivio.ai
 
-Configure the apex domain with the GitHub Pages `A` records:
-
-```text
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
-```
-
-Optional IPv6 records:
-
-```text
-2606:50c0:8000::153
-2606:50c0:8001::153
-2606:50c0:8002::153
-2606:50c0:8003::153
-```
-
-For `www.solivio.ai`, create a `CNAME` record pointing to:
-
-```text
-solivio-ai.github.io
-```
-
-Avoid wildcard records for `*.solivio.ai`.
+Production docs are served from `solivio.ai`. Preview environments use
+Cloudflare-generated Worker preview URLs and do not need custom DNS.
 
 ## Manual Static Deployment
 
@@ -82,5 +49,5 @@ yarn dlx @redocly/cli@latest lint apps/docs/public/openapi/solivio.json
 ## Publishing Targets
 
 The output is static HTML, CSS, JavaScript, and search assets. Suitable targets
-include GitHub Pages, Netlify, Vercel, Cloudflare Pages, and any plain static
-host.
+include Cloudflare Workers static assets, Cloudflare Pages, Netlify, Vercel, and
+any plain static host.
