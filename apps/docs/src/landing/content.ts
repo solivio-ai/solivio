@@ -131,9 +131,9 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     path: "/",
     alternatePath: "/pl/",
     alternateLabel: "PL",
-    title: "Solivio - Open-source inquiry-to-quote system for B2B teams",
+    title: "Solivio - Open-source AI quoting system for B2B sales",
     description:
-      "Solivio is an open-source, self-hosted, AI-provider-agnostic inquiry-to-draft-quote system that connects existing B2B tools, structures sales data, and turns messy requests into reviewable offer drafts.",
+      "Solivio is an open-source, self-hosted AI quoting system that turns messy B2B requests, catalogs, and customer data into reviewable draft offers.",
     ogTitle: "Solivio - Open-source inquiry-to-draft-quote system",
     ogDescription:
       "Run Solivio locally or on-prem. Connect CRM, ERP, ecommerce, catalogs, and documents into one AI-assisted sales workspace.",
@@ -397,9 +397,9 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     path: "/pl/",
     alternatePath: "/",
     alternateLabel: "EN",
-    title: "Solivio - open-source system od zapytania do szkicu oferty dla B2B",
+    title: "Solivio - open-source system AI do ofert B2B",
     description:
-      "Solivio to open-source'owy, samodzielnie hostowany system od zapytania do szkicu oferty. Łączy istniejące narzędzia B2B, porządkuje dane sprzedażowe i działa z wybranym dostawcą AI albo lokalnymi modelami.",
+      "Solivio to open-source'owy, samodzielnie hostowany system AI, który zamienia chaotyczne zapytania B2B, katalogi i dane klientów w szkice ofert.",
     ogTitle: "Solivio - open-source system od zapytania do szkicu oferty",
     ogDescription:
       "Uruchom Solivio lokalnie albo w pełni on-prem. Połącz CRM, ERP, e-commerce, katalogi i dokumenty w jednym wspieranym przez AI miejscu pracy sprzedaży.",
