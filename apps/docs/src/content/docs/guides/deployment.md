@@ -6,9 +6,9 @@ description: Move Solivio from local Docker to a live single-host environment.
 The simplest live deployment is a single Linux host running Docker Compose. The
 production compose stack starts:
 
-- **traefik** — reverse proxy, terminates TLS via Let's Encrypt.
-- **db** — Postgres 18 with pgvector.
-- **app** — the Next.js app, pulled from GHCR.
+- **traefik** - reverse proxy, terminates TLS via Let's Encrypt.
+- **db** - Postgres 18 with pgvector.
+- **app** - the Next.js app, pulled from GHCR.
 
 The app container applies committed database migrations before starting Next.js.
 
@@ -24,7 +24,7 @@ The app container applies committed database migrations before starting Next.js.
 
 The production image is built from `apps/solivio/Dockerfile`:
 
-- `ghcr.io/solivio-ai/solivio-app` — Next.js standalone runtime that ships with the committed migrations and applies them on container startup.
+- `ghcr.io/solivio-ai/solivio-app` - Next.js standalone runtime that ships with the committed migrations and applies them on container startup.
 
 Both are declared in `docker-compose.build.yml`. CI (`.github/workflows/build-image.yml`) runs on every push to `main`:
 

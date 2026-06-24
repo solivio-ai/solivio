@@ -10,7 +10,7 @@ Solivio can be started in two ways:
 
 The published image is:
 
-- `ghcr.io/solivio-ai/solivio-app:latest` — the Next.js runtime that applies committed migrations on startup.
+- `ghcr.io/solivio-ai/solivio-app:latest` - the Next.js runtime that applies committed migrations on startup.
 
 ## Requirements
 

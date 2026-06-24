@@ -1,12 +1,12 @@
 ---
 title: Extending Solivio
-description: Run Solivio with your own custom modules — without forking, with painless base updates.
+description: Run Solivio with your own custom modules - without forking, with painless base updates.
 ---
 
 Solivio is designed to be extended with custom modules **without forking the
 repository**. You keep your modules and deployment manifest in your own
 repository (the *overlay*), link it into a stock Solivio checkout, and update
-the base by pulling a new version — your files never conflict with upstream.
+the base by pulling a new version - your files never conflict with upstream.
 
 ## The overlay layout
 
@@ -22,7 +22,7 @@ acme-solivio/                  # your repository
 ```
 
 Keep the overlay and the Solivio checkout close together (the overlay
-containing the checkout, as above, or as sibling directories) — the build
+containing the checkout, as above, or as sibling directories) - the build
 widens its compilation root to their common ancestor.
 
 ## Setting up
@@ -41,7 +41,7 @@ yarn dev
 `yarn overlay link <dir>` does three things, all recorded locally (never
 committed):
 
-1. symlinks each `<dir>/modules/<id>` into the checkout's `modules/` — Yarn
+1. symlinks each `<dir>/modules/<id>` into the checkout's `modules/` - Yarn
    registers them as workspaces, so their dependencies install and hot reload
    works on your real files;
 2. copies `<dir>/solivio.config.ts` to `solivio.config.local.ts`, which the
@@ -56,7 +56,7 @@ removes everything.
 
 ## Your deployment manifest
 
-The overlay's `solivio.config.ts` is the complete module list — built-ins plus
+The overlay's `solivio.config.ts` is the complete module list - built-ins plus
 yours:
 
 ```ts
@@ -85,7 +85,7 @@ options validated against the module's schema.
 
 ## Writing a custom module
 
-A custom module has exactly the same shape as the built-in ones — pages, API
+A custom module has exactly the same shape as the built-in ones - pages, API
 routes, services, events, jobs, database tables with their own migrations,
 translations, nav entries, agent tools, and importers, all discovered by file
 convention. Use `modules/products-sync` in the Solivio repository as the
@@ -98,10 +98,10 @@ Two overlay-specific notes:
   (e.g. `@acme/solivio-module-acme-sync`) and keep `"solivio": { "module": true }`
   in its `package.json`.
 - Make `tsconfig.json` self-contained (don't `extends` a Solivio file by
-  relative path — your module's real location is outside the checkout).
+  relative path - your module's real location is outside the checkout).
 
 After adding or changing modules: `yarn generate` (or just keep `yarn dev`
-running — it regenerates on change), then `yarn db:migrate` if your module
+running - it regenerates on change), then `yarn db:migrate` if your module
 ships migrations.
 
 ## Updating the base
@@ -137,7 +137,7 @@ container start, exactly like first-party modules.
 
 If you prefer to version modules independently (or share them between
 deployments), publish them as npm packages and reference them by package name
-in the manifest — no overlay modules directory needed:
+in the manifest - no overlay modules directory needed:
 
 ```bash
 yarn add @acme/solivio-module-erp-sync

@@ -133,21 +133,21 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     alternateLabel: "PL",
     title: "Solivio - Open-source AI quoting system for B2B sales",
     description:
-      "Solivio is an open-source, self-hosted AI quoting system that turns messy B2B requests, catalogs, and customer data into reviewable draft offers.",
+      "Solivio is an open-source, self-hosted AI quoting system that turns raw B2B requests, catalogs, and customer data into draft offers.",
     ogTitle: "Solivio - Open-source inquiry-to-draft-quote system",
     ogDescription:
-      "Run Solivio locally or on-prem. Connect CRM, ERP, ecommerce, catalogs, and documents into one AI-assisted sales workspace.",
+      "Run Solivio locally or on-prem. Connect CRM, ERP, ecommerce, catalogs, and documents into one sales review flow.",
     nav: {
       product: "Product",
       architecture: "Architecture",
       docs: "Docs",
     },
     hero: {
-      h1: "From messy B2B inquiry to",
+      h1: "From raw B2B inquiry to",
       h1Highlight: "draft quote",
-      body: "Solivio is an open-source, self-hosted, AI-provider-agnostic inquiry-to-draft-quote system. It connects the tools you already use — CRM, ERP, ecommerce, catalogs, inboxes, spreadsheets, and documents — then structures that context into reviewable offer drafts inside one sales workspace.",
+      body: "Solivio is an open-source, self-hosted quoting system for B2B teams. It connects CRM, ERP, ecommerce, catalogs, inboxes, spreadsheets, and documents, then turns that context into draft offers for review. Use hosted AI providers or local model endpoints depending on the deployment.",
       facts: [
-        "MIT licensed · clone and run",
+        "MIT licensed - clone and run",
         "Run cloud AI or local models on-prem",
         "Extend with modules for your existing systems",
       ],
@@ -156,7 +156,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       quickStart: "git clone https://github.com/solivio-ai/solivio.git && cd solivio && yarn setup",
       offerNav: ["Inquiries", "Catalog", "Offers", "Customers", "Assistant"],
       offerTitle: "Draft offer 2026-0607-001",
-      offerMeta: "ACME Automation · 18 items · Review",
+      offerMeta: "ACME Automation - 18 items - Review",
       offerStatus: "Draft",
       offerTableHeaders: ["Item", "Qty", "Total"],
       offerRows: [
@@ -189,7 +189,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     what: {
       title: "From inquiry to draft quote",
-      body: "Solivio is an open-source application foundation for companies that need to turn complex, multi-line inquiries and scattered sales context into well-structured offers. The core workflow is intentionally narrow, inspectable, and extendable.",
+      body: "Solivio helps companies turn complex, multi-line inquiries and scattered sales context into structured offers. The core workflow is narrow, inspectable, and extendable.",
       items: [
         {
           title: "Request intake",
@@ -205,7 +205,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
         },
         {
           title: "Draft quote",
-          body: "Create a reviewable draft with line items, notes, unmatched fragments, and PDF output.",
+          body: "Create a draft with line items, notes, unmatched fragments, and PDF output.",
         },
         {
           title: "Human review",
@@ -215,7 +215,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     capabilities: {
       title: "A sales layer for your existing systems",
-      body: "Solivio does not ask you to replace CRM, ERP, ecommerce, catalog, document, or reporting tools. It structures sales data from those sources in one place, prepares the draft, and hands accepted output back where your team already works.",
+      body: "Solivio does not replace CRM, ERP, ecommerce, catalog, document, or reporting tools. It gathers sales context from those systems, prepares the draft, and returns accepted output through implementation modules.",
       items: [
         {
           title: "Source intake",
@@ -284,8 +284,8 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
           body: "CRM, ERP, ecommerce, inboxes, spreadsheets, PDFs, product catalogs, and internal APIs feed Solivio.",
         },
         {
-          title: "Solivio workspace",
-          body: "Intake, extraction, catalog matching, draft offers, review, acceptance, and PDF output live in one sales workspace.",
+          title: "Solivio app",
+          body: "Intake, extraction, catalog matching, draft offers, review, acceptance, and PDF output live in one app.",
         },
         {
           title: "Extension modules",
@@ -296,7 +296,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
           body: "Choose managed AI providers, local model endpoints, or fully on-prem operation so data boundaries match company policy.",
         },
       ],
-      note: "Single-tenant per deployment · AI provider agnostic · modules compiled at build time · no runtime module imports",
+      note: "Single-tenant per deployment - AI provider agnostic - modules compiled at build time - no runtime module imports",
     },
     modules: {
       title: "Module surfaces",
@@ -353,7 +353,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     why: {
       title: "Why it exists",
-      body: "The hard part in many B2B teams is not the final quote template. It is the messy front of the process — before clean data reaches CRM, ERP, ecommerce, or the tools the team already uses. Solivio tackles that front end directly.",
+      body: "The hard part in many B2B teams is not the final quote template. It is the intake step: raw requests arrive before clean data reaches CRM, ERP, ecommerce, or the tools the team already uses. Solivio focuses on that stage.",
       items: [
         {
           title: "Technical distributors",
@@ -376,8 +376,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       developerPrimary: { href: "/guides/getting-started/", label: "Run Solivio locally" },
       developerSecondary: { href: githubUrl, label: "View GitHub", external: true },
       businessTitle: "Business / implementation?",
-      businessBody:
-        "Bring one representative RFQ and review whether the inquiry-to-draft-quote workflow maps to your current quoting process.",
+      businessBody: "Use one real RFQ to check whether Solivio fits your current quoting process.",
       businessPrimary: {
         href: deraveReferralUrl("en", "final_business_cta"),
         label: "Visit Derave",
@@ -399,21 +398,21 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     alternateLabel: "EN",
     title: "Solivio - open-source system AI do ofert B2B",
     description:
-      "Solivio to open-source'owy, samodzielnie hostowany system AI, który zamienia chaotyczne zapytania B2B, katalogi i dane klientów w szkice ofert.",
+      "Solivio to open-source'owy, samodzielnie hostowany system AI, który zamienia surowe zapytania B2B, katalogi i dane klientów w szkice ofert.",
     ogTitle: "Solivio - open-source system od zapytania do szkicu oferty",
     ogDescription:
-      "Uruchom Solivio lokalnie albo w pełni on-prem. Połącz CRM, ERP, e-commerce, katalogi i dokumenty w jednym wspieranym przez AI miejscu pracy sprzedaży.",
+      "Uruchom Solivio lokalnie albo w pełni on-prem. Połącz CRM, ERP, e-commerce, katalogi i dokumenty w jednym procesie przeglądu ofert.",
     nav: {
       product: "Produkt",
       architecture: "Architektura",
       docs: "Dokumentacja",
     },
     hero: {
-      h1: "Od chaotycznego zapytania B2B do",
+      h1: "Od surowego zapytania B2B do",
       h1Highlight: "szkicu oferty",
-      body: "Solivio to open-source'owy, samodzielnie hostowany system od zapytania do szkicu oferty, niezależny od dostawcy AI. Łączy CRM, ERP, e-commerce, katalogi, skrzynki, arkusze i dokumenty, a następnie porządkuje ten kontekst w jednym miejscu pracy sprzedaży.",
+      body: "Solivio to open-source'owy, samodzielnie hostowany system do szkiców ofert B2B. Łączy CRM, ERP, e-commerce, katalogi, skrzynki, arkusze i dokumenty, a potem zamienia ten kontekst w szkice ofert do sprawdzenia. Możesz użyć dostawcy AI w chmurze albo lokalnych modeli.",
       facts: [
-        "Licencja MIT · sklonuj i uruchom",
+        "Licencja MIT - sklonuj i uruchom",
         "AI w chmurze albo lokalne modele on-prem",
         "Moduły dla istniejących systemów",
       ],
@@ -422,7 +421,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       quickStart: "git clone https://github.com/solivio-ai/solivio.git && cd solivio && yarn setup",
       offerNav: ["Zapytania", "Katalog", "Oferty", "Klienci", "Asystent"],
       offerTitle: "Szkic oferty 2026-0607-001",
-      offerMeta: "ACME Automation · 18 pozycji · Do sprawdzenia",
+      offerMeta: "ACME Automation - 18 pozycji - Do sprawdzenia",
       offerStatus: "Szkic",
       offerTableHeaders: ["Pozycja", "Ilość", "Suma"],
       offerRows: [
@@ -455,7 +454,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     what: {
       title: "Od zapytania do szkicu oferty",
-      body: "Solivio to open-source'owy fundament aplikacji dla firm, które muszą zamieniać złożone, wielopozycyjne zapytania i rozproszony kontekst sprzedażowy w uporządkowane oferty. Rdzeń procesu jest celowo wąski, przejrzysty i rozszerzalny.",
+      body: "Solivio pomaga firmom zamieniać złożone, wielopozycyjne zapytania i rozproszony kontekst sprzedażowy w uporządkowane oferty. Rdzeń procesu jest celowo wąski, przejrzysty i rozszerzalny.",
       items: [
         {
           title: "Przyjęcie zapytania",
@@ -562,7 +561,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
           body: "Wybierz dostawców AI w chmurze, lokalne endpointy modeli albo pełne on-prem, aby granice danych pasowały do polityki firmy.",
         },
       ],
-      note: "Wdrożenie dla jednego klienta · niezależność od dostawcy AI · moduły kompilowane podczas budowania · brak importów między modułami podczas działania",
+      note: "Wdrożenie dla jednego klienta - niezależność od dostawcy AI - moduły kompilowane podczas budowania - brak importów między modułami podczas działania",
     },
     modules: {
       title: "Co mogą dodać moduły",
@@ -622,7 +621,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     why: {
       title: "Dlaczego to istnieje",
-      body: "W wielu firmach B2B najtrudniejszy nie jest końcowy szablon oferty. Najtrudniejszy jest chaotyczny początek procesu — zanim dane trafią do CRM, ERP, e-commerce albo narzędzi, których zespół już używa. Solivio bierze na siebie ten etap.",
+      body: "W wielu firmach B2B najtrudniejszy nie jest końcowy szablon oferty. Najtrudniejszy bywa początek procesu: zapytania przychodzą zanim czyste dane trafią do CRM, ERP, e-commerce albo narzędzi, których zespół już używa. Solivio porządkuje właśnie ten etap.",
       items: [
         {
           title: "Dystrybutorzy techniczni",
