@@ -5848,6 +5848,7 @@ __metadata:
     "@langchain/textsplitters": "npm:^1.0.1"
     "@solivio/sdk": "workspace:*"
     "@solivio/ui": "workspace:*"
+    "@types/pdf-parse": "npm:^1.1.4"
     "@types/react": "npm:^19.2.17"
     "@xyflow/react": "npm:^12.11.0"
     drizzle-orm: "npm:^0.45.2"
@@ -5855,6 +5856,7 @@ __metadata:
     lucide-react: "npm:^1.17.0"
     next: "npm:^16.2.9"
     next-intl: "npm:^4.13.0"
+    pdf-parse: "npm:^1.1.1"
     react-markdown: "npm:^10.1.0"
     remark-gfm: "npm:^4.0.1"
     server-only: "npm:^0.0.1"
@@ -6566,6 +6568,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/710050c42f89075c4479e4e1e4c2532486b0c41b1e2a8a13ad88641c88b88cdaea87414e19224f30028719737bd70e327edcaa184d50e86b9418941edd7eb02b
+  languageName: node
+  linkType: hard
+
+"@types/pdf-parse@npm:^1.1.4":
+  version: 1.1.5
+  resolution: "@types/pdf-parse@npm:1.1.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/68989815ca9b6321eb5ab47437edf58d4f8291d4857b4bad0d7dedf1f4535da9918bc1113f7f59763c238f35175b080d3dfa76c5f26eeeb091ac4b6604028d2e
   languageName: node
   linkType: hard
 
@@ -13266,6 +13277,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-ensure@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "node-ensure@npm:0.0.0"
+  checksum: 10c0/7af391aee024a8b7df77c239ed8b90417e3f2539824fa06b60f243ce14c75ee455766464c7c3ba9407d5b1e4d1d74ed5cf5f8af10c67b0fc05aa6e29f5d2462b
+  languageName: node
+  linkType: hard
+
 "node-fetch-native@npm:^1.6.7":
   version: 1.6.7
   resolution: "node-fetch-native@npm:1.6.7"
@@ -13932,6 +13950,15 @@ __metadata:
   dependencies:
     through: "npm:~2.3"
   checksum: 10c0/86f12c64cdaaa8e45ebaca4e39a478e1442db8b4beabc280b545bfaf79c0e2f33c51efb554aace5c069cc441c7b924ba484837b345eaa4ba6fc940d62f826802
+  languageName: node
+  linkType: hard
+
+"pdf-parse@npm:^1.1.1":
+  version: 1.1.4
+  resolution: "pdf-parse@npm:1.1.4"
+  dependencies:
+    node-ensure: "npm:^0.0.0"
+  checksum: 10c0/43edaad7fd7d08047162ad0d40b583647c321c8f6d2c282ceca8fe75531de5233ad82e4777f18acfe891994117e3bb7646b541107d4472d0414f32ad6b2cf3f8
   languageName: node
   linkType: hard
 

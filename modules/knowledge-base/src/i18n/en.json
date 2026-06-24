@@ -120,7 +120,18 @@
       "directory": {
         "label": "Directory",
         "desc": "Groups related nodes together"
+      },
+      "upload": {
+        "label": "Upload file",
+        "desc": "Import from .txt, .md or .pdf"
       }
+    },
+    "upload": {
+      "fileLabel": "File",
+      "dropHint": "Click to choose a file",
+      "accepts": ".txt, .md, .pdf",
+      "extracting": "Extracting content…",
+      "error": "Could not read the file. Try again."
     },
     "nameLabel": "Title",
     "namePlaceholderArticle": "e.g. Getting Started",

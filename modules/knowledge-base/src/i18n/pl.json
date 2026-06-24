@@ -120,7 +120,18 @@
       "directory": {
         "label": "Katalog",
         "desc": "Grupuje powiązane węzły"
+      },
+      "upload": {
+        "label": "Wgraj plik",
+        "desc": "Importuj z .txt, .md lub .pdf"
       }
+    },
+    "upload": {
+      "fileLabel": "Plik",
+      "dropHint": "Kliknij, aby wybrać plik",
+      "accepts": ".txt, .md, .pdf",
+      "extracting": "Wyodrębnianie treści…",
+      "error": "Nie udało się odczytać pliku. Spróbuj ponownie."
     },
     "nameLabel": "Tytuł",
     "namePlaceholderArticle": "np. Pierwsze kroki",

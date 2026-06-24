@@ -146,7 +146,11 @@ type Props = {
   onArticleClick: (id: string) => void;
 };
 
-type AddNodeState = { parentId: string | null; position: { x: number; y: number } | null };
+type AddNodeState = {
+  parentId: string | null;
+  position: { x: number; y: number } | null;
+  initialValues?: { title: string; body: string; type: "article" | "directory" | "upload" };
+};
 
 function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props) {
   const t = useTranslations("knowledge-base.map");
@@ -196,7 +200,7 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
   setNodesRef.current = setNodes;
   setEdgesRef.current = setEdges;
 
-  const { fitView } = useReactFlow();
+  const { fitView, screenToFlowPosition } = useReactFlow();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [edgeMenu, setEdgeMenu] = useState<EdgeMenu | null>(null);
   const autoLayoutRan = useRef(false);
@@ -242,6 +246,38 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
       }, 420);
     });
   }, [nodes, edges, spaceId, setNodes, fitView]);
+
+  const handleFileDrop = useCallback(
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files?.[0];
+      if (!file) return;
+      const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      // Pre-open dialog on upload tab with drop position; extraction happens inside the dialog
+      setAddNodeState({
+        parentId: null,
+        position,
+        initialValues: { title: "", body: "", type: "upload" },
+      });
+      // Trigger extraction immediately and populate once ready
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const res = await fetch("/api/knowledge-base/extract-text", { method: "POST", body: form });
+        if (res.ok) {
+          const data = await res.json();
+          setAddNodeState({
+            parentId: null,
+            position,
+            initialValues: { title: data.title ?? "", body: data.body ?? "", type: "upload" },
+          });
+        }
+      } catch {
+        // Dialog stays open; user can type manually
+      }
+    },
+    [screenToFlowPosition],
+  );
 
   const onNodeDragStop = useCallback(
     (_: unknown, node: Node) => {
@@ -386,7 +422,14 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
 
   return (
     <>
-      <div className="h-full w-full">
+      <section
+        aria-label="Knowledge base map canvas"
+        className="h-full w-full"
+        onDragOver={(e) => {
+          if (e.dataTransfer.types.includes("Files")) e.preventDefault();
+        }}
+        onDrop={handleFileDrop}
+      >
         <ReactFlow
           nodes={nodes}
           edges={displayEdges}
@@ -446,13 +489,14 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
             </Button>
           </Panel>
         </ReactFlow>
-      </div>
+      </section>
 
       <AddNodeDialog
         open={!!addNodeState}
         spaceId={spaceId}
         parentId={addNodeState?.parentId ?? null}
         parentPosition={addNodeState?.position ?? null}
+        initialValues={addNodeState?.initialValues}
         onClose={() => setAddNodeState(null)}
         onCreated={handleNodeCreated}
       />
