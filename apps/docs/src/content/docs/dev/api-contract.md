@@ -3,13 +3,21 @@ title: API contract
 description: How Solivio generates OpenAPI from route contracts.
 ---
 
-Solivio generates OpenAPI from TypeScript route contracts instead of maintaining
-a handwritten schema file.
+Solivio generates OpenAPI from TypeScript route contracts instead of
+maintaining a handwritten schema file. Core routes and module routes share the
+same contract vocabulary, then `yarn generate` merges enabled module contracts
+into the app-level catalog.
 
 ## Source of truth
 
-API contracts live in `apps/solivio/src/server/api/contracts.ts`. Each contract
-declares:
+The app-level catalog lives in
+`apps/solivio/src/server/api/contracts/routes.ts`. It combines:
+
+- core contracts from `apps/solivio/src/server/api/contracts/system.ts`,
+- enabled module contracts from `modules/<id>/src/contracts/routes.ts`,
+  emitted through `apps/solivio/src/generated/contracts.ts`.
+
+Each contract declares:
 
 - HTTP method and path.
 - Operation ID, summary, and tags.
@@ -38,39 +46,10 @@ reference pages under `/api/`.
 
 ## Documented endpoints
 
-The generated API reference covers every Next.js route handler under
-`apps/solivio/src/app/api`:
-
-- `GET /api/auth/{authPath}`
-- `POST /api/auth/{authPath}`
-- `POST /api/chat`
-- `GET /api/embedding-models`
-- `GET /api/health`
-- `GET /api/offers`
-- `POST /api/offers`
-- `GET /api/offers/{offerId}`
-- `PATCH /api/offers/{offerId}`
-- `DELETE /api/offers/{offerId}`
-- `GET /api/offers/{offerId}/chat/threads`
-- `POST /api/offers/{offerId}/chat/threads`
-- `GET /api/offers/{offerId}/chat/threads/{threadId}/messages`
-- `GET /api/offers/{offerId}/pdf`
-- `POST /api/offers/{offerId}/products`
-- `PATCH /api/offers/{offerId}/products/{offerProductId}`
-- `DELETE /api/offers/{offerId}/products/{offerProductId}`
-- `GET /api/offers/{offerId}/revisions`
-- `POST /api/offers/{offerId}/revisions`
-- `GET /api/offers/{offerId}/revisions/{revisionId}`
-- `POST /api/offers/{offerId}/revisions/{revisionId}/restore`
-- `GET /api/offers/pdf`
-- `POST /api/offers/pdf`
-- `POST /api/offers/quick`
-- `GET /api/products`
-- `POST /api/products/import`
-- `POST /api/products/search`
-- `POST /api/products/text-search`
-- `GET /api/requests`
-- `POST /api/requests`
+The generated API reference covers the contracts exported by the core and every
+enabled module. In the default first-party configuration that includes route
+families for auth, health, products, customers, requests, offers, offer PDFs,
+offer revisions, and offer review chat.
 
 The Better Auth route is documented as a catch-all because the concrete
 subroutes are owned by the Better Auth handler rather than by Solivio route

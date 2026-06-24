@@ -59,14 +59,17 @@ customers ◄──┐
              ├── offers ◄── offer-chat
 catalog  ◄───┘
    ▲
-   └── products-sync                csv-import (headless; no deps)
+   └── products-sync
+
+offers ◄── order-history            csv-import (headless; no deps)
 ```
 
 - **catalog** — products + prices, semantic search, import target `product`.
 - **customers** — customers + intake requests, import target `customer`.
 - **offers** — offer lifecycle: drafts, line items, revisions, PDF, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`).
 - **offer-chat** — the offer review chat *domain*: threads, messages, the copilot agent, streaming routes.
-- **csv-import** — CSV importer capabilities for the product/customer import targets (bound via config `slots`).
+- **order-history** — agent tools that recall a customer's accepted past offers/orders through the offers service.
+- **csv-import** — CSV importer capabilities for the product/customer/offer import targets (bound via config `slots`).
 - **products-sync** — the reference example: scheduled sync of products from an external source into the catalog.
 
 One deliberate seam: the chat **panel UI lives in offers** (it integrates imperatively with the offer review screen) while the chat **domain lives in offer-chat**; the panel reaches it over HTTP only. When UI cohesion and domain ownership pull apart, HTTP is the boundary that lets each module keep what it owns.
@@ -123,7 +126,7 @@ AI surfaces are treated as security boundaries.
 
 ## 11. The default deployment
 
-The stock image, built from this repo's `solivio.config.ts`, ships the six first-party modules (§3.3) and runs the pipeline end-to-end with one AI provider credential and a Postgres connection. Larger integrations (Odoo, HubSpot, WhatsApp, voice) are intended to live outside this repo as out-of-tree module packages.
+The stock image, built from this repo's `solivio.config.ts`, ships the first-party modules (§3.3) and runs the pipeline end-to-end with one AI provider credential and a Postgres connection. Larger integrations (Odoo, HubSpot, WhatsApp, voice) are intended to live outside this repo as out-of-tree module packages.
 
 ## 12. Out of scope (v0)
 

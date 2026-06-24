@@ -3,108 +3,119 @@
 </p>
 
 <p align="center">
-  <strong>Stop building quotes. Start closing deals.</strong>
+  <strong>Open-source foundation for AI-assisted sales quoting.</strong>
   <br />
-  <strong>Fix your quoting process - using your data and knowledge.</strong>
+  Turn customer requests, product knowledge, and past context into reviewed offer drafts.
 </p>
 
-Solivio is an open-source product created by Derave Software.
+<p align="center">
+  <a href="https://solivio.ai">Website</a>
+  ·
+  <a href="./apps/docs/src/content/docs/guides/getting-started.md">Getting started</a>
+  ·
+  <a href="./apps/docs/src/content/docs/guides/features.md">Feature walkthrough</a>
+  ·
+  <a href="./apps/docs/src/content/docs/guides/modules.md">Modules guide</a>
+</p>
 
-It combines an implementation process with an open-source software foundation built for companies where product catalogs contain thousands of items and quotes often include dozens of line items.
+Solivio helps sales teams handle quoting workflows where product catalogs are
+large, offers contain many line items, and the knowledge needed to prepare a
+good quote is spread across systems and people.
 
-Solivio helps teams move from manual quoting to a data- and knowledge-driven process. Instead of rebuilding every quote from scratch, it uses AI plus connected business context to prepare a draft quote that the sales team reviews, adjusts, validates, and moves further through the organization.
+The product path is intentionally practical: a customer sends a request,
+Solivio extracts requirements, searches the catalog, prepares a draft offer,
+and keeps a salesperson in the loop to review, edit, validate, accept, and
+export the final result. The public product and implementation story lives at
+[solivio.ai](https://solivio.ai); this repository is the open-source software
+foundation behind it.
 
-## 💡 What Solivio Is
+Solivio is created by
+[Derave](https://derave.dev/en/?utm_source=solivio.ai&utm_medium=referral&utm_campaign=solivio_landing&utm_content=en_readme_attribution)
+and released under the MIT license.
 
-Solivio is designed for companies where quoting is too complex, too manual, and too dependent on individual experience.
+## What Solivio Does
 
-It is especially relevant when the business operates with:
+Solivio is built for quote processes that are too manual, too inconsistent, or
+too dependent on individual sales experts. In its current open-source shape, it
+provides:
 
-- 📦 large product catalogs
-- 🧩 many configurable or multi-line offers
-- 🧠 data scattered across ERP, CRM, price lists, documents, and people's heads
-- ✅ approval-heavy processes
-- ⏳ long onboarding time for new sales team members
+- product catalog import, search, embeddings, and product matching,
+- customer and intake request management,
+- AI-assisted draft offer generation from raw customer input,
+- an offer review workspace with editable line items, validation, revisions,
+  PDF preview, and acceptance flow,
+- an offer assistant that can answer questions and help edit drafts,
+- historical order recall for agents when repeat buying patterns matter,
+- CSV import capabilities for products, customers, and historical orders,
+- a modular architecture for company-specific integrations and workflows.
 
-Solivio is both an implementation process and an open-source software product. The goal is not to replace the sales team. The goal is to reduce repetitive operational work, standardize quoting, and help teams respond faster with more consistency.
+The goal is not to remove the salesperson from the process. The goal is to
+remove repetitive operational work, make quoting knowledge easier to reuse, and
+turn the route from inquiry to reviewed offer into a clearer, faster pipeline.
 
-Solivio is also meant to support consultative selling. It should connect many data points and help teams generate the best possible quote, not only the fastest one.
+## How The Product Works
 
-## 🚨 Why Solivio Exists
+1. A customer request is entered or imported.
+2. Solivio reads the request with available business context: catalog data,
+   customer data, past orders, pricing notes, and implementation-specific
+   guidance.
+3. Agents extract requirements, match products, and prepare a structured draft.
+4. A salesperson reviews the draft, edits line items, uses the assistant when
+   helpful, checks validation signals, and accepts or revises the offer.
+5. Accepted offers can be previewed and downloaded as PDFs. Downstream steps
+   such as ERP sync, approval workflows, or final document templates are meant
+   to be implemented through modules.
 
-In many organizations, quoting is still a fragmented process:
+## Repository Shape
 
-- 🧑‍💼 senior sales team members spend time on operational work instead of selling
-- 🌱 new sales team members need months to become effective
-- 📝 every quote is built slightly differently
-- 🚦 approvals, pricing, and product knowledge create bottlenecks
-- 🔗 ERP, CRM, Excel, price lists, and internal know-how do not work as one system
+Solivio is a modular monolith. The core app stays small; feature code lives in
+modules that are compiled into the app at build time.
 
-The result is slow response time, inconsistent quality, onboarding friction, and limited ability to scale sales operations.
+| Path | Purpose |
+| --- | --- |
+| [`apps/solivio`](./apps/solivio) | The Next.js app: auth, app shell, runtime boot, health checks, migrations, and generated module wiring. |
+| [`modules`](./modules) | First-party feature modules such as catalog, customers, offers, offer chat, CSV import, order history, and product sync. |
+| [`sdk`](./sdk) | `@solivio/sdk`, the public contract modules build against. |
+| [`packages/domain`](./packages/domain) | Shared domain types, workflow constants, and fixtures. |
+| [`packages/ui`](./packages/ui) | Shared shadcn/ui component kit. |
+| [`packages/theme`](./packages/theme) | Design tokens used by the app and modules. |
+| [`scripts/generate`](./scripts/generate) | Build-time module discovery, validation, and code generation. |
+| [`docs`](./docs) | Contributor architecture, module, database, testing, API, and ADR documentation. |
+| [`apps/docs`](./apps/docs) | User-facing documentation site source. |
+| [`infra/postgres`](./infra/postgres) | Local Postgres bootstrap files. |
 
-Solivio exists to solve that operational gap.
+## Modules
 
-## 🛠️ How Solivio Works
+Modules are TypeScript source packages under `modules/<id>/`. Each module can
+contribute pages, API routes, services, events, jobs, agent tools, importers,
+translations, navigation entries, UI slots, permissions, and its own Drizzle
+migration journal.
 
-Solivio shortens the quoting process through an AI-assisted workflow:
+`solivio.config.ts` is the deployment manifest. `yarn generate` reads it,
+discovers enabled modules by file convention, validates the module graph, and
+emits the app-router stubs and registries the Next.js app builds against.
+Enabling a module is therefore a config + regenerate + rebuild operation, not a
+runtime plugin install.
 
-1. 📥 A customer sends an inquiry.
-2. 🔎 Solivio reads the inquiry together with connected sources such as product catalogs, CRM, ERP, FAQ, customer profile, pricing policies, product instructions, industry knowledge, and additional `.md` guidance files.
-3. 🧠 The system extracts requirements, searches for matching products, and prepares recommendations.
-4. 🧾 Solivio generates a draft quote.
-5. 👥 The sales team reviews it, edits it if needed, validates it, and accepts it.
-6. 🚀 The accepted draft moves into downstream steps defined during implementation, such as ERP sync or final PDF generation.
+The default repository configuration enables:
 
-Each implementation starts with mapping the real quoting process inside the client organization. What happens after the draft is generated depends on that mapped workflow.
+- `catalog` - products, prices, embeddings, and semantic search,
+- `customers` - customers and intake requests,
+- `offers` - offer drafts, line items, revisions, PDF rendering, and offer UI,
+- `offer-chat` - review chat threads, messages, and the salesperson copilot,
+- `order-history` - agent tools for recalling a customer's past orders,
+- `csv-import` - CSV importers for products, customers, and historical orders,
+- `products-sync` - a reference scheduled product-sync module.
 
-## 🔥 Business Problems Solivio Solves
+Start with the [Modules guide](./apps/docs/src/content/docs/guides/modules.md)
+for the operating model, then use
+[docs/module-system.md](./docs/module-system.md),
+[docs/codegen.md](./docs/codegen.md), and
+[docs/contracts.md](./docs/contracts.md) when authoring modules or changing the
+module boundary. `modules/products-sync` is the reference example for the full
+module surface.
 
-Solivio focuses on the bottlenecks that make quoting difficult to scale:
-
-1. ⏳ Onboarding slows down growth. New sales team members need months to become effective, so team expansion takes too long.
-2. 💸 Senior team members are trapped in operations. Top performers spend time building quotes and supporting juniors instead of generating revenue.
-3. 📏 Quote quality depends on the person, not the process. Juniors work slower, seniors work faster, and consistency suffers.
-4. 📈 Quoting does not scale with demand. Every additional inquiry creates more manual work and more chaos.
-5. 🔌 Data is fragmented across systems. ERP, CRM, Excel, price lists, and internal know-how require repeated copy-paste work.
-
-## 📈 What Business Outcome It Aims For
-
-Solivio is meant to help companies:
-
-- ⚡ shorten quote turnaround time
-- 🧹 reduce manual operational work and retyping into ERP or quoting systems
-- 📏 standardize quote quality across the team
-- 🧑‍🏫 make onboarding less dependent on senior team members
-- 🚀 improve sales capacity without growing chaos
-- 🔁 create a more scalable quoting process
-
-## 🔮 Product Direction
-
-Solivio aims to become the layer between customer inquiry and final offer by providing:
-
-- 🤖 automatic draft quote generation based on data
-- 🔗 CRM, ERP, FAQ, price-list, and knowledge-base integration
-- 🧩 support for configurable products and bundles
-- ✅ approval-aware workflows such as discount acceptance
-- 📍 a central source of truth about product and customer context
-- 🚀 faster onboarding for sales teams
-- 📬 support for multiple channels such as email, phone, and B2B workflows
-
-## 🌍 Open-Source Repository
-
-This repository contains the open-source groundwork for Solivio and is intentionally kept easy to launch for contributors evaluating the idea.
-
-- 🖥️ `apps/solivio` contains the main Next.js app
-- 🌐 `apps/solivio/src/app/api` contains HTTP API routes
-- ✨ `apps/solivio/src/features` contains user-facing feature UI
-- 🔒 `apps/solivio/src/server` contains server-only integrations and services
-- 📦 `packages/domain` contains shared types, workflow constants, and mock fixtures
-- 🐘 `infra/postgres` contains local database bootstrap files
-- 🗃️ `apps/solivio/drizzle` contains the database migrations applied by `yarn db:migrate`
-
-Mocks are preferred until data models and integration boundaries are clear.
-
-## 🚀 Local Setup
+## Local Setup
 
 Requirements:
 
@@ -121,101 +132,101 @@ yarn setup
 yarn dev
 ```
 
-Environment notes:
-
-- `BETTER_AUTH_SECRET` — any non-trivial string works locally; generate a
-  strong one (`openssl rand -base64 32`) for production only.
-- `OPENAI_API_KEY` — optional. Without it the AI agents are unavailable and
-  products import without embeddings (semantic search disabled, text search
-  still works); everything else runs. The demo path needs no external services.
-
-Open the app at `http://localhost:3000` and create the first user from the
-login screen. Load example data to explore with content:
+Before the first run, set `BETTER_AUTH_SECRET` in
+`apps/solivio/.env.local`. A local value can be generated with:
 
 ```bash
-yarn seed     # imports example products and customers from examples/import/
+openssl rand -base64 32
 ```
 
-People who only want to run the ready app image can use the Docker quick start
-in the docs. It uses the public GHCR image `ghcr.io/solivio-ai/solivio-app`,
-which applies committed migrations on startup.
+`OPENAI_API_KEY` is optional for launching the app. Without it, AI-backed
+features such as embeddings, semantic search, offer generation, and the offer
+assistant are unavailable; the rest of the app still runs.
 
-Useful commands:
+Open `http://localhost:3000`, create the first user from the login screen, and
+load example data if you want content to explore:
 
 ```bash
-yarn check                       # Biome lint + format check
-yarn biome check --write .       # auto-fix lint + format (run after every change)
-yarn test                        # Vitest suite
-yarn typecheck
-yarn e2e
-yarn docs:dev
-yarn db:migrate
-yarn db:down
+yarn seed
 ```
 
-Run `yarn biome check --write .` before committing — it sorts imports, normalises
-formatting, and applies safe lint fixes so `yarn check` stays green in CI.
+For the Docker image path, see the
+[Getting started guide](./apps/docs/src/content/docs/guides/getting-started.md).
+The published image is `ghcr.io/solivio-ai/solivio-app`.
 
-## 🧪 Tests
-
-Unit and module tests live beside the production files they exercise
-(`*.test.ts` or `*.test.tsx`) and use Vitest:
+## Useful Commands
 
 ```bash
-yarn test
-yarn test:watch
+yarn dev                        # generator watch mode + Next.js on :3000
+yarn setup                      # start Postgres, generate wiring, apply migrations
+yarn generate                   # regenerate module registries and app-router stubs
+yarn biome check --write .      # format, sort imports, apply safe lint fixes
+yarn check                      # Biome + module boundary checker
+yarn typecheck                  # type-check all workspaces
+yarn test                       # Vitest suite
+yarn e2e                        # Playwright smoke tests
+yarn docs:dev                   # local docs site on :4321
+yarn validate                   # generate --check + check + typecheck + tests
+yarn validate:all               # full local handoff suite
 ```
 
-Use these for deterministic module behavior, importers, service branches, and
-runtime-backed tests with faked SDK services. The testing strategy lives in
-`docs/testing.md`.
+Run `yarn generate` after changing module files or `solivio.config.ts`. Run
+`yarn setup` on a fresh checkout and again after new migrations are added.
 
-## 🧪 End-to-End Tests
+## Documentation Map
 
-Playwright tests live in `e2e/` and use the same local app path as source
-development. Run the regular setup first:
+- [Getting started](./apps/docs/src/content/docs/guides/getting-started.md) -
+  Docker quick start and source checkout.
+- [Feature walkthrough](./apps/docs/src/content/docs/guides/features.md) -
+  import a catalog, generate a draft, review, chat, accept, and download.
+- [Modules guide](./apps/docs/src/content/docs/guides/modules.md) - how a
+  deployment chooses and configures modules.
+- [Extending Solivio](./apps/docs/src/content/docs/guides/extending.md) - custom
+  modules without forking the base repository.
+- [Architecture](./docs/architecture.md) - core/module split, pipeline shape,
+  extension surfaces, and out-of-scope boundaries.
+- [Module system](./docs/module-system.md) - module anatomy and authoring rules.
+- [Code generation](./docs/codegen.md) - what `yarn generate` reads, validates,
+  and emits.
+- [SDK contracts](./docs/contracts.md) - the public `@solivio/sdk` surface.
+- [Database](./docs/database.md) and [ERD](./docs/erd.md) - schema ownership and
+  migration model.
+- [API](./docs/api.md) - route conventions and OpenAPI contract docs.
+- [Testing](./docs/testing.md) - Vitest, module tests, and Playwright strategy.
+- [Publishing](./docs/publishing.md) and
+  [Deployment](./apps/docs/src/content/docs/guides/deployment.md) - image build
+  and production deployment notes.
+
+## Agent Benchmarks
+
+The AI benchmark suite lives in
+[`apps/solivio/benchmarks`](./apps/solivio/benchmarks/README.md). It contains a
+fixed set of offer-generation scenarios and deterministic scoring rules for
+tracking agent quality over time.
 
 ```bash
-yarn setup
-yarn e2e
+yarn benchmark
+yarn benchmark:report
 ```
 
-`yarn e2e` starts `yarn dev` on `http://localhost:3000` if the app is not
-already running. Set `PLAYWRIGHT_BASE_URL` only when you want to point the same
-tests at an already-running app URL. If Playwright browsers are missing, run
-`yarn playwright install chromium` once.
+## Contributing
 
-Docs:
+Contributions should keep the default demo path simple, documented, and
+runnable without mandatory external services.
 
-- Getting started: `apps/docs/src/content/docs/guides/getting-started.md`
-- Deployment: `apps/docs/src/content/docs/guides/deployment.md`
-- Feature walkthrough: `apps/docs/src/content/docs/guides/features.md`
+When adding functionality:
 
-## 📊 Agent Benchmarks
+- keep feature code inside modules whenever it belongs to a business domain,
+- use `@solivio/sdk` and `@solivio/sdk/runtime` instead of app internals,
+- preserve module boundaries: no runtime imports between modules, no SQL joins
+  across module tables, and no module-owned access to app internals,
+- prefer mocks until the data model and integration boundary are clear,
+- document new setup, environment, migration, or operator requirements,
+- run `yarn biome check --write .`, `yarn check`, and `yarn test` before
+  handing changes back; add `yarn typecheck` for TypeScript, server, API, or
+  React behavior changes.
 
-A measurable benchmark suite for Solivio's AI agents lives in
-[`apps/solivio/benchmarks/`](apps/solivio/benchmarks/README.md) — 12 scenario
-cases (basic → expert) scored deterministically against a fixed product
-catalog, with committed results and per-run history. Use it to track agent
-quality over time and compare models:
-
-```bash
-yarn benchmark            # run the suite (writes a .json result)
-yarn benchmark:report     # render markdown + refresh the latest-results summary
-```
-
-See [`apps/solivio/benchmarks/README.md`](apps/solivio/benchmarks/README.md)
-for scoring rules, case catalog, and the latest results.
-
-## 🤝 Contributing
-
-Contributions should keep the default demo path simple, documented, and runnable without mandatory external services.
-
-When adding new functionality:
-
-- preserve the frontend, API, and server separation
-- keep AI and database integrations behind server helpers and API routes
-- prefer a working mock over an unfinished integration
-- document any new setup or environment requirements
-
-If you want to help shape Solivio, contributions are welcome in product thinking, workflow design, quoting use cases, and implementation details.
+If you are new to the codebase, read
+[docs/architecture.md](./docs/architecture.md) and
+[apps/docs/src/content/docs/guides/modules.md](./apps/docs/src/content/docs/guides/modules.md)
+before making structural changes.

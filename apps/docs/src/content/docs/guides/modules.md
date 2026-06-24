@@ -4,12 +4,12 @@ description: How Solivio modules work and how a deployment chooses which ones ru
 ---
 
 Solivio is a **modular monolith**: almost every feature - the product catalog,
-customers, offers, the review chat, CSV import, external sync - is a module
-under `modules/` in the repository. Modules are TypeScript source packages
-**compiled into the app at build time**: a generator (`yarn generate`) reads
-the deployment manifest `solivio.config.ts`, discovers each enabled module's
-pages, API routes, services, events, jobs, translations, and database
-migrations by file convention, and wires them into the Next.js app.
+customers, offers, the review chat, order-history recall, CSV import, external
+sync - is a module under `modules/` in the repository. Modules are TypeScript
+source packages **compiled into the app at build time**: a generator
+(`yarn generate`) reads the deployment manifest `solivio.config.ts`, discovers
+each enabled module's pages, API routes, services, events, jobs, translations,
+and database migrations by file convention, and wires them into the Next.js app.
 
 The published image ships with the first-party module set enabled:
 
@@ -18,7 +18,9 @@ The published image ships with the first-party module set enabled:
 - `offers` - offer drafts, line items, revisions, PDF rendering, and all
   offer-facing UI including the dashboard.
 - `offer-chat` - the offer-review assistant (threads, messages, streaming).
-- `csv-import` - CSV importer capabilities for products and customers.
+- `order-history` - tools that let agents recall a customer's past orders.
+- `csv-import` - CSV importer capabilities for products, customers, and
+  historical orders.
 - `products-sync` - scheduled sync of products from an external source.
 
 ## Enabling and configuring modules
@@ -35,11 +37,13 @@ export default defineConfig({
     "offers",
     "offer-chat",
     "csv-import",
+    "order-history",
     ["products-sync", { sourceUrl: "https://example.com/products.json", cron: "0 3 * * *" }],
   ],
   slots: {
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
+    "offer.importer": "csv-import/csv-orders",
   },
 });
 ```

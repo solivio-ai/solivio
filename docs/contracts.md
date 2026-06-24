@@ -46,9 +46,9 @@ generator does with these files in `codegen.md`.
   flow framework at the consumption boundary.
 - Importer types — `ImporterDefinition` (`name`, `description`, `target`, `accept`,
   `run`), `ImportResult`, `ImportRowError`, `ImportStatus`, `ImportTarget`
-  (`"product" | "customer"`), plus `ProductImporterDefinition` /
-  `CustomerImporterDefinition` and the entity DTOs `ProductInput`, `CustomerInput`,
-  `ProductMatch`.
+  (`"product" | "customer" | "offer"`), plus `ProductImporterDefinition`,
+  `CustomerImporterDefinition`, `OfferImporterDefinition`, and the entity DTOs
+  `ProductInput`, `CustomerInput`, `OfferImportInput`, `ProductMatch`.
 - Registry types — `Services`, `Events`, `ServiceName`, `EventName`,
   `CoreUsersService` (see merging contract below).
 - Infrastructure types — `Logger`, `AiClientFactory`.

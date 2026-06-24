@@ -1,0 +1,121 @@
+---
+import { deraveUrl, githubUrl, siteOrigin, type LandingContent } from "../../landing/content";
+import { releaseLabel } from "./shared";
+
+interface Props {
+  page: LandingContent;
+}
+
+const { page } = Astro.props;
+const isPolish = page.locale === "pl";
+
+const absoluteUrl = (path: string) => new URL(path, siteOrigin).toString();
+
+const canonical = absoluteUrl(page.path);
+const englishUrl = absoluteUrl("/");
+const polishUrl = absoluteUrl("/pl/");
+const ogImage = absoluteUrl("/media/solivio-promo-poster.png");
+const ogImageAlt = isPolish
+  ? "Podgląd procesu Solivio od zapytania klienta do szkicu oferty"
+  : "Solivio inquiry-to-draft-quote workflow preview";
+const alternateLocale = isPolish ? "en_US" : "pl_PL";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${deraveUrl}/#organization`,
+      name: "Derave",
+      url: `${deraveUrl}/`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteOrigin}/#website`,
+      name: "Solivio",
+      url: `${siteOrigin}/`,
+      inLanguage: page.lang,
+      publisher: { "@id": `${deraveUrl}/#organization` },
+    },
+    {
+      "@type": "ImageObject",
+      "@id": `${ogImage}#primaryimage`,
+      url: ogImage,
+      contentUrl: ogImage,
+      width: 1280,
+      height: 720,
+      caption: ogImageAlt,
+      inLanguage: page.lang,
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: page.title,
+      description: page.description,
+      inLanguage: page.lang,
+      isPartOf: { "@id": `${siteOrigin}/#website` },
+      primaryImageOfPage: { "@id": `${ogImage}#primaryimage` },
+      about: { "@id": `${siteOrigin}/#source` },
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": `${siteOrigin}/#source`,
+      name: "Solivio",
+      url: `${siteOrigin}/`,
+      codeRepository: githubUrl,
+      license: "https://opensource.org/licenses/MIT",
+      programmingLanguage: "TypeScript",
+      runtimePlatform: "Node.js, Docker, PostgreSQL",
+      version: releaseLabel.replace(/^v/, ""),
+      isAccessibleForFree: true,
+      description: page.description,
+      image: { "@id": `${ogImage}#primaryimage` },
+      creator: { "@id": `${deraveUrl}/#organization` },
+      publisher: { "@id": `${deraveUrl}/#organization` },
+    },
+  ],
+};
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{page.title}</title>
+  <meta name="description" content={page.description} />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="max-image-preview:large" />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang="en" href={englishUrl} />
+  <link rel="alternate" hreflang="pl" href={polishUrl} />
+  <link rel="alternate" hreflang="x-default" href={englishUrl} />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Solivio" />
+  <meta property="og:locale" content={isPolish ? "pl_PL" : "en_US"} />
+  <meta property="og:locale:alternate" content={alternateLocale} />
+  <meta property="og:title" content={page.ogTitle} />
+  <meta property="og:description" content={page.ogDescription} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:secure_url" content={ogImage} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content={ogImageAlt} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={page.ogTitle} />
+  <meta name="twitter:description" content={page.ogDescription} />
+  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image:alt" content={ogImageAlt} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <script is:inline>
+    (() => {
+      const storedTheme =
+        typeof localStorage !== "undefined" && localStorage.getItem("starlight-theme");
+      document.documentElement.dataset.theme = storedTheme === "dark" ? "dark" : "light";
+    })();
+  </script>
+</head>

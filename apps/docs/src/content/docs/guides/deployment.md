@@ -18,7 +18,7 @@ The app container applies committed database migrations before starting Next.js.
 - A DNS A record for your app host, for example `offers.example.com`, pointing to the host's public IP.
 - Inbound TCP 80 and 443 open in the host firewall.
 - Access to the public GHCR image `ghcr.io/solivio-ai/solivio-app`.
-- An OpenAI API key for AI-backed catalog import, offer generation, semantic search, and offer chat.
+- An OpenAI API key for product embeddings, semantic search, offer generation, and offer chat.
 
 ## Image build
 
@@ -55,7 +55,7 @@ Important values:
 | `IMAGE_TAG`           | `latest` for fast iteration, or a commit SHA for reproducible deploys.                        |
 | `POSTGRES_PASSWORD`   | Database password used by the `db` service.                                                   |
 | `DATABASE_URL`        | Internal app database URL, usually `postgresql://solivio:<password>@db:5432/solivio`.         |
-| `OPENAI_API_KEY`      | Enables AI-backed product import, matching, offer generation, and chat.                       |
+| `OPENAI_API_KEY`      | Enables product embeddings, semantic matching, offer generation, and chat.                    |
 | `OPENAI_MODEL_*`      | Optional per-role model overrides (see `apps/solivio/src/server/runtime/ai/modelConfig.ts`).      |
 | `EMBEDDING_MODEL`     | Optional override for product embedding model. Defaults to `text-embedding-3-large`.          |
 | `BETTER_AUTH_URL`     | Public app URL, for example `https://offers.example.com`.                                     |

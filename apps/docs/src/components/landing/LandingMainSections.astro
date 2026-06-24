@@ -1,0 +1,32 @@
+---
+import type { LandingContent } from "../../landing/content";
+import LandingArchitectureSection from "./LandingArchitectureSection.astro";
+import LandingCapabilitiesSection from "./LandingCapabilitiesSection.astro";
+import LandingFinalCtaSection from "./LandingFinalCtaSection.astro";
+import LandingHeroSection from "./LandingHeroSection.astro";
+import LandingModulesSection from "./LandingModulesSection.astro";
+import LandingOperatorSection from "./LandingOperatorSection.astro";
+import LandingStackSection from "./LandingStackSection.astro";
+import LandingWhySection from "./LandingWhySection.astro";
+import LandingWorkflowSection from "./LandingWorkflowSection.astro";
+import type { LandingLabels } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+---
+
+<main id="main" class="overflow-clip">
+  <LandingHeroSection page={page} labels={labels} />
+  <LandingStackSection page={page} />
+  <LandingWorkflowSection page={page} labels={labels} />
+  <LandingCapabilitiesSection page={page} />
+  <LandingArchitectureSection page={page} labels={labels} />
+  <LandingModulesSection page={page} labels={labels} />
+  <LandingOperatorSection page={page} labels={labels} />
+  <LandingWhySection page={page} />
+  <LandingFinalCtaSection page={page} labels={labels} />
+</main>
