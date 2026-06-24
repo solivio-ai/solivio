@@ -38,7 +38,6 @@ export type LandingContent = {
     facts: string[];
     primary: Link;
     secondary: Link;
-    tertiary: Link;
     quickStart: string;
     offerNav: string[];
     offerTitle: string;
@@ -114,6 +113,16 @@ export type LandingContent = {
 export const siteOrigin = "https://solivio.ai";
 export const githubUrl = "https://github.com/solivio-ai/solivio";
 export const deraveUrl = "https://derave.dev";
+export const deraveReferralUrl = (locale: LandingLocale, placement: string) => {
+  const url = new URL(deraveUrl);
+
+  url.searchParams.set("utm_source", "solivio.ai");
+  url.searchParams.set("utm_medium", "referral");
+  url.searchParams.set("utm_campaign", "solivio_landing");
+  url.searchParams.set("utm_content", `${locale}_${placement}`);
+
+  return url.toString();
+};
 
 export const landingPages: Record<LandingLocale, LandingContent> = {
   en: {
@@ -144,7 +153,6 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       ],
       primary: { href: "/guides/getting-started/", label: "Start setup" },
       secondary: { href: githubUrl, label: "View GitHub", external: true },
-      tertiary: { href: "/guides/features/", label: "Read features" },
       quickStart: "git clone https://github.com/solivio-ai/solivio.git && cd solivio && yarn setup",
       offerNav: ["Inquiries", "Catalog", "Offers", "Customers", "Assistant"],
       offerTitle: "Draft offer 2026-0607-001",
@@ -370,7 +378,11 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       businessTitle: "Business / implementation?",
       businessBody:
         "Bring one representative RFQ and review whether the inquiry-to-draft-quote workflow maps to your current quoting process.",
-      businessPrimary: { href: deraveUrl, label: "Visit Derave", external: true },
+      businessPrimary: {
+        href: deraveReferralUrl("en", "final_business_cta"),
+        label: "Visit Derave",
+        external: true,
+      },
     },
     footer: {
       tagline: "Open-source inquiry-to-draft-quote system for technical B2B teams.",
@@ -407,7 +419,6 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       ],
       primary: { href: "/guides/getting-started/", label: "Rozpocznij konfigurację" },
       secondary: { href: githubUrl, label: "Zobacz GitHub", external: true },
-      tertiary: { href: "/guides/features/", label: "Zobacz funkcje" },
       quickStart: "git clone https://github.com/solivio-ai/solivio.git && cd solivio && yarn setup",
       offerNav: ["Zapytania", "Katalog", "Oferty", "Klienci", "Asystent"],
       offerTitle: "Szkic oferty 2026-0607-001",
@@ -636,7 +647,11 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
       businessTitle: "Biznes / wdrożenie?",
       businessBody:
         "Weź jedno reprezentatywne zapytanie ofertowe i sprawdź, czy proces od zapytania do szkicu oferty pasuje do obecnego sposobu ofertowania.",
-      businessPrimary: { href: deraveUrl, label: "Odwiedź Derave", external: true },
+      businessPrimary: {
+        href: deraveReferralUrl("pl", "final_business_cta"),
+        label: "Odwiedź Derave",
+        external: true,
+      },
     },
     footer: {
       tagline: "Open-source system od zapytania do szkicu oferty dla technicznych zespołów B2B.",
