@@ -169,15 +169,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     stack: {
       title: "Built with a stack you already know",
-      items: [
-        "Next.js",
-        "TypeScript",
-        "Postgres",
-        "Drizzle ORM",
-        "Tailwind v4",
-        "shadcn/ui",
-        "Astro",
-      ],
+      items: ["Next.js", "TypeScript", "Postgres", "Drizzle ORM", "Tailwind v4", "shadcn/ui"],
     },
     metrics: {
       items: [
@@ -434,15 +426,7 @@ export const landingPages: Record<LandingLocale, LandingContent> = {
     },
     stack: {
       title: "Zbudowane na stacku, który już znasz",
-      items: [
-        "Next.js",
-        "TypeScript",
-        "Postgres",
-        "Drizzle ORM",
-        "Tailwind v4",
-        "shadcn/ui",
-        "Astro",
-      ],
+      items: ["Next.js", "TypeScript", "Postgres", "Drizzle ORM", "Tailwind v4", "shadcn/ui"],
     },
     metrics: {
       items: [
