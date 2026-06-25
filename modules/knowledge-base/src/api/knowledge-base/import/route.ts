@@ -8,7 +8,7 @@ import { createImportRun, listImportRuns } from "../../../server/knowledgeBaseRe
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const { response: authResponse } = await getAuth().requireAdmin();
   if (authResponse) return authResponse;
   const runs = await listImportRuns(20);

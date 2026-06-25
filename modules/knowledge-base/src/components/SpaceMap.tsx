@@ -144,6 +144,8 @@ type Props = {
   connections: MapConnection[];
   spaceId: string;
   onArticleClick: (id: string) => void;
+  onArticleCreated?: (article: MapArticle) => void;
+  onArticleReparented?: (articleId: string, newParentId: string | null) => void;
 };
 
 type AddNodeState = {
@@ -152,7 +154,14 @@ type AddNodeState = {
   initialValues?: { title: string; body: string; type: "article" | "directory" | "upload" };
 };
 
-function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props) {
+function SpaceMapInner({
+  articles,
+  connections,
+  spaceId,
+  onArticleClick,
+  onArticleCreated,
+  onArticleReparented,
+}: Props) {
   const t = useTranslations("knowledge-base.map");
 
   // Stable refs keep state setters and current nodes accessible in callbacks
@@ -327,17 +336,22 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
       };
       setEdges((eds) => [...eds, newEdge]);
       setArticleParent(params.target, params.source);
+      onArticleReparented?.(params.target, params.source);
     },
-    [setEdges],
+    [setEdges, onArticleReparented],
   );
 
-  const onEdgesDelete = useCallback((deleted: Edge[]) => {
-    for (const edge of deleted) {
-      if (edge.id.startsWith("p-")) {
-        setArticleParent(edge.target, null);
+  const onEdgesDelete = useCallback(
+    (deleted: Edge[]) => {
+      for (const edge of deleted) {
+        if (edge.id.startsWith("p-")) {
+          setArticleParent(edge.target, null);
+          onArticleReparented?.(edge.target, null);
+        }
       }
-    }
-  }, []);
+    },
+    [onArticleReparented],
+  );
 
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
     setEdgeMenu({ edge, x: event.clientX, y: event.clientY });
@@ -360,9 +374,10 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
     setEdges((eds) => eds.filter((e) => e.id !== edgeMenu.edge.id));
     if (edgeMenu.edge.id.startsWith("p-")) {
       setArticleParent(edgeMenu.edge.target, null);
+      onArticleReparented?.(edgeMenu.edge.target, null);
     }
     setEdgeMenu(null);
-  }, [edgeMenu, setEdges]);
+  }, [edgeMenu, setEdges, onArticleReparented]);
 
   const handleNodeCreated = useCallback(
     (article: MapArticle) => {
@@ -408,9 +423,10 @@ function SpaceMapInner({ articles, connections, spaceId, onArticleClick }: Props
       }
 
       persistPositions(spaceId, [newNode]);
+      onArticleCreated?.(article);
       setAddNodeState(null);
     },
-    [addNodeState, onArticleClick, handleAddChild, setNodes, setEdges, spaceId],
+    [addNodeState, onArticleClick, onArticleCreated, handleAddChild, setNodes, setEdges, spaceId],
   );
 
   // Apply brand yellow on hover.

@@ -91,9 +91,30 @@ export function KnowledgeBaseShell({
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
     initialArticleId ?? null,
   );
+  const [localArticles, setLocalArticles] = useState(articles);
   const selectedArticle = selectedArticleId
-    ? (articles.find((a) => a.id === selectedArticleId) ?? null)
+    ? (localArticles.find((a) => a.id === selectedArticleId) ?? null)
     : null;
+
+  // Reset local articles when switching spaces.
+  useEffect(() => {
+    setLocalArticles(articles);
+  }, [activeSpaceId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const applyReparent = (articleId: string, newParentId: string | null) => {
+    setLocalArticles((prev) =>
+      prev.map((a) => (a.id === articleId ? { ...a, parentId: newParentId } : a)),
+    );
+  };
+
+  const handleReparent = (articleId: string, newParentId: string | null) => {
+    applyReparent(articleId, newParentId);
+    fetch(`/api/knowledge-base/articles/${articleId}/parent`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ parentId: newParentId }),
+    });
+  };
 
   // ── Space management ───────────────────────────────────────────────────────
   const [newSpaceOpen, setNewSpaceOpen] = useState(false);
@@ -329,13 +350,14 @@ export function KnowledgeBaseShell({
         <div className="relative min-h-0 flex-1">
           {view === "list" ? (
             <ArticleListView
-              articles={articles}
+              articles={localArticles}
               selectedArticleId={selectedArticleId}
               onArticleClick={setSelectedArticleId}
               onAdd={handleListAdd}
               onDelete={handleListDelete}
+              onReparent={handleReparent}
             />
-          ) : articles.length === 0 ? (
+          ) : localArticles.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4">
               <p className="text-sm text-muted-foreground">{t("emptySpace")}</p>
               <Button onClick={() => setAddNodeOpen(true)} className="gap-2">
@@ -345,10 +367,12 @@ export function KnowledgeBaseShell({
             </div>
           ) : (
             <SpaceMap
-              articles={articles}
+              articles={localArticles}
               connections={connections}
               spaceId={activeSpaceId}
               onArticleClick={setSelectedArticleId}
+              onArticleCreated={(article) => setLocalArticles((prev) => [...prev, article])}
+              onArticleReparented={applyReparent}
             />
           )}
         </div>
@@ -429,9 +453,9 @@ export function KnowledgeBaseShell({
         parentId={listAddParentId}
         parentPosition={null}
         onClose={() => setListAddOpen(false)}
-        onCreated={() => {
+        onCreated={(article) => {
           setListAddOpen(false);
-          router.refresh();
+          setLocalArticles((prev) => [...prev, article]);
         }}
       />
     </div>

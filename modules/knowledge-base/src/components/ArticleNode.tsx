@@ -19,7 +19,7 @@ export type ArticleNodeData = {
   onDelete: () => void;
 };
 
-export function ArticleNode({ data, selected }: NodeProps<Node<ArticleNodeData>>) {
+export function ArticleNode({ data }: NodeProps<Node<ArticleNodeData>>) {
   const t = useTranslations("knowledge-base");
   const [hovered, setHovered] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,7 +80,7 @@ export function ArticleNode({ data, selected }: NodeProps<Node<ArticleNodeData>>
         <Handle
           type="target"
           position={Position.Top}
-          className="!h-2 !w-2 !border-border !bg-background"
+          className="h-2! w-2! border-border! bg-background!"
         />
 
         <div className="mb-1.5 flex items-start gap-2">
@@ -103,7 +103,7 @@ export function ArticleNode({ data, selected }: NodeProps<Node<ArticleNodeData>>
         <Handle
           type="source"
           position={Position.Bottom}
-          className="!h-2 !w-2 !border-border !bg-background"
+          className="h-2! w-2! border-border! bg-background!"
         />
       </button>
     </>

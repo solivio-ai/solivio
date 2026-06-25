@@ -106,7 +106,8 @@
     "deleteTitle": "Usunąć element?",
     "deleteDesc": "Spowoduje to trwałe usunięcie \"{title}\" wraz ze wszystkimi elementami podrzędnymi. Tej operacji nie można cofnąć.",
     "deleteCancel": "Anuluj",
-    "deleteConfirm": "Usuń"
+    "deleteConfirm": "Usuń",
+    "dropToRoot": "Upuść tutaj, aby przenieść na poziom główny"
   },
   "addNode": {
     "title": "Dodaj",

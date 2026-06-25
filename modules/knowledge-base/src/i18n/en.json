@@ -106,7 +106,8 @@
     "deleteTitle": "Delete article?",
     "deleteDesc": "This will permanently delete \"{title}\" and all its children. This cannot be undone.",
     "deleteCancel": "Cancel",
-    "deleteConfirm": "Delete"
+    "deleteConfirm": "Delete",
+    "dropToRoot": "Drop here to move to top level"
   },
   "addNode": {
     "title": "Add",
