@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const isPolish = page.locale === "pl";
 
 const absoluteUrl = (path: string) => new URL(path, siteOrigin).toString();
 
@@ -15,10 +14,7 @@ const canonical = absoluteUrl(page.path);
 const englishUrl = absoluteUrl("/");
 const polishUrl = absoluteUrl("/pl/");
 const ogImage = absoluteUrl("/media/solivio-promo-poster.png");
-const ogImageAlt = isPolish
-  ? "Podgląd procesu Solivio od zapytania klienta do szkicu oferty"
-  : "Solivio inquiry-to-draft-quote workflow preview";
-const alternateLocale = isPolish ? "en_US" : "pl_PL";
+const ogImageAlt = page.seo.ogImageAlt;
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -94,8 +90,8 @@ const structuredData = {
   <link rel="apple-touch-icon" href="/favicon.png" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Solivio" />
-  <meta property="og:locale" content={isPolish ? "pl_PL" : "en_US"} />
-  <meta property="og:locale:alternate" content={alternateLocale} />
+  <meta property="og:locale" content={page.seo.ogLocale} />
+  <meta property="og:locale:alternate" content={page.seo.alternateOgLocale} />
   <meta property="og:title" content={page.ogTitle} />
   <meta property="og:description" content={page.ogDescription} />
   <meta property="og:url" content={canonical} />

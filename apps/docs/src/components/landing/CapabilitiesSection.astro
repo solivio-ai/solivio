@@ -13,7 +13,7 @@ const { page } = Astro.props;
   <div class="mx-auto grid max-w-[94rem] gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,0.85fr)]">
     <article data-reveal>
       <div class="grid max-w-2xl gap-3">
-        <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Fundament" : "Foundation"}</p>
+        <p class={ui.sectionLabelClass}>{page.sectionLabels.foundation}</p>
         <h2 class={ui.sectionTitleClass}>{page.capabilities.title}</h2>
         <p class={ui.sectionLeadClass}>{page.capabilities.body}</p>
       </div>
@@ -54,7 +54,7 @@ const { page } = Astro.props;
     </article>
 
     <article class="self-start rounded-lg border border-border bg-muted/35 p-5 sm:p-7" data-reveal data-reveal-delay="130">
-      <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Proces" : "Process"}</p>
+      <p class={ui.sectionLabelClass}>{page.sectionLabels.process}</p>
       <h2 class="mt-3 text-3xl font-semibold leading-tight text-foreground">{page.workflow.title}</h2>
       <p class={`${ui.sectionLeadClass} mt-3`}>{page.workflow.body}</p>
       <ol class="mt-8 grid gap-5">

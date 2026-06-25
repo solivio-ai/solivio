@@ -1,6 +1,6 @@
 ---
 import LandingPage from "../../components/LandingPage.astro";
-import { landingPages } from "../../landing/content";
+import { getLandingPage } from "../../landing/content";
 ---
 
-<LandingPage page={landingPages.pl} />
+<LandingPage page={getLandingPage("pl")} />

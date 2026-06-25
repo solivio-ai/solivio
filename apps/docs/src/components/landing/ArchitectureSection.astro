@@ -8,23 +8,14 @@ interface Props {
 }
 
 const { page, labels } = Astro.props;
-const isPolish = page.locale === "pl";
-const sourceSystems = isPolish
-  ? ["CRM", "ERP", "E-commerce", "E-mail", "Excel", "PDF", "Wewnętrzne API"]
-  : ["CRM", "ERP", "Ecommerce", "Email", "Excel", "PDF", "Internal APIs"];
-const salesTeamActions = isPolish
-  ? ["Weryfikacja", "Edycja", "Akceptacja", "PDF", "CRM", "ERP"]
-  : ["Review", "Edit", "Approve", "PDF", "CRM", "ERP"];
-const solivioPipeline = isPolish
-  ? ["Przyjęcie", "Ekstrakcja", "Dopasowanie", "Szkic", "Weryfikacja"]
-  : ["Intake", "Extraction", "Matching", "Draft", "Review"];
+const { sourceSystems, solivioPipeline, salesTeam } = page.architectureDiagram;
 ---
 
 <section id="architecture" class={`${ui.sectionClass} bg-muted/30`}>
   <div class="mx-auto max-w-[94rem]">
     <div class="grid gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:items-start">
       <div class="grid gap-4" data-reveal>
-        <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Architektura" : "Architecture"}</p>
+        <p class={ui.sectionLabelClass}>{page.sectionLabels.architecture}</p>
         <h2 class={ui.sectionTitleClass}>{page.architecture.title}</h2>
         <p class={ui.sectionLeadClass}>{page.architecture.body}</p>
         <a class={ui.textLinkClass} href={page.architecture.link.href}>
@@ -91,17 +82,11 @@ const solivioPipeline = isPolish
 
           <article class="grid gap-4 rounded-lg border border-border bg-background p-4 shadow-sm">
             <div class="grid gap-1">
-              <h3 class={ui.h3Class}>{isPolish ? "Zespół sprzedaży" : "Sales team"}</h3>
-              <p class={ui.bodyTextClass}>
-                {
-                  isPolish
-                    ? "Handlowcy weryfikują, edytują i akceptują ofertę przed PDF-em lub przekazaniem wyniku do istniejących narzędzi."
-                    : "Salespeople review, edit, and approve the offer before PDF output or handoff into existing tools."
-                }
-              </p>
+              <h3 class={ui.h3Class}>{salesTeam.title}</h3>
+              <p class={ui.bodyTextClass}>{salesTeam.body}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-              {salesTeamActions.map((label) => (
+              {salesTeam.actions.map((label) => (
                 <span class="inline-flex h-8 items-center rounded-lg border border-secondary/20 bg-accent px-3 text-sm font-semibold text-secondary dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
                   {label}
                 </span>

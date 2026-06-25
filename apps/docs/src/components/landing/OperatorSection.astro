@@ -13,7 +13,7 @@ const { page, labels } = Astro.props;
 <section class="border-t border-border bg-muted/30 px-4 py-16 sm:px-6 lg:px-14 lg:py-24">
   <div class="mx-auto grid max-w-[94rem] gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
     <div class="grid content-start gap-4" data-reveal>
-      <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Operator" : "Operator"}</p>
+      <p class={ui.sectionLabelClass}>{page.sectionLabels.operator}</p>
       <h2 class={ui.sectionTitleClass}>{page.operator.title}</h2>
       <p class={ui.sectionLeadClass}>{page.operator.body}</p>
       <a class={ui.textLinkClass} href="/guides/deployment/">

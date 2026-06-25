@@ -1,12 +1,11 @@
 ---
 import type { LandingContent } from "../landing/content";
-import LandingDocumentHead from "./landing/LandingDocumentHead.astro";
-import LandingFooter from "./landing/LandingFooter.astro";
-import LandingHeader from "./landing/LandingHeader.astro";
-import LandingInteractions from "./landing/LandingInteractions.astro";
-import LandingMainSections from "./landing/LandingMainSections.astro";
-import LandingSkipLink from "./landing/LandingSkipLink.astro";
-import { getLandingLabels } from "./landing/shared";
+import DocumentHead from "./landing/DocumentHead.astro";
+import Footer from "./landing/Footer.astro";
+import Header from "./landing/Header.astro";
+import Interactions from "./landing/Interactions.astro";
+import MainSections from "./landing/MainSections.astro";
+import SkipLink from "./landing/SkipLink.astro";
 import "../styles/landing.css";
 
 interface Props {
@@ -14,21 +13,21 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const labels = getLandingLabels(page);
+const labels = page.labels;
 ---
 
 <!doctype html>
 <html lang={page.lang}>
-  <LandingDocumentHead page={page} />
+  <DocumentHead page={page} />
   <body class="bg-background font-sans text-foreground antialiased">
-    <LandingSkipLink label={labels.skipToContent} />
+    <SkipLink label={labels.skipToContent} />
 
-    <LandingHeader page={page} labels={labels} />
+    <Header page={page} labels={labels} />
 
-    <LandingMainSections page={page} labels={labels} />
+    <MainSections page={page} labels={labels} />
 
-    <LandingFooter page={page} labels={labels} />
+    <Footer page={page} labels={labels} />
 
-    <LandingInteractions />
+    <Interactions />
   </body>
 </html>

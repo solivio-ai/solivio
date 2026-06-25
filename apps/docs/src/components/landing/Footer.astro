@@ -14,7 +14,7 @@ const docsLinks = [
   { href: "/guides/features/", label: page.capabilities.link.label },
   { href: "/guides/modules/", label: page.architecture.link.label },
   { href: "/guides/extending/", label: page.modules.link.label },
-  { href: "/api/", label: "API" },
+  { href: "/api/", label: labels.apiReference },
 ];
 ---
 
@@ -22,11 +22,11 @@ const docsLinks = [
   <div class="mx-auto grid max-w-[94rem] gap-8 md:grid-cols-[minmax(14rem,1.2fr)_repeat(3,minmax(0,1fr))]">
     <div class="grid content-start gap-3">
       <div class="flex flex-wrap items-center gap-3">
-        <a href={page.locale === "pl" ? "/pl/" : "/"} aria-label={labels.home}>
+        <a href={page.path} aria-label={labels.home}>
           <img class="h-8 w-auto max-w-[136px] object-contain dark:hidden" src="/solivio-logo.png" alt="Solivio" width="180" height="60" />
           <img class="hidden h-8 w-auto max-w-[136px] object-contain dark:block" src="/solivio-logo-dark.png" alt="Solivio" width="180" height="60" />
         </a>
-        <span class="text-sm font-semibold text-muted-foreground">by</span>
+        <span class="text-sm font-semibold text-muted-foreground">{labels.footerBy}</span>
         <a
           class="inline-flex items-center text-foreground transition-colors hover:text-secondary dark:hover:text-primary"
           href={footerDeraveUrl}

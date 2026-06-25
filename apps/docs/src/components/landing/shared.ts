@@ -6,46 +6,12 @@ export type Link = {
   external?: boolean;
 };
 
-export type LandingLabels = ReturnType<typeof getLandingLabels>;
+export type LandingLabels = LandingContent["labels"];
 
 export const releaseLabel = "v0.1.0";
 
 export const linkAttrs = (link: Link) =>
   link.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
-
-export const getLandingLabels = (page: LandingContent) => {
-  const isPolish = page.locale === "pl";
-
-  return {
-    skipToContent: isPolish ? "Przejdź do treści" : "Skip to content",
-    home: isPolish ? "Strona główna Solivio" : "Solivio home",
-    primaryNavigation: isPolish ? "Główna nawigacja" : "Primary navigation",
-    primaryActions: isPolish ? "Główne akcje" : "Primary actions",
-    projectFacts: isPolish ? "Informacje o projekcie" : "Project facts",
-    productPreview: isPolish ? "Podgląd produktu Solivio" : "Solivio product preview",
-    nextSteps: isPolish ? "Następne kroki" : "Next steps",
-    announcement: isPolish
-      ? "Uruchom lokalnie, przejrzyj architekturę i sprawdź proces od zapytania do oferty"
-      : "Run locally, inspect the architecture, and review the inquiry-to-quote workflow",
-    quickStart: isPolish ? "Szybki start" : "Quick start",
-    copy: isPolish ? "Kopiuj" : "Copy",
-    copied: isPolish ? "Skopiowano" : "Copied",
-    rawInquiry: isPolish ? "Surowe zapytanie" : "Raw inquiry",
-    extractedSummary: isPolish ? "Ekstrakcja" : "Extracted summary",
-    productMatches: isPolish ? "Dopasowania katalogu" : "Catalog matches",
-    confidence: isPolish ? "Pewność" : "Confidence",
-    generated: isPolish ? "Wygenerowany" : "Generated",
-    inReview: isPolish ? "W weryfikacji" : "In review",
-    accepted: isPolish ? "PDF" : "PDF",
-    sourceTrail: isPolish ? "Ścieżka decyzyjna" : "Decision trail",
-    architectureCaption: isPolish
-      ? "Istniejące systemy → Solivio → zespół sprzedaży"
-      : "Existing systems → Solivio → sales team",
-    moduleStatus: isPolish ? "Typ" : "Surface",
-    operatorLink: isPolish ? "Przejdź do przewodnika wdrożenia" : "Open deployment guide",
-    footerTop: isPolish ? "Do góry" : "Back to top",
-  };
-};
 
 const buttonBaseClass =
   "inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent px-4 text-sm font-semibold transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px";

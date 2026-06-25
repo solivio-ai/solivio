@@ -8,14 +8,13 @@ interface Props {
 }
 
 const { page, labels } = Astro.props;
-const isPolish = page.locale === "pl";
 ---
 
 <section class={ui.sectionClass}>
   <div class="mx-auto max-w-[94rem]">
     <div class="mb-10 grid gap-5 md:grid-cols-[minmax(0,0.8fr)_auto] md:items-end" data-reveal>
       <div class="grid max-w-3xl gap-3">
-        <p class={ui.sectionLabelClass}>{page.locale === "pl" ? "Moduły" : "Modules"}</p>
+        <p class={ui.sectionLabelClass}>{page.sectionLabels.modules}</p>
         <h2 class={ui.sectionTitleClass}>{page.modules.title}</h2>
         <p class={ui.sectionLeadClass}>{page.modules.body}</p>
       </div>
@@ -26,8 +25,8 @@ const isPolish = page.locale === "pl";
     </div>
     <div class="overflow-hidden rounded-lg border border-border bg-background" data-reveal>
       <div class="hidden grid-cols-[minmax(10rem,0.4fr)_minmax(0,1fr)_8rem] border-b border-border bg-muted/45 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground md:grid">
-        <span>{isPolish ? "Moduł" : "Module"}</span>
-        <span>{isPolish ? "Co wnosi" : "What it contributes"}</span>
+        <span>{page.moduleTable.moduleHeader}</span>
+        <span>{page.moduleTable.contributionHeader}</span>
         <span>{labels.moduleStatus}</span>
       </div>
       {page.modules.items.map((item, index) => (
@@ -38,7 +37,7 @@ const isPolish = page.locale === "pl";
             "w-fit rounded-md border px-2 py-1 text-xs font-semibold",
             index < 3 ? "border-primary/45 bg-primary/15 text-foreground" : "border-secondary/25 bg-accent text-secondary dark:border-primary/25 dark:bg-primary/10 dark:text-primary",
           ]}>
-            {index < 3 ? (isPolish ? "Rdzeń" : "Core") : (isPolish ? "Rozszerzenie" : "Extension")}
+            {index < 3 ? page.moduleTable.coreStatus : page.moduleTable.extensionStatus}
           </span>
         </article>
       ))}
