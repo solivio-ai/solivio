@@ -2,6 +2,7 @@
 
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +23,8 @@ type Props = {
 
 export function ArticleDrawer({ article, onClose, note, spaceName }: Props) {
   const t = useTranslations("knowledge-base.drawer");
+  const pathname = usePathname();
+  const inKb = pathname.startsWith("/knowledge-base");
   const [fullBody, setFullBody] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -64,12 +67,14 @@ export function ArticleDrawer({ article, onClose, note, spaceName }: Props) {
                     {spaceName}
                   </Badge>
                 )}
-                <Button variant="outline" size="sm" asChild className="w-fit">
-                  <Link href={`/knowledge-base/${article.spaceId}?article=${article.id}`}>
-                    <ExternalLink size={13} />
-                    {t("viewInKb")}
-                  </Link>
-                </Button>
+                {!inKb && (
+                  <Button variant="outline" size="sm" asChild className="w-fit">
+                    <Link href={`/knowledge-base/${article.spaceId}?article=${article.id}`}>
+                      <ExternalLink size={13} />
+                      {t("viewInKb")}
+                    </Link>
+                  </Button>
+                )}
               </div>
             </SheetHeader>
             <div className="px-4 pb-4 text-sm text-muted-foreground">
