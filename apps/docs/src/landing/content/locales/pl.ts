@@ -8,12 +8,12 @@ export const plLandingContent = {
   alternateLocale: "en",
   alternatePath: "/",
   alternateLabel: "EN",
-  title: "Solivio - open-source system AI do ofert B2B",
+  title: "Solivio - open-source system do ofertowania B2B z AI",
   description:
-    "Solivio to open-source'owy, samodzielnie hostowany system AI, który zamienia surowe zapytania B2B, katalogi i dane klientów w szkice ofert.",
-  ogTitle: "Solivio - open-source system od zapytania do szkicu oferty",
+    "Solivio to open-source system do samodzielnego hostingu, który zamienia nieuporządkowane zapytania B2B, katalogi i dane klientów w szkice ofert.",
+  ogTitle: "Solivio - od zapytania ofertowego do szkicu oferty w open source",
   ogDescription:
-    "Uruchom Solivio lokalnie albo w pełni on-prem. Połącz CRM, ERP, e-commerce, katalogi i dokumenty w jednym procesie przeglądu ofert.",
+    "Uruchom Solivio lokalnie albo on-prem. Połącz CRM, ERP, e-commerce, katalogi i dokumenty w jednym procesie przygotowania i weryfikacji ofert.",
   seo: {
     ogLocale: "pl_PL",
     alternateOgLocale: "en_US",
@@ -24,11 +24,11 @@ export const plLandingContent = {
     home: "Strona główna Solivio",
     primaryNavigation: "Główna nawigacja",
     primaryActions: "Główne akcje",
-    projectFacts: "Informacje o projekcie",
+    projectFacts: "Fakty o projekcie",
     productPreview: "Podgląd produktu Solivio",
     nextSteps: "Następne kroki",
     announcement:
-      "Uruchom lokalnie, przejrzyj architekturę i sprawdź proces od zapytania do oferty",
+      "Uruchom lokalnie, zobacz architekturę i przejdź przez proces od zapytania do szkicu oferty",
     quickStart: "Szybki start",
     copy: "Kopiuj",
     copied: "Skopiowano",
@@ -39,10 +39,10 @@ export const plLandingContent = {
     generated: "Wygenerowany",
     inReview: "W weryfikacji",
     accepted: "PDF",
-    sourceTrail: "Ścieżka decyzyjna",
+    sourceTrail: "Ślad źródeł",
     architectureCaption: "Istniejące systemy → Solivio → zespół sprzedaży",
-    moduleStatus: "Typ",
-    operatorLink: "Przejdź do przewodnika wdrożenia",
+    moduleStatus: "Obszar",
+    operatorLink: "Otwórz przewodnik wdrożenia",
     footerTop: "Do góry",
     footerBy: "od",
     githubRepository: "Repozytorium GitHub",
@@ -63,20 +63,20 @@ export const plLandingContent = {
     docs: "Dokumentacja",
   },
   hero: {
-    h1: "Od surowego zapytania B2B do",
+    h1: "Od zapytania w dowolnej formie do",
     h1Highlight: "szkicu oferty",
-    body: "Solivio to open-source'owy, samodzielnie hostowany system ofertowania B2B. Zamienia zapytania, katalogi, kontekst z CRM/ERP i dokumenty w szkice ofert gotowe do weryfikacji.",
+    body: "Solivio to open-source system ofertowania B2B do samodzielnego hostingu. Przyjmuje zapytanie tak, jak przychodzi: mail, załącznik, zdjęcie, notatka albo wiadomość głosowa. Łączy je z katalogiem i kontekstem z CRM/ERP, porządkuje i przygotowuje szkic oferty do weryfikacji przez handlowca.",
     facts: [
-      "Licencja MIT - sklonuj i uruchom",
-      "AI w chmurze albo lokalne modele on-prem",
-      "Moduły dla istniejących systemów",
+      "Licencja MIT - sklonuj, uruchom, sprawdź kod",
+      "Modele AI w chmurze albo lokalnie",
+      "Moduły do integracji z istniejącymi systemami",
     ],
-    primary: { href: "/guides/getting-started/", label: "Rozpocznij konfigurację" },
+    primary: { href: "/guides/getting-started/", label: "Uruchom lokalnie" },
     secondary: { href: githubUrl, label: "Zobacz GitHub", external: true },
     quickStart: "git clone https://github.com/solivio-ai/solivio.git && cd solivio && yarn setup",
     offerNav: ["Zapytania", "Katalog", "Oferty", "Klienci", "Asystent"],
     offerTitle: "Szkic oferty 2026-0607-001",
-    offerMeta: "ACME Automation - 18 pozycji - Do sprawdzenia",
+    offerMeta: "ACME Automation - 18 pozycji - Weryfikacja",
     offerStatus: "Szkic",
     offerTableHeaders: ["Pozycja", "Ilość", "Suma"],
     offerRows: [
@@ -85,29 +85,29 @@ export const plLandingContent = {
       ["Sterownik napędu 3 kW", "4", "4 320,00"],
       ["Rezystor hamujący 200 W", "4", "440,00"],
     ],
-    offerActions: ["Edytuj", "Zaakceptuj i wygeneruj PDF"],
+    offerActions: ["Edytuj", "Zatwierdź i wygeneruj PDF"],
   },
   heroPreview: {
     productSignals: [
-      { label: "Pozycji w szkicu", value: "4" },
+      { label: "Pozycje", value: "4" },
       { label: "Etap", value: "Szkic" },
       { label: "Wynik", value: "PDF" },
     ],
     rail: [
       {
         title: "Kod open source",
-        body: "MIT, lokalne uruchomienie i kod do przejrzenia.",
+        body: "MIT, lokalne uruchomienie i kod do wglądu.",
       },
       {
         title: "Samodzielny hosting",
-        body: "Docker, Postgres i brak vendor lock-in.",
+        body: "Docker, Postgres i brak uzależnienia od dostawcy.",
       },
       {
-        title: "Dla złożonych procesów",
+        title: "Na złożone zapytania",
         body: "Wielopozycyjne zapytania i duże katalogi.",
       },
       {
-        title: "Dla deweloperów",
+        title: "Dla zespołów technicznych",
         body: "TypeScript, Next.js, Drizzle i moduły.",
       },
     ],
@@ -122,77 +122,77 @@ export const plLandingContent = {
     ],
   },
   stack: {
-    title: "Zbudowane na stacku, który już znasz",
+    title: "Zbudowane na znanym stacku",
     items: ["Next.js", "TypeScript", "Postgres", "Drizzle ORM", "Tailwind v4", "shadcn/ui"],
   },
   metrics: {
     items: [
-      { value: "MIT", label: "Licencja open-source" },
-      { value: "6", label: "Wbudowanych modułów" },
-      { value: "On-prem", label: "Opcja wdrożenia" },
-      { value: "Dowolne AI", label: "Strategia dostawcy" },
+      { value: "MIT", label: "Licencja open source" },
+      { value: "7", label: "Wbudowanych modułów" },
+      { value: "On-prem", label: "Możliwe wdrożenie" },
+      { value: "Chmura/lokalnie", label: "Modele AI" },
     ],
   },
   what: {
-    title: "Od zapytania do szkicu oferty",
-    body: "Solivio pomaga firmom zamieniać złożone, wielopozycyjne zapytania i rozproszony kontekst sprzedażowy w uporządkowane oferty. Rdzeń procesu jest celowo wąski, przejrzysty i rozszerzalny.",
+    title: "Od zapytania ofertowego do szkicu oferty",
+    body: "Solivio pomaga zespołom sprzedaży zamieniać złożone, wielopozycyjne zapytania i rozproszony kontekst w uporządkowane szkice ofert. Rdzeń procesu jest celowo wąski, przejrzysty i łatwy do rozszerzenia.",
     items: [
       {
         title: "Przyjęcie zapytania",
-        body: "Zbieraj surowe zapytania z e-maili, wklejonego tekstu, CSV albo importerów specyficznych dla wdrożenia.",
+        body: "Przyjmuj zapytania z e-maili, wklejonego tekstu, plików CSV albo importerów dopasowanych do wdrożenia.",
       },
       {
         title: "Ekstrakcja",
-        body: "System wyciąga pozycje, ilości, parametry, niejasności i ślad źródeł.",
+        body: "System rozpoznaje pozycje, ilości, parametry, niejasności i ślad źródeł.",
       },
       {
         title: "Dopasowanie produktów",
-        body: "Przeszukuj katalog po SKU, tekście, regułach i podobieństwie semantycznym, gdy embeddingi są włączone.",
+        body: "Przeszukuj katalog po SKU, opisie, regułach i podobieństwie semantycznym, jeśli wdrożenie korzysta z embeddingów.",
       },
       {
         title: "Szkic oferty",
-        body: "Powstaje szkic z pozycjami, notatkami, niedopasowanymi fragmentami i możliwością wygenerowania PDF.",
+        body: "Powstaje szkic z pozycjami, notatkami, fragmentami wymagającymi decyzji i możliwością wygenerowania PDF.",
       },
       {
         title: "Weryfikacja przez handlowca",
-        body: "Zespół poprawia produkty, ilości, rabaty i status akceptacji zanim cokolwiek wyjdzie do klienta.",
+        body: "Handlowiec poprawia produkty, ilości, rabaty i status akceptacji, zanim cokolwiek trafi do klienta.",
       },
     ],
   },
   capabilities: {
-    title: "Warstwa sprzedaży dla istniejących systemów",
-    body: "Solivio nie wymaga wymiany CRM, ERP, e-commerce, katalogów, dokumentów ani narzędzi raportowych. Porządkuje dane sprzedażowe z tych źródeł w jednym miejscu, przygotowuje szkic i przekazuje zaakceptowany rezultat tam, gdzie zespół już pracuje.",
+    title: "Warstwa sprzedażowa dla systemów, które już masz",
+    body: "Solivio nie zastępuje CRM, ERP, e-commerce, katalogów, dokumentów ani narzędzi raportowych. Zbiera z nich kontekst sprzedażowy, przygotowuje szkic oferty i po akceptacji przekazuje wynik tam, gdzie zespół już pracuje.",
     items: [
       {
-        title: "Przyjmowanie źródeł",
-        body: "Zacznij od e-maili, wklejonego tekstu, CSV, dokumentów albo importerów specyficznych dla wdrożenia.",
+        title: "Wejście z wielu źródeł",
+        body: "Zacznij od e-maili, wklejonego tekstu, plików CSV, dokumentów albo importerów dopasowanych do wdrożenia.",
       },
       {
-        title: "Kontekst z istniejących systemów",
-        body: "Wprowadź do procesu katalog, klientów, ceny, stany magazynowe, umowy, CRM, ERP, e-commerce i polityki sprzedaży.",
+        title: "Kontekst z obecnych narzędzi",
+        body: "Włącz do ofertowania katalog, dane klienta, ceny, stany magazynowe, umowy, historię zamówień, CRM, ERP, e-commerce i zasady sprzedaży.",
       },
       {
         title: "Wybór dostawcy AI",
-        body: "Użyj dostawcy AI pasującego do wdrożenia albo podłącz lokalne endpointy modeli do ekstrakcji i funkcji asystenta.",
+        body: "Wybierz dostawców AI w chmurze pasujących do wdrożenia albo podłącz lokalne modele do ekstrakcji, dopasowania i funkcji asystenta.",
       },
       {
-        title: "Opcja w pełni on-prem",
-        body: "Uruchom Solivio z lokalnymi modelami AI i samodzielnie hostowaną infrastrukturą, gdy dane nie mogą opuszczać firmy.",
+        title: "Pełne on-prem, gdy trzeba",
+        body: "Gdy polityka firmy tego wymaga, uruchom Solivio z lokalnymi modelami AI i własną infrastrukturą.",
       },
       {
-        title: "Weryfikacja przez sprzedaż",
+        title: "Kontrola po stronie handlowca",
         body: "Handlowiec zachowuje kontrolę nad produktami, ilościami, rabatami, marżą i akceptacją.",
       },
       {
-        title: "Rozszerzalne przekazanie danych",
+        title: "Elastyczne przekazanie wyniku",
         body: "Dodawaj moduły dla importerów, narzędzi agentów, stron, API, zadań, zdarzeń, slotów UI i dalszych integracji.",
       },
     ],
-    link: { href: "/guides/features/", label: "Zobacz opis funkcji" },
+    link: { href: "/guides/features/", label: "Zobacz przewodnik po funkcjach" },
   },
   workflow: {
     title: "Jak to działa",
-    body: "Rdzeń procesu jest celowo wąski: przejście od danych od klienta do ustrukturyzowanego szkicu oferty z człowiekiem w pętli.",
+    body: "Rdzeń procesu jest celowo wąski: przejście od danych od klienta do ustrukturyzowanego szkicu oferty z handlowcem po drodze.",
     steps: [
       {
         title: "Zapytanie klienta",
@@ -200,11 +200,11 @@ export const plLandingContent = {
       },
       {
         title: "Ekstrakcja",
-        body: "Solivio wyciąga produkty, ilości, wymagania i ograniczenia.",
+        body: "Solivio rozpoznaje produkty, ilości, wymagania i ograniczenia.",
       },
       {
         title: "Dopasowanie katalogu",
-        body: "System znajduje kandydatów i oznacza wybory wymagające decyzji.",
+        body: "System znajduje produkty-kandydatów i oznacza wybory wymagające decyzji.",
       },
       {
         title: "Szkic oferty",
@@ -212,10 +212,10 @@ export const plLandingContent = {
       },
       {
         title: "Weryfikacja i akceptacja",
-        body: "Handlowiec edytuje, waliduje, akceptuje albo cofa do kolejnego przebiegu.",
+        body: "Handlowiec edytuje, waliduje, akceptuje albo odsyła szkic do kolejnego przebiegu.",
       },
       {
-        title: "Zaakceptowane wyjście",
+        title: "Zaakceptowany wynik",
         body: "Zaakceptowana oferta może stać się PDF-em albo trafić do CRM, ERP, e-commerce i innych miejsc specyficznych dla wdrożenia.",
       },
     ],
@@ -230,41 +230,41 @@ export const plLandingContent = {
     stepsCountLabel: "kroków",
   },
   architecture: {
-    title: "Architektura pod rozszerzenia, nie pod lock-in",
-    body: "Solivio to modułowy monolit wdrażany dla jednego klienta. Rdzeń koncentruje się na procesie od zapytania do szkicu oferty, a moduły kompilowane podczas budowania łączą źródła, reguły, endpointy AI i miejsca docelowe właściwe dla danego wdrożenia.",
+    title: "Architektura pod rozszerzenia, bez przywiązania do dostawcy",
+    body: "Solivio to modułowy monolit dla pojedynczego wdrożenia. Rdzeń prowadzi proces od zapytania do szkicu oferty, a moduły dodają źródła danych, reguły, modele AI i miejsca docelowe konkretnej firmy.",
     link: { href: "/guides/modules/", label: "Poznaj moduły" },
     blocks: [
       {
         title: "Istniejące systemy",
-        body: "CRM, ERP, e-commerce, skrzynki, arkusze, PDF-y, katalogi produktowe i wewnętrzne API zasilają Solivio danymi.",
+        body: "CRM, ERP, e-commerce, skrzynki e-mail, arkusze, PDF-y, katalogi produktowe i wewnętrzne API dostarczają Solivio kontekstu.",
       },
       {
-        title: "Miejsce pracy Solivio",
-        body: "Przyjęcie zapytania, ekstrakcja, dopasowanie katalogu, szkic oferty, weryfikacja, akceptacja i PDF działają w jednym miejscu.",
+        title: "Aplikacja Solivio",
+        body: "Przyjęcie zapytania, ekstrakcja, dopasowanie katalogu, szkic oferty, weryfikacja, akceptacja i PDF działają w jednym przepływie.",
       },
       {
         title: "Moduły rozszerzeń",
-        body: "Typowane strony, API, usługi, zdarzenia, importery, zadania, narzędzia agentów i sloty UI dopasowują Solivio do firmy.",
+        body: "Typowane strony, API, usługi, zdarzenia, importery, zadania, narzędzia agentów i sloty UI dopasowują Solivio do procesu firmy.",
       },
       {
-        title: "Granica wdrożenia",
-        body: "Wybierz dostawców AI w chmurze, lokalne endpointy modeli albo pełne on-prem, aby granice danych pasowały do polityki firmy.",
+        title: "Wybór wdrożenia",
+        body: "Dobierz dostawców AI w chmurze, lokalne modele albo pełne on-prem tak, aby wdrożenie pasowało do polityki firmy.",
       },
     ],
-    note: "Wdrożenie dla jednego klienta - niezależność od dostawcy AI - moduły kompilowane podczas budowania - brak importów między modułami podczas działania",
+    note: "Jedno wdrożenie dla jednego klienta - wybór dostawcy lub lokalnych modeli AI - moduły kompilowane przy buildzie - brak importów między modułami w runtime",
   },
   architectureDiagram: {
     sourceSystems: ["CRM", "ERP", "E-commerce", "E-mail", "Excel", "PDF", "Wewnętrzne API"],
     solivioPipeline: ["Przyjęcie", "Ekstrakcja", "Dopasowanie", "Szkic", "Weryfikacja"],
     salesTeam: {
       title: "Zespół sprzedaży",
-      body: "Handlowcy weryfikują, edytują i akceptują ofertę przed PDF-em lub przekazaniem wyniku do istniejących narzędzi.",
-      actions: ["Weryfikacja", "Edycja", "Akceptacja", "PDF", "CRM", "ERP"],
+      body: "Handlowcy sprawdzają, edytują i akceptują ofertę przed wygenerowaniem PDF-a albo przekazaniem wyniku do istniejących narzędzi.",
+      actions: ["Sprawdzenie", "Edycja", "Akceptacja", "PDF", "CRM", "ERP"],
     },
   },
   modules: {
-    title: "Co mogą dodać moduły",
-    body: "Moduły to pakiety źródłowe, które rozszerzają aplikację o typowane strony, API, usługi, zadania i integracje bez importów między modułami podczas działania aplikacji.",
+    title: "Co dodają moduły",
+    body: "Moduły to pakiety źródłowe, które rozszerzają aplikację o typowane strony, API, usługi, zadania i integracje bez importów między modułami w runtime.",
     link: { href: "/guides/extending/", label: "Przeczytaj przewodnik po rozszerzaniu" },
     items: [
       { title: "Strony", body: "UI osadzone w wygenerowanym shellu aplikacji." },
@@ -275,7 +275,7 @@ export const plLandingContent = {
       },
       { title: "Zadania", body: "Zadania w tle i opcjonalne harmonogramy cron." },
       {
-        title: "Możliwości importerów",
+        title: "Importery",
         body: "Normalizacja surowych danych przed zapisem przez moduł właściciela.",
       },
       {
@@ -295,70 +295,76 @@ export const plLandingContent = {
     extensionStatus: "Rozszerzenie",
   },
   operator: {
-    title: "Ścieżka operatora",
-    body: "Od lokalnego uruchomienia do wdrożenia dla jednego klienta - dokumentacja prowadzi po kolei.",
+    title: "Ścieżka wdrożenia",
+    body: "Zacznij lokalnie, a potem dobierz sposób uruchomienia, integracje oraz modele AI - chmurowe lub lokalne - dla poszczególnych ról w systemie.",
     items: [
       {
         title: "Uruchom lokalnie",
         body: "`yarn setup` uruchamia Postgres, generuje połączenia modułów i wykonuje migracje.",
       },
       {
-        title: "Konfiguracja ze źródeł",
-        body: "Klon repozytorium, instalacja przez Yarn, kopia `.env.example`, potem aplikacja Next.js.",
+        title: "Konfiguracja z kodu źródłowego",
+        body: "Sklonuj repozytorium, zainstaluj zależności przez Yarn, skopiuj `.env.example` i uruchom aplikację Next.js.",
       },
       {
         title: "Ścieżka integracji",
-        body: "Domyślna ewaluacja działa lokalnie; integracje z CRM, ERP, e-commerce i innymi narzędziami dodaje się jako moduły wdrożeniowe.",
+        body: "Domyślna ewaluacja działa lokalnie; integracje z CRM, ERP, e-commerce i innymi narzędziami dodajesz jako moduły wdrożeniowe.",
       },
       {
-        title: "Granica AI",
-        body: "Użyj poświadczeń wybranego dostawcy albo lokalnych endpointów modeli do ekstrakcji, dopasowania i funkcji asystenta.",
+        title: "Opcje modeli AI",
+        body: "Używaj dostawców AI w chmurze albo lokalnych modeli i przypisuj ekstrakcję, dopasowanie oraz asystenta do właściwych ról.",
       },
       {
         title: "Budowanie i wdrożenie",
-        body: "Obraz produkcyjny i przewodnik wdrożeniowy obsługują instalację VPS.",
+        body: "Obraz produkcyjny i przewodnik wdrożeniowy prowadzą przez instalację na VPS-ie.",
       },
       {
         title: "Dokumentacja i API",
-        body: "Konfiguracja, moduły, rozszerzanie, wdrożenie i wygenerowana referencja OpenAPI są dostępne w dokumentacji.",
+        body: "Konfiguracja, moduły, rozszerzanie, wdrożenie i wygenerowana referencja OpenAPI są opisane w dokumentacji.",
       },
     ],
   },
   why: {
-    title: "Dlaczego to istnieje",
-    body: "W wielu firmach B2B najtrudniejszy nie jest końcowy szablon oferty. Najtrudniejszy bywa początek procesu: zapytania przychodzą zanim czyste dane trafią do CRM, ERP, e-commerce albo narzędzi, których zespół już używa. Solivio porządkuje właśnie ten etap.",
-    items: [
-      {
-        title: "Dystrybutorzy techniczni",
-        body: "Najlepsze dopasowanie: tysiące SKU i wielopozycyjne zapytania.",
-      },
-      {
-        title: "Rozproszone dane",
-        body: "Katalog, ERP, CRM, Excel, cenniki, PDF-y i wiedza seniorów rzadko działają jak jeden system.",
-      },
-      {
-        title: "Weryfikacja zamiast autonomii",
-        body: "Solivio przygotowuje szkic; handlowiec decyduje, co jest poprawne i co wychodzi do klienta.",
-      },
-    ],
+    title: "Wąskie gardło jest przed ofertą",
+    body: "Zapytania klientów przychodzą w nieuporządkowanej formie, a wiedza potrzebna do odpowiedzi jest rozproszona między katalogiem, CRM/ERP, cennikami, dokumentami, historią ofert i ludźmi. Solivio zbiera ten kontekst w szkic oferty do weryfikacji przez handlowca.",
+    flow: {
+      inbound: "Dziś zbierane ręcznie",
+      engine: "Solivio to składa",
+      outbound: "Gotowe do weryfikacji",
+    },
+    inquiry: {
+      title: "Chaotyczne zapytanie",
+      body: "Zapytanie przychodzi jak normalna komunikacja biznesowa, a nie jako gotowe pozycje produktowe.",
+      items: ["Mail", "Załączniki", "Zdjęcia", "Notatki"],
+    },
+    knowledge: {
+      title: "Rozproszona wiedza",
+      body: "Solivio łączy kontekst sprzedażowy, którego zwykle trzeba szukać ręcznie.",
+      items: ["Katalog", "CRM/ERP", "Cenniki", "Historia ofert", "Wiedza zespołu"],
+    },
+    outcome: {
+      title: "Sprawdzony szkic",
+      body: "Handlowiec nadal edytuje, waliduje, akceptuje i decyduje, co wychodzi poza firmę.",
+      items: ["Edytowalne pozycje", "Ślad źródeł", "PDF albo przekazanie"],
+    },
   },
   finalCta: {
-    developerTitle: "Deweloper / operator?",
+    developerTitle: "Dla zespołu technicznego",
     developerBody:
-      "Uruchom Solivio lokalnie w kilka minut, przeczytaj przewodniki po modułach i sprawdź każdą warstwę kodu przed decyzją.",
-    developerPrimary: { href: "/guides/getting-started/", label: "Uruchom lokalnie" },
+      "Uruchom Solivio lokalnie w kilka minut, przejrzyj przewodniki po modułach i sprawdź kod zanim zdecydujesz, czy pasuje do Twojego zespołu.",
+    developerPrimary: { href: "/guides/getting-started/", label: "Uruchom Solivio lokalnie" },
     developerSecondary: { href: githubUrl, label: "Zobacz GitHub", external: true },
-    businessTitle: "Biznes / wdrożenie?",
+    businessTitle: "Dla biznesu i wdrożeń",
     businessBody:
-      "Weź jedno reprezentatywne zapytanie ofertowe i sprawdź, czy proces od zapytania do szkicu oferty pasuje do obecnego sposobu ofertowania.",
+      "Weź jedno prawdziwe zapytanie klienta i sprawdź, czy Solivio pasuje do obecnego procesu ofertowania.",
     businessPrimary: {
       href: deraveReferralUrl("pl", "final_business_cta"),
-      label: "Odwiedź Derave",
+      label: "Porozmawiaj o wdrożeniu",
       external: true,
     },
   },
   footer: {
-    tagline: "Open-source system od zapytania do szkicu oferty dla technicznych zespołów B2B.",
+    tagline: "Open-source system do przygotowywania szkiców ofert dla technicznych zespołów B2B.",
     product: "Produkt",
     resources: "Zasoby",
     community: "Społeczność",

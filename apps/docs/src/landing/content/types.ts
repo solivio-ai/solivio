@@ -94,6 +94,10 @@ type LandingModuleTable = {
   extensionStatus: string;
 };
 
+type LandingWhyNode = SectionItem & {
+  items: string[];
+};
+
 export type LandingContent = {
   locale: LandingLocale;
   lang: string;
@@ -177,7 +181,14 @@ export type LandingContent = {
   why: {
     title: string;
     body: string;
-    items: SectionItem[];
+    flow: {
+      inbound: string;
+      engine: string;
+      outbound: string;
+    };
+    inquiry: LandingWhyNode;
+    knowledge: LandingWhyNode;
+    outcome: LandingWhyNode;
   };
   finalCta: {
     developerTitle: string;

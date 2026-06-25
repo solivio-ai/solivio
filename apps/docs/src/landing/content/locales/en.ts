@@ -127,9 +127,9 @@ export const enLandingContent = {
   metrics: {
     items: [
       { value: "MIT", label: "Open-source license" },
-      { value: "6", label: "Built-in modules" },
+      { value: "7", label: "Built-in modules" },
       { value: "On-prem", label: "Deployment option" },
-      { value: "Any AI", label: "Provider strategy" },
+      { value: "Cloud/local", label: "AI options" },
     ],
   },
   what: {
@@ -246,8 +246,8 @@ export const enLandingContent = {
         body: "Typed pages, API routes, services, events, importers, jobs, agent tools, and UI slots adapt Solivio to each company.",
       },
       {
-        title: "Deployment boundary",
-        body: "Choose managed AI providers, local model endpoints, or fully on-prem operation so data boundaries match company policy.",
+        title: "Deployment choice",
+        body: "Choose cloud AI providers, local model endpoints, or fully on-prem operation so the deployment matches company policy.",
       },
     ],
     note: "Single-tenant per deployment - AI provider agnostic - modules compiled at build time - no runtime module imports",
@@ -291,8 +291,8 @@ export const enLandingContent = {
     extensionStatus: "Extension",
   },
   operator: {
-    title: "Operator path",
-    body: "From laptop evaluation to a single-tenant deployment, the docs keep the path explicit.",
+    title: "Deployment path",
+    body: "Start on a laptop, then choose the deployment shape, integrations, and which cloud or local models handle each AI role.",
     items: [
       {
         title: "Run locally",
@@ -307,8 +307,8 @@ export const enLandingContent = {
         body: "The default evaluation path is local-first; CRM, ERP, ecommerce, and other integrations are added as deployment modules.",
       },
       {
-        title: "AI boundary",
-        body: "Use managed provider credentials or local model endpoints for extraction, matching, and assistant capabilities.",
+        title: "AI model options",
+        body: "Use cloud AI providers or local model endpoints, and assign extraction, matching, and assistant roles to the models that fit.",
       },
       {
         title: "Build & deploy",
@@ -321,22 +321,28 @@ export const enLandingContent = {
     ],
   },
   why: {
-    title: "Why it exists",
-    body: "The hard part in many B2B teams is not the final quote template. It is the intake step: raw requests arrive before clean data reaches CRM, ERP, ecommerce, or the tools the team already uses. Solivio focuses on that stage.",
-    items: [
-      {
-        title: "Technical distributors",
-        body: "Best fit for teams with thousands of SKUs and multi-line requests.",
-      },
-      {
-        title: "Fragmented data",
-        body: "Catalogs, ERP, CRM, Excel, price lists, PDFs, and senior knowledge rarely act as one system.",
-      },
-      {
-        title: "Review over autonomy",
-        body: "Solivio prepares a draft; salespeople decide what is correct and what leaves the company.",
-      },
-    ],
+    title: "The bottleneck is before the quote",
+    body: "Customer requests arrive messy, and the knowledge needed to answer them is scattered across catalogs, CRM/ERP, price lists, documents, past offers, and people. Solivio collects that context into a draft offer for sales review.",
+    flow: {
+      inbound: "Today, gathered by hand",
+      engine: "Solivio assembles it",
+      outbound: "Ready for review",
+    },
+    inquiry: {
+      title: "Messy inquiry",
+      body: "The request arrives as natural business communication, not clean product lines.",
+      items: ["Email", "Attachments", "Photos", "Notes"],
+    },
+    knowledge: {
+      title: "Scattered knowledge",
+      body: "Solivio connects the sales context that usually has to be hunted down by hand.",
+      items: ["Catalog", "CRM/ERP", "Price notes", "Past offers", "Team knowledge"],
+    },
+    outcome: {
+      title: "Reviewed draft",
+      body: "The salesperson still edits, validates, accepts, and decides what leaves the company.",
+      items: ["Editable lines", "Source trail", "PDF or handoff"],
+    },
   },
   finalCta: {
     developerTitle: "Developer / operator?",
