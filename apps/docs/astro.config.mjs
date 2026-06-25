@@ -1,4 +1,5 @@
 import starlight from "@astrojs/starlight";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
 
@@ -18,6 +19,9 @@ function sectionSidebarPlugin() {
 
 export default defineConfig({
   site: "https://solivio.ai",
+  vite: {
+    plugins: [tailwindcss()],
+  },
   integrations: [
     starlight({
       title: "Solivio",

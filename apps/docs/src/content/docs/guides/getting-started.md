@@ -10,13 +10,13 @@ Solivio can be started in two ways:
 
 The published image is:
 
-- `ghcr.io/solivio-ai/solivio-app:latest` — the Next.js runtime that applies committed migrations on startup.
+- `ghcr.io/solivio-ai/solivio-app:latest` - the Next.js runtime that applies committed migrations on startup.
 
 ## Requirements
 
 - Docker Engine with Docker Compose v2 for the Docker quick start.
 - Node.js 24.15 or newer and Yarn 4.14.1 for source development.
-- An OpenAI API key when you want to import catalogs, generate offers, search products semantically, or use the offer assistant.
+- An OpenAI API key when you want product embeddings, semantic search, offer generation, or the offer assistant. Catalog CSV import itself can run without a key; products are saved without embeddings and remain available to keyword search.
 
 ## Docker quick start
 
@@ -72,8 +72,9 @@ printf "BETTER_AUTH_SECRET=%s\n" "$(openssl rand -base64 32)" > .env
 printf "OPENAI_API_KEY=\n" >> .env
 ```
 
-Set `OPENAI_API_KEY` in `.env` before testing AI-backed features. Then start
-the stack:
+Set `OPENAI_API_KEY` in `.env` before testing AI-backed features such as
+semantic search, offer generation, or the offer assistant. Then start the
+stack:
 
 ```bash
 docker compose up -d
@@ -119,8 +120,8 @@ openssl rand -base64 32
 ```
 
 Paste the generated value into `BETTER_AUTH_SECRET`. Set `OPENAI_API_KEY` in the
-same file when you want AI-backed catalog import, offer generation, product
-search, or offer chat.
+same file when you want product embeddings, semantic search, offer generation,
+or offer chat.
 
 Start the local database and apply the schema:
 

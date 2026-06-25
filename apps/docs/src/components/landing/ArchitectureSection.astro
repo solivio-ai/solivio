@@ -1,0 +1,111 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { type LandingLabels, ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+const { sourceSystems, solivioPipeline, salesTeam } = page.architectureDiagram;
+---
+
+<section id="architecture" class={`${ui.sectionClass} bg-muted/30`}>
+  <div class="mx-auto max-w-[94rem]">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:items-start">
+      <div class="grid gap-4" data-reveal>
+        <p class={ui.sectionLabelClass}>{page.sectionLabels.architecture}</p>
+        <h2 class={ui.sectionTitleClass}>{page.architecture.title}</h2>
+        <p class={ui.sectionLeadClass}>{page.architecture.body}</p>
+        <a class={ui.textLinkClass} href={page.architecture.link.href}>
+          {page.architecture.link.label}
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+        </a>
+      </div>
+
+      <div class={`${ui.cardClass} overflow-hidden`} data-reveal data-reveal-delay="120">
+        <div class="border-b border-border px-5 py-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary dark:text-primary">
+            {labels.architectureCaption}
+          </p>
+        </div>
+        <div class="grid gap-4 p-5 lg:grid-cols-[minmax(0,0.95fr)_auto_minmax(0,1.15fr)_auto_minmax(0,0.95fr)] lg:items-stretch">
+          <article class="grid gap-4 rounded-lg border border-border bg-background p-4 shadow-sm">
+            <div class="grid gap-1">
+              <h3 class={ui.h3Class}>{page.architecture.blocks[0]?.title}</h3>
+              <p class={ui.bodyTextClass}>{page.architecture.blocks[0]?.body}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {sourceSystems.map((label) => (
+                <span class="inline-flex h-8 items-center rounded-lg border border-border bg-muted/45 px-3 text-sm font-semibold text-muted-foreground">
+                  {label}
+                </span>
+              ))}
+            </div>
+          </article>
+
+          <div class="flex items-center justify-center text-secondary dark:text-primary" aria-hidden="true">
+            <svg class="hidden size-8 lg:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
+            </svg>
+            <svg class="size-8 lg:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14" /><path d="m19 13-7 7-7-7" />
+            </svg>
+          </div>
+
+          <article class="grid gap-5 rounded-lg border border-primary/45 bg-primary/10 p-4 shadow-sm">
+            <div class="grid gap-1">
+              <h3 class={ui.h3Class}>{page.architecture.blocks[1]?.title}</h3>
+              <p class={ui.bodyTextClass}>{page.architecture.blocks[1]?.body}</p>
+            </div>
+            <div class="grid gap-2">
+              {solivioPipeline.map((label, index) => (
+                <div class="grid grid-cols-[auto_1fr] items-center gap-3 rounded-lg border border-primary/30 bg-background px-3 py-2">
+                  <span class="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+                    {String(index + 1)}
+                  </span>
+                  <span class="text-sm font-semibold text-foreground">{label}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <div class="flex items-center justify-center text-secondary dark:text-primary" aria-hidden="true">
+            <svg class="hidden size-8 lg:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
+            </svg>
+            <svg class="size-8 lg:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14" /><path d="m19 13-7 7-7-7" />
+            </svg>
+          </div>
+
+          <article class="grid gap-4 rounded-lg border border-border bg-background p-4 shadow-sm">
+            <div class="grid gap-1">
+              <h3 class={ui.h3Class}>{salesTeam.title}</h3>
+              <p class={ui.bodyTextClass}>{salesTeam.body}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {salesTeam.actions.map((label) => (
+                <span class="inline-flex h-8 items-center rounded-lg border border-secondary/20 bg-accent px-3 text-sm font-semibold text-secondary dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
+                  {label}
+                </span>
+              ))}
+            </div>
+          </article>
+        </div>
+        <div class="grid border-t border-border sm:grid-cols-2">
+          {page.architecture.blocks.slice(2).map((block) => (
+            <article class="grid gap-2 border-b border-border p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+              <h3 class={ui.h3Class}>{block.title}</h3>
+              <p class={ui.bodyTextClass}>{block.body}</p>
+            </article>
+          ))}
+        </div>
+        <p class="border-t border-border bg-background px-5 py-4 text-sm text-muted-foreground">
+          {page.architecture.note}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

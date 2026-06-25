@@ -54,7 +54,7 @@ const document = generator.generateDocument({
     title: "Solivio API",
     summary: "API boundaries for Data → AI → Structured draft → Review → Send.",
     description:
-      "Solivio is an open-source AI system that transforms how B2B companies create offers. The current API intentionally uses mock data so contributors can launch the product without external services.",
+      "Solivio is an open-source AI-assisted quoting system. Its API combines core system routes with enabled module routes for catalog, customers, offers, chat, import, and operational workflows.",
     version: "0.1.0",
     license: {
       name: "MIT",

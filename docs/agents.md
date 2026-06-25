@@ -48,11 +48,13 @@ them into one registry; agents consume the registry via `getAgentTools()` and ad
 framework-agnostic shape to Voltagent at the consumption boundary (see
 `toVoltagentTool` in `chatAgent.ts`).
 
-Concretely today: the **offers** module contributes the copilot's tools
+Concretely today: the **offers** module contributes the copilot's offer-editing tools
 (`search_products`, `add_product_to_offer`, `update_offer_line_item`,
 `remove_offer_line_item`, `propose_products_for_requirements`, `bulk_add_products`) —
 they call the `catalog` and `offers` services lazily via `getService()` — and the
-**offer-chat** module's copilot runs with them. Neither module imports the other.
+**order-history** module contributes `recall_order_history` for both the copilot and
+offer-generation agents. The consuming agents request their scoped tool registry through
+`getAgentTools()`; neither module imports another module's implementation.
 
 ## Rules for agent code in modules
 

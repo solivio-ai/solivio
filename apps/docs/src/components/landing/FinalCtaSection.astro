@@ -1,0 +1,47 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { linkAttrs, type LandingLabels, ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+---
+
+<section class="border-t border-border px-4 py-16 sm:px-6 lg:px-14 lg:py-20" aria-label={labels.nextSteps}>
+  <div class="mx-auto grid max-w-[94rem] gap-3 lg:grid-cols-2">
+    <article class="grid gap-5 rounded-lg border border-primary/35 bg-primary/10 p-5 sm:grid-cols-[auto_1fr] sm:p-6" data-reveal>
+      <div class="flex size-14 items-center justify-center rounded-lg bg-primary text-primary-foreground" aria-hidden="true">
+        <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+      </div>
+      <div class="grid gap-3">
+        <h2 class="text-2xl font-semibold leading-tight text-foreground">{page.finalCta.developerTitle}</h2>
+        <p class={ui.sectionLeadClass}>{page.finalCta.developerBody}</p>
+        <div class="flex flex-wrap gap-2">
+          <a class={ui.buttonPrimaryClass} href={page.finalCta.developerPrimary.href}>
+            {page.finalCta.developerPrimary.label}
+          </a>
+          <a class={ui.buttonOutlineClass} href={page.finalCta.developerSecondary.href} {...linkAttrs(page.finalCta.developerSecondary)}>
+            {page.finalCta.developerSecondary.label}
+          </a>
+        </div>
+      </div>
+    </article>
+    <article class="grid gap-5 rounded-lg border border-secondary/25 bg-accent p-5 sm:grid-cols-[auto_1fr] sm:p-6" data-reveal data-reveal-delay="120">
+      <div class="flex size-14 items-center justify-center rounded-lg bg-secondary text-secondary-foreground" aria-hidden="true">
+        <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
+      </div>
+      <div class="grid gap-3">
+        <h2 class="text-2xl font-semibold leading-tight text-foreground">{page.finalCta.businessTitle}</h2>
+        <p class={ui.sectionLeadClass}>{page.finalCta.businessBody}</p>
+        <div class="flex flex-wrap gap-2">
+          <a class={ui.buttonDarkClass} href={page.finalCta.businessPrimary.href} {...linkAttrs(page.finalCta.businessPrimary)}>
+            {page.finalCta.businessPrimary.label}
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
