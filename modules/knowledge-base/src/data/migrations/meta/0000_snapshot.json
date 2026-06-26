@@ -1,5 +1,5 @@
 {
-  "id": "7c991c62-6597-4975-83cb-b37e6362ad88",
+  "id": "63228a77-657a-49ec-8741-c5cbba9ccc7c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -140,6 +140,13 @@
           "notNull": true,
           "default": "'article'"
         },
+        "format": {
+          "name": "format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'plain'"
+        },
         "sort_order": {
           "name": "sort_order",
           "type": "integer",
@@ -239,6 +246,90 @@
           "tableFrom": "knowledge_base_articles",
           "tableTo": "knowledge_base_articles",
           "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.knowledge_base_chunks": {
+      "name": "knowledge_base_chunks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "article_id": {
+          "name": "article_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heading_path": {
+          "name": "heading_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "knowledge_base_chunks_article_id_idx": {
+          "name": "knowledge_base_chunks_article_id_idx",
+          "columns": [
+            {
+              "expression": "article_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "knowledge_base_chunks_article_id_knowledge_base_articles_id_fk": {
+          "name": "knowledge_base_chunks_article_id_knowledge_base_articles_id_fk",
+          "tableFrom": "knowledge_base_chunks",
+          "tableTo": "knowledge_base_articles",
+          "columnsFrom": ["article_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -391,8 +482,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "article_id": {
-          "name": "article_id",
+        "chunk_id": {
+          "name": "chunk_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -443,11 +534,11 @@
         }
       },
       "foreignKeys": {
-        "knowledge_base_embeddings_article_id_knowledge_base_articles_id_fk": {
-          "name": "knowledge_base_embeddings_article_id_knowledge_base_articles_id_fk",
+        "knowledge_base_embeddings_chunk_id_knowledge_base_chunks_id_fk": {
+          "name": "knowledge_base_embeddings_chunk_id_knowledge_base_chunks_id_fk",
           "tableFrom": "knowledge_base_embeddings",
-          "tableTo": "knowledge_base_articles",
-          "columnsFrom": ["article_id"],
+          "tableTo": "knowledge_base_chunks",
+          "columnsFrom": ["chunk_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -455,12 +546,86 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "knowledge_base_embeddings_article_id_unique": {
-          "name": "knowledge_base_embeddings_article_id_unique",
+        "knowledge_base_embeddings_chunk_id_unique": {
+          "name": "knowledge_base_embeddings_chunk_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["article_id"]
+          "columns": ["chunk_id"]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.knowledge_base_import_runs": {
+      "name": "knowledge_base_import_runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'running'"
+        },
+        "origin": {
+          "name": "origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'json-import'"
+        },
+        "spaces_count": {
+          "name": "spaces_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "articles_upserted": {
+          "name": "articles_upserted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "errors": {
+          "name": "errors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

@@ -69,8 +69,10 @@ function buildNodes(
 }
 
 function buildEdges(articles: MapArticle[], connections: MapConnection[]): Edge[] {
+  const nodeIds = new Set(articles.map((a) => a.id));
+
   const parentEdges: Edge[] = articles
-    .filter((a) => a.parentId)
+    .filter((a) => a.parentId && nodeIds.has(a.parentId))
     .map((a) => ({
       id: `p-${a.parentId}-${a.id}`,
       source: a.parentId!,
@@ -79,16 +81,18 @@ function buildEdges(articles: MapArticle[], connections: MapConnection[]): Edge[
       style: { stroke: "hsl(var(--border))", strokeWidth: 1.5 },
     }));
 
-  const connEdges: Edge[] = connections.map((c) => ({
-    id: `c-${c.id}`,
-    source: c.fromId,
-    target: c.toId,
-    type: "default",
-    label: c.type,
-    labelStyle: { fontSize: 10, fill: "hsl(var(--muted-foreground))" },
-    labelBgStyle: { fill: "hsl(var(--background))" },
-    style: { stroke: CONN_EDGE_STYLE[c.type] ?? CONN_EDGE_STYLE.related, strokeWidth: 1.5 },
-  }));
+  const connEdges: Edge[] = connections
+    .filter((c) => nodeIds.has(c.fromId) && nodeIds.has(c.toId))
+    .map((c) => ({
+      id: `c-${c.id}`,
+      source: c.fromId,
+      target: c.toId,
+      type: "default",
+      label: c.type,
+      labelStyle: { fontSize: 10, fill: "hsl(var(--muted-foreground))" },
+      labelBgStyle: { fill: "hsl(var(--background))" },
+      style: { stroke: CONN_EDGE_STYLE[c.type] ?? CONN_EDGE_STYLE.related, strokeWidth: 1.5 },
+    }));
 
   return [...parentEdges, ...connEdges];
 }

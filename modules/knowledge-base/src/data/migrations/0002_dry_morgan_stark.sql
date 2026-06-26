@@ -1,1 +1,0 @@
-ALTER TABLE "knowledge_base_articles" ALTER COLUMN "format" SET DEFAULT 'plain';
