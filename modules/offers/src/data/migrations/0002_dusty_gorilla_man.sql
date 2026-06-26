@@ -1,0 +1,1 @@
+ALTER TABLE "offers" ADD COLUMN "kb_articles" jsonb DEFAULT '[]'::jsonb NOT NULL;

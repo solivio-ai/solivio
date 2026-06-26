@@ -1,0 +1,151 @@
+{
+  "nav": {
+    "knowledgeBase": "Baza Wiedzy",
+    "upload": "Import KB"
+  },
+  "import": {
+    "page": {
+      "title": "Import bazy wiedzy",
+      "description": "Wgraj plik JSON, aby zaimportować przestrzenie i artykuły do bazy wiedzy."
+    },
+    "card": {
+      "title": "Wgrywanie bazy wiedzy",
+      "description": "Wybierz plik JSON i zaimportuj go. Artykuły są dzielone na fragmenty i indeksowane w tle.",
+      "chooseFile": "Wybierz plik",
+      "pickAnother": "Kliknij, aby wybrać inny plik",
+      "dropOne": "lub upuść plik w tym miejscu",
+      "readError": "Nie udało się odczytać pliku.",
+      "importAction": {
+        "queuing": "Kolejkowanie...",
+        "import": "Importuj"
+      },
+      "importDone": "Dodano do kolejki {spaces, plural, one {# przestrzeń} other {# przestrzenie}}.",
+      "importError": "Import nie powiódł się."
+    },
+    "runs": {
+      "title": "Ostatnie importy",
+      "colStatus": "Status",
+      "colSpaces": "Przestrzenie",
+      "colArticles": "Artykuły",
+      "colErrors": "Błędy",
+      "colStarted": "Rozpoczęto",
+      "running": "W toku",
+      "completed": "Zakończono",
+      "failed": "Błąd"
+    }
+  },
+  "page": {
+    "title": "Baza Wiedzy",
+    "emptySpaces": {
+      "title": "Brak przestrzeni",
+      "description": "Utwórz pierwszą przestrzeń, aby zacząć organizować wiedzę.",
+      "button": "Utwórz przestrzeń"
+    }
+  },
+  "shell": {
+    "spaces": "Przestrzenie",
+    "newSpace": "Nowa przestrzeń",
+    "loadingMap": "Ładowanie mapy…",
+    "emptySpace": "Ta przestrzeń jest pusta.",
+    "addFirst": "Dodaj pierwszy element",
+    "manage": {
+      "button": "Zarządzaj przestrzeniami",
+      "done": "Gotowe",
+      "deleteTitle": "Usunąć przestrzeń?",
+      "deleteDesc": "Spowoduje to trwałe usunięcie \"{name}\" wraz ze wszystkimi elementami. Tej operacji nie można cofnąć.",
+      "deleteCancel": "Anuluj",
+      "deleteConfirm": "Usuń"
+    }
+  },
+  "viewToggle": {
+    "map": "Mapa",
+    "list": "Lista"
+  },
+  "dialog": {
+    "title": "Nowa przestrzeń",
+    "nameLabel": "Nazwa",
+    "namePlaceholder": "np. Regulacje produktów",
+    "colorLabel": "Kolor",
+    "cancel": "Anuluj",
+    "creating": "Tworzenie…",
+    "create": "Utwórz"
+  },
+  "editSpace": {
+    "title": "Edytuj przestrzeń",
+    "nameLabel": "Nazwa",
+    "colorLabel": "Kolor",
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie…",
+    "save": "Zapisz"
+  },
+  "offerSlot": {
+    "title": "Źródła z Bazy Wiedzy"
+  },
+  "drawer": {
+    "noContent": "Brak treści.",
+    "updated": "Zaktualizowano",
+    "loading": "Ładowanie…",
+    "viewInKb": "Pokaż w Bazie Wiedzy"
+  },
+  "map": {
+    "autoLayout": "Porządkuj układ",
+    "removeConnection": "Usuń połączenie"
+  },
+  "node": {
+    "delete": "Usuń"
+  },
+  "list": {
+    "allArticles": "Wszystkie artykuły",
+    "add": "Dodaj",
+    "edit": "Edytuj",
+    "addChild": "Dodaj podrzędny",
+    "delete": "Usuń",
+    "empty": "Brak artykułów.",
+    "searchPlaceholder": "Szukaj artykułów…",
+    "noResults": "Brak artykułów pasujących do wyszukiwania.",
+    "deleteTitle": "Usunąć element?",
+    "deleteDesc": "Spowoduje to trwałe usunięcie \"{title}\" wraz ze wszystkimi elementami podrzędnymi. Tej operacji nie można cofnąć.",
+    "deleteCancel": "Anuluj",
+    "deleteConfirm": "Usuń",
+    "dropToRoot": "Upuść tutaj, aby przenieść na poziom główny"
+  },
+  "addNode": {
+    "title": "Dodaj",
+    "editTitle": "Edytuj",
+    "addChild": "Dodaj",
+    "type": {
+      "article": {
+        "label": "Artykuł",
+        "desc": "Treść tekstowa z tytułem"
+      },
+      "directory": {
+        "label": "Katalog",
+        "desc": "Grupuje powiązane węzły"
+      },
+      "upload": {
+        "label": "Wgraj plik",
+        "desc": "Importuj z .txt, .md lub .pdf"
+      }
+    },
+    "upload": {
+      "fileLabel": "Plik",
+      "dropHint": "Kliknij, aby wybrać plik",
+      "accepts": ".txt, .md, .pdf",
+      "extracting": "Wyodrębnianie treści…",
+      "error": "Nie udało się odczytać pliku. Spróbuj ponownie."
+    },
+    "nameLabel": "Tytuł",
+    "namePlaceholderArticle": "np. Pierwsze kroki",
+    "namePlaceholderDirectory": "np. Produkty",
+    "bodyLabel": "Treść",
+    "descLabel": "Opis",
+    "bodyPlaceholder": "Napisz treść artykułu…",
+    "descPlaceholder": "Krótki opis (opcjonalnie)",
+    "optional": "opcjonalnie",
+    "cancel": "Anuluj",
+    "creating": "Tworzenie…",
+    "saving": "Zapisywanie…",
+    "create": "Utwórz",
+    "save": "Zapisz"
+  }
+}

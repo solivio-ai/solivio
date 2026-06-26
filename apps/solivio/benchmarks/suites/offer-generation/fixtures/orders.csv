@@ -1,0 +1,7 @@
+order_ref;customer;item;sku;quantity;unit_price;vat;date;currency
+ORD-2026-0303;Instal-Bud Sp. z o.o.;Przewód YDYp 2x1,5 mm² 450/750V krążek 100m;KAB-YDYP-2X15;5;95.00;23;2026-03-03;PLN
+ORD-2026-0303;Instal-Bud Sp. z o.o.;Przewód YDYp 3x1,5 mm² 450/750V krążek 100m;KAB-YDYP-3X15;3;128.00;23;2026-03-03;PLN
+ORD-2026-0512;Instal-Bud Sp. z o.o.;Wyłącznik nadprądowy B16 1P;WYL-B16-1P;10;12.50;23;2026-05-12;PLN
+ORD-2026-0512;Instal-Bud Sp. z o.o.;Wyłącznik różnicowoprądowy 25A 30mA 2P;RCD-25-30-2P;2;89.00;23;2026-05-12;PLN
+ORD-2026-0512;Instal-Bud Sp. z o.o.;Rozdzielnica podtynkowa 24 modułów IP40;ROZ-24-PT;1;124.00;23;2026-05-12;PLN
+ORD-2026-0512;Instal-Bud Sp. z o.o.;Przewód YDYp 3x2,5 mm² 450/750V krążek 100m;KAB-YDYP-3X25;4;285.00;23;2026-05-12;PLN

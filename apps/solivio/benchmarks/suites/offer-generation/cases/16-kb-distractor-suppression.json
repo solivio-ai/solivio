@@ -1,0 +1,17 @@
+{
+  "id": "16-kb-distractor-suppression",
+  "title": "Knowledge base: irrelevant space must not surface",
+  "difficulty": "expert",
+  "notes": "NEGATIVE KB CASE. A plain connector order whose 'parking firmowy' wording lexically tempts the HR 'Sprawy biurowe i HR' distractor space (parking + EV charging, which shares 'gniazdo/kabel/różnicowoprądowe' vocabulary). No real policy/regulation/compatibility article applies (connectors have none), so the agent should cite NOTHING — expected.kbArticles is []. Citing the forbidden HR article zeroes the citation dimension. Tests that the agent respects space descriptions ('nie używać przy tworzeniu oferty') and does not let irrelevant knowledge leak into the offer.",
+  "customer": {
+    "name": "Instalacje Parkingowe Tech-Mont",
+    "profile": "Contractor wiring parking and garage installations."
+  },
+  "request": "Na potrzeby instalacji na parkingu firmowym poproszę 100 szybkozłączek 3-przewodowych.",
+  "expected": {
+    "items": [{ "sku": "ZL-221-413", "quantity": 100, "altSkus": ["ZL-221-613"] }],
+    "unmatched": [],
+    "kbArticles": [],
+    "forbiddenKbArticles": ["parkingowa ładowanie pojazdów"]
+  }
+}

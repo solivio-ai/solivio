@@ -4,8 +4,8 @@ description: How Solivio modules work and how a deployment chooses which ones ru
 ---
 
 Solivio is a **modular monolith**: almost every feature - the product catalog,
-customers, offers, the review chat, order-history recall, CSV import, external
-sync - is a module under `modules/` in the repository. Modules are TypeScript
+customers, offers, the review chat, order-history recall, the knowledge base,
+CSV import, external sync - is a module under `modules/` in the repository. Modules are TypeScript
 source packages **compiled into the app at build time**: a generator
 (`yarn generate`) reads the deployment manifest `solivio.config.ts`, discovers
 each enabled module's pages, API routes, services, events, jobs, translations,
@@ -19,6 +19,8 @@ The published image ships with the first-party module set enabled:
   offer-facing UI including the dashboard.
 - `offer-chat` - the offer-review assistant (threads, messages, streaming).
 - `order-history` - tools that let agents recall a customer's past orders.
+- `knowledge-base` - internal knowledge base (spaces and articles) with
+  semantic retrieval that grounds the agents, plus a JSON importer.
 - `csv-import` - CSV importer capabilities for products, customers, and
   historical orders.
 - `products-sync` - scheduled sync of products from an external source.
@@ -38,6 +40,7 @@ export default defineConfig({
     "offer-chat",
     "csv-import",
     "order-history",
+    "knowledge-base",
     ["products-sync", { sourceUrl: "https://example.com/products.json", cron: "0 3 * * *" }],
   ],
   slots: {

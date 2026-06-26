@@ -1,0 +1,72 @@
+{
+  "origin": "benchmark",
+  "spaces": [
+    {
+      "externalId": "instalacja-kompatybilnosc",
+      "name": "Instalacja i kompatybilność",
+      "description": "Zasady kompletowania instalacji: wymagane elementy ochronne, kompatybilność aparatury, kompletność dostarczanych rozdzielnic. Stosować przy doborze produktów do oferty.",
+      "color": "#134E4A",
+      "articles": [
+        {
+          "externalId": "rozdzielnice-ochrona",
+          "title": "Wymagana ochrona różnicowoprądowa rozdzielnic",
+          "type": "policy",
+          "tags": ["rozdzielnica", "ochrona", "RCD"],
+          "body": "## Kompletność dostarczanych rozdzielnic\n\nKażda rozdzielnica mieszkaniowa lub obiektowa, którą dostarczamy, **musi** być skompletowana z ochroną różnicowoprądową. Sama obudowa rozdzielnicy nie stanowi kompletnego rozwiązania i nie może zostać zaoferowana samodzielnie.\n\n**Minimalne wyposażenie:**\n- wyłącznik różnicowoprądowy 30 mA, typ A, dobrany do liczby biegunów instalacji,\n- rozłącznik główny przed obwodami odbiorczymi.\n\n**Zasada ofertowania:** gdy klient prosi wyłącznie o rozdzielnicę (obudowę), dołóż do oferty odpowiedni wyłącznik różnicowoprądowy 30 mA jako pozycję wymaganą i zaznacz w uzasadnieniu, że wynika to z zasad kompletności instalacji. Dla typowej rozdzielnicy mieszkaniowej domyślnie przyjmij wariant 2-biegunowy (1-fazowy)."
+        }
+      ]
+    },
+    {
+      "externalId": "polityki-sprzedazy",
+      "name": "Polityki sprzedaży",
+      "description": "Wewnętrzne zasady handlowe: jednostki sprzedaży, minimalne ilości zamówienia, czasy realizacji. Stosować przy ustalaniu ilości i warunków pozycji oferty.",
+      "color": "#F6C215",
+      "articles": [
+        {
+          "externalId": "moq-kable",
+          "title": "Minimalne ilości zamówienia kabli na krążkach",
+          "type": "policy",
+          "tags": ["kabel", "krążek", "minimum", "MOQ"],
+          "body": "## Kable na krążkach — jednostka sprzedaży i minimum\n\nPrzewody i kable na krążkach (rodzina YDYp i pokrewne) sprzedajemy **wyłącznie w pełnych krążkach** — nie tniemy na metry bieżące.\n\n**Minimalna ilość zamówienia (MOQ): 5 krążków.** Zamówienia poniżej tej ilości należy zaokrąglić w górę do 5 krążków, a klienta poinformować o jednostce sprzedaży.\n\n**Czas realizacji:** dla pozycji kablowych standardowo **10 dni roboczych** — zawsze umieść tę informację w ofercie."
+        }
+      ]
+    },
+    {
+      "externalId": "normy-przepisy",
+      "name": "Normy i przepisy",
+      "description": "Wymagania normatywne i prawne dla instalacji elektrycznych: minimalne przekroje żył, dobór zabezpieczeń, klasy ochrony. Stosować, gdy klient nie podaje parametru, który narzuca norma.",
+      "color": "#134E4A",
+      "articles": [
+        {
+          "externalId": "przekroje-przewodow",
+          "title": "Minimalne przekroje przewodów dla obwodów",
+          "type": "directive",
+          "tags": ["przekrój", "obwód gniazdowy", "norma"],
+          "body": "## Minimalne przekroje żył wg rodzaju obwodu\n\nDobór przekroju przewodu wynika z normy instalacyjnej (seria N SEP-E) i zależy od rodzaju obwodu:\n\n| Rodzaj obwodu | Minimalny przekrój żyły |\n|---------------|--------------------------|\n| Obwody **gniazd wtyczkowych** | **2,5 mm²** |\n| Obwody **oświetleniowe** | 1,5 mm² |\n\n**Zasada ofertowania:** gdy klient prosi o przewód do obwodów gniazdowych, ale nie podaje przekroju, dobierz przewód o żyle **2,5 mm²** — nie 1,5 mm². Przewód 1,5 mm² jest dopuszczalny wyłącznie dla obwodów oświetleniowych."
+        }
+      ]
+    },
+    {
+      "externalId": "sprawy-biurowe-hr",
+      "name": "Sprawy biurowe i HR",
+      "description": "Wewnętrzne sprawy pracownicze i administracyjne firmy: regulamin parkingu, urlopy, sprzęt socjalny. NIE dotyczy ofert handlowych ani produktów dla klientów — nie używać przy tworzeniu oferty.",
+      "color": "#9CA3AF",
+      "articles": [
+        {
+          "externalId": "parking-ev",
+          "title": "Polityka parkingowa i ładowanie pojazdów elektrycznych",
+          "type": "policy",
+          "tags": ["parking", "HR", "samochód służbowy"],
+          "body": "## Parking firmowy i ładowanie pojazdów elektrycznych\n\nDokument dla pracowników, nie dla klientów. Miejsca parkingowe przydziela dział administracji. Na parkingu dostępne są stacje ładowania pojazdów elektrycznych — każde stanowisko ma gniazdo, kabel oraz zabezpieczenie różnicowoprądowe instalacji ładowarki. Korzystanie z ładowania wymaga rejestracji pojazdu służbowego w systemie HR. Awarie zgłaszać do administracji budynku."
+        },
+        {
+          "externalId": "ekspres-kawa",
+          "title": "Instrukcja obsługi ekspresu do kawy w kuchni",
+          "type": "note",
+          "tags": ["biuro", "kuchnia"],
+          "body": "## Ekspres do kawy\n\nEkspres znajduje się w kuchni na 2 piętrze. Przed pierwszym użyciem napełnić zbiornik wodą. Po zakończeniu wyczyścić tackę ociekową. Konserwacja co miesiąc przez firmę zewnętrzną. To dokument socjalny — nie ma związku z ofertami ani produktami."
+        }
+      ]
+    }
+  ]
+}
