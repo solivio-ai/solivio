@@ -1,5 +1,3 @@
-import "server-only";
-
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 import type { Chunk, Chunker } from "./index.ts";

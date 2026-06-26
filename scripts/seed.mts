@@ -6,15 +6,16 @@
  *
  * Imports examples/import/products-example-100.csv and clients-example.csv
  * through the same CSV importers the app uses, then writes directly to the
- * database (embeddings are skipped — semantic search needs an OPENAI_API_KEY
- * and a real import via the admin upload pages). Idempotent: re-running
- * updates existing rows by SKU / reuses customers by name.
+ * database. KB articles are chunked and embedded when OPENAI_API_KEY is set.
+ * Idempotent: re-running updates existing rows by SKU / reuses customers by name.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { and, eq, sql } from "drizzle-orm";
+import { openai } from "@ai-sdk/openai";
+import { embedMany } from "ai";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import { productPrices, products } from "../modules/catalog/src/data/schema.ts";
@@ -23,13 +24,16 @@ import { csvProductImporter } from "../modules/csv-import/src/lib/productImporte
 import { customers } from "../modules/customers/src/data/schema.ts";
 import {
   knowledgeBaseArticles,
+  knowledgeBaseChunks,
   knowledgeBaseConnections,
+  knowledgeBaseEmbeddings,
   knowledgeBaseSpaces,
 } from "../modules/knowledge-base/src/data/schema.ts";
 import {
   flattenPayload,
   importPayloadSchema,
 } from "../modules/knowledge-base/src/lib/importSchema.ts";
+import { getChunker } from "../modules/knowledge-base/src/lib/chunking/index.ts";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -128,6 +132,9 @@ let kbSpaceCount = 0;
 let kbArticleCount = 0;
 // Global map used for cross-space connection wiring in the second pass.
 const globalExternalIdToDbId = new Map<string, string>();
+// Articles to chunk/embed after insertion.
+const seededArticles: Array<{ id: string; body: string; format: "markdown" | "plain" | "csv" }> =
+  [];
 
 for (const spaceInput of kbPayload.spaces) {
   const existingSpace = spaceInput.externalId
@@ -241,8 +248,13 @@ for (const spaceInput of kbPayload.spaces) {
       articleId = ins!.id;
     }
     kbArticleCount++;
-    // suppress unused-variable warning — articleId used by connections pass below
-    void articleId;
+    const looksLikeMarkdown =
+      /^#{1,6}\s/m.test(articleInput.body) || /\|.*\|.*\|/.test(articleInput.body);
+    seededArticles.push({
+      id: articleId,
+      body: articleInput.body,
+      format: looksLikeMarkdown ? "markdown" : "plain",
+    });
   }
 }
 
@@ -264,6 +276,72 @@ for (const spaceInput of kbPayload.spaces) {
 }
 
 console.log(`✓ ${kbSpaceCount} KB spaces, ${kbArticleCount} articles seeded`);
+
+// ── KB chunking ────────────────────────────────────────────────────────────────
+let totalChunks = 0;
+const articleIds = seededArticles.map((a) => a.id);
+if (articleIds.length > 0) {
+  // Delete stale chunks for all seeded articles (cascade deletes embeddings too).
+  await db
+    .delete(knowledgeBaseChunks)
+    .where(inArray(knowledgeBaseChunks.articleId, articleIds));
+}
+for (const article of seededArticles) {
+  if (!article.body.trim()) continue;
+  const chunker = await getChunker(article.format);
+  const chunks = await chunker.split(article.body);
+  if (chunks.length === 0) continue;
+  await db.insert(knowledgeBaseChunks).values(
+    chunks.map((c, i) => ({
+      articleId: article.id,
+      chunkIndex: i,
+      text: c.text,
+      headingPath: c.headingPath ?? null,
+    })),
+  );
+  totalChunks += chunks.length;
+}
+console.log(`✓ ${totalChunks} chunks created for ${seededArticles.length} articles`);
+
+// ── KB embeddings (requires OPENAI_API_KEY) ────────────────────────────────────
+if (!process.env.OPENAI_API_KEY?.trim()) {
+  console.log("  (embeddings skipped — set OPENAI_API_KEY to enable semantic search)");
+} else {
+  const EMBEDDING_MODEL = "text-embedding-3-large";
+  const BATCH_SIZE = 100;
+
+  const allChunks = articleIds.length
+    ? await db
+        .select({ id: knowledgeBaseChunks.id, text: knowledgeBaseChunks.text })
+        .from(knowledgeBaseChunks)
+        .where(inArray(knowledgeBaseChunks.articleId, articleIds))
+    : [];
+
+  let embeddedCount = 0;
+  for (let i = 0; i < allChunks.length; i += BATCH_SIZE) {
+    const batch = allChunks.slice(i, i + BATCH_SIZE);
+    const { embeddings } = await embedMany({
+      model: openai.embedding(EMBEDDING_MODEL),
+      values: batch.map((c) => c.text),
+    });
+    await db
+      .insert(knowledgeBaseEmbeddings)
+      .values(
+        batch.map((chunk, j) => ({
+          chunkId: chunk.id,
+          model: EMBEDDING_MODEL,
+          vector: embeddings[j]!,
+        })),
+      )
+      .onConflictDoUpdate({
+        target: knowledgeBaseEmbeddings.chunkId,
+        set: { model: EMBEDDING_MODEL, vector: sql`excluded.vector`, updatedAt: new Date() },
+      });
+    embeddedCount += batch.length;
+    process.stdout.write(`  embedding ${embeddedCount}/${allChunks.length}...\r`);
+  }
+  console.log(`✓ ${embeddedCount} embeddings generated (${EMBEDDING_MODEL})`);
+}
 
 console.log("\nSign in and open the dashboard — try /offers/new or the product search.");
 process.exit(0);

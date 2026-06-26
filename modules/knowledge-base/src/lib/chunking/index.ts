@@ -1,5 +1,3 @@
-import "server-only";
-
 export interface Chunk {
   text: string;
   headingPath: string | null;

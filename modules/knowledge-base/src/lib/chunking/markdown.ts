@@ -1,5 +1,3 @@
-import "server-only";
-
 import { MarkdownTextSplitter } from "@langchain/textsplitters";
 
 import type { Chunk, Chunker } from "./index.ts";
