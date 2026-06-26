@@ -95,9 +95,10 @@ single runs carry LLM nondeterminism noise.
    agent tools and db accessors the app wires in `instrumentation.ts`, minus
    the job engine. The dev database is never touched, and benchmark search
    results never depend on dev data.
-2. Syncs the catalog to exactly mirror `cases/catalog.json`: deletes strays,
-   imports new/changed rows through `getService("catalog").importProducts`,
-   so embeddings come from the same code path as production imports.
+2. Syncs the catalog to exactly mirror `cases/catalog.csv` (parsed through the
+   same `csvProductImporter` the app and seeder use): deletes strays, imports
+   new/changed rows through `getService("catalog").importProducts`, so
+   embeddings come from the same code path as production imports.
 3. Calls the real offer-generation agent through the offers service
    (`getService("offers").generateOffer`) — full tool loop and vector
    search — once per case per run, in parallel.
@@ -133,9 +134,11 @@ in the numbers comes from the agent under test, never from the measurement.
 ## Cases
 
 Each case in `suites/offer-generation/cases/` is a full scenario: customer profile, catalog
-(shared `catalog.json`), request text, and the expected offer. Data the agent should fetch from the
-database itself (e.g. order history, once an orders table exists) belongs
-in DB seeding, not in case parameters.
+(shared `catalog.csv`), request text, and the expected offer. Data the agent should fetch from the
+database itself (e.g. order history, seeded from `cases/orders.csv`) belongs
+in DB seeding, not in case parameters. `prepare()` syncs both the catalog and the
+historical orders, and `runCase` resolves each case's customer so agent tools
+like `recall_order_history` have customer scope.
 
 Every case declares a `difficulty` tier, and reports aggregate per tier:
 
@@ -163,8 +166,8 @@ Every case declares a `difficulty` tier, and reports aggregate per tier:
 | `10-customer-standard` | expert | "our house standard" resolves only via customer context |
 
 To add a case: copy an existing JSON, keep `id` = filename, set
-`difficulty`. If a case needs a product the catalog lacks, add it to
-`catalog.json` following the existing SKU/naming conventions (keep SKUs
+`difficulty`. If a case needs a product the catalog lacks, add a row to
+`catalog.csv` following the existing SKU/naming conventions (keep SKUs
 unique; do not add coax cable — case 03 expects RG6 unmatched).
 **Versioning rule:** when the case set or catalog changes, scores are a new
 baseline — never compare numbers across different case sets.

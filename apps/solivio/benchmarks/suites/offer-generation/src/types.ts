@@ -1,16 +1,5 @@
 import { z } from "zod";
 
-export const catalogProductSchema = z.object({
-  sku: z.string(),
-  name: z.string(),
-  description: z.string(),
-});
-
-export const catalogFileSchema = z.object({
-  description: z.string(),
-  products: z.array(catalogProductSchema),
-});
-
 export const expectedItemSchema = z.object({
   sku: z.string(),
   quantity: z.number().int().positive(),
@@ -41,7 +30,6 @@ export const benchmarkCaseSchema = z.object({
   }),
 });
 
-export type CatalogProduct = z.infer<typeof catalogProductSchema>;
 export type BenchmarkCase = z.infer<typeof benchmarkCaseSchema>;
 export type ExpectedItem = z.infer<typeof expectedItemSchema>;
 export type Difficulty = z.infer<typeof difficultySchema>;
