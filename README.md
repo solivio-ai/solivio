@@ -46,6 +46,7 @@ provides:
   PDF preview, and acceptance flow,
 - an offer assistant that can answer questions and help edit drafts,
 - historical order recall for agents when repeat buying patterns matter,
+- an internal knowledge base with semantic retrieval that grounds the agents in company-specific rules,
 - CSV import capabilities for products, customers, and historical orders,
 - a modular architecture for company-specific integrations and workflows.
 
@@ -74,7 +75,7 @@ modules that are compiled into the app at build time.
 | Path | Purpose |
 | --- | --- |
 | [`apps/solivio`](./apps/solivio) | The Next.js app: auth, app shell, runtime boot, health checks, migrations, and generated module wiring. |
-| [`modules`](./modules) | First-party feature modules such as catalog, customers, offers, offer chat, CSV import, order history, and product sync. |
+| [`modules`](./modules) | First-party feature modules such as catalog, customers, offers, offer chat, knowledge base, CSV import, order history, and product sync. |
 | [`sdk`](./sdk) | `@solivio/sdk`, the public contract modules build against. |
 | [`packages/domain`](./packages/domain) | Shared domain types, workflow constants, and fixtures. |
 | [`packages/ui`](./packages/ui) | Shared shadcn/ui component kit. |
@@ -104,6 +105,7 @@ The default repository configuration enables:
 - `offers` - offer drafts, line items, revisions, PDF rendering, and offer UI,
 - `offer-chat` - review chat threads, messages, and the salesperson copilot,
 - `order-history` - agent tools for recalling a customer's past orders,
+- `knowledge-base` - internal knowledge base with semantic retrieval for agents,
 - `csv-import` - CSV importers for products, customers, and historical orders,
 - `products-sync` - a reference scheduled product-sync module.
 

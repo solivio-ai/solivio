@@ -169,13 +169,13 @@ To add a module: create `modules/<id>/` with `package.json` (name `@solivio/modu
 ## Architecture
 
 - `apps/solivio` owns the single Next.js app — the core: auth + `/admin/users`, the app shell and sidebar, runtime boot (`src/server/runtime/`, `instrumentation.ts`), the pg-boss jobs engine, `/api/health`, and the generated wiring.
-- `modules/` owns the feature modules: `catalog`, `customers`, `offers`, `offer-chat`, `csv-import`, `products-sync`.
+- `modules/` owns the feature modules: `catalog`, `customers`, `offers`, `offer-chat`, `order-history`, `knowledge-base`, `csv-import`, `products-sync`.
 - `sdk/` owns `@solivio/sdk` — the only contract modules build against (manifest types, registries, runtime accessors).
 - `packages/domain` owns shared types, workflow constants, and mock fixtures; `packages/ui` the shared shadcn/ui kit; `packages/theme` the design tokens.
 - `scripts/generate` owns the module generator; `scripts/check-boundaries.mts` enforces import boundaries.
 - `infra/postgres` owns local database bootstrap files.
 
-Module dependency direction (declared via `dependsOn`, validated acyclic): `catalog` and `customers` are leaves; `offers` depends on both; `offer-chat` depends on `offers`; `products-sync` depends on `catalog`; `csv-import` is a headless capability provider.
+Module dependency direction (declared via `dependsOn`, validated acyclic): `catalog` and `customers` are leaves; `offers` depends on both; `offer-chat` depends on `offers`; `order-history` depends on `offers`; `products-sync` depends on `catalog`; `csv-import` and `knowledge-base` are headless/standalone (no deps).
 
 ## Current Product Shape
 
