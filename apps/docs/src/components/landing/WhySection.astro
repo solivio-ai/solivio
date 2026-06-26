@@ -1,0 +1,136 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+}
+
+const { page } = Astro.props;
+const { flow, inquiry, knowledge, outcome } = page.why;
+
+const inputs = [
+  {
+    node: inquiry,
+    icon: "inquiry",
+  },
+  {
+    node: knowledge,
+    icon: "knowledge",
+  },
+] as const;
+---
+
+<section class={ui.sectionClass}>
+  <div class="mx-auto grid max-w-[94rem] gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center">
+    <div class="grid max-w-2xl gap-3" data-reveal>
+      <p class={ui.sectionLabelClass}>{page.sectionLabels.why}</p>
+      <h2 class={ui.sectionTitleClass}>{page.why.title}</h2>
+      <p class={ui.sectionLeadClass}>{page.why.body}</p>
+    </div>
+
+    <div class="landing-canvas-grid rounded-lg border border-border p-5 shadow-[0_20px_70px_rgba(16,32,29,0.07)] sm:p-7" data-reveal>
+      <div class="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_2.75rem_auto_2.75rem_minmax(0,0.92fr)] lg:items-center lg:gap-3">
+        {/* Inputs: the messy reality, gathered by hand today */}
+        <div class="grid gap-3">
+          <p class="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{flow.inbound}</p>
+          {inputs.map(({ node, icon }) => (
+            <article class="grid gap-3 rounded-lg border border-border bg-background/70 p-4">
+              <div class="flex items-center gap-3">
+                <span class={ui.iconTileClass}>
+                  {icon === "inquiry" ? (
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="m3 7 9 6 9-6" />
+                    </svg>
+                  ) : (
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z" />
+                      <path d="m3 12 9 4.5 9-4.5" />
+                      <path d="m3 16.5 9 4.5 9-4.5" />
+                    </svg>
+                  )}
+                </span>
+                <h3 class={ui.h3Class}>{node.title}</h3>
+              </div>
+              <p class={ui.bodyTextClass}>{node.body}</p>
+              <div class="flex flex-wrap gap-1.5">
+                {node.items.map((item) => (
+                  <span class="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Desktop: two inputs converge toward the hub */}
+        <div class="hidden self-stretch text-border lg:flex" aria-hidden="true">
+          <svg class="h-full w-full" viewBox="0 0 44 140" fill="none" preserveAspectRatio="none">
+            <path d="M0 30 C 22 30, 22 70, 44 70" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+            <path d="M0 110 C 22 110, 22 70, 44 70" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+          </svg>
+        </div>
+
+        {/* Mobile: inputs flow down into the hub */}
+        <div class="flex justify-center text-secondary lg:hidden" aria-hidden="true">
+          <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14" />
+            <path d="m6 13 6 6 6-6" />
+          </svg>
+        </div>
+
+        {/* The Solivio hub: the value — gather and assemble */}
+        <div class="grid justify-items-center gap-2 text-center">
+          <span class="flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_12px_30px_rgba(246,194,21,0.28)]">
+            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" />
+            </svg>
+          </span>
+          <p class="text-sm font-semibold text-foreground">Solivio</p>
+          <p class="max-w-[11rem] text-xs leading-5 text-muted-foreground">{flow.engine}</p>
+        </div>
+
+        {/* Desktop: hub delivers one draft */}
+        <div class="hidden justify-center text-secondary lg:flex" aria-hidden="true">
+          <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12h14" />
+            <path d="m13 6 7 6-7 6" />
+          </svg>
+        </div>
+
+        {/* Mobile: hub flows down into the draft */}
+        <div class="flex justify-center text-secondary lg:hidden" aria-hidden="true">
+          <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14" />
+            <path d="m6 13 6 6 6-6" />
+          </svg>
+        </div>
+
+        {/* Output: one reviewed draft, the salesperson stays in control */}
+        <div class="grid gap-3">
+          <p class="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-secondary dark:text-primary">{flow.outbound}</p>
+          <article class="grid gap-3 rounded-lg border border-secondary/20 bg-accent p-4 dark:border-primary/25 dark:bg-primary/10">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground dark:bg-primary dark:text-primary-foreground">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </span>
+              <h3 class="text-base font-semibold leading-6 text-foreground">{outcome.title}</h3>
+            </div>
+            <p class={ui.bodyTextClass}>{outcome.body}</p>
+            <div class="flex flex-wrap gap-1.5">
+              {outcome.items.map((item) => (
+                <span class="inline-flex items-center rounded-md bg-background px-2 py-0.5 text-xs font-semibold text-secondary dark:text-primary">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

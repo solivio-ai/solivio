@@ -1,0 +1,283 @@
+---
+import type { LandingContent } from "../../landing/content";
+import { linkAttrs, releaseLabel, type LandingLabels, ui } from "./shared";
+
+interface Props {
+  page: LandingContent;
+  labels: LandingLabels;
+}
+
+const { page, labels } = Astro.props;
+const previewOfferRows = page.hero.offerRows.slice(0, 3);
+const productSignals = page.heroPreview.productSignals;
+const heroRail = page.heroPreview.rail;
+---
+
+<section
+  class="landing-hero-grid relative px-4 pb-8 pt-10 sm:px-6 sm:pt-12 lg:px-14 lg:pb-8 lg:pt-14"
+  aria-labelledby="landing-title"
+>
+  <div class="mx-auto grid max-w-[94rem] items-center gap-8 xl:grid-cols-[minmax(0,0.78fr)_minmax(31rem,1.22fr)] xl:gap-10">
+    <div class="grid max-w-3xl gap-5">
+      <div
+        class="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm font-medium text-muted-foreground shadow-sm"
+        data-reveal
+      >
+        <span class="rounded-md bg-secondary px-2 py-0.5 font-mono text-xs font-semibold text-secondary-foreground">
+          {releaseLabel}
+        </span>
+        <span>{page.hero.facts[0]}</span>
+      </div>
+      <h1
+        id="landing-title"
+        class="text-balance text-4xl font-semibold leading-none text-foreground sm:text-5xl lg:text-6xl"
+        data-reveal
+        data-reveal-delay="70"
+      >
+        {page.hero.h1} <span class="text-secondary dark:text-primary">{page.hero.h1Highlight}</span>
+      </h1>
+      <p
+        class="max-w-xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg"
+        data-reveal
+        data-reveal-delay="140"
+      >
+        {page.hero.body}
+      </p>
+      <div class="flex flex-wrap items-center gap-3" aria-label={labels.primaryActions} data-reveal data-reveal-delay="210">
+        <a class={ui.buttonPrimaryClass} href={page.hero.primary.href}>
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 5l7 7-7 7" />
+          </svg>
+          <span>{page.hero.primary.label}</span>
+        </a>
+        <a class={ui.buttonOutlineClass} href={page.hero.secondary.href} {...linkAttrs(page.hero.secondary)}>
+          <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+          </svg>
+          {page.hero.secondary.label}
+        </a>
+      </div>
+      <div
+        class="hidden max-w-2xl overflow-hidden rounded-lg border border-border bg-background shadow-sm 2xl:grid"
+        data-reveal
+        data-reveal-delay="280"
+      >
+        <div class="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
+          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {labels.quickStart}
+          </span>
+          <button
+            class="inline-flex h-7 items-center gap-1.5 rounded-md border border-border px-2 text-xs font-semibold text-secondary transition-colors hover:bg-accent"
+            type="button"
+            data-copy-command={page.hero.quickStart}
+            data-default-label={labels.copy}
+            data-copied-label={labels.copied}
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="14" height="14" x="8" y="8" rx="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg>
+            <span data-copy-label>{labels.copy}</span>
+          </button>
+        </div>
+        <p class="overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-sm leading-6 text-foreground">
+          <span class="mr-2 font-semibold text-primary">$</span>{page.hero.quickStart}
+        </p>
+      </div>
+      <ul class="hidden gap-3 2xl:grid 2xl:grid-cols-3" aria-label={labels.projectFacts} data-reveal data-reveal-delay="350">
+        {page.hero.facts.map((fact) => (
+          <li class="grid grid-cols-[auto_1fr] gap-2 text-sm font-semibold leading-5 text-foreground">
+            <span class="mt-0.5 flex size-5 items-center justify-center rounded-full bg-secondary text-[11px] text-secondary-foreground dark:bg-primary dark:text-primary-foreground" aria-hidden="true">
+              <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <span>{fact}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="relative" aria-label={labels.productPreview}>
+      <div class={`${ui.cardClass} landing-preview-scan overflow-hidden`}>
+        <div class="grid min-h-[28rem] 2xl:grid-cols-[10rem_minmax(0,1fr)]">
+          <aside class="hidden border-r border-border bg-sidebar/85 px-4 py-5 text-sm text-sidebar-foreground/75 2xl:grid 2xl:content-start 2xl:gap-2">
+            <img class="mb-4 h-auto max-w-[104px] dark:hidden" src="/solivio-logo.png" alt="" width="104" height="35" />
+            <img class="mb-4 hidden h-auto max-w-[104px] dark:block" src="/solivio-logo-dark.png" alt="" width="104" height="35" />
+            {page.hero.offerNav.map((label, index) => (
+              index === 2 ? (
+                <strong class="rounded-lg bg-background px-3 py-2.5 font-semibold text-secondary shadow-sm ring-1 ring-border dark:text-primary">
+                  {label}
+                </strong>
+              ) : (
+                <span class="rounded-lg px-3 py-2.5 font-semibold">{label}</span>
+              )
+            ))}
+          </aside>
+          <article class="grid gap-0">
+            <div class="grid border-b border-border md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+              <div class="grid gap-4 border-b border-border p-4 md:border-b-0 md:border-r md:p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 class="text-lg font-semibold leading-6 text-foreground">
+                      {page.heroPreview.inquiryTitle}
+                    </h2>
+                    <p class={ui.bodyTextClass}>#INQ-2026-0607</p>
+                  </div>
+                  <span class="rounded-md bg-accent px-2 py-1 text-xs font-semibold text-secondary">
+                    {page.heroPreview.inquiryStatus}
+                  </span>
+                </div>
+                <div class={`${ui.flatCardClass} p-4`}>
+                  <h3 class="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    {labels.rawInquiry}
+                  </h3>
+                  <p class="mt-3 text-sm leading-6 text-foreground">
+                    {page.heroPreview.rawInquiryBody}
+                  </p>
+                </div>
+                <div class={`${ui.flatCardClass} p-4`}>
+                  <h3 class="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    {labels.extractedSummary}
+                  </h3>
+                  <ul class="mt-3 grid gap-2">
+                    {page.heroPreview.extractedSummaryItems.map((item) => (
+                      <li class="grid grid-cols-[auto_1fr] gap-2 text-sm text-foreground">
+                        <span class="mt-1.5 size-2 rounded-full bg-secondary dark:bg-primary" aria-hidden="true"></span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div class="grid gap-4 p-4 md:p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 class="text-lg font-semibold leading-6 text-foreground">{page.hero.offerTitle}</h2>
+                    <p class={ui.bodyTextClass}>{page.hero.offerMeta}</p>
+                  </div>
+                  <span class="inline-flex h-7 shrink-0 items-center rounded-md border border-primary/40 bg-primary/15 px-2 text-xs font-semibold text-foreground">
+                    {page.hero.offerStatus}
+                  </span>
+                </div>
+                <div class={`${ui.flatCardClass} overflow-hidden`}>
+                  <div class="border-b border-border px-4 py-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      {labels.productMatches}
+                    </h3>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full table-fixed border-collapse text-sm">
+                      <thead>
+                        <tr>
+                          {page.hero.offerTableHeaders.map((header, index) => (
+                            <th class:list={["border-b border-border px-4 py-2 text-left text-xs font-semibold text-muted-foreground", index > 0 && "text-right"]}>
+                              {header}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          previewOfferRows.map((row) => (
+                            <tr>
+                              {row.map((cell, index) => (
+                                <td class:list={["border-b border-border px-4 py-3 text-foreground", index > 0 && "text-right"]}>
+                                  {cell}
+                                </td>
+                              ))}
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="hidden gap-3 sm:grid-cols-3 2xl:grid">
+                  {productSignals.map((signal) => (
+                    <div class="rounded-lg border border-border bg-muted/45 p-3">
+                      <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                        {signal.label}
+                      </p>
+                      <p class="mt-1 text-lg font-semibold text-foreground">{signal.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div class="hidden flex-wrap justify-end gap-2 2xl:flex">
+                  {page.hero.offerActions.map((label, index) => (
+                    <button
+                      class:list={[
+                        ui.buttonBaseClass,
+                        "h-9 px-3",
+                        index === 0 ? "border-border bg-background text-foreground hover:bg-muted" : "bg-primary text-primary-foreground hover:bg-primary/80",
+                      ]}
+                      type="button"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div class="hidden gap-4 p-4 md:grid-cols-3 md:p-5 2xl:grid">
+              {[
+                { label: page.workflow.steps[3]?.title, state: labels.generated, active: true },
+                { label: page.workflow.steps[4]?.title, state: labels.inReview, active: true },
+                { label: page.workflow.steps[5]?.title, state: labels.accepted, active: false },
+              ].map((step, index) => (
+                <div class="relative grid gap-2">
+                  {index < 2 && (
+                    <span class="landing-flow-line absolute left-[2rem] right-[-1rem] top-5 hidden h-px md:block" aria-hidden="true"></span>
+                  )}
+                  <span class:list={[
+                    "z-10 flex size-10 items-center justify-center rounded-full border text-sm font-semibold",
+                    step.active ? "border-secondary bg-secondary text-secondary-foreground dark:border-primary dark:bg-primary dark:text-primary-foreground" : "border-border bg-background text-muted-foreground",
+                  ]}>
+                    {index + 1}
+                  </span>
+                  <div>
+                    <p class="text-sm font-semibold text-foreground">{step.label}</p>
+                    <p class={ui.bodyTextClass}>{step.state}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-8 hidden max-w-[94rem] gap-3 rounded-lg border border-border bg-background/90 p-3 shadow-sm sm:grid-cols-2 lg:grid-cols-4 2xl:grid">
+    {heroRail.map((item, index) => (
+      <article class:list={["grid grid-cols-[auto_1fr] gap-3 p-3", index > 0 && "border-t border-border sm:border-t-0 lg:border-l"]}>
+        <span class={ui.iconTileClass} aria-hidden="true">
+          {index === 0 && (
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m16 18 6-6-6-6" /><path d="m8 6-6 6 6 6" />
+            </svg>
+          )}
+          {index === 1 && (
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h18" /><path d="M5 7v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          )}
+          {index === 2 && (
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5" /><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3" />
+            </svg>
+          )}
+          {index === 3 && (
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2 3 14h8l-1 8 10-12h-8z" />
+            </svg>
+          )}
+        </span>
+        <div>
+          <h2 class="text-sm font-semibold leading-5 text-foreground">{item.title}</h2>
+          <p class="mt-1 text-sm leading-5 text-muted-foreground">{item.body}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

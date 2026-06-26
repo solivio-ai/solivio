@@ -1,0 +1,33 @@
+---
+import type { LandingContent } from "../landing/content";
+import DocumentHead from "./landing/DocumentHead.astro";
+import Footer from "./landing/Footer.astro";
+import Header from "./landing/Header.astro";
+import Interactions from "./landing/Interactions.astro";
+import MainSections from "./landing/MainSections.astro";
+import SkipLink from "./landing/SkipLink.astro";
+import "../styles/landing.css";
+
+interface Props {
+  page: LandingContent;
+}
+
+const { page } = Astro.props;
+const labels = page.labels;
+---
+
+<!doctype html>
+<html lang={page.lang}>
+  <DocumentHead page={page} />
+  <body class="bg-background font-sans text-foreground antialiased">
+    <SkipLink label={labels.skipToContent} />
+
+    <Header page={page} labels={labels} />
+
+    <MainSections page={page} labels={labels} />
+
+    <Footer page={page} labels={labels} />
+
+    <Interactions />
+  </body>
+</html>

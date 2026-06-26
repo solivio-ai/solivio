@@ -22,22 +22,25 @@ Open **Catalog Upload** at `/products/upload`.
 Upload a CSV file with these columns:
 
 ```text
-sku,name,description
+sku,name,description,price_net,price_gross,vat_rate,currency
 ```
 
 Comma, semicolon, and tab-separated files are accepted. The importer previews
-the parsed rows before saving them. The current importer does not map price
-columns; imported products default to zero price until pricing rules or ERP data
-are added for a specific implementation.
+the parsed rows before saving them. It accepts common English and Polish column
+aliases for product identity, description, net price, gross price, VAT rate, and
+currency.
 
-When you click **Embed and save**, Solivio:
+When you click **Import**, Solivio:
 
-- sends product text to the selected OpenAI embedding model,
 - stores products in Postgres,
-- stores a combined vector embedding for semantic search,
+- stores product prices,
+- stores a combined vector embedding for semantic search when `OPENAI_API_KEY`
+  is configured,
 - updates existing products when the same `sku` is imported again.
 
-Catalog import requires `OPENAI_API_KEY`.
+Catalog import does not require `OPENAI_API_KEY`. Without it, imported products
+are saved without embeddings; keyword search still works, but semantic search
+is unavailable for those rows until they are reimported with embeddings.
 
 ## 3. Generate a draft offer
 

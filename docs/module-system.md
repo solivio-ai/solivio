@@ -105,10 +105,19 @@ deployment enables. It is read **at generate time only**, never at runtime:
 import { defineConfig } from "@solivio/sdk/config";
 
 export default defineConfig({
-  modules: ["catalog", "customers", "offers", "offer-chat", "csv-import", "products-sync"],
+  modules: [
+    "catalog",
+    "customers",
+    "offers",
+    "offer-chat",
+    "csv-import",
+    "order-history",
+    "products-sync",
+  ],
   slots: {
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
+    "offer.importer": "csv-import/csv-orders",
   },
 });
 ```

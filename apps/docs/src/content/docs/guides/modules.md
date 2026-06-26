@@ -3,23 +3,25 @@ title: Modules
 description: How Solivio modules work and how a deployment chooses which ones run.
 ---
 
-Solivio is a **modular monolith**: almost every feature — the product catalog,
-customers, offers, the review chat, CSV import, external sync — is a module
-under `modules/` in the repository. Modules are TypeScript source packages
-**compiled into the app at build time**: a generator (`yarn generate`) reads
-the deployment manifest `solivio.config.ts`, discovers each enabled module's
-pages, API routes, services, events, jobs, translations, and database
-migrations by file convention, and wires them into the Next.js app.
+Solivio is a **modular monolith**: almost every feature - the product catalog,
+customers, offers, the review chat, order-history recall, CSV import, external
+sync - is a module under `modules/` in the repository. Modules are TypeScript
+source packages **compiled into the app at build time**: a generator
+(`yarn generate`) reads the deployment manifest `solivio.config.ts`, discovers
+each enabled module's pages, API routes, services, events, jobs, translations,
+and database migrations by file convention, and wires them into the Next.js app.
 
 The published image ships with the first-party module set enabled:
 
-- `catalog` — products, prices, embeddings, and semantic search.
-- `customers` — customers and intake requests.
-- `offers` — offer drafts, line items, revisions, PDF rendering, and all
+- `catalog` - products, prices, embeddings, and semantic search.
+- `customers` - customers and intake requests.
+- `offers` - offer drafts, line items, revisions, PDF rendering, and all
   offer-facing UI including the dashboard.
-- `offer-chat` — the offer-review assistant (threads, messages, streaming).
-- `csv-import` — CSV importer capabilities for products and customers.
-- `products-sync` — scheduled sync of products from an external source.
+- `offer-chat` - the offer-review assistant (threads, messages, streaming).
+- `order-history` - tools that let agents recall a customer's past orders.
+- `csv-import` - CSV importer capabilities for products, customers, and
+  historical orders.
+- `products-sync` - scheduled sync of products from an external source.
 
 ## Enabling and configuring modules
 
@@ -35,11 +37,13 @@ export default defineConfig({
     "offers",
     "offer-chat",
     "csv-import",
+    "order-history",
     ["products-sync", { sourceUrl: "https://example.com/products.json", cron: "0 3 * * *" }],
   ],
   slots: {
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
+    "offer.importer": "csv-import/csv-orders",
   },
 });
 ```
@@ -51,7 +55,7 @@ export default defineConfig({
 - `slots` bind exclusive capabilities (e.g. which importer handles the
   `product` target) when more than one module provides them.
 
-Changing the config requires regenerating and rebuilding the image — that is
+Changing the config requires regenerating and rebuilding the image - that is
 the deliberate trade of the build-time model: modules get the full surface
 (pages, API routes, database tables, translations) instead of being limited to
 runtime-loadable plugins.
@@ -59,7 +63,7 @@ runtime-loadable plugins.
 ## Custom modules without forking
 
 Operators run their own modules from a separate repository linked into a
-stock checkout with `yarn overlay link` — no fork, conflict-free base
+stock checkout with `yarn overlay link` - no fork, conflict-free base
 updates. See **[Extending Solivio](/guides/extending/)** for the full
 workflow, including npm-published modules.
 
