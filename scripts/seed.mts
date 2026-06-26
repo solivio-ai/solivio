@@ -6,7 +6,7 @@
  *
  * Imports examples/import/products-example-100.csv and clients-example.csv
  * through the same CSV importers the app uses, then writes directly to the
- * database. KB articles are chunked and embedded when OPENAI_API_KEY is set.
+ * database. Products and KB articles are embedded when OPENAI_API_KEY is set.
  * Idempotent: re-running updates existing rows by SKU / reuses customers by name.
  */
 import fs from "node:fs";
@@ -29,11 +29,11 @@ import {
   knowledgeBaseEmbeddings,
   knowledgeBaseSpaces,
 } from "../modules/knowledge-base/src/data/schema.ts";
+import { getChunker } from "../modules/knowledge-base/src/lib/chunking/index.ts";
 import {
   flattenPayload,
   importPayloadSchema,
 } from "../modules/knowledge-base/src/lib/importSchema.ts";
-import { getChunker } from "../modules/knowledge-base/src/lib/chunking/index.ts";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -60,13 +60,41 @@ if (productResult.status === "failed") {
   console.error("Product example file failed to parse:", productResult.errors.slice(0, 3));
   process.exit(1);
 }
+
+// Embed products exactly as the catalog import service does (same model and
+// input string as importProductsWithEmbeddings), so seeded vectors are
+// compatible with query-time embeddings and semantic catalog search works.
+// Without a key, products import with null embeddings and text search still works.
+const PRODUCT_EMBEDDING_MODEL = "text-embedding-3-large";
+const productEmbeddings = new Map<string, number[]>();
+if (process.env.OPENAI_API_KEY?.trim()) {
+  const BATCH_SIZE = 100;
+  for (let i = 0; i < productResult.records.length; i += BATCH_SIZE) {
+    const batch = productResult.records.slice(i, i + BATCH_SIZE);
+    const { embeddings } = await embedMany({
+      model: openai.embedding(PRODUCT_EMBEDDING_MODEL),
+      values: batch.map((r) => `${r.sku} ${r.name} ${r.description}`),
+    });
+    batch.forEach((r, j) => {
+      productEmbeddings.set(r.sku, embeddings[j]!);
+    });
+  }
+}
+
 for (const row of productResult.records) {
+  const embedding = productEmbeddings.get(row.sku) ?? null;
   const [product] = await db
     .insert(products)
-    .values({ sku: row.sku, name: row.name, description: row.description, source: "seed" })
+    .values({
+      sku: row.sku,
+      name: row.name,
+      description: row.description,
+      source: "seed",
+      embedding,
+    })
     .onConflictDoUpdate({
       target: products.sku,
-      set: { name: row.name, description: row.description, updatedAt: new Date() },
+      set: { name: row.name, description: row.description, embedding, updatedAt: new Date() },
     })
     .returning({ id: products.id });
   await db
@@ -89,7 +117,12 @@ for (const row of productResult.records) {
       },
     });
 }
-console.log(`✓ ${productResult.records.length} products (with prices) seeded`);
+console.log(
+  `✓ ${productResult.records.length} products (with prices) seeded` +
+    (productEmbeddings.size > 0
+      ? ` (${productEmbeddings.size} embedded, ${PRODUCT_EMBEDDING_MODEL})`
+      : " (embeddings skipped — set OPENAI_API_KEY to enable semantic search)"),
+);
 
 // ── Customers ──────────────────────────────────────────────────────────────────
 const customerResult = await csvCustomerImporter.run(read("clients-example.csv"));
@@ -282,9 +315,7 @@ let totalChunks = 0;
 const articleIds = seededArticles.map((a) => a.id);
 if (articleIds.length > 0) {
   // Delete stale chunks for all seeded articles (cascade deletes embeddings too).
-  await db
-    .delete(knowledgeBaseChunks)
-    .where(inArray(knowledgeBaseChunks.articleId, articleIds));
+  await db.delete(knowledgeBaseChunks).where(inArray(knowledgeBaseChunks.articleId, articleIds));
 }
 for (const article of seededArticles) {
   if (!article.body.trim()) continue;
