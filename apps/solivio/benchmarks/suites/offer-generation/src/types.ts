@@ -27,6 +27,16 @@ export const benchmarkCaseSchema = z.object({
   expected: z.object({
     items: z.array(expectedItemSchema),
     unmatched: z.array(z.string()),
+    // Knowledge-base citation expectations (recall-based, no precision penalty).
+    // Each string is a distinctive keyphrase from an article title the agent
+    // SHOULD cite (matched when all its significant tokens appear in a cited
+    // title). Defining this (or forbiddenKbArticles) opts the case into citation
+    // scoring; extra relevant citations are not penalized.
+    kbArticles: z.array(z.string()).optional(),
+    // Article-title keyphrases the agent must NOT cite — e.g. distractor-space
+    // articles that share vocabulary with the request but are irrelevant.
+    // Citing any one zeroes the citation dimension for that run.
+    forbiddenKbArticles: z.array(z.string()).optional(),
   }),
 });
 

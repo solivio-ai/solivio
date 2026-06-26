@@ -2,7 +2,7 @@
   "id": "04-repeat-order-history",
   "title": "Repeat order referencing customer history",
   "difficulty": "expert",
-  "notes": "Requires resolving 'powtórka ostatniego zamówienia' from the customer's order history. The customer's last order (2026-05-12, seeded via cases/orders.csv) was: WYL-B16-1P x10, RCD-25-30-2P x2, ROZ-24-PT x1, KAB-YDYP-3X25 x4; an earlier order (2026-03-03) is also seeded so the agent must pick the latest. The agent fetches this through the recall_order_history tool (order-history module), which needs the customer in scope — runCase passes customerId resolved from the seeded customer. Tests history-awareness end to end.",
+  "notes": "Requires resolving 'powtórka ostatniego zamówienia' from the customer's order history. The customer's last order (2026-05-12, seeded via fixtures/orders.csv) was: WYL-B16-1P x10, RCD-25-30-2P x2, ROZ-24-PT x1, KAB-YDYP-3X25 x4; an earlier order (2026-03-03) is also seeded so the agent must pick the latest. The agent fetches this through the recall_order_history tool (order-history module), which needs the customer in scope — runCase passes customerId resolved from the seeded customer. Tests history-awareness end to end.",
   "customer": {
     "name": "Instal-Bud Sp. z o.o.",
     "profile": "Construction subcontractor, orders the same site kit for each new building stage."

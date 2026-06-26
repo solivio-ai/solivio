@@ -13,7 +13,8 @@ import { getAi, getService } from "@solivio/sdk/runtime";
 
 import { csvOrderImporter } from "../../../../../modules/csv-import/src/lib/orderImporter.ts";
 import { csvProductImporter } from "../../../../../modules/csv-import/src/lib/productImporter.ts";
-import { syncCatalog, syncOrders } from "../../src/setup";
+import { importPayloadSchema } from "../../../../../modules/knowledge-base/src/lib/importSchema.ts";
+import { syncCatalog, syncKB, syncOrders } from "../../src/setup";
 import { buildJsonReport, buildMarkdownReport } from "./src/report";
 import type { CaseScore } from "./src/scoring";
 import { scoreCase } from "./src/scoring";
@@ -27,10 +28,13 @@ export type { BenchmarkCase, CaseScore };
 export { buildJsonReport, buildMarkdownReport };
 
 const casesDir = path.join(import.meta.dirname, "cases");
+// Seed data imported into the benchmark DB (catalog, orders, KB) — distinct
+// from cases/, which holds only the scored case files.
+const fixturesDir = path.join(import.meta.dirname, "fixtures");
 
 export const name = "offer-generation";
 
-const catalogPath = path.join(casesDir, "catalog.csv");
+const catalogPath = path.join(fixturesDir, "catalog.csv");
 const readCatalogCsv = () => readFileSync(catalogPath, "utf8");
 
 /** Parses the catalog fixture through the same CSV importer the app and seeder use. */
@@ -47,7 +51,7 @@ async function loadCatalog() {
   return result.records;
 }
 
-const ordersPath = path.join(casesDir, "orders.csv");
+const ordersPath = path.join(fixturesDir, "orders.csv");
 const readOrdersCsv = () => readFileSync(ordersPath, "utf8");
 
 /** Parses the historical-orders fixture through the same CSV importer the app uses. */
@@ -64,6 +68,20 @@ async function loadOrders() {
   return result.records;
 }
 
+const kbPath = path.join(fixturesDir, "knowledge-base.json");
+const readKbJson = () => readFileSync(kbPath, "utf8");
+
+/** Parses the knowledge-base fixture through the app's import schema. */
+function loadKnowledgeBase() {
+  const parsed = importPayloadSchema.safeParse(JSON.parse(readKbJson()));
+  if (!parsed.success) {
+    throw new Error(
+      `Benchmark knowledge-base.json failed to parse: ${parsed.error.issues.length} issues`,
+    );
+  }
+  return parsed.data;
+}
+
 /** Seeds the benchmark DB with this suite's fixtures (idempotent sync). */
 export async function prepare(): Promise<void> {
   const products = await loadCatalog();
@@ -73,6 +91,12 @@ export async function prepare(): Promise<void> {
   const orders = await loadOrders();
   const { created } = await syncOrders(orders);
   console.log(`Orders synced: ${created} historical orders seeded.`);
+
+  const kb = loadKnowledgeBase();
+  const { spaces, articles, embeddedChunks } = await syncKB(kb);
+  console.log(
+    `KB synced: ${spaces} spaces, ${articles} articles (${embeddedChunks} chunks embedded).`,
+  );
 }
 
 export function loadCases(filters: {
@@ -98,6 +122,7 @@ export function fingerprint(cases: BenchmarkCase[]): string {
   return createHash("sha256")
     .update(readCatalogCsv())
     .update(readOrdersCsv())
+    .update(readKbJson())
     .update(JSON.stringify(cases))
     .digest("hex")
     .slice(0, 12);

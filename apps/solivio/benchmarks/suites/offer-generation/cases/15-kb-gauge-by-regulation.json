@@ -1,0 +1,17 @@
+{
+  "id": "15-kb-gauge-by-regulation",
+  "title": "Knowledge base: conductor gauge dictated by regulation",
+  "difficulty": "expert",
+  "notes": "KB-DRIVEN DISAMBIGUATION. The customer asks for cable for socket circuits but omits the gauge. The 'Normy i przepisy' space requires ≥2.5 mm² for socket circuits, so the agent must pick KAB-YDYP-3X25 (2.5 mm²) over the near-variant KAB-YDYP-3X15 (1.5 mm²) and cite the standard. Quantity is given explicitly (5 reels = MOQ already met) to isolate the gauge decision from unit-conversion and MOQ noise. The most achievable of the KB cases — tests genuine retrieval + reasoning, not keyword overlap (the article never names a SKU).",
+  "customer": {
+    "name": "Warsztat Elektryczny Nowak",
+    "profile": "Workshop fit-out; wiring socket circuits."
+  },
+  "request": "Poproszę 5 krążków przewodu do obwodów gniazdkowych w warsztacie.",
+  "expected": {
+    "items": [{ "sku": "KAB-YDYP-3X25", "quantity": 5 }],
+    "unmatched": [],
+    "kbArticles": ["minimalne przekroje przewodów"],
+    "forbiddenKbArticles": ["parkingowa ładowanie pojazdów"]
+  }
+}

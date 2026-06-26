@@ -2,12 +2,24 @@
 // benchmark database and the module runtime has been booted — syncCatalog
 // reaches the catalog through the same runtime accessors modules use.
 
+import { openai } from "@ai-sdk/openai";
+import { embedMany } from "ai";
 import { sql } from "drizzle-orm";
 import { Client, escapeIdentifier } from "pg";
 
 import type { OfferImportInput, ProductInput } from "@solivio/sdk";
-import { getDb, getService } from "@solivio/sdk/runtime";
+import { getAi, getDb, getService } from "@solivio/sdk/runtime";
 
+import { getChunker } from "../../../../modules/knowledge-base/src/lib/chunking/index.ts";
+import type { ImportPayload } from "../../../../modules/knowledge-base/src/lib/importSchema.ts";
+import { flattenPayload } from "../../../../modules/knowledge-base/src/lib/importSchema.ts";
+import {
+  findArticlesBySpace,
+  findChunksByArticle,
+  replaceChunks,
+  upsertEmbeddings,
+  upsertFromImport,
+} from "../../../../modules/knowledge-base/src/server/knowledgeBaseRepository.ts";
 import { importOffers } from "../../../../modules/offers/src/server/offerImportService.ts";
 
 /** Creates the benchmark database if missing; migrations create extensions and schema. */
@@ -80,4 +92,50 @@ export async function syncOrders(orders: OfferImportInput[]): Promise<{ created:
   await getDb().execute(sql`DELETE FROM offers WHERE status = 'imported'`);
   const { count } = await importOffers(orders);
   return { created: count };
+}
+
+/**
+ * Seeds the benchmark knowledge base, then chunks and embeds it inline. The
+ * app does chunking/embedding via persistent job subscribers, but the benchmark
+ * runtime boots without the job engine, so we mirror the job sequence
+ * (upsertFromImport → getChunker → replaceChunks → embed) synchronously.
+ * upsertFromImport upserts by externalId+origin, so re-seeding is idempotent;
+ * the KB is small enough to re-chunk/re-embed every run.
+ */
+export async function syncKB(
+  payload: ImportPayload,
+): Promise<{ spaces: number; articles: number; embeddedChunks: number }> {
+  const result = await upsertFromImport(flattenPayload(payload));
+
+  const hasKey = !!process.env.OPENAI_API_KEY?.trim();
+  const model = getAi().embeddingModelId();
+  let embeddedChunks = 0;
+
+  for (const spaceId of result.spaceIds) {
+    for (const article of await findArticlesBySpace(spaceId)) {
+      if (!article.body.trim()) {
+        await replaceChunks(article.id, []);
+        continue;
+      }
+      const chunker = await getChunker(article.format);
+      await replaceChunks(article.id, await chunker.split(article.body));
+      if (!hasKey) continue;
+      const chunks = await findChunksByArticle(article.id);
+      if (chunks.length === 0) continue;
+      const { embeddings } = await embedMany({
+        model: openai.embedding(model),
+        values: chunks.map((c) => c.text),
+      });
+      await upsertEmbeddings(
+        chunks.map((chunk, i) => ({ chunkId: chunk.id, model, vector: embeddings[i]! })),
+      );
+      embeddedChunks += chunks.length;
+    }
+  }
+
+  return {
+    spaces: result.spacesUpserted,
+    articles: result.articlesUpserted,
+    embeddedChunks,
+  };
 }

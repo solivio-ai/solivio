@@ -1,0 +1,17 @@
+{
+  "id": "14-kb-cable-moq",
+  "title": "Knowledge base: cable reel minimum order quantity",
+  "difficulty": "expert",
+  "notes": "KB-DRIVEN QUANTITY POLICY. The 'Polityki sprzedaży' space sets a 5-reel MOQ for cables on reels; the customer orders 2. The full-knowledge answer is KAB-YDYP-3X25 x5 with the policy cited. Likely a GAP today: agents tend to keep the requested quantity, so this scores 0.5 on the item (right SKU, wrong qty) and the rounding lands in a note at best — a roadmap metric for applying commercial rules. Gauge is explicit in the request, so this isolates the MOQ behavior.",
+  "customer": {
+    "name": "ElektroHurt Lublin Sp. z o.o.",
+    "profile": "Regional wholesaler reselling to small installers."
+  },
+  "request": "Poproszę 2 krążki przewodu YDYp 3x2,5 mm².",
+  "expected": {
+    "items": [{ "sku": "KAB-YDYP-3X25", "quantity": 5 }],
+    "unmatched": [],
+    "kbArticles": ["minimalne ilości zamówienia kabli"],
+    "forbiddenKbArticles": ["parkingowa ładowanie pojazdów"]
+  }
+}
