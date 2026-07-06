@@ -17,55 +17,35 @@
               "externalId": "classes-photocell",
               "title": "Photocell (dusk) sensors — price classes",
               "type": "article",
-              "tags": [
-                "photocell",
-                "dusk sensor",
-                "price classes"
-              ],
+              "tags": ["photocell", "dusk sensor", "price classes"],
               "body": "## Photocell sensors — class comparison\n\n| Class | SKU | Brand | Mounting | Max current | IP | Net price | When to choose |\n|-------|-----|-------|----------|-------------|-----|-----------|----------------|\n| **Budget** | EM-012-10371 (Timeguard NE-71) | Timeguard (GB) | DIN | 6 A | IP65 (head) | £14.90 | Low price; DIN acceptable; EMC included |\n| **Standard** | EM-012-10335 (Schneider AR-35) | Schneider (FR) | Surface | 6 A | IP65 | £26.50 | Most exterior projects; surface mount with no back box; the usual recommendation |\n| **Premium** | EM-012-10277 (ABB TW-77) | ABB (CH) | DIN | **16 A** | IP44 | £27.20 | Large circuits > 6 A; ABB specification; car parks and yards |\n\n**Important:**\n- AR-35 (Standard) and the NE-71 remote head (Budget) are IP65 — suitable outdoors\n- TW-77 (Premium) is only IP44 — the enclosure must provide the weather protection\n- NE-71 with its remote head: the control unit can sit inside the consumer unit\n\n**Common mistake:** Using AR-35 (6 A) to switch large LED floodlight arrays directly without checking the circuit current."
             },
             {
               "externalId": "classes-acoustic",
               "title": "Acoustic switches — price classes",
               "type": "article",
-              "tags": [
-                "acoustic switch",
-                "sound switch",
-                "price classes"
-              ],
+              "tags": ["acoustic switch", "sound switch", "price classes"],
               "body": "## Acoustic switches — class comparison\n\n| Class | SKU | Brand | Mounting | Current | Off-delay | Net price | When to choose |\n|-------|-----|-------|----------|---------|-----------|-----------|----------------|\n| **Budget** | EM-013-10623 (ESP AP-23) | ESP (GB) | Flush | 6 A | up to 300 s | £13.20 | Residential stairwells; long off-delay suits multi-storey blocks |\n| **Standard** | EM-013-10750 (ABB SN-50) | ABB (CH) | Flush | **10 A** | up to 30 s | £15.60 | Short corridors and plant rooms; higher current; ABB specification |\n| **Premium** | EM-013-10695 (Legrand LX-95) | Legrand (FR) | DIN | 6 A | up to 60 s | £16.80 | Central distribution board; office buildings; Legrand specification |\n\n**Choosing the off-delay:**\n- 300 s (ESP) — tall stairwells, hard to reach\n- 60 s (Legrand) — office corridors where a long delay wastes energy\n- 30 s (ABB) — short circulation routes, utility rooms\n\n**Note:** ESP and ABB are flush (need a 60 mm back box). The Legrand LX-95 is DIN — board mounted, no vandalism risk."
             },
             {
               "externalId": "classes-thermostats",
               "title": "Thermostats — price classes",
               "type": "article",
-              "tags": [
-                "thermostat",
-                "heating",
-                "price classes"
-              ],
+              "tags": ["thermostat", "heating", "price classes"],
               "body": "## Thermostats — class comparison\n\n| Class | SKU | Brand | Voltage | Mounting | Certificates | Net price | When to choose |\n|-------|-----|-------|---------|----------|--------------|-----------|----------------|\n| **Standard** | EM-014-10797 (Heatmiser HM-97) | Heatmiser (GB) | **24 V** AC/DC | DIN | CE, UKCA, RoHS | £24.80 | Standard underfloor heating control; 24 V circuit |\n| **Standard+** | EM-014-10842 (Finder FN-42) | Finder (IT) | **24 V** AC/DC | DIN | CE, UKCA, RoHS, **EMC** | £33.10 | Industrial, healthcare, tenders requiring EMC |\n| **Premium** | EM-014-10840 (Schneider TH-40) | Schneider (FR) | **230 V** AC | Surface | CE, UKCA | £38.30 | Hotels, apartments — visible enclosure; removes the 24 V transformer |\n\n**⚠️ CRITICAL — supply voltage:**\n- HM-97 and FN-42 require **24 V** — a transformer is needed on a 230 V mains supply\n- TH-40 runs **directly from 230 V** — no transformer required\n\n**Certificate note:** TH-40 carries CE/UKCA only (no RoHS). Where RoHS is required, choose the Heatmiser or Finder. The OLED Heatmiser HM-56 (EM-014-10856, £29.90) is a 24 V option with a touch display for visible locations."
             },
             {
               "externalId": "classes-time-switches",
               "title": "Time switches — price classes",
               "type": "article",
-              "tags": [
-                "time switch",
-                "timer",
-                "price classes"
-              ],
+              "tags": ["time switch", "timer", "price classes"],
               "body": "## Time switches — class comparison\n\n### Plug-in\n| Class | SKU | Brand | Programs | Mode | IP | Certificates | Net price |\n|-------|-----|-------|----------|------|----|--------------|-----------|\n| **Budget** | EM-022-11527 (BG BG-27) | BG Electrical (GB) | 16 | Daily | IP44 | CE, UKCA, RoHS | £6.50 |\n| **Standard** | EM-022-11696 (Hager EZ-96) | Hager (DE) | 20 | Weekly | IP20 | CE, UKCA, RoHS, EMC | £12.40 |\n\n### Surface-mount (fixed)\n| Class | SKU | Brand | Programs | IP | Certificates | Net price |\n|-------|-----|-------|----------|----|--------------|-----------|\n| **Standard** | EM-023-11928 (Timeguard TP-28) | Timeguard (GB) | 4/week | IP44 | CE, UKCA, RoHS, EMC | £20.80 |\n| **Premium** | EM-023-11752 (Finder FN-52) | Finder (IT) | 4/week | **IP54** | CE, UKCA, RoHS | £30.20 |\n\n**Plug-in vs surface-mount:**\n- Plug-in: temporary installs, domestic appliances\n- Surface-mount: permanent installs, garages, agriculture, outdoor sites\n\n**⚠️ Finder FN-52:** limited to 10 A (vs 16 A on the others). Check the circuit load before selecting.\n\n**IP54 Finder** — the only one with splash protection; recommended for commercial kitchens and terraces. For estate/street lighting that must track sunrise and sunset, use the Legrand LG-32 astronomical time switch (EM-021-12232, £86.40)."
             },
             {
               "externalId": "classes-leak",
               "title": "Leak detectors — price classes",
               "type": "article",
-              "tags": [
-                "leak detector",
-                "water leak",
-                "price classes"
-              ],
+              "tags": ["leak detector", "water leak", "price classes"],
               "body": "## Leak detectors — class comparison\n\n| Class | SKU | Brand | Notification | IP | Net price | When to choose |\n|-------|-----|-------|--------------|----|-----------|----------------|\n| **Standard** | EM-015-11134 (ESP AQ-34) | ESP (GB) | Wi-Fi (phone push) | IP65 | £11.90 | Flats, offices, remote monitoring |\n| **Premium** | EM-015-11212 (ABB AS-12) | ABB (CH) | Audible alarm | **IP67** | £23.50 | Plant rooms, server rooms; IP67 (brief immersion); audible on site |\n\n**When Wi-Fi (Standard) is not enough:**\n- no Wi-Fi coverage at the location (a server room behaves like a Faraday cage)\n- RF interference in an industrial environment\n- an immediate on-site warning is required\n→ In these cases always the ABB AS-12\n\n**Note for the offer:** The ESP AQ-34 needs a working Wi-Fi network and app pairing. Tell the customer."
             }
           ]
@@ -82,41 +62,21 @@
           "externalId": "req-ip",
           "title": "IP ratings — what goes where",
           "type": "directive",
-          "tags": [
-            "IP",
-            "protection",
-            "bathroom",
-            "outdoor",
-            "standard"
-          ],
+          "tags": ["IP", "protection", "bathroom", "outdoor", "standard"],
           "body": "## Matching the IP rating to the environment\n\n| Environment | Minimum IP | Reason |\n|-------------|-----------|--------|\n| Dry interiors (office, living room) | IP20 | No moisture risk |\n| Garages, cellars, corridors | IP44 | Splashing, floor washing |\n| Bathroom zone 2 (BS 7671) | IP44 | IET Wiring Regs requirement |\n| Sheltered outdoor (canopy, porch) | IP44 | Wind-driven rain |\n| Exposed outdoor | **IP65** | Jets of water |\n| Prone to flooding | **IP67** | Temporary immersion |\n\n**Practical consequences for the offer:**\n- Photocell sensor outdoors → min IP65 → Schneider AR-35 (EM-012-10335) or Timeguard NE-71 head (EM-012-10371)\n- Time switch in a sheltered outdoor spot → IP44 → BG BG-27 (EM-022-11527) or Timeguard TP-28 (EM-023-11928)\n- Time switch on a kitchen terrace → IP54 → Finder FN-52 (EM-023-11752)\n- Leak detector in a server room with sudden-flood risk → IP67 → ABB AS-12 (EM-015-11212)\n\n**Note:** Installing a device with an insufficient IP rating can void the warranty and breach BS 7671."
         },
         {
           "externalId": "req-certificates",
           "title": "Certifications required for different project types",
           "type": "directive",
-          "tags": [
-            "CE",
-            "UKCA",
-            "RoHS",
-            "EMC",
-            "certificates",
-            "public tender",
-            "industrial"
-          ],
+          "tags": ["CE", "UKCA", "RoHS", "EMC", "certificates", "public tender", "industrial"],
           "body": "## Certifications — when each is required\n\n### CE / UKCA — mandatory for all\nAll electrical products placed on the market must carry CE and/or UKCA marking. **Every product in our catalogue is CE/UKCA marked.**\n\n### RoHS — restriction of hazardous substances\nMandatory for electrical equipment. **Almost all our products carry RoHS.** Exception: Schneider TH-40 (EM-014-10840, CE/UKCA only). Where RoHS is required (hospitals, schools, public buildings), do not offer the TH-40.\n\n### EMC — electromagnetic compatibility\nNot required for standard installations, but **required in:**\n- factories and production sites\n- hospitals and medical facilities\n- public tenders (often stated explicitly in the spec)\n- near sensitive equipment (server rooms, metering stations)\n\n**Products with EMC certification in the range:**\n| Category | SKU | Brand |\n|----------|-----|-------|\n| Photocell DIN | EM-012-10371 (Timeguard NE-71) | Timeguard |\n| Photocell DIN 16A | EM-012-10277 (ABB TW-77) | ABB |\n| Acoustic DIN | EM-013-10695 (Legrand LX-95) | Legrand |\n| Thermostat DIN | EM-014-10842 (Finder FN-42) | Finder |\n| Plug-in timer weekly | EM-022-11696 (Hager EZ-96) | Hager |\n| Surface time switch IP44 | EM-023-11928 (Timeguard TP-28) | Timeguard |\n\n**On public tenders:** Always check the specification for EMC requirements — select from the list above."
         },
         {
           "externalId": "req-current",
           "title": "Current rating — when you need an interposing relay",
           "type": "directive",
-          "tags": [
-            "current",
-            "load",
-            "relay",
-            "16A",
-            "6A"
-          ],
+          "tags": ["current", "load", "relay", "16A", "6A"],
           "body": "## Matching the product to the circuit load\n\n| Current limit | Products | Notes |\n|---------------|----------|-------|\n| **6 A** (1380 W @ 230 V) | Most photocell and acoustic switches | Enough for 1–3 LED fittings |\n| **10 A** (2300 W @ 230 V) | ABB SN-50, Finder FN-52 | Direct switching of medium circuits |\n| **16 A** (3680 W @ 230 V) | ABB TW-77, all plug-in timers | Large lighting circuits |\n\n### When to use an interposing relay\nIf the load exceeds 16 A, **always** add a relay or contactor. Signals:\n- switching many exterior fittings (car parks, warehouses)\n- switching motors (pumps, actuators)\n- switching heaters and immersion loads > 3.5 kW\n\n### Quick calculator\n- total power ÷ 230 V = current in amps\n- Example: 20 fittings × 50 W = 1000 W → 1000/230 = 4.35 A → within 6 A\n- Example: 40 fittings × 50 W = 2000 W → 2000/230 = 8.7 A → needs a 10 A product or a relay\n\n**When building the offer:** If the customer gives a fitting count or total wattage, always check the chosen sensor/timer can carry the load."
         }
       ]
@@ -137,12 +97,7 @@
               "externalId": "kit-exterior-lighting",
               "title": "Exterior lighting — complete control kit",
               "type": "article",
-              "tags": [
-                "exterior lighting",
-                "photocell",
-                "time switch",
-                "kit"
-              ],
+              "tags": ["exterior lighting", "photocell", "time switch", "kit"],
               "connections": [
                 {
                   "toExternalId": "classes-photocell",
@@ -159,13 +114,7 @@
               "externalId": "kit-underfloor-heating",
               "title": "Underfloor heating — thermostat and required accessories",
               "type": "article",
-              "tags": [
-                "underfloor heating",
-                "thermostat",
-                "transformer",
-                "24V",
-                "kit"
-              ],
+              "tags": ["underfloor heating", "thermostat", "transformer", "24V", "kit"],
               "connections": [
                 {
                   "toExternalId": "classes-thermostats",
@@ -178,25 +127,14 @@
               "externalId": "kit-cctv",
               "title": "CCTV — IP camera and power",
               "type": "article",
-              "tags": [
-                "CCTV",
-                "IP camera",
-                "surveillance",
-                "power supply",
-                "PoE",
-                "kit"
-              ],
+              "tags": ["CCTV", "IP camera", "surveillance", "power supply", "PoE", "kit"],
               "body": "## CCTV system — kit components\n\n### Minimum components for a working system\n1. **IP camera** (e.g. Hikvision VL-93, EM-042-12693)\n2. **Power** — a PoE switch or a dedicated 12 V DC power supply\n3. **NVR recorder** (e.g. Dahua DH-25, EM-045-13525) or a cloud option (optional on small installs)\n4. **Cabling** Cat5e/Cat6 (up to 100 m for PoE)\n\n### PoE vs dedicated power supply\n\n**PoE (Power over Ethernet) — preferred:**\n- one cable for signal and power\n- easier to install and service\n- needs a PoE switch or PoE injector\n\n**Dedicated 12 V power supply:**\n- when the camera has no PoE, or there is no PoE switch\n- the supply voltage **must** match the camera spec (check the datasheet)\n- MEAN WELL supplies are in the catalogue — size for the total load\n\n### Common mistakes\n- Ordering a camera with no power supply or PoE switch — the camera won't work\n- Voltage mismatch on the supply — camera damage\n- Undersized supply feeding several cameras — check total power draw\n\n**When quoting cameras:** Always include a power supply or PoE switch — don't leave the customer with a camera and no power."
             },
             {
               "externalId": "kit-video-intercom",
               "title": "Video intercom — complete kit",
               "type": "article",
-              "tags": [
-                "video intercom",
-                "door entry",
-                "kit"
-              ],
+              "tags": ["video intercom", "door entry", "kit"],
               "body": "## Video intercom — kit components\n\n### Minimum components\n1. **Outdoor panel** (camera and call button)\n2. **Indoor monitor** (screen and door release button)\n3. **Power supply** — usually 12–18 V DC (check whether it is in the kit or separate)\n4. **Electric strike or lock** — if the customer wants remote release\n\n### Kits in the catalogue\n- One-family: Aiphone JO-42 (EM-052-13942) — panel + monitor + PSU included\n- Multi-tenant: Urmet UR-58 (EM-053-14358) — modular system for many flats\n\n### Selection notes\n- **Number of flats:** One-family kits = 1 monitor. Multiple flats → a multi-tenant system\n- **Cable:** Check the documentation — usually 2-wire or Cat5/Cat6 depending on the system\n- **Gate release:** If the customer wants remote release, make sure an electric strike is in the offer\n\n**Common mistake:** Ordering only the monitor or only the panel — the system only works as a complete kit."
             }
           ]
@@ -213,45 +151,28 @@
           "externalId": "terms-warranty",
           "title": "Manufacturer warranty — periods and procedures",
           "type": "policy",
-          "tags": [
-            "warranty",
-            "service",
-            "repair"
-          ],
+          "tags": ["warranty", "service", "repair"],
           "body": "## Product warranty\n\n### Warranty periods by brand\n\n| Brand | Period | Notes |\n|-------|--------|-------|\n| Schneider Electric | 3 years | |\n| ABB | 3 years | |\n| Legrand | 3 years | |\n| Finder | 2 years | |\n| Hager | 2 years | |\n| Timeguard | 2 years | UK service support |\n| BG Electrical | 2 years | UK service support |\n| ESP | 2 years | UK service support |\n| Heatmiser | 2 years | UK service support |\n\n### Warranty procedure\n1. Customer reports the fault in writing\n2. We issue an RMA within 1 working day\n3. Customer returns the faulty product (carriage refunded if the claim is upheld)\n4. Fault assessment: up to 5 working days\n5. Replacement or repair: up to 14 days after assessment\n\n### Warranty does not cover\n- mechanical damage, or water ingress on a product without a suitable IP rating\n- damage caused by exceeding the rated current\n- products with the label or serial number removed\n\n**When selling Schneider and ABB:** the 3-year warranty is a selling point that justifies the higher price."
         },
         {
           "externalId": "terms-returns",
           "title": "Returns and complaints policy",
           "type": "policy",
-          "tags": [
-            "returns",
-            "complaint",
-            "consumer rights"
-          ],
+          "tags": ["returns", "complaint", "consumer rights"],
           "body": "## Returns and complaints\n\n### Return without giving a reason\n- Window: **14 days** from delivery\n- Applies to: consumers (B2C) only, under the Consumer Contracts Regulations\n- B2B customers: no statutory right of return — by contract only\n- Product must be unused, in its original packaging\n\n### Complaint under statutory rights\n- Window: **up to 6 years** in England & Wales (Consumer Rights Act; B2C)\n- The customer may request repair, replacement, a price reduction or a refund\n\n### Goods not matching the order\n- Report within **5 working days** of delivery\n- Documentation: a photo showing the damage or the wrong product\n- Review: up to 2 working days\n- Correction: replacement or missing goods at no extra cost\n\n### Products not eligible for return\n- items specially ordered for a project (outside the catalogue)\n- products with a broken seal or no packaging"
         },
         {
           "externalId": "terms-payment",
           "title": "Payment terms and periods",
           "type": "policy",
-          "tags": [
-            "payment",
-            "invoice",
-            "payment terms"
-          ],
+          "tags": ["payment", "invoice", "payment terms"],
           "body": "## Standard payment terms\n\n| Customer type | Standard term | Possible extension |\n|---------------|--------------|--------------------|\n| New customer | Prepayment or 7 days | Up to net-14 after review |\n| Customer < 12 months | net-14 | Up to net-30 with Finance approval |\n| Customer > 12 months | net-30 | Up to net-45 with Finance approval |\n| Customer with a framework agreement | Per agreement (usually net-30) | Up to net-60 — Director only |\n\n### Proforma and prepayment\n- Proforma for new customers with no credit limit\n- Stock reservation: **5 working days** from proforma issue\n- After 5 days with no payment — reservation cancelled\n\n### Collections\n- 14 days past due: new orders blocked\n- 30 days past due: passed to external collections\n- Unblocking: after the arrears are cleared + Finance approval"
         },
         {
           "externalId": "terms-documents",
           "title": "Documents for public contracts and tenders",
           "type": "policy",
-          "tags": [
-            "tender",
-            "public contract",
-            "declaration of conformity",
-            "certificate"
-          ],
+          "tags": ["tender", "public contract", "declaration of conformity", "certificate"],
           "body": "## Documents available for public contracts\n\n| Document | Lead time | Notes |\n|----------|-----------|-------|\n| Declaration of Conformity (CE/UKCA) | 1 working day | For every product |\n| RoHS certificate | 1 working day | For products carrying RoHS |\n| EMC certificate | 1 working day | Only for products carrying EMC |\n| Technical datasheet (TDS) | 1 working day | Manufacturer specification |\n| VAT invoice | On dispatch day | |\n| ISO 9001 certificate (ours) | 3 working days | |\n\n### Common tender requirements and how to meet them\n- **'CE/UKCA marked products'** → all our products ✓\n- **'RoHS-compliant products'** → most — exception: Schneider TH-40 (CE/UKCA only)\n- **'EMC certificate required'** → select from the EMC product list (see: Certifications required)\n- **'Authorised distributor'** → we are authorised for Schneider, ABB, Legrand, Hager, Timeguard, BG Electrical, ESP\n\n**Important:** Always ask tender customers for the specification before submitting an offer."
         }
       ]
@@ -266,13 +187,7 @@
           "externalId": "project-pennine",
           "title": "Pennine Manufacturing — factory lighting upgrade",
           "type": "article",
-          "tags": [
-            "Pennine Manufacturing",
-            "factory",
-            "lighting",
-            "industrial",
-            "EMC"
-          ],
+          "tags": ["Pennine Manufacturing", "factory", "lighting", "industrial", "EMC"],
           "connections": [
             {
               "toExternalId": "kit-exterior-lighting",
