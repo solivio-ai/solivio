@@ -149,8 +149,13 @@ Open `http://localhost:3000`, create the first user from the login screen, and
 load example data if you want content to explore:
 
 ```bash
-yarn seed
+yarn seed              # Polish example data (default)
+yarn seed --lang en    # English example data
 ```
+
+Both languages cover the same electrical-materials domain (products, customers,
+and a cross-referenced knowledge base). Example import files live under
+`examples/import/<lang>/`.
 
 For the Docker image path, see the
 [Getting started guide](./apps/docs/src/content/docs/guides/getting-started.md).

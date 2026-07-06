@@ -2,9 +2,11 @@ import { z } from "zod";
 
 /**
  * Canonical JSON format for knowledge base imports.
- * Accepts either a nested tree (children arrays) or a flat list with
- * parentExternalId — adapters may produce either shape; the import job
- * flattens nested trees before upserting.
+ * Hierarchy is expressed with nested `children` arrays; `flattenArticles`
+ * flattens the tree and derives each article's `parentExternalId` from its
+ * position, overwriting any inline value. An inline `parentExternalId` on a
+ * top-level (non-nested) article is therefore ignored — nest the article under
+ * its parent's `children` to establish a parent link.
  */
 
 const articleTypeEnum = z.enum(["article", "directory", "directive", "template", "policy", "note"]);

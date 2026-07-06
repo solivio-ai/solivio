@@ -42,6 +42,7 @@ const INSTRUCTIONS = [
 
   "If no offer context is provided, answer as a general Solivio assistant.",
   "Keep answers concise, practical, and focused on helping a salesperson review the draft.",
+  "Always reply — and write any rationale you populate — in the same language as the user's latest message (fall back to the language of the original client request). Never default to a fixed language.",
 ].join(" ");
 
 let _chatAgent: Agent | null = null;

@@ -2,12 +2,15 @@
 /**
  * Loads example data for a fresh local install:
  *
- *   yarn seed
+ *   yarn seed              # Polish example data (default)
+ *   yarn seed --lang en    # English example data
+ *   yarn seed --lang pl    # explicit Polish
  *
- * Imports examples/import/products-example-100.csv and clients-example.csv
- * through the same CSV importers the app uses, then writes directly to the
- * database. Products and KB articles are embedded when OPENAI_API_KEY is set.
- * Idempotent: re-running updates existing rows by SKU / reuses customers by name.
+ * Imports products-example-100.csv, clients-example.csv and
+ * knowledge-base-example.json from examples/import/<lang>/ through the same CSV
+ * importers the app uses, then writes directly to the database. Products and KB
+ * articles are embedded when OPENAI_API_KEY is set. Idempotent: re-running
+ * updates existing rows by SKU / reuses customers by name.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -51,8 +54,34 @@ if (!process.env.DATABASE_URL) {
 }
 const db = drizzle(process.env.DATABASE_URL);
 
+// ── Language selection ──────────────────────────────────────────────────────────
+// `--lang <code>` / `--lang=<code>` (also `--locale`), or the SEED_LANG env var.
+// Defaults to Polish to preserve the historical `yarn seed` behavior.
+const SUPPORTED_LANGS = ["pl", "en"] as const;
+type SeedLang = (typeof SUPPORTED_LANGS)[number];
+
+function resolveLang(): SeedLang {
+  const argv = process.argv.slice(2);
+  let value: string | undefined;
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]!;
+    const match = arg.match(/^--(?:lang|locale)(?:=(.*))?$/);
+    if (!match) continue;
+    value = match[1] ?? argv[++i];
+  }
+  value = (value ?? process.env.SEED_LANG ?? "pl").toLowerCase();
+  if (!SUPPORTED_LANGS.includes(value as SeedLang)) {
+    console.error(`Unsupported --lang "${value}". Supported: ${SUPPORTED_LANGS.join(", ")}.`);
+    process.exit(1);
+  }
+  return value as SeedLang;
+}
+
+const lang = resolveLang();
+console.log(`Seeding ${lang.toUpperCase()} example data from examples/import/${lang}/\n`);
+
 const read = (file: string) =>
-  fs.readFileSync(path.join(repoRoot, "examples/import", file), "utf8");
+  fs.readFileSync(path.join(repoRoot, "examples/import", lang, file), "utf8");
 
 // ── Products + prices ──────────────────────────────────────────────────────────
 const productResult = await csvProductImporter.run(read("products-example-100.csv"));

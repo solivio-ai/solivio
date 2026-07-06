@@ -7,7 +7,6 @@ import { z } from "zod";
 import { getAgentTools, getService } from "@solivio/sdk/runtime";
 
 import { offerUnmatchedItemInputSchema } from "../../contracts/offer.ts";
-import { getAppLocaleLanguage } from "../../server/appLocale.ts";
 import { CONTEXT_KEY_CUSTOMER_ID, toVoltagentTool } from "./agentToolAdapter.ts";
 import { getModelFor } from "./modelConfig.ts";
 import { voltOpsClient } from "./voltOpsClient.ts";
@@ -62,13 +61,14 @@ Rules:
 - Each product id appears in "items" AT MOST ONCE. When multiple fragments map to the same product id, decide:
     * MERGE — if the fragments express the SAME product intent (same product type AND the same identifying specs such as size, capacity, voltage, port count, model number, color, material), combine them into ONE item with quantity = SUM of all fragment quantities. This handles requests where the customer lists the same item under different sections, headings, or rooms (e.g., "Room 1: gauze x10, Room 2: gauze x10" → ONE item with quantity 20). Note the merge in rationale (e.g., "summed across 3 mentions in the request").
     * SPLIT — if the fragments differ in identifying specs (e.g., "size XS" vs "size S", "5ml" vs "10ml", "24-port" vs "48-port", "M10" vs "M12") but only one catalog product matches both, keep ONE item for the first fragment and add the others to "unmatched" with a reason that the catalog lacks the requested variant/spec. Do NOT silently sum quantities across distinct variants.
-- unmatched: each entry is an object with "item" (verbatim customer fragment) and "reason" (1–2 sentences in ${getAppLocaleLanguage()} explaining why no catalog product was selected). Never leave "reason" empty.
+- unmatched: each entry is an object with "item" (verbatim customer fragment) and "reason" (1–2 sentences, in the same language as the customer request, explaining why no catalog product was selected). Never leave "reason" empty.
   Examples:
     * SKU miss: item "WG-9999", reason "SKU WG-9999 was not found in the catalog."
     * Semantic miss: item "czujnik CO2 przemysłowy", reason "Top search results are smoke detectors and temperature sensors; none match an industrial CO2 sensor."
     * SPLIT variant: item "rękawiczki nitrylowe XS x5op", reason "Catalog only has size M; requested size XS is not available."
 - requestItem: VERBATIM copy of the customer's text for this product, INCLUDING the quantity, units, and any size/spec notation EXACTLY as the customer wrote it ("strzykawki 5ml luerlock x1op", "rękawiczki nitrylowe XS x5op", "śruba M10 nierdzewna 50szt"). Do NOT clean it up, do NOT translate, do NOT lemmatize, do NOT drop quantity — quantity-stripping rules apply ONLY to the search query, never to requestItem. For a merged item, concatenate the original fragments separated by " + " so the salesperson sees every mention (e.g., "kompresy x10op (Gab 1) + kompresy x10op (Gab 3) + kompresy x10op (Gab 4)") — preserve original wording of each.
-- Write rationale in ${getAppLocaleLanguage()}. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
+- Write rationale in the same language as the customer request. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
+- OUTPUT LANGUAGE: every human-readable field you produce (rationale, unmatched reason, notes, relevance) MUST be written in the SAME LANGUAGE as the customer request. Infer the language from the request text itself — never default to a fixed language. Product names/SKUs stay verbatim from the catalog.
 
 Baza Wiedzy / Knowledge Base:
 - After matching products, call browse_knowledge_base to see all available spaces with their names and descriptions.

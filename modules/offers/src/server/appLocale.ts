@@ -2,28 +2,16 @@
  * Server-side locale helpers for offer generation — not UI i18n (that stays in next-intl).
  *
  * Unmatched items store `{ item, reason }`. Reasons come from two places:
- * 1. The generation agent — writes `reason` per fragment in the language named by
- *    `getAppLocaleLanguage()` (driven by APP_LOCALE, same as rationale).
+ * 1. The generation agent — writes `reason`/`rationale` in the same language as the
+ *    customer request (inferred from the request text, not from APP_LOCALE).
  * 2. offerService post-processing — adds unmatched rows the agent never sees (duplicate
- *    productId collapse, product UUID missing from DB). Those need fixed copy here.
- *
- * Centralizing APP_LOCALE here keeps agent instructions and server-synthesized reasons aligned.
+ *    productId collapse, product UUID missing from DB). The agent never sees the request
+ *    for these, so they fall back to fixed copy keyed by APP_LOCALE here.
  */
 import "server-only";
 
-const LOCALE_LANGUAGE_MAP: Record<string, string> = {
-  pl: "Polish",
-  en: "English",
-  de: "German",
-  fr: "French",
-};
-
 export function getAppLocaleCode(): string {
   return (process.env.APP_LOCALE ?? "pl").toLowerCase().split("-")[0];
-}
-
-export function getAppLocaleLanguage(): string {
-  return LOCALE_LANGUAGE_MAP[getAppLocaleCode()] ?? "Polish";
 }
 
 const DUPLICATE_UNMATCHED_REASON: Record<string, string> = {

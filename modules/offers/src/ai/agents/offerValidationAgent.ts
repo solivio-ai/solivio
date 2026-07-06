@@ -31,7 +31,7 @@ Verdict:
 - "partial": most requirements satisfied but some gaps or approximate matches
 - "fail": one or more significant requirements are completely missing from the offer
 
-Respond in the same language as the customer request (Polish if request is in Polish).
+Respond in the same language as the customer request — infer it from the request text, never default to a fixed language.
 `.trim();
 
 export const offerValidationResultSchema = z.object({
