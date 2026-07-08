@@ -196,11 +196,20 @@ function SpaceMapInner({
         }
       }
     }
+    const removedNodes = nodesRef.current.filter((n) => toDelete.has(n.id));
+    const removedEdges = edgesRef.current.filter(
+      (e) => toDelete.has(e.source) || toDelete.has(e.target),
+    );
     setNodesRef.current?.((nds) => nds.filter((n) => !toDelete.has(n.id)));
     setEdgesRef.current?.((eds) =>
       eds.filter((e) => !toDelete.has(e.source) && !toDelete.has(e.target)),
     );
-    fetch(`/api/knowledge-base/articles/${id}`, { method: "DELETE" });
+    fetch(`/api/knowledge-base/articles/${id}`, { method: "DELETE" }).then((res) => {
+      if (!res.ok) {
+        setNodesRef.current?.((nds) => [...nds, ...removedNodes]);
+        setEdgesRef.current?.((eds) => [...eds, ...removedEdges]);
+      }
+    });
   }, []);
 
   const initNodes = buildNodes(articles, onArticleClick, handleAddChild, handleDelete);
@@ -547,7 +556,7 @@ function SpaceMapInner({
 export function SpaceMap(props: Props) {
   return (
     <ReactFlowProvider>
-      <SpaceMapInner {...props} />
+      <SpaceMapInner key={props.spaceId} {...props} />
     </ReactFlowProvider>
   );
 }

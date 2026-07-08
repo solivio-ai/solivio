@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { getAuth } from "@solivio/sdk/runtime";
+
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
+  await getAuth().requireAuth();
   const formData = await req.formData();
   const file = formData.get("file");
 

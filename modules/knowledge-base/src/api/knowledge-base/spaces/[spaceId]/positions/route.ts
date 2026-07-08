@@ -21,12 +21,12 @@ type RouteParams = { params: Promise<{ spaceId: string }> };
 
 export async function POST(request: Request, { params }: RouteParams) {
   await getAuth().requireAuth();
-  await params;
+  const { spaceId } = await params;
   const body = await request.json();
   const parsed = positionsSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
-  await updateArticlePositions(parsed.data.positions);
+  await updateArticlePositions(spaceId, parsed.data.positions);
   return NextResponse.json({ ok: true });
 }

@@ -3,7 +3,11 @@ import { z } from "zod/v4";
 
 import { getAuth } from "@solivio/sdk/runtime";
 
-import { updateArticle } from "../../../../../server/knowledgeBaseRepository.ts";
+import {
+  findArticleById,
+  findArticlesBySpace,
+  updateArticle,
+} from "../../../../../server/knowledgeBaseRepository.ts";
 
 export const runtime = "nodejs";
 
@@ -21,7 +25,31 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
-  const article = await updateArticle(articleId, { parentId: parsed.data.parentId });
-  if (!article) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(article);
+
+  const { parentId } = parsed.data;
+
+  if (parentId !== null) {
+    const [article, parent] = await Promise.all([
+      findArticleById(articleId),
+      findArticleById(parentId),
+    ]);
+    if (!article) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!parent || parent.spaceId !== article.spaceId) {
+      return NextResponse.json({ error: "Invalid parent" }, { status: 422 });
+    }
+    // Reject if parentId is the article itself or a descendant of it.
+    const spaceArticles = await findArticlesBySpace(article.spaceId);
+    const byId = new Map(spaceArticles.map((a) => [a.id, a]));
+    let cur: (typeof spaceArticles)[0] | undefined = byId.get(parentId);
+    while (cur) {
+      if (cur.id === articleId) {
+        return NextResponse.json({ error: "Cycle detected" }, { status: 422 });
+      }
+      cur = cur.parentId ? byId.get(cur.parentId) : undefined;
+    }
+  }
+
+  const updated = await updateArticle(articleId, { parentId });
+  if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(updated);
 }

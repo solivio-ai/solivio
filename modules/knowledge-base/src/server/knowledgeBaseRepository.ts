@@ -240,6 +240,7 @@ export async function findConnectionsBySpace(spaceId: string): Promise<Connectio
 }
 
 export async function updateArticlePositions(
+  spaceId: string,
   updates: Array<{ id: string; x: number; y: number }>,
 ): Promise<void> {
   await Promise.all(
@@ -247,7 +248,9 @@ export async function updateArticlePositions(
       db
         .update(knowledgeBaseArticles)
         .set({ positionX: x, positionY: y, updatedAt: new Date() })
-        .where(eq(knowledgeBaseArticles.id, id)),
+        .where(
+          and(eq(knowledgeBaseArticles.id, id), eq(knowledgeBaseArticles.spaceId, spaceId)),
+        ),
     ),
   );
 }
@@ -339,7 +342,7 @@ export async function upsertFromImport(payload: ImportPayload): Promise<{
               body: articleInput.body,
               type: articleInput.type,
               sortOrder: articleInput.sortOrder,
-              parentId: parentDbId ?? undefined,
+              parentId: parentDbId,
             }))!;
           } else {
             article = await insertArticle({
