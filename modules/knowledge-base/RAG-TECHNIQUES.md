@@ -31,7 +31,7 @@ Run both queries in parallel in the search service, merge results with RRF befor
 
 ## 2. Parent-Document Retrieval — High priority
 
-- [ ] Implemented
+- [x] Implemented
 
 Embed small chunks for retrieval precision, but return the full parent article (or a larger surrounding window) as context to the agent. The chunk that matches the query is rarely the right granularity to answer from — the agent needs surrounding context.
 
@@ -41,13 +41,15 @@ The `heading_path` column already stored on chunks makes the parent lookup trivi
 
 ## 3. Sitemap-First Navigation — High priority
 
-- [ ] Implemented
+- [x] Implemented
 
 Before doing a vector search, the agent calls `browse_knowledge_base` which returns the full space tree (spaces → directories → article titles, no bodies). The agent uses this to identify the relevant space or subtree, then scopes the vector search with `spaceId`.
 
 This prevents the agent from searching the wrong space and gives it structural orientation — same pattern search engines use (crawl structure, then fetch content).
 
 The agent instructions in `chatAgent.ts` should explicitly tell it to browse first, not treat search as the first move.
+
+**Implementation note:** Implemented as two separate tools — `browse_knowledge_base` (returns spaces) and `list_articles` (returns the article tree for a given space). Agent instructions encode the browse-first workflow explicitly.
 
 **Scalability note:** compact at 500 articles (~10–15k tokens). At 2000+ articles consider returning only the top two levels by default with a depth parameter.
 

@@ -248,9 +248,7 @@ export async function updateArticlePositions(
       db
         .update(knowledgeBaseArticles)
         .set({ positionX: x, positionY: y, updatedAt: new Date() })
-        .where(
-          and(eq(knowledgeBaseArticles.id, id), eq(knowledgeBaseArticles.spaceId, spaceId)),
-        ),
+        .where(and(eq(knowledgeBaseArticles.id, id), eq(knowledgeBaseArticles.spaceId, spaceId))),
     ),
   );
 }
