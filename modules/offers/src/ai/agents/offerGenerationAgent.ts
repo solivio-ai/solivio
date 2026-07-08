@@ -130,7 +130,7 @@ const agentOutputSchema = z.object({
   kbArticles: z
     .array(kbArticleSchema)
     .describe(
-      "Baza Wiedzy articles whose content actually influenced this offer. Only include articles that changed a product selection, added a warning, or informed a requirement. Leave empty if Baza Wiedzy was not consulted or returned no relevant findings.",
+      "Knowledge Base articles whose content actually influenced this offer. Only include articles that changed a product selection, added a warning, or informed a requirement. Leave empty if Baza Wiedzy was not consulted or returned no relevant findings.",
     ),
 });
 
