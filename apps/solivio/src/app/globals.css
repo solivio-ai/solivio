@@ -4,6 +4,8 @@
 /* Tailwind @source directives for enabled module sources (yarn generate). */
 @import "../generated/tailwind.css";
 
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

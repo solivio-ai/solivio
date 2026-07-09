@@ -91,61 +91,9 @@ export function ArticleDrawer({ article, onClose, note, spaceName }: Props) {
               {loading ? (
                 <p className="text-muted-foreground/50 animate-pulse">{t("loading")}</p>
               ) : body ? (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: ({ children }) => (
-                      <h1 className="text-base font-semibold mt-4 mb-2 text-foreground">
-                        {children}
-                      </h1>
-                    ),
-                    h2: ({ children }) => (
-                      <h2 className="text-sm font-semibold mt-4 mb-1.5 text-foreground">
-                        {children}
-                      </h2>
-                    ),
-                    h3: ({ children }) => (
-                      <h3 className="text-sm font-medium mt-3 mb-1 text-foreground">{children}</h3>
-                    ),
-                    p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
-                    ul: ({ children }) => (
-                      <ul className="mb-2 ml-4 list-disc space-y-0.5">{children}</ul>
-                    ),
-                    ol: ({ children }) => (
-                      <ol className="mb-2 ml-4 list-decimal space-y-0.5">{children}</ol>
-                    ),
-                    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                    strong: ({ children }) => (
-                      <strong className="font-semibold text-foreground">{children}</strong>
-                    ),
-                    code: ({ children }) => (
-                      <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {children}
-                      </code>
-                    ),
-                    table: ({ children }) => (
-                      <div className="my-2 overflow-x-auto">
-                        <table className="w-full border-collapse text-xs">{children}</table>
-                      </div>
-                    ),
-                    th: ({ children }) => (
-                      <th className="border border-border bg-muted px-2 py-1 text-left font-medium text-foreground">
-                        {children}
-                      </th>
-                    ),
-                    td: ({ children }) => (
-                      <td className="border border-border px-2 py-1">{children}</td>
-                    ),
-                    blockquote: ({ children }) => (
-                      <blockquote className="border-l-2 border-border pl-3 italic">
-                        {children}
-                      </blockquote>
-                    ),
-                    hr: () => <hr className="my-3 border-border" />,
-                  }}
-                >
-                  {body}
-                </ReactMarkdown>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
+                </div>
               ) : (
                 <p className="leading-relaxed">{t("noContent")}</p>
               )}
