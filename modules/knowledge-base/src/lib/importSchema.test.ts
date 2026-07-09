@@ -1,10 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import {
-  flattenArticles,
-  flattenPayload,
-  importPayloadSchema,
-} from "./importSchema.ts";
+import { flattenArticles, flattenPayload, importPayloadSchema } from "./importSchema.ts";
 
 describe("importPayloadSchema", () => {
   test("accepts a minimal valid payload", () => {
@@ -50,8 +46,24 @@ describe("importPayloadSchema", () => {
 describe("flattenArticles", () => {
   test("returns flat list unchanged when no children", () => {
     const flat = flattenArticles([
-      { externalId: "a", title: "A", body: "", type: "article", sortOrder: 0, tags: [], connections: [] },
-      { externalId: "b", title: "B", body: "", type: "article", sortOrder: 1, tags: [], connections: [] },
+      {
+        externalId: "a",
+        title: "A",
+        body: "",
+        type: "article",
+        sortOrder: 0,
+        tags: [],
+        connections: [],
+      },
+      {
+        externalId: "b",
+        title: "B",
+        body: "",
+        type: "article",
+        sortOrder: 1,
+        tags: [],
+        connections: [],
+      },
     ]);
     expect(flat).toHaveLength(2);
     expect(flat.map((a) => a.externalId)).toEqual(["a", "b"]);
@@ -69,7 +81,15 @@ describe("flattenArticles", () => {
         tags: [],
         connections: [],
         children: [
-          { externalId: "child", title: "Child", body: "", type: "article", sortOrder: 0, tags: [], connections: [] },
+          {
+            externalId: "child",
+            title: "Child",
+            body: "",
+            type: "article",
+            sortOrder: 0,
+            tags: [],
+            connections: [],
+          },
         ],
       },
     ]);
@@ -100,7 +120,15 @@ describe("flattenArticles", () => {
             tags: [],
             connections: [],
             children: [
-              { externalId: "leaf", title: "Leaf", body: "", type: "article", sortOrder: 0, tags: [], connections: [] },
+              {
+                externalId: "leaf",
+                title: "Leaf",
+                body: "",
+                type: "article",
+                sortOrder: 0,
+                tags: [],
+                connections: [],
+              },
             ],
           },
         ],
@@ -146,7 +174,15 @@ describe("flattenArticles", () => {
         tags: [],
         connections: [],
         children: [
-          { externalId: "c", title: "C", body: "", type: "article", sortOrder: 0, tags: [], connections: [] },
+          {
+            externalId: "c",
+            title: "C",
+            body: "",
+            type: "article",
+            sortOrder: 0,
+            tags: [],
+            connections: [],
+          },
         ],
       },
     ]);
