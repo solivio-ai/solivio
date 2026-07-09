@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { MarkdownChunker, extractHeadingPath } from "./markdown.ts";
+import { extractHeadingPath, MarkdownChunker } from "./markdown.ts";
 
 describe("extractHeadingPath", () => {
   test("returns null when no headings are present", () => {
@@ -49,14 +49,16 @@ describe("MarkdownChunker", () => {
   });
 
   test("splits long text into multiple chunks", async () => {
-    const section = "## Section\n" + "word ".repeat(200);
-    const longText = Array.from({ length: 5 }, (_, i) => `## Part ${i + 1}\n` + "word ".repeat(200)).join("\n\n");
+    const longText = Array.from(
+      { length: 5 },
+      (_, i) => `## Part ${i + 1}\n ${"word ".repeat(200)}`,
+    ).join("\n\n");
     const chunks = await chunker.split(longText);
     expect(chunks.length).toBeGreaterThan(1);
   });
 
   test("each chunk has a headingPath or null", async () => {
-    const text = "## Setup\nContent.\n## Usage\n" + "word ".repeat(200);
+    const text = `## Setup\nContent.\n## Usage\n ${"word ".repeat(200)}`;
     const chunks = await chunker.split(text);
     for (const chunk of chunks) {
       expect(typeof chunk.headingPath === "string" || chunk.headingPath === null).toBe(true);
