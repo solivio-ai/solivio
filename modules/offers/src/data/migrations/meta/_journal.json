@@ -15,6 +15,13 @@
       "when": 1781269255888,
       "tag": "0001_amazing_wallop",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782153541470,
+      "tag": "0002_dusty_gorilla_man",
+      "breakpoints": true
     }
   ]
 }

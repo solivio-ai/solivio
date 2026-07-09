@@ -23,6 +23,12 @@ const SUITES = {
   "offer-generation": () => import("./suites/offer-generation/suite"),
 };
 
+// Benchmarks default to a cheaper model than the app's production default
+// (gpt-5.5) to keep runs affordable; the offer-generation tool loop still needs
+// real reasoning, so mini — not nano — is the floor. Override with --model
+// (e.g. --model openai/gpt-5.5 for a quality ceiling).
+const DEFAULT_BENCHMARK_MODEL = "openai/gpt-5.4-mini";
+
 // NaN here would silently produce zero jobs and an all-zero history entry.
 function parsePositiveInt(name: string, value: string): number {
   const parsed = Number.parseInt(value, 10);
@@ -55,7 +61,7 @@ async function main() {
   config({ path: path.join(appRoot, ".env") });
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not set");
-  if (args.model) process.env.OPENAI_MODEL_OFFER_GENERATION = args.model;
+  process.env.OPENAI_MODEL_OFFER_GENERATION = args.model ?? DEFAULT_BENCHMARK_MODEL;
 
   // Point the app's Drizzle client at the dedicated benchmark DB. Must happen
   // before any server module is imported (db.ts reads the env var at init).

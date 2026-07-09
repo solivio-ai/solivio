@@ -16,6 +16,7 @@ the extension model; the architectural framing is `architecture.md` §6.
 | Offer validation | offers | `modules/offers/src/ai/agents/offerValidationAgent.ts` | `offerValidation` | Compares an offer against the original request; returns pass / partial / fail with structured issues. |
 | Chat (salesperson copilot) | offer-chat | `modules/offer-chat/src/ai/chatAgent.ts` | `chat` | Human-in-the-loop copilot in the offer review UI. Built from the **merged agent-tool registry** (`getAgentTools()`), so its capabilities come from other modules. |
 | Product search | catalog | `modules/catalog/src/server/productSearchAgent.ts` | `productSearch` | Wraps vector search with an LLM-formatted answer behind `POST /api/products/search`. Slated to become a plain `search_catalog` tool. |
+| Space description | knowledge-base | `modules/knowledge-base/src/ai/spaceDescriptionAgent.ts` | `offerName` | Generates a short description for a knowledge-base space from its article titles (reuses the cheap short-output role). |
 
 All agents are built on Voltagent over the Vercel AI SDK. VoltOps tracing is opt-in per
 deployment via `VOLTAGENT_TRACING=true` + `VOLTAGENT_PUBLIC_KEY`/`VOLTAGENT_SECRET_KEY`.
@@ -53,7 +54,10 @@ Concretely today: the **offers** module contributes the copilot's offer-editing 
 `remove_offer_line_item`, `propose_products_for_requirements`, `bulk_add_products`) —
 they call the `catalog` and `offers` services lazily via `getService()` — and the
 **order-history** module contributes `recall_order_history` for both the copilot and
-offer-generation agents. The consuming agents request their scoped tool registry through
+offer-generation agents. The **knowledge-base** module likewise contributes its RAG
+retrieval tools (`browse_knowledge_base`, `search_knowledge_base`, `list_articles`,
+`get_article`) to the same two agents, so the offer generator can ground decisions in
+internal articles. The consuming agents request their scoped tool registry through
 `getAgentTools()`; neither module imports another module's implementation.
 
 ## Rules for agent code in modules

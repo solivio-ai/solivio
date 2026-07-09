@@ -109,6 +109,7 @@ export async function createOffer(
         status: OFFER_STATUS.DRAFT,
         currency: offerCurrency,
         notes: generated.notes,
+        kbArticles: generated.kbArticles,
       },
       tx,
     );

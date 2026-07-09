@@ -1,0 +1,17 @@
+{
+  "id": "13-kb-board-protection",
+  "title": "Knowledge base: distribution board requires RCD protection",
+  "difficulty": "expert",
+  "notes": "KB-DRIVEN ITEM ADDITION. The customer asks only for an enclosure, but the 'Instalacja i kompatybilność' space states every supplied board must ship with a 30mA Type-A RCD. The agent should add RCD-25-30-2P and cite the article. Likely a GAP today: current agents rarely add a product the request never mentions, so item recall will sit near 0.5 until that lands — a roadmap metric. The forbidden HR article also mentions 'różnicowoprądowe', so it adversarially tempts retrieval and must not be cited.",
+  "customer": {
+    "name": "Dom-Instal Mateusz Kowalski",
+    "profile": "Residential electrician fitting out apartments; orders boards per flat."
+  },
+  "request": "Dzień dobry, poproszę rozdzielnicę podtynkową 24-modułową do mieszkania.",
+  "expected": {
+    "items": [{ "sku": "ROZ-24-PT", "quantity": 1 }, { "sku": "RCD-25-30-2P", "quantity": 1 }],
+    "unmatched": [],
+    "kbArticles": ["ochrona różnicowoprądowa rozdzielnic"],
+    "forbiddenKbArticles": ["parkingowa ładowanie pojazdów"]
+  }
+}

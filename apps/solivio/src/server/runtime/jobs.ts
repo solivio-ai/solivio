@@ -38,8 +38,13 @@ export async function startJobEngine(): Promise<SolivioRuntime["enqueue"]> {
     await boss.offWork(job.name).catch(() => {});
     await boss.work<unknown>(job.name, { batchSize: 1 }, async ([item]) => {
       logger.info("job started", { job: job.name, id: item.id });
-      await job.handler(item.data);
-      logger.info("job finished", { job: job.name, id: item.id });
+      try {
+        await job.handler(item.data);
+        logger.info("job finished", { job: job.name, id: item.id });
+      } catch (error) {
+        logger.error("job failed", { job: job.name, id: item.id, error: String(error) });
+        throw error;
+      }
     });
     const schedule = typeof job.schedule === "function" ? job.schedule() : job.schedule;
     if (schedule) {

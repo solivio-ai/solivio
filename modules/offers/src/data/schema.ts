@@ -12,7 +12,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import type { Offer, OfferRevisionSnapshot } from "@solivio/domain";
+import type { Offer, OfferKbArticle, OfferRevisionSnapshot } from "@solivio/domain";
 import { timestamps } from "@solivio/sdk/db";
 
 export const offers = pgTable(
@@ -34,6 +34,7 @@ export const offers = pgTable(
       .notNull()
       .default(0),
     notes: text("notes").array().notNull().default([]),
+    kbArticles: jsonb("kb_articles").$type<OfferKbArticle[]>().notNull().default([]),
     ...timestamps,
   },
   (table) => [

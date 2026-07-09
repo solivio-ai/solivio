@@ -32,9 +32,9 @@ type IntegrationConfig = {
 
 const INTEGRATIONS: IntegrationConfig[] = [
   { key: "productCatalog", icon: Package, active: true },
-  { key: "historicalOrders", icon: History, active: false },
-  { key: "documentation", icon: FileText, active: false },
-  { key: "industryKnowledge", icon: BookOpen, active: false },
+  { key: "historicalOrders", icon: History, active: true },
+  { key: "documentation", icon: FileText, active: true },
+  { key: "industryKnowledge", icon: BookOpen, active: true },
   { key: "rfqBenchmarks", icon: Gauge, active: false },
   { key: "priceRules", icon: DollarSign, active: false },
   { key: "crm", icon: Users, active: false },

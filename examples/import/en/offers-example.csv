@@ -1,0 +1,31 @@
+order_ref;customer;item;sku;quantity;unit_price;vat;date;currency
+ORD-2024-001;Meridian Developments;Schneider Argus AR-35 Photocell Switch 100 lux;EM-012-10335;10;26.50;20;2024-01-15;GBP
+ORD-2024-001;Meridian Developments;Timeguard NightEye NE-71 Photocell Switch 2 lux;EM-012-10371;5;14.90;20;2024-01-15;GBP
+ORD-2024-002;Pennine Manufacturing;Heatmiser Neo HM-97 Underfloor Thermostat 24V;EM-014-10797;8;24.80;20;2024-01-22;GBP
+ORD-2024-002;Pennine Manufacturing;Schneider Thermo TH-40 Room Thermostat 230V;EM-014-10840;4;38.30;20;2024-01-22;GBP
+ORD-2024-002;Pennine Manufacturing;Heatmiser Touch HM-56 Underfloor Thermostat OLED 24V;EM-014-10856;6;29.90;20;2024-01-22;GBP
+ORD-2024-003;Kingsway Facilities Management;Hikvision Visionline VL-93 4MP IP Dome Camera;;3;96.00;20;2024-02-05;GBP
+ORD-2024-003;Kingsway Facilities Management;Dahua Pro DH-07 5MP IP Bullet Camera;;2;102.00;20;2024-02-05;GBP
+ORD-2024-004;Voltway Electrical Contractors;Texecom Premier TX-09 PIR Detector 10m;EM-043-13109;12;18.90;20;2024-02-12;GBP
+ORD-2024-004;Voltway Electrical Contractors;Pyronix Enforcer PY-94 Alarm Panel 128 zones;EM-044-13394;1;242.00;20;2024-02-12;GBP
+ORD-2024-004;Voltway Electrical Contractors;Dahua NVR DH-25 64-ch 12MP Recorder;EM-045-13525;1;164.00;20;2024-02-12;GBP
+ORD-2024-005;Riverside Property Group;Hager EHZ EZ-96 Plug-in Timer Weekly;EM-022-11696;20;12.40;20;2024-02-20;GBP
+ORD-2024-005;Riverside Property Group;BG Electrical Sync BG-27 Plug-in Timer Daily;EM-022-11527;15;6.50;20;2024-02-20;GBP
+ORD-2024-006;Northgate Building Services Ltd;Legrand Céliane LG-32 Astronomical Time Switch 2-ch;;2;86.40;20;2024-03-01;GBP
+ORD-2024-007;Meridian Developments;ESP AquaGuard AQ-34 Wi-Fi Leak Detector;EM-015-11134;6;11.90;20;2024-03-08;GBP
+ORD-2024-007;Meridian Developments;ABB Twilo TW-77 Photocell Switch 10 lux 16A;EM-012-10277;4;27.20;20;2024-03-08;GBP
+ORD-2024-008;Harbourside Pharma;MEAN WELL DR-01 DIN PSU 5V/2A;EM-071-17701;10;10.20;20;2024-03-15;GBP
+ORD-2024-008;Harbourside Pharma;ESP Multi ES-72 Multifunction Time Relay;EM-025-12372;5;17.90;20;2024-03-15;GBP
+ORD-2024-009;Cathedral Site Services;Somfy Elixo SF-85 Swing Gate Motor 800kg;EM-063-15985;1;598.00;20;2024-03-22;GBP
+ORD-2024-009;Cathedral Site Services;CAME Solo CM-24 PIN Keypad 50 users;EM-062-15424;2;61.50;20;2024-03-22;GBP
+ORD-2024-010;Blackwood Electrical Wholesale;Wago 221 WG-20 Lever Connector 8-way;EM-081-16320;100;1.15;20;2024-04-03;GBP
+ORD-2024-011;Pennine Manufacturing;ESP Aperta AP-23 Acoustic Switch 80 dB;EM-013-10623;8;13.20;20;2024-04-10;GBP
+ORD-2024-011;Pennine Manufacturing;Legrand Lexic LX-95 Acoustic Switch DIN;EM-013-10695;6;16.80;20;2024-04-10;GBP
+ORD-2024-012;Kingsway Facilities Management;Timeguard TimePro TP-28 Surface Time Switch Weekly;EM-023-11928;5;20.80;20;2024-04-18;GBP
+ORD-2024-013;Pennine Manufacturing;Bosch GSB BO-36 Impact Drill 180Nm;EM-092-19236;3;159.00;20;2024-05-06;GBP
+ORD-2024-013;Pennine Manufacturing;Milwaukee M18 ML-91 Wall Chaser 1300W 125mm;EM-091-18991;2;529.00;20;2024-05-06;GBP
+ORD-2024-014;Meridian Developments;Hikvision Visionline VL-93 4MP IP Dome Camera;EM-042-12693;4;96.00;20;2024-05-14;GBP
+ORD-2024-014;Meridian Developments;Dahua NVR DH-25 64-ch 12MP Recorder;EM-045-13525;1;164.00;20;2024-05-14;GBP
+ORD-2024-014;Meridian Developments;Texecom Premier TX-09 PIR Detector 10m;EM-043-13109;8;18.90;20;2024-05-14;GBP
+ORD-2024-015;Riverside Property Group;ESP Multi ES-72 Multifunction Time Relay;EM-025-12372;10;17.90;20;2024-05-28;GBP
+ORD-2024-015;Riverside Property Group;BG Electrical Sync BG-27 Plug-in Timer Daily;EM-022-11527;8;6.50;20;2024-05-28;GBP

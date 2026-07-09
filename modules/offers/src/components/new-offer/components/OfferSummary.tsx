@@ -1,19 +1,29 @@
+"use client";
+
 import { AlertTriangle, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import type { Offer } from "@solivio/domain";
+import type { Offer, OfferKbArticle } from "@solivio/domain";
 import { OFFER_STATUS } from "@solivio/domain";
+import { Slot } from "@solivio/slots";
 import { Alert, AlertDescription } from "@solivio/ui/components/alert.tsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
 
 import { CommercialTotals } from "./CommercialTotals";
 import type { DraftLine } from "./offer-builder-types";
 
+declare module "@solivio/sdk" {
+  interface SlotPropsMap {
+    "offers.summary.kbArticles": { kbArticles: OfferKbArticle[] };
+  }
+}
+
 type OfferSummaryProps = {
   currency: DraftLine["currency"];
   discount: number;
   discountPercent: number;
   notes: Offer["notes"];
+  kbArticles?: OfferKbArticle[];
   requestText: string;
   setDiscountPercent: (discountPercent: number) => void;
   status: Offer["status"];
@@ -26,6 +36,7 @@ export function OfferSummary({
   discount,
   discountPercent,
   notes,
+  kbArticles = [],
   requestText,
   setDiscountPercent,
   status,
@@ -33,6 +44,7 @@ export function OfferSummary({
   total,
 }: OfferSummaryProps) {
   const tSummary = useTranslations("offers.newOffer.review.summary");
+
   return (
     <Card className="min-w-0 border border-foreground/15 shadow-sm ring-0" size="sm">
       <CardHeader className="pb-1">
@@ -63,6 +75,8 @@ export function OfferSummary({
               </div>
             </section>
           ) : null}
+
+          <Slot id="offers.summary.kbArticles" kbArticles={kbArticles} />
         </div>
 
         <CommercialTotals

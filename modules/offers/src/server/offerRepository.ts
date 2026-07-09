@@ -5,6 +5,7 @@ import { and, asc, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import type {
   MatchSource,
   Offer,
+  OfferKbArticle,
   OfferStatus,
   OfferUnmatchedItem,
   OfferUnmatchedItemInput,
@@ -26,6 +27,7 @@ export type InsertOfferData = {
   status: OfferStatus;
   currency: string;
   notes: string[];
+  kbArticles?: OfferKbArticle[];
   discountPercent?: number;
   discountAmount?: number;
   createdAt?: Date;
@@ -70,6 +72,7 @@ export type OfferRow = {
   status: OfferStatus;
   currency: string;
   notes: string[];
+  kbArticles: OfferKbArticle[];
   unmatched: OfferUnmatchedItem[];
   discountPercent: number;
   discountAmount: number;
@@ -334,6 +337,7 @@ export async function findOfferById(id: string, tx: Tx = db): Promise<OfferRow |
     status: offer.status,
     currency: offer.currency,
     notes: offer.notes,
+    kbArticles: offer.kbArticles ?? [],
     unmatched,
     discountPercent: offer.discountPercent,
     discountAmount: offer.discountAmount,
@@ -479,6 +483,7 @@ export async function findRecentOffersByCustomer(
     status: offer.status,
     currency: offer.currency,
     notes: offer.notes,
+    kbArticles: offer.kbArticles ?? [],
     unmatched: unmatchedByOfferId.get(offer.id) ?? [],
     discountPercent: offer.discountPercent,
     discountAmount: offer.discountAmount,
@@ -521,6 +526,7 @@ export function offerRowToDomain(row: OfferRow): Offer {
     discountPercent: row.discountPercent,
     discountAmount: row.discountAmount,
     notes: row.notes,
+    kbArticles: row.kbArticles ?? [],
     unmatched: row.unmatched,
     customerName: row.customerName,
     clientRequest: row.clientRequest,

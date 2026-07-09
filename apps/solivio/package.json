@@ -25,6 +25,7 @@
     "@solivio/theme": "workspace:*",
     "@solivio/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.1",
+    "@tailwindcss/typography": "^0.5.20",
     "@voltagent/core": "^2.7.7",
     "ai": "^6.0.202",
     "better-auth": "^1.6.17",

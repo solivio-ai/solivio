@@ -62,6 +62,7 @@ catalog  ◄───┘
    └── products-sync
 
 offers ◄── order-history            csv-import (headless; no deps)
+                                    knowledge-base (no deps)
 ```
 
 - **catalog** — products + prices, semantic search, import target `product`.
@@ -71,6 +72,7 @@ offers ◄── order-history            csv-import (headless; no deps)
 - **order-history** — agent tools that recall a customer's accepted past offers/orders through the offers service.
 - **csv-import** — CSV importer capabilities for the product/customer/offer import targets (bound via config `slots`).
 - **products-sync** — the reference example: scheduled sync of products from an external source into the catalog.
+- **knowledge-base** — internal knowledge base (spaces, articles, chunking + embeddings) with map/list UI and a JSON importer; contributes RAG retrieval tools to the offer-generation and copilot agents.
 
 One deliberate seam: the chat **panel UI lives in offers** (it integrates imperatively with the offer review screen) while the chat **domain lives in offer-chat**; the panel reaches it over HTTP only. When UI cohesion and domain ownership pull apart, HTTP is the boundary that lets each module keep what it owns.
 

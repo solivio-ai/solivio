@@ -5,6 +5,7 @@ import type { BenchmarkCase } from "./types";
 export type GeneratedOfferLike = {
   items: Array<{ productSku: string; quantity: number }>;
   unmatched: Array<{ item: string; reason: string }>;
+  kbArticles: Array<{ articleTitle: string }>;
 };
 
 export type ItemVerdict = {
@@ -24,6 +25,16 @@ export type CaseScore = {
   verdicts: ItemVerdict[];
   extraSkus: string[]; // generated items not expected — hallucinations or wrong picks
   missedUnmatched: string[]; // expected-unmatched fragments the agent did not report
+  // KB citation scoring — all null when the case does not opt in (neither
+  // expected.kbArticles nor forbiddenKbArticles set). Recall-based: rewards
+  // citing the expected article; extra relevant citations are NOT penalized.
+  // citationScore equals citationRecall unless a forbidden article was cited,
+  // in which case it is 0 (the distractor "must not surface" penalty).
+  citationScore: number | null;
+  citationRecall: number | null;
+  citedTitles: string[]; // every article title the agent cited
+  missedCitations: string[]; // expected keyphrases not found in any cited title
+  forbiddenCitations: string[]; // cited titles matching a forbidden keyphrase
 };
 
 const significantTokens = (s: string): Set<string> =>
@@ -39,6 +50,17 @@ const fragmentsOverlap = (a: string, b: string): boolean => {
   const tb = significantTokens(b);
   for (const t of ta) if (tb.has(t)) return true;
   return false;
+};
+
+// A cited title satisfies an expected keyphrase when ALL of the keyphrase's
+// significant tokens appear in the title — stricter than fragmentsOverlap so a
+// single shared word (titles often share generic terms) is not a match.
+const citationMatches = (expectedKey: string, title: string): boolean => {
+  const want = significantTokens(expectedKey);
+  if (want.size === 0) return false;
+  const have = significantTokens(title);
+  for (const t of want) if (!have.has(t)) return false;
+  return true;
 };
 
 /**
@@ -112,11 +134,44 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
       : (expectedUnmatched.length - missedUnmatched.length) / expectedUnmatched.length;
 
   const unmatchedWeight = expectedUnmatched.length;
-  const score =
-    unmatchedRecall === null
-      ? itemF1
-      : (itemF1 * expectedCount + unmatchedRecall * unmatchedWeight) /
-        (expectedCount + unmatchedWeight);
+
+  // KB citation scoring. Opt-in when the case declares expected.kbArticles or
+  // forbiddenKbArticles. Deliberately RECALL-based, not precision-based: the
+  // agent legitimately reaches for relevant articles we did not enumerate, so
+  // extra citations are never punished. The only penalty is citing an article
+  // the case explicitly forbids (a distractor-space article), which zeroes the
+  // citation dimension for that run — that is the "must not surface" test.
+  const expectedCitations = benchCase.expected.kbArticles;
+  const forbiddenCitationKeys = benchCase.expected.forbiddenKbArticles;
+  const opensCitationScoring =
+    expectedCitations !== undefined || forbiddenCitationKeys !== undefined;
+  const citedTitles = generated.kbArticles.map((a) => a.articleTitle);
+  let citationScore: number | null = null;
+  let citationRecall: number | null = null;
+  let missedCitations: string[] = [];
+  let forbiddenCitations: string[] = [];
+  if (opensCitationScoring) {
+    const expected = expectedCitations ?? [];
+    missedCitations = expected.filter(
+      (key) => !citedTitles.some((title) => citationMatches(key, title)),
+    );
+    citationRecall =
+      expected.length === 0 ? 1 : (expected.length - missedCitations.length) / expected.length;
+    forbiddenCitations = citedTitles.filter((title) =>
+      (forbiddenCitationKeys ?? []).some((key) => citationMatches(key, title)),
+    );
+    citationScore = forbiddenCitations.length > 0 ? 0 : citationRecall;
+  }
+
+  // Headline score: weighted mean of the present dimensions. Items weigh by
+  // expected-item count, unmatched by expected-unmatched count, citation by
+  // max(expected citations, 1) so a cite-nothing/forbidden case still counts.
+  const terms: Array<[value: number, weight: number]> = [[itemF1, expectedCount]];
+  if (unmatchedRecall !== null) terms.push([unmatchedRecall, unmatchedWeight]);
+  if (citationScore !== null)
+    terms.push([citationScore, Math.max(expectedCitations?.length ?? 0, 1)]);
+  const totalWeight = terms.reduce((sum, [, w]) => sum + w, 0);
+  const score = totalWeight === 0 ? 0 : terms.reduce((sum, [v, w]) => sum + v * w, 0) / totalWeight;
 
   return {
     score,
@@ -127,6 +182,11 @@ export function scoreCase(benchCase: BenchmarkCase, generated: GeneratedOfferLik
     verdicts,
     extraSkus,
     missedUnmatched,
+    citationScore,
+    citationRecall,
+    citedTitles,
+    missedCitations,
+    forbiddenCitations,
   };
 }
 

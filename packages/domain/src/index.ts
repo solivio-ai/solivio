@@ -10,6 +10,7 @@ export type {
   MatchSource,
   Offer,
   OfferItem,
+  OfferKbArticle,
   OfferStatus,
   OfferUnmatchedItem,
   OfferUnmatchedItemInput,

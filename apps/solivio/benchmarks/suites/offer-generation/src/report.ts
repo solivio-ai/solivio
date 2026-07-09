@@ -71,6 +71,11 @@ export function buildJsonReport(meta: BenchmarkMeta, results: CaseResult[]) {
         verdicts: run.score.verdicts,
         extraSkus: run.score.extraSkus,
         missedUnmatched: run.score.missedUnmatched,
+        citationScore: run.score.citationScore,
+        citationRecall: run.score.citationRecall,
+        citedTitles: run.score.citedTitles,
+        missedCitations: run.score.missedCitations,
+        forbiddenCitations: run.score.forbiddenCitations,
         durationMs: run.durationMs,
         error: run.error ?? null,
         generated: run.generated,
@@ -176,6 +181,18 @@ export function buildMarkdownReport(report: JsonReport): string {
         lines.push(
           `Agent reported unmatched: ${run.generated.unmatched.map(formatUnmatched).join("; ")}`,
         );
+      }
+      if (run.citationScore != null) {
+        lines.push("");
+        lines.push(
+          `KB citation score: ${pct(run.citationScore)} (recall ${pct(run.citationRecall ?? 0)})`,
+        );
+        if (run.missedCitations.length > 0) {
+          lines.push(`  Missed expected citations: ${run.missedCitations.join("; ")}`);
+        }
+        if (run.forbiddenCitations.length > 0) {
+          lines.push(`  ⚠ Forbidden citations surfaced: ${run.forbiddenCitations.join("; ")}`);
+        }
       }
       lines.push("");
     }
