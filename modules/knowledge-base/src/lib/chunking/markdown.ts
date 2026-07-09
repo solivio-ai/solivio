@@ -22,7 +22,7 @@ export class MarkdownChunker implements Chunker {
 
 // Extract the last heading line found in the chunk as a simple breadcrumb.
 // e.g. "## Installation\n### Wiring" → "Installation > Wiring"
-function extractHeadingPath(text: string): string | null {
+export function extractHeadingPath(text: string): string | null {
   const headings = [...text.matchAll(/^#{1,6}\s+(.+)$/gm)].map((m) => m[1]!.trim());
   if (headings.length === 0) return null;
   return headings.join(" > ");
