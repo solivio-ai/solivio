@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@solivio/sdk/runtime";
 
@@ -168,6 +168,6 @@ export async function listImportRuns(limit = 20): Promise<ImportRunRow[]> {
   return db
     .select()
     .from(knowledgeBaseImportRuns)
-    .orderBy(knowledgeBaseImportRuns.startedAt)
+    .orderBy(desc(knowledgeBaseImportRuns.startedAt))
     .limit(limit);
 }
