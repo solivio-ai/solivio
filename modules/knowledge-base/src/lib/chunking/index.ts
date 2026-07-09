@@ -1,3 +1,7 @@
+import type { ArticleFormat } from "../../data/schema.ts";
+
+export type { ArticleFormat };
+
 export interface Chunk {
   text: string;
   headingPath: string | null;
@@ -7,7 +11,7 @@ export interface Chunker {
   split(text: string): Promise<Chunk[]>;
 }
 
-export async function getChunker(format: "markdown" | "plain" | "csv"): Promise<Chunker> {
+export async function getChunker(format: ArticleFormat): Promise<Chunker> {
   switch (format) {
     case "markdown": {
       const { MarkdownChunker } = await import("./markdown.ts");

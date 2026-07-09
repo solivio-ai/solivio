@@ -2,7 +2,8 @@ import { defineJob } from "@solivio/sdk";
 import { enqueueJob, getLogger } from "@solivio/sdk/runtime";
 
 import { getChunker } from "../lib/chunking/index.ts";
-import { findArticleById, replaceChunks } from "../server/knowledgeBaseRepository.ts";
+import { findArticleById } from "../server/repositories/articles.ts";
+import { replaceChunks } from "../server/repositories/chunks.ts";
 
 export default defineJob({
   name: "knowledge-base.chunkArticle",

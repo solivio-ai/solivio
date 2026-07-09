@@ -12,6 +12,8 @@ import {
 
 import { halfvec, timestamps } from "@solivio/sdk/db";
 
+export type ArticleFormat = "markdown" | "plain" | "csv";
+
 // ---------------------------------------------------------------------------
 // Spaces — top-level navigation units, each owns a dedicated map canvas.
 // Source metadata (origin/external_id/synced_at) is present from day one so
@@ -53,7 +55,7 @@ export const knowledgeBaseArticles = pgTable(
       .$type<"article" | "directory" | "directive" | "template" | "policy" | "note">()
       .notNull()
       .default("article"),
-    format: text("format").$type<"markdown" | "plain" | "csv">().notNull().default("plain"),
+    format: text("format").$type<ArticleFormat>().notNull().default("plain"),
     sortOrder: integer("sort_order").notNull().default(0),
     positionX: real("position_x"),
     positionY: real("position_y"),

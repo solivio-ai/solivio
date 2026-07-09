@@ -4,12 +4,9 @@ import type { AgentTool } from "@solivio/sdk";
 import { defineAgentTool } from "@solivio/sdk";
 import { getLogger } from "@solivio/sdk/runtime";
 
-import {
-  findAllSpaces,
-  findArticleById,
-  findArticlesBySpace,
-} from "../server/knowledgeBaseRepository.ts";
 import { searchArticles } from "../server/knowledgeBaseSearchService.ts";
+import { findArticleById, findArticlesBySpace } from "../server/repositories/articles.ts";
+import { findAllSpaces } from "../server/repositories/spaces.ts";
 
 const searchKnowledgeBase = defineAgentTool({
   name: "search_knowledge_base",
@@ -93,7 +90,7 @@ const browseKnowledgeBase = defineAgentTool({
   name: "browse_knowledge_base",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "Returns all Baza Wiedzy spaces with their names and descriptions. " +
+    "Returns all Knowledge Base spaces with their names and descriptions. " +
     "Call this first — with no arguments — to see what spaces exist and pick the relevant one. " +
     "Then call list_articles with the spaceId to inspect its structure, or go straight to search_knowledge_base to query it.",
   parameters: z.object({}),
@@ -116,7 +113,7 @@ const listArticles = defineAgentTool({
   name: "list_articles",
   agents: ["offer-generation-agent", "chat-agent"],
   description:
-    "Returns the full article tree (titles and types only, no body content) for a specific Baza Wiedzy space. " +
+    "Returns the full article tree (titles and types only, no body content) for a specific Knowledge Base space. " +
     "Use this when the space description is not enough to decide whether to search — inspect the structure first. " +
     "Do NOT use this to read article content; use search_knowledge_base or get_article for that.",
   parameters: z.object({

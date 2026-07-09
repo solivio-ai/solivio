@@ -3,11 +3,7 @@ import { z } from "zod/v4";
 
 import { getAuth } from "@solivio/sdk/runtime";
 
-import {
-  deleteSpace,
-  findSpaceById,
-  updateSpace,
-} from "../../../../server/knowledgeBaseRepository.ts";
+import { deleteSpace, findSpaceById, updateSpace } from "../../../../server/repositories/spaces.ts";
 
 export const runtime = "nodejs";
 

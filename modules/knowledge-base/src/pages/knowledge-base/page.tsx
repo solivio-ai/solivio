@@ -13,7 +13,7 @@ import {
 } from "@solivio/ui/components/empty.tsx";
 
 import { CreateFirstSpaceButton } from "../../components/CreateFirstSpaceButton.tsx";
-import { findAllSpaces } from "../../server/knowledgeBaseRepository.ts";
+import { findAllSpaces } from "../../server/repositories/spaces.ts";
 
 export default async function KnowledgeBasePage() {
   const [spaces, t] = await Promise.all([findAllSpaces(), getTranslations("knowledge-base.page")]);

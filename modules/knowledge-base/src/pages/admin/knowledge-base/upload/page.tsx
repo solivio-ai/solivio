@@ -4,7 +4,7 @@ import { getImporter } from "@solivio/sdk/runtime";
 import { AppPage } from "@solivio/ui/components/app-page.tsx";
 
 import { KnowledgeBaseImport } from "../../../../components/KnowledgeBaseImport.tsx";
-import { listImportRuns } from "../../../../server/knowledgeBaseRepository.ts";
+import { listImportRuns } from "../../../../server/repositories/import.ts";
 
 export async function generateMetadata() {
   const t = await getTranslations("knowledge-base.import.page");

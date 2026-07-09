@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { enqueueJob, getAuth, getImporter } from "@solivio/sdk/runtime";
 
 import type { ImportPayload } from "../../../lib/importSchema.ts";
-import { createImportRun, listImportRuns } from "../../../server/knowledgeBaseRepository.ts";
+import { createImportRun, listImportRuns } from "../../../server/repositories/import.ts";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;

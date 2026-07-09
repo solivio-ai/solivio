@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 
 import { getAuth } from "@solivio/sdk/runtime";
 
-import { findAllSpaces, insertSpace } from "../../../server/knowledgeBaseRepository.ts";
+import { findAllSpaces, insertSpace } from "../../../server/repositories/spaces.ts";
 
 export const runtime = "nodejs";
 

@@ -2,11 +2,8 @@ import { defineJob } from "@solivio/sdk";
 import { getLogger } from "@solivio/sdk/runtime";
 
 import { generateSpaceDescription } from "../ai/spaceDescriptionAgent.ts";
-import {
-  findArticlesBySpace,
-  findSpaceById,
-  updateSpace,
-} from "../server/knowledgeBaseRepository.ts";
+import { findArticlesBySpace } from "../server/repositories/articles.ts";
+import { findSpaceById, updateSpace } from "../server/repositories/spaces.ts";
 
 export default defineJob({
   name: "knowledge-base.summarizeSpace",

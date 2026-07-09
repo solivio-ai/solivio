@@ -1,26 +1,27 @@
 import type { Services } from "@solivio/sdk";
 
 import type { ImportPayload } from "./lib/importSchema.ts";
-import type { ArticleRow, SpaceRow } from "./server/knowledgeBaseRepository.ts";
+import type { ArticleSearchMatch } from "./server/knowledgeBaseSearchService.ts";
+import { searchArticles } from "./server/knowledgeBaseSearchService.ts";
+import type { ArticleRow } from "./server/repositories/articles.ts";
 import {
   deleteArticle,
-  findAllSpaces,
   findArticleById,
   findArticlesBySpace,
-  findConnectionsByArticle,
-  findConnectionsBySpace,
   findRootArticlesBySpace,
-  findSpaceById,
   findTagsByArticle,
   insertArticle,
-  insertSpace,
   setArticleTags,
   updateArticle,
   updateArticlePositions,
-  upsertFromImport,
-} from "./server/knowledgeBaseRepository.ts";
-import type { ArticleSearchMatch } from "./server/knowledgeBaseSearchService.ts";
-import { searchArticles } from "./server/knowledgeBaseSearchService.ts";
+} from "./server/repositories/articles.ts";
+import {
+  findConnectionsByArticle,
+  findConnectionsBySpace,
+} from "./server/repositories/connections.ts";
+import { upsertFromImport } from "./server/repositories/import.ts";
+import type { SpaceRow } from "./server/repositories/spaces.ts";
+import { findAllSpaces, findSpaceById, insertSpace } from "./server/repositories/spaces.ts";
 
 export type { ArticleRow, SpaceRow };
 
@@ -65,7 +66,10 @@ export interface KnowledgeBaseService {
   listConnectionsBySpace(
     spaceId: string,
   ): Promise<Array<{ id: string; fromId: string; toId: string; type: string }>>;
-  updateArticlePositions(updates: Array<{ id: string; x: number; y: number }>): Promise<void>;
+  updateArticlePositions(
+    spaceId: string,
+    updates: Array<{ id: string; x: number; y: number }>,
+  ): Promise<void>;
 
   upsertFromImport(payload: ImportPayload): Promise<{
     spacesUpserted: number;
@@ -105,7 +109,7 @@ function createKnowledgeBaseService(): KnowledgeBaseService {
     findTagsByArticle: (articleId) => findTagsByArticle(articleId),
     findConnectionsByArticle: (articleId) => findConnectionsByArticle(articleId),
     listConnectionsBySpace: (spaceId) => findConnectionsBySpace(spaceId),
-    updateArticlePositions: (updates) => updateArticlePositions(updates),
+    updateArticlePositions: (spaceId, updates) => updateArticlePositions(spaceId, updates),
 
     upsertFromImport: (payload) => upsertFromImport(payload),
     searchArticles: (query, options) => searchArticles(query, options),

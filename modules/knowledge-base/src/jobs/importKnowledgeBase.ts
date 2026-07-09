@@ -6,7 +6,7 @@ import {
   completeImportRun,
   failImportRun,
   upsertFromImport,
-} from "../server/knowledgeBaseRepository.ts";
+} from "../server/repositories/import.ts";
 
 export default defineJob({
   name: "knowledge-base.import",

@@ -4,12 +4,9 @@ import { AppPage } from "@solivio/ui/components/app-page.tsx";
 
 import { KnowledgeBaseShell } from "../../../components/KnowledgeBaseShell.tsx";
 import type { MapArticle, MapConnection, MapSpace } from "../../../lib/mapTypes.ts";
-import {
-  findAllSpaces,
-  findArticlesBySpaceForMap,
-  findConnectionsBySpace,
-  findSpaceById,
-} from "../../../server/knowledgeBaseRepository.ts";
+import { findArticlesBySpaceForMap } from "../../../server/repositories/articles.ts";
+import { findConnectionsBySpace } from "../../../server/repositories/connections.ts";
+import { findAllSpaces, findSpaceById } from "../../../server/repositories/spaces.ts";
 
 type Props = {
   params: Promise<{ spaceId: string }>;

@@ -4,7 +4,7 @@ import { embedMany } from "ai";
 import { defineJob } from "@solivio/sdk";
 import { emitEvent, getAi, getLogger } from "@solivio/sdk/runtime";
 
-import { findChunksByArticle, upsertEmbeddings } from "../server/knowledgeBaseRepository.ts";
+import { findChunksByArticle, upsertEmbeddings } from "../server/repositories/chunks.ts";
 
 export default defineJob({
   name: "knowledge-base.embedChunks",

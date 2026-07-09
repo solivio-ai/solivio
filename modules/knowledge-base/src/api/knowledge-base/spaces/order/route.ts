@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 
 import { getAuth } from "@solivio/sdk/runtime";
 
-import { updateSpaceSortOrders } from "../../../../server/knowledgeBaseRepository.ts";
+import { updateSpaceSortOrders } from "../../../../server/repositories/spaces.ts";
 
 export const runtime = "nodejs";
 

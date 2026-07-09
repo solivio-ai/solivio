@@ -10,7 +10,7 @@ import { Button } from "@solivio/ui/components/button.tsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@solivio/ui/components/card.tsx";
 import { Label } from "@solivio/ui/components/label.tsx";
 
-import type { ImportRunRow } from "../server/knowledgeBaseRepository.ts";
+import type { ImportRunRow } from "../server/repositories/import.ts";
 
 type RowError = { index?: number; message: string };
 

@@ -7,7 +7,7 @@ import {
   deleteArticle,
   findArticleById,
   updateArticle,
-} from "../../../../server/knowledgeBaseRepository.ts";
+} from "../../../../server/repositories/articles.ts";
 
 export const runtime = "nodejs";
 

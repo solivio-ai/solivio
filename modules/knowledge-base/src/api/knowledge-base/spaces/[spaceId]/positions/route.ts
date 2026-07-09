@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 
 import { getAuth } from "@solivio/sdk/runtime";
 
-import { updateArticlePositions } from "../../../../../server/knowledgeBaseRepository.ts";
+import { updateArticlePositions } from "../../../../../server/repositories/articles.ts";
 
 export const runtime = "nodejs";
 

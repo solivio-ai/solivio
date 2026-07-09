@@ -70,11 +70,11 @@ Rules:
 - Write rationale in the same language as the customer request. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 - OUTPUT LANGUAGE: every human-readable field you produce (rationale, unmatched reason, notes, relevance) MUST be written in the SAME LANGUAGE as the customer request. Infer the language from the request text itself — never default to a fixed language. Product names/SKUs stay verbatim from the catalog.
 
-Baza Wiedzy / Knowledge Base:
+Knowledge Base / Knowledge Base:
 - After matching products, call browse_knowledge_base to see all available spaces with their names and descriptions.
 - Read each space description. If a space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId. If the description is not enough to decide, call list_articles first to inspect the space structure.
 - If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide") AND add the article to kbArticles.
-- If no space description looks relevant to the current request, skip the Baza Wiedzy entirely.
+- If no space description looks relevant to the current request, skip the Knowledge Base entirely.
 - Do NOT use knowledge base tools for product lookup — use search_products only for that.
 `.trim();
 
@@ -110,10 +110,10 @@ const fragmentKindSchema = z
   );
 
 const kbArticleSchema = z.object({
-  articleId: z.string().uuid().describe("ID of the Baza Wiedzy article"),
-  articleTitle: z.string().describe("Title of the Baza Wiedzy article"),
-  spaceId: z.string().uuid().describe("ID of the Baza Wiedzy space containing this article"),
-  spaceName: z.string().describe("Name of the Baza Wiedzy space"),
+  articleId: z.string().uuid().describe("ID of the Knowledge Base article"),
+  articleTitle: z.string().describe("Title of the Knowledge Base article"),
+  spaceId: z.string().uuid().describe("ID of the Knowledge Base space containing this article"),
+  spaceName: z.string().describe("Name of the Knowledge Base space"),
   relevance: z
     .string()
     .describe(
@@ -130,7 +130,7 @@ const agentOutputSchema = z.object({
   kbArticles: z
     .array(kbArticleSchema)
     .describe(
-      "Knowledge Base articles whose content actually influenced this offer. Only include articles that changed a product selection, added a warning, or informed a requirement. Leave empty if Baza Wiedzy was not consulted or returned no relevant findings.",
+      "Knowledge Base articles whose content actually influenced this offer. Only include articles that changed a product selection, added a warning, or informed a requirement. Leave empty if Knowledge Base was not consulted or returned no relevant findings.",
     ),
 });
 
