@@ -17,7 +17,7 @@ You generate a structured offer from a customer request. The catalog can span an
 medical, automotive parts, etc.). The same rules apply regardless of domain.
 
 Workflow:
-1. Extract each distinct product item from the request (exact phrase + quantity).
+1. Extract each distinct product item from the request (exact phrase + quantity). If the request refers to prior purchases ("powtórka ostatniego zamówienia", "repeat my last order", "same as last time", "what we usually order"), FIRST call recall_order_history and treat every line of the referenced past order as a requested item, then add anything else the customer listed. Capturing the full request — including these referenced items — always comes first, before any Knowledge Base work.
 2. Classify each fragment as "sku" or "description":
    - "sku": the fragment is a product code/identifier (alphanumeric with separators, no semantic meaning, e.g. "IV-071-07612", "WG-6256T", "AB12345"). Looks like a database key.
    - "description": a natural-language product reference — a name, category, or descriptive phrase from any industry, e.g.:
@@ -70,12 +70,13 @@ Rules:
 - Write rationale in the same language as the customer request. Briefly explain WHY this product matched (e.g., "exact category match", "same SKU", "same product type with matching specs"); for merged items, also note the merge.
 - OUTPUT LANGUAGE: every human-readable field you produce (rationale, unmatched reason, notes, relevance) MUST be written in the SAME LANGUAGE as the customer request. Infer the language from the request text itself — never default to a fixed language. Product names/SKUs stay verbatim from the catalog.
 
-Knowledge Base / Knowledge Base:
-- After matching products, call browse_knowledge_base to see all available spaces with their names and descriptions.
-- Read each space description. If a space looks relevant to the matched products or the customer request, call search_knowledge_base with that spaceId. If the description is not enough to decide, call list_articles first to inspect the space structure.
-- If the search returns relevant findings, include a brief note in the affected product's rationale (e.g., "requires matching controller — see installation guide") AND add the article to kbArticles.
-- If no space description looks relevant to the current request, skip the Knowledge Base entirely.
-- Do NOT use knowledge base tools for product lookup — use search_products only for that.
+Knowledge Base (LAST step — only after the offer already covers the full request; never let KB work drop, change, or delay a requested item):
+The KB can REQUIRE changes to the offer, not just annotations. Once matching is done:
+- browse_knowledge_base to list spaces; note any whose description forbids use in offers (e.g. HR/office) and exclude their articles.
+- Search BROAD: call search_knowledge_base WITHOUT a spaceId — a rule may live in an unexpected space (a minimum-order quantity is a "sales policy", not a "regulation"). Run one search per matched product family, covering both commercial angles (min order qty, packaging, rounding, lead time) and technical/regulatory angles (required protection, min cross-section, compatibility).
+- Apply an article ONLY when it EXPLICITLY mandates a change to a matched product — then either ADD a required product (look it up via search_products; matchSource null; put a short description of it in requestItem), OVERRIDE a quantity to the policy minimum/multiple (state the customer's original figure in rationale), or SWAP to the compliant variant. Record the article in kbArticles and explain the change in that item's rationale.
+- GUARDRAIL: never add/override/swap for completeness, upsell or a hunch; an article merely mentioning a topic is not enough. If nothing is mandated, change nothing and cite nothing (leave kbArticles empty).
+- Do NOT use KB tools for product lookup — use search_products for that.
 `.trim();
 
 // ── Schemas ────────────────────────────────────────────────────────────────────
@@ -84,14 +85,24 @@ const offerItemSchema = z.object({
   productId: z.string().describe("UUID from the 'id' field of the search result"),
   productName: z.string().describe("Name of the matched product"),
   productSku: z.string().describe("SKU of the matched product"),
-  requestItem: z.string().describe("Exact phrase from the customer request for this item"),
-  quantity: z.number().int().positive().describe("Quantity the customer requested"),
+  requestItem: z
+    .string()
+    .describe(
+      "Exact phrase from the customer request for this item. For a KB-mandated product the customer never named, put a short description of the mandated product instead.",
+    ),
+  quantity: z
+    .number()
+    .int()
+    .positive()
+    .describe(
+      "Quantity to offer — normally what the customer requested, but override it to satisfy a KB-mandated minimum or rounding policy (explain the change in rationale).",
+    ),
   rationale: z.string().describe("Why this product matches the request"),
   matchSource: z
     .enum(["exact", "semantic", "manual"])
     .nullable()
     .describe(
-      "'exact' when the customer fragment was a SKU and matched 1:1; 'semantic' when retrieved via vector search and reranked. Use null when not applicable.",
+      "'exact' when the customer fragment was a SKU and matched 1:1; 'semantic' when retrieved via vector search and reranked. Use null when not applicable — including products added because a Knowledge Base article mandated them.",
     ),
   matchScore: z
     .number()
@@ -243,6 +254,9 @@ export async function generateOfferWithAgent(
   const result = await agent.generateText(userMessage, {
     output: Output.object({ schema: agentOutputSchema }),
     context: contextMap,
+    // History + product + KB lookups need more than the default 5 tool steps;
+    // too few and the model stops on tool-calls without emitting the offer.
+    maxSteps: 12,
   });
 
   return agentOutputSchema.parse(result.output);

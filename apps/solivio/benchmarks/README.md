@@ -10,16 +10,16 @@ correctness and comparing models/implementations over time.
 ## Latest results
 
 <!-- benchmark-latest:start -->
-Latest run: **2026-06-26 14:04** — full data: [`results/offer-generation/2026-06-26-14-04-54__openai-gpt-5.4-mini.json`](results/offer-generation/2026-06-26-14-04-54__openai-gpt-5.4-mini.json)
+Latest run: **2026-07-14 14:04** — full data: [`results/offer-generation/2026-07-14-14-04-59__openai-gpt-5.4-mini.json`](results/offer-generation/2026-07-14-14-04-59__openai-gpt-5.4-mini.json)
 
 | | |
 |---|---|
-| **Overall score** | **77.8%** (macro mean over 16 cases) |
+| **Overall score** | **75.4%** (macro mean over 16 cases) |
 | Model | `openai/gpt-5.4-mini` |
 | Embedding model | `text-embedding-3-large` |
 | Runs per case | 1 |
-| Git commit | `daa63b9` |
-| Case set | `6507b1d16146` (scores only comparable within the same case set) |
+| Git commit | `210f342` |
+| Case set | `80c1658922b9` (scores only comparable within the same case set) |
 
 ### Scores by difficulty
 
@@ -27,8 +27,8 @@ Latest run: **2026-06-26 14:04** — full data: [`results/offer-generation/2026-
 |---|---|---|
 | basic | 100.0% | 2 |
 | realistic | 100.0% | 2 |
-| hard | 90.2% | 6 |
-| expert | 50.5% | 6 |
+| hard | 89.4% | 6 |
+| expert | 44.9% | 6 |
 
 ### Per-case scores
 
@@ -39,19 +39,19 @@ Latest run: **2026-06-26 14:04** — full data: [`results/offer-generation/2026-
 | [03-inflected-synonyms](suites/offer-generation/cases/03-inflected-synonyms.json) | realistic | 100.0% | ±0.0% | Inflected Polish, synonyms, and one item missing from catalog |
 | [04-repeat-order-history](suites/offer-generation/cases/04-repeat-order-history.json) | expert | 100.0% | ±0.0% | Repeat order referencing customer history |
 | [05-sections-merge](suites/offer-generation/cases/05-sections-merge.json) | realistic | 100.0% | ±0.0% | Quantities spread across sections requiring merge |
-| [06-messy-site-email](suites/offer-generation/cases/06-messy-site-email.json) | hard | 93.3% | ±0.0% | Long messy site email: slang, typos, abbreviations, scattered merge |
+| [06-messy-site-email](suites/offer-generation/cases/06-messy-site-email.json) | hard | 86.7% | ±0.0% | Long messy site email: slang, typos, abbreviations, scattered merge |
 | [07-variant-minefield](suites/offer-generation/cases/07-variant-minefield.json) | hard | 100.0% | ±0.0% | Near-variant disambiguation in dense product families |
 | [08-unit-conversion](suites/offer-generation/cases/08-unit-conversion.json) | hard | 50.0% | ±0.0% | Quantities in meters vs catalog packaging units |
 | [09-implied-specs](suites/offer-generation/cases/09-implied-specs.json) | hard | 100.0% | ±0.0% | Specs implied by installation location, not stated |
 | [10-customer-standard](suites/offer-generation/cases/10-customer-standard.json) | expert | 0.0% | ±0.0% | Order in the customer's house standard (context not in the request) |
-| [11-bulk-rfq](suites/offer-generation/cases/11-bulk-rfq.json) | hard | 98.0% | ±0.0% | Bulk RFQ: 51 description-only positions across all families |
+| [11-bulk-rfq](suites/offer-generation/cases/11-bulk-rfq.json) | hard | 100.0% | ±0.0% | Bulk RFQ: 51 description-only positions across all families |
 | [12-prose-amendments](suites/offer-generation/cases/12-prose-amendments.json) | hard | 100.0% | ±0.0% | Flowing prose with amendments, cancellations and cross-references |
-| [13-kb-board-protection](suites/offer-generation/cases/13-kb-board-protection.json) | expert | 77.8% | ±0.0% | Knowledge base: distribution board requires RCD protection |
+| [13-kb-board-protection](suites/offer-generation/cases/13-kb-board-protection.json) | expert | 44.4% | ±0.0% | Knowledge base: distribution board requires RCD protection |
 | [14-kb-cable-moq](suites/offer-generation/cases/14-kb-cable-moq.json) | expert | 25.0% | ±0.0% | Knowledge base: cable reel minimum order quantity |
 | [15-kb-gauge-by-regulation](suites/offer-generation/cases/15-kb-gauge-by-regulation.json) | expert | 0.0% | ±0.0% | Knowledge base: conductor gauge dictated by regulation |
 | [16-kb-distractor-suppression](suites/offer-generation/cases/16-kb-distractor-suppression.json) | expert | 100.0% | ±0.0% | Knowledge base: irrelevant space must not surface |
 
-For a detailed per-run markdown report (verdict tables for every case), run `yarn benchmark:report --file results/offer-generation/2026-06-26-14-04-54__openai-gpt-5.4-mini.json`.
+For a detailed per-run markdown report (verdict tables for every case), run `yarn benchmark:report --file results/offer-generation/2026-07-14-14-04-59__openai-gpt-5.4-mini.json`.
 <!-- benchmark-latest:end -->
 
 ## Structure

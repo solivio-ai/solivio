@@ -1,0 +1,427 @@
+{
+  "meta": {
+    "timestamp": "2026-07-14T14:19:04.278Z",
+    "model": "openai/gpt-5.5",
+    "embeddingModel": "text-embedding-3-large",
+    "runsPerCase": 1,
+    "gitCommit": "210f342",
+    "caseSetHash": "125b8fbb55a7"
+  },
+  "aggregate": {
+    "meanScore": 0.7462121212121212,
+    "stddevAcrossCases": 0.21333527030801094,
+    "tiers": {
+      "expert": {
+        "mean": 0.7462121212121212,
+        "caseCount": 4
+      }
+    },
+    "cases": [
+      {
+        "id": "04-repeat-order-history",
+        "difficulty": "expert",
+        "title": "Repeat order referencing customer history",
+        "mean": 0.8181818181818181,
+        "stddev": 0
+      },
+      {
+        "id": "13-kb-board-protection",
+        "difficulty": "expert",
+        "title": "Knowledge base: distribution board requires RCD protection",
+        "mean": 0.6666666666666666,
+        "stddev": 0
+      },
+      {
+        "id": "14-kb-cable-moq",
+        "difficulty": "expert",
+        "title": "Knowledge base: cable reel minimum order quantity",
+        "mean": 1,
+        "stddev": 0
+      },
+      {
+        "id": "15-kb-gauge-by-regulation",
+        "difficulty": "expert",
+        "title": "Knowledge base: conductor gauge dictated by regulation",
+        "mean": 0.5,
+        "stddev": 0
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "04-repeat-order-history",
+      "title": "Repeat order referencing customer history",
+      "caseFile": "../../suites/offer-generation/cases/04-repeat-order-history.json",
+      "runs": [
+        {
+          "score": 0.8181818181818181,
+          "itemF1": 0.8181818181818182,
+          "itemRecall": 0.9,
+          "itemPrecision": 0.75,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "WYL-B16-1P",
+              "expectedQuantity": 10,
+              "matchedSku": "WYL-B16-1P",
+              "generatedQuantity": 10,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-25-30-2P",
+              "expectedQuantity": 2,
+              "matchedSku": "RCD-25-30-2P",
+              "generatedQuantity": 2,
+              "credit": 1
+            },
+            {
+              "expectedSku": "ROZ-24-PT",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZ-24-PT",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 4,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 5,
+              "credit": 0.5
+            },
+            {
+              "expectedSku": "ZL-221-413",
+              "expectedQuantity": 20,
+              "matchedSku": "ZL-221-613",
+              "generatedQuantity": 20,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [
+            "ROZL-FR-32-2P"
+          ],
+          "missedUnmatched": [],
+          "citationScore": null,
+          "citationRecall": null,
+          "citedTitles": [
+            "Minimalne ilości zamówienia kabli na krążkach",
+            "Wymagana ochrona różnicowoprądowa rozdzielnic"
+          ],
+          "missedCitations": [],
+          "forbiddenCitations": [],
+          "durationMs": 94484,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "c9e9d031-550f-4e42-a550-b2727f18ead0",
+                "productName": "Wyłącznik nadprądowy B16 1P",
+                "productSku": "WYL-B16-1P",
+                "requestItem": "powtórkę ostatniego zamówienia: WYL-B16-1P x10",
+                "quantity": 10,
+                "rationale": "Dokładne dopasowanie SKU z ostatniego zamówienia klienta.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "0f44662e-bce8-4271-9865-29c62b23f758",
+                "productName": "Wyłącznik różnicowoprądowy 25A 30mA 2P",
+                "productSku": "RCD-25-30-2P",
+                "requestItem": "powtórkę ostatniego zamówienia: RCD-25-30-2P x2",
+                "quantity": 2,
+                "rationale": "Dokładne dopasowanie SKU z ostatniego zamówienia klienta. Uwaga: artykuł KB dla kompletowania rozdzielnic wymaga RCD 30 mA typu A; w katalogu nie znaleziono zgodnego wariantu typu A, więc pozostawiono pozycję z ostatniego zamówienia do weryfikacji handlowej.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "635abe8b-2e66-4d1a-8aa0-e0b444194280",
+                "productName": "Rozdzielnica podtynkowa 24 modułów IP40",
+                "productSku": "ROZ-24-PT",
+                "requestItem": "powtórkę ostatniego zamówienia: ROZ-24-PT x1",
+                "quantity": 1,
+                "rationale": "Dokładne dopasowanie SKU z ostatniego zamówienia klienta.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "b4d7e17c-790b-4a8b-b7bd-b090ff32a779",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "powtórkę ostatniego zamówienia: KAB-YDYP-3X25 x4",
+                "quantity": 5,
+                "rationale": "Dokładne dopasowanie SKU z ostatniego zamówienia klienta. Ilość zwiększono z 4 do 5 krążków, ponieważ polityka sprzedaży dla kabli na krążkach wymaga minimalnego zamówienia 5 krążków.",
+                "matchSource": "exact",
+                "matchScore": 1
+              },
+              {
+                "productId": "bb6aef36-deb8-417a-86f4-b9ae508e91ab",
+                "productName": "Szybkozłączka instalacyjna 3-przewodowa 6mm²",
+                "productSku": "ZL-221-613",
+                "requestItem": "20 szybkozłączek 3-przewodowych",
+                "quantity": 20,
+                "rationale": "Najbliższe dopasowanie opisowe: szybkozłączka instalacyjna 3-przewodowa; opis potwierdza złączkę typu WAGO 221 dla 3 przewodów.",
+                "matchSource": "semantic",
+                "matchScore": 0.6656
+              },
+              {
+                "productId": "0fba6b1a-17ea-4961-a832-0a70e09b9750",
+                "productName": "Rozłącznik izolacyjny FR 32A 2P",
+                "productSku": "ROZL-FR-32-2P",
+                "requestItem": "wymagany rozłącznik główny 2P do rozdzielnicy",
+                "quantity": 1,
+                "rationale": "Dodano jako pozycję wymaganą przez KB: rozdzielnica musi być skompletowana z rozłącznikiem głównym; wybrano wariant 2-biegunowy do typowej rozdzielnicy 1-fazowej.",
+                "matchSource": null,
+                "matchScore": null
+              }
+            ],
+            "unmatched": [
+              {
+                "item": "wymagany wg KB wyłącznik różnicowoprądowy 30 mA typ A 2P",
+                "reason": "KB wymaga RCD 30 mA typu A do kompletowania rozdzielnicy, ale wyszukiwanie w katalogu zwróciło wyłącznie warianty typu AC lub inne niezgodne parametry. Nie dodano zamiennika typu A, ponieważ nie znaleziono akceptowalnego produktu katalogowego."
+              }
+            ],
+            "notes": [
+              "Pozycje z ostatniego zamówienia odtworzono na podstawie zamówienia ORD-2026-0512.",
+              "Dla pozycji kablowej YDYp obowiązuje czas realizacji 10 dni roboczych zgodnie z polityką sprzedaży.",
+              "Przestrzeń KB „Sprawy biurowe i HR” nie została użyta, ponieważ jej opis wyklucza stosowanie przy ofertach handlowych."
+            ],
+            "kbArticles": [
+              {
+                "articleId": "f9604e39-fdee-45d5-9cc2-2ffbc86bd7b4",
+                "articleTitle": "Minimalne ilości zamówienia kabli na krążkach",
+                "spaceId": "0b6af3bd-0302-4abd-8c35-e846d2bf3a88",
+                "spaceName": "Polityki sprzedaży",
+                "relevance": "Artykuł wymusił zwiększenie ilości przewodu YDYp z 4 do minimalnych 5 krążków oraz dodanie informacji o czasie realizacji."
+              },
+              {
+                "articleId": "bd097b5a-9d15-4351-b001-841674e972ec",
+                "articleTitle": "Wymagana ochrona różnicowoprądowa rozdzielnic",
+                "spaceId": "5624a773-f84e-4b3f-b356-818ffd7be96d",
+                "spaceName": "Instalacja i kompatybilność",
+                "relevance": "Artykuł wymusił dodanie rozłącznika głównego do rozdzielnicy oraz ostrzeżenie, że wymagany RCD typu A nie został znaleziony w katalogu."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "13-kb-board-protection",
+      "title": "Knowledge base: distribution board requires RCD protection",
+      "caseFile": "../../suites/offer-generation/cases/13-kb-board-protection.json",
+      "runs": [
+        {
+          "score": 0.6666666666666666,
+          "itemF1": 0.5,
+          "itemRecall": 0.5,
+          "itemPrecision": 0.5,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "ROZ-24-PT",
+              "expectedQuantity": 1,
+              "matchedSku": "ROZ-24-PT",
+              "generatedQuantity": 1,
+              "credit": 1
+            },
+            {
+              "expectedSku": "RCD-25-30-2P",
+              "expectedQuantity": 1,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            }
+          ],
+          "extraSkus": [
+            "ROZL-FR-40-2P"
+          ],
+          "missedUnmatched": [],
+          "citationScore": 1,
+          "citationRecall": 1,
+          "citedTitles": [
+            "Wymagana ochrona różnicowoprądowa rozdzielnic"
+          ],
+          "missedCitations": [],
+          "forbiddenCitations": [],
+          "durationMs": 69888,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "635abe8b-2e66-4d1a-8aa0-e0b444194280",
+                "productName": "Rozdzielnica podtynkowa 24 modułów IP40",
+                "productSku": "ROZ-24-PT",
+                "requestItem": "rozdzielnicę podtynkową 24-modułową do mieszkania",
+                "quantity": 1,
+                "rationale": "Produkt odpowiada prośbie: rozdzielnica podtynkowa, 24 moduły, IP40, do mieszkań i biur.",
+                "matchSource": "semantic",
+                "matchScore": 0.71
+              },
+              {
+                "productId": "8b6973c9-cf63-4a29-bde6-15261d0bf105",
+                "productName": "Rozłącznik izolacyjny FR 40A 2P",
+                "productSku": "ROZL-FR-40-2P",
+                "requestItem": "wymagany rozłącznik główny do rozdzielnicy mieszkaniowej",
+                "quantity": 1,
+                "rationale": "Dodano jako pozycję wymaganą do kompletności rozdzielnicy mieszkaniowej zgodnie z artykułem KB; przyjęto wariant 2-biegunowy dla typowej instalacji mieszkaniowej 1-fazowej.",
+                "matchSource": null,
+                "matchScore": null
+              }
+            ],
+            "unmatched": [
+              {
+                "item": "wymagany wyłącznik różnicowoprądowy 30 mA typ A 2P",
+                "reason": "Zasady kompletności wymagają wyłącznika różnicowoprądowego 30 mA typu A, domyślnie 2-biegunowego dla typowej rozdzielnicy mieszkaniowej. W katalogu znalezione kandydaty są typu AC, więc nie wybrano ich jako zgodnego zamiennika."
+              }
+            ],
+            "notes": [
+              "Rozdzielnica nie powinna być oferowana jako sama obudowa; wymagane elementy kompletności instalacji wskazano zgodnie z KB. Dobór prądu znamionowego rozłącznika głównego warto potwierdzić z projektem instalacji."
+            ],
+            "kbArticles": [
+              {
+                "articleId": "bd097b5a-9d15-4351-b001-841674e972ec",
+                "articleTitle": "Wymagana ochrona różnicowoprądowa rozdzielnic",
+                "spaceId": "5624a773-f84e-4b3f-b356-818ffd7be96d",
+                "spaceName": "Instalacja i kompatybilność",
+                "relevance": "Artykuł wymusił uzupełnienie oferty o rozłącznik główny oraz wskazał obowiązkowy wyłącznik różnicowoprądowy 30 mA typ A, którego zgodnego wariantu nie znaleziono w katalogu."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "14-kb-cable-moq",
+      "title": "Knowledge base: cable reel minimum order quantity",
+      "caseFile": "../../suites/offer-generation/cases/14-kb-cable-moq.json",
+      "runs": [
+        {
+          "score": 1,
+          "itemF1": 1,
+          "itemRecall": 1,
+          "itemPrecision": 1,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 5,
+              "matchedSku": "KAB-YDYP-3X25",
+              "generatedQuantity": 5,
+              "credit": 1
+            }
+          ],
+          "extraSkus": [],
+          "missedUnmatched": [],
+          "citationScore": 1,
+          "citationRecall": 1,
+          "citedTitles": [
+            "Minimalne ilości zamówienia kabli na krążkach"
+          ],
+          "missedCitations": [],
+          "forbiddenCitations": [],
+          "durationMs": 27996,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "b4d7e17c-790b-4a8b-b7bd-b090ff32a779",
+                "productName": "Przewód YDYp 3x2,5 mm² 450/750V krążek 100m",
+                "productSku": "KAB-YDYP-3X25",
+                "requestItem": "2 krążki przewodu YDYp 3x2,5 mm²",
+                "quantity": 5,
+                "rationale": "Produkt odpowiada zapytaniu: przewód instalacyjny płaski YDYp 3x2,5 mm² w krążku 100 m. Ilość zwiększono z 2 do 5 krążków, ponieważ polityka sprzedaży dla przewodów YDYp na krążkach wymaga minimalnego zamówienia 5 krążków.",
+                "matchSource": "semantic",
+                "matchScore": 0.7326
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Przewody i kable na krążkach z rodziny YDYp sprzedawane są wyłącznie w pełnych krążkach; brak cięcia na metry bieżące.",
+              "Standardowy czas realizacji dla pozycji kablowych: 10 dni roboczych."
+            ],
+            "kbArticles": [
+              {
+                "articleId": "f9604e39-fdee-45d5-9cc2-2ffbc86bd7b4",
+                "articleTitle": "Minimalne ilości zamówienia kabli na krążkach",
+                "spaceId": "0b6af3bd-0302-4abd-8c35-e846d2bf3a88",
+                "spaceName": "Polityki sprzedaży",
+                "relevance": "Artykuł wymusił podniesienie ilości z 2 do minimalnych 5 krążków oraz dodanie informacji o sprzedaży wyłącznie w pełnych krążkach i czasie realizacji."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "15-kb-gauge-by-regulation",
+      "title": "Knowledge base: conductor gauge dictated by regulation",
+      "caseFile": "../../suites/offer-generation/cases/15-kb-gauge-by-regulation.json",
+      "runs": [
+        {
+          "score": 0.5,
+          "itemF1": 0,
+          "itemRecall": 0,
+          "itemPrecision": 0,
+          "unmatchedRecall": null,
+          "verdicts": [
+            {
+              "expectedSku": "KAB-YDYP-3X25",
+              "expectedQuantity": 5,
+              "matchedSku": null,
+              "generatedQuantity": null,
+              "credit": 0
+            }
+          ],
+          "extraSkus": [
+            "KAB-OWY-3X25"
+          ],
+          "missedUnmatched": [],
+          "citationScore": 1,
+          "citationRecall": 1,
+          "citedTitles": [
+            "Minimalne przekroje przewodów dla obwodów",
+            "Minimalne ilości zamówienia kabli na krążkach"
+          ],
+          "missedCitations": [],
+          "forbiddenCitations": [],
+          "durationMs": 56655,
+          "error": null,
+          "generated": {
+            "items": [
+              {
+                "productId": "53fd6279-68d9-42be-9c8b-6b53202574b4",
+                "productName": "Przewód OWY 3x2,5 mm² 100m",
+                "productSku": "KAB-OWY-3X25",
+                "requestItem": "5 krążków przewodu do obwodów gniazdkowych w warsztacie",
+                "quantity": 5,
+                "rationale": "Najbliższe dopasowanie: przewód w krążku 100 m, 3-żyłowy o przekroju 2,5 mm². Przekrój 2,5 mm² został dobrany zgodnie z wymaganiem dla obwodów gniazd wtyczkowych; zamówiona ilość 5 krążków spełnia minimalną ilość dla kabli na krążkach.",
+                "matchSource": "semantic",
+                "matchScore": 0.6116
+              }
+            ],
+            "unmatched": [],
+            "notes": [
+              "Przewody na krążkach są sprzedawane wyłącznie w pełnych krążkach; ta pozycja obejmuje krążki po 100 m.",
+              "Standardowy czas realizacji pozycji kablowych: 10 dni roboczych."
+            ],
+            "kbArticles": [
+              {
+                "articleId": "2244925e-a20c-4158-816a-3f9f4b2c2a76",
+                "articleTitle": "Minimalne przekroje przewodów dla obwodów",
+                "spaceId": "07e1b7d8-47bb-464b-b8a9-47d6caf9d354",
+                "spaceName": "Normy i przepisy",
+                "relevance": "Artykuł wskazał wymagany przekrój 2,5 mm² dla obwodów gniazd wtyczkowych, co przesądziło o wyborze wariantu 3x2,5 mm²."
+              },
+              {
+                "articleId": "f9604e39-fdee-45d5-9cc2-2ffbc86bd7b4",
+                "articleTitle": "Minimalne ilości zamówienia kabli na krążkach",
+                "spaceId": "0b6af3bd-0302-4abd-8c35-e846d2bf3a88",
+                "spaceName": "Polityki sprzedaży",
+                "relevance": "Artykuł potwierdził sprzedaż wyłącznie w pełnych krążkach, minimalną ilość 5 krążków oraz wymóg podania standardowego czasu realizacji."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
