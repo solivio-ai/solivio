@@ -9,5 +9,16 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@solivio/sdk": "workspace:*"
+  },
+  "peerDependencies": {
+    "@solivio/sdk": "*"
+  },
+  "peerDependenciesMeta": {
+    "@solivio/sdk": {
+      "optional": true
+    }
   }
 }

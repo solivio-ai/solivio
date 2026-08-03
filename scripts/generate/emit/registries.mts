@@ -28,6 +28,7 @@ export function emitRegistries(
   emitEvents(writer, modules);
   emitJobs(writer, modules);
   emitAi(writer, modules);
+  emitChannels(writer, modules);
   emitNav(writer, modules);
   emitSlots(writer, modules);
   emitAcl(writer, modules);
@@ -216,6 +217,39 @@ ${importerProviders
   );
 }
 
+/**
+ * Channel providers get their own artifact rather than joining `ai.ts`: channels
+ * are an output capability with nothing AI about them, and `ai.ts` is already a
+ * misnomer for the importers it carries.
+ */
+function emitChannels(writer: Writer, modules: ModuleModel[]): void {
+  const providers = modules.filter((module) => module.has.channels);
+  const imports = providers
+    .map(
+      (module) =>
+        `import { channels as ${camel(module.id)}Channels } from "${spec(module, "channels.ts")}";`,
+    )
+    .join("\n");
+
+  writer.write(
+    `${GEN}/channels.ts`,
+    `import type { AnyChannelDefinition } from "@solivio/sdk";
+${imports.length > 0 ? `\n${imports}\n` : ""}
+export const channelProviders: ReadonlyArray<{
+  moduleId: string;
+  channel: AnyChannelDefinition;
+}> = [
+${providers
+  .map(
+    (module) =>
+      `  ...${camel(module.id)}Channels.map((channel) => ({ moduleId: "${module.id}", channel })),`,
+  )
+  .join("\n")}
+];
+`,
+  );
+}
+
 function emitNav(writer: Writer, modules: ModuleModel[]): void {
   const providers = modules.filter((module) => module.has.nav);
   const imports = providers
@@ -259,6 +293,24 @@ function emitSlots(writer: Writer, modules: ModuleModel[]): void {
 
 import type { SlotContribution, SlotContributions, SlotId, SlotPropsMap } from "@solivio/sdk";
 ${imports ? `\n${imports}\n` : ""}
+/**
+ * A contribution tagged with the module it came from. The tag is internal to
+ * this generated file — modules author plain \`SlotContribution\`, unaware of
+ * it — and exists so \`Slot\` can restrict a slot to the contribution from one
+ * particular module (see \`providerId\` below).
+ */
+type TaggedSlotContribution<K extends SlotId = SlotId> = SlotContribution<K> & {
+  moduleId: string;
+};
+
+function tagModule(moduleId: string, contributions: SlotContributions): SlotContributions {
+  const tagged: Record<string, TaggedSlotContribution[]> = {};
+  for (const [slotId, items] of Object.entries(contributions)) {
+    tagged[slotId] = ((items ?? []) as SlotContribution[]).map((item) => ({ ...item, moduleId }));
+  }
+  return tagged as SlotContributions;
+}
+
 function mergeSlots(all: SlotContributions[]): SlotContributions {
   const merged: Record<string, SlotContribution[]> = {};
   for (const contributions of all) {
@@ -273,22 +325,45 @@ function mergeSlots(all: SlotContributions[]): SlotContributions {
 }
 
 export const slotRegistry: SlotContributions = mergeSlots([
-${providers.map((module) => `  ${camel(module.id)}Slots,`).join("\n")}
+${providers.map((module) => `  tagModule("${module.id}", ${camel(module.id)}Slots),`).join("\n")}
 ]);
 
+function contributionsFor<K extends SlotId>(id: K): ReadonlyArray<TaggedSlotContribution<K>> {
+  return (slotRegistry[id] ?? []) as ReadonlyArray<TaggedSlotContribution<K>>;
+}
+
 /**
- * Renders every contribution registered for a slot. Core code imports this
+ * Whether a slot has a contribution — from a specific module if \`providerId\`
+ * is given, from any module otherwise. Lets a host decide whether to render a
+ * slot's surrounding chrome (a wrapper, a section heading) before knowing if
+ * anything will actually fill it.
+ */
+export function hasSlotContribution(id: SlotId, providerId?: string): boolean {
+  const items = contributionsFor(id);
+  return providerId ? items.some((item) => item.moduleId === providerId) : items.length > 0;
+}
+
+/**
+ * Renders the contributions registered for a slot. Core code imports this
  * from "@/generated/slots"; module pages import it as "@solivio/slots"
  * (aliased here by next.config + tsconfig paths).
+ *
+ * \`providerId\` restricts rendering to the named module's contribution — for a
+ * slot tied to an exclusive capability (e.g. the module currently bound to the
+ * \`offer\` channel), so only that module's UI shows even when other modules
+ * also contribute to the same slot id. Omit it for slots meant to be additive
+ * (every enabled contributor renders).
  */
 export function Slot<K extends SlotId>({
   id,
+  providerId,
   ...props
-}: { id: K } & SlotPropsMap[K]): React.ReactNode {
-  const items = (slotRegistry[id] ?? []) as ReadonlyArray<SlotContribution<K>>;
+}: { id: K; providerId?: string } & SlotPropsMap[K]): React.ReactNode {
+  const items = contributionsFor(id);
+  const filtered = providerId ? items.filter((item) => item.moduleId === providerId) : items;
   return (
     <>
-      {items.map((contribution) => (
+      {filtered.map((contribution) => (
         <contribution.component key={contribution.id} {...(props as unknown as SlotPropsMap[K])} />
       ))}
     </>

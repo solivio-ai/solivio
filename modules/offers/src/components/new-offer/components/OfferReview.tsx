@@ -33,6 +33,8 @@ import { OfferRevisionTimeline } from "./OfferRevisionTimeline";
 
 type OfferReviewProps = {
   offerId: string;
+  /** Which module backs the `offer` channel; resolved server-side, see `page.tsx`. */
+  offerChannelModuleId: string | null;
 };
 
 type LoadState =
@@ -59,7 +61,7 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
-export function OfferReview({ offerId }: OfferReviewProps) {
+export function OfferReview({ offerId, offerChannelModuleId }: OfferReviewProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [rightPanel, setRightPanel] = useState<"chat" | "revisions">("chat");
@@ -345,7 +347,11 @@ export function OfferReview({ offerId }: OfferReviewProps) {
   if (state.offer.status === OFFER_STATUS.ACCEPTED) {
     return (
       <section className={cn(paneScrollClass, "pr-2 xl:pr-3")}>
-        <OfferAcceptedView offer={state.offer} onBackToDraft={() => void handleBackToDraft()} />
+        <OfferAcceptedView
+          offer={state.offer}
+          onBackToDraft={() => void handleBackToDraft()}
+          channelModuleId={offerChannelModuleId}
+        />
       </section>
     );
   }

@@ -1,0 +1,14 @@
+{
+  "document": {
+    "previewAria": "Podgląd PDF zaakceptowanej oferty",
+    "loading": "Ładowanie PDF…",
+    "error": "Nie udało się załadować PDF.",
+    "zoomOut": "Pomniejsz",
+    "zoomIn": "Powiększ",
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona"
+  },
+  "action": {
+    "download": "Wygeneruj i pobierz PDF"
+  }
+}

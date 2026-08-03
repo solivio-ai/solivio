@@ -30,6 +30,7 @@ function moduleModel(overrides: Partial<ModuleModel>): ModuleModel {
       aiTools: false,
       aiImporters: false,
       aiAgents: false,
+      channels: false,
     },
     ...overrides,
   };
@@ -110,5 +111,52 @@ test("validate flags unknown dependsOn and cycles", async () => {
   );
   expect(unknown).toEqual(
     expect.arrayContaining([expect.stringContaining('unknown/disabled module "ghost"')]),
+  );
+});
+
+test("validate flags a slot bound to a module that does not provide the capability", async () => {
+  const { validate } = await import("../validate.mts");
+
+  const provider = moduleModel({
+    id: "offer-pdf",
+    has: { ...moduleModel({}).has, channels: true },
+  });
+  const ok = validate(
+    [provider],
+    {
+      modules: ["offer-pdf"],
+      slots: { "offer.channel": "offer-pdf/pdf" },
+    },
+    process.cwd(),
+  );
+  expect(ok.filter((error) => error.includes("offer.channel"))).toEqual([]);
+
+  // Same binding, but the module ships no channels.ts.
+  const withoutChannels = moduleModel({ id: "offer-pdf" });
+  const missing = validate(
+    [withoutChannels],
+    {
+      modules: ["offer-pdf"],
+      slots: { "offer.channel": "offer-pdf/pdf" },
+    },
+    process.cwd(),
+  );
+  expect(missing).toEqual(
+    expect.arrayContaining([expect.stringContaining("which has no channels.ts")]),
+  );
+});
+
+test("validate flags a slot naming an unknown capability kind", async () => {
+  const { validate } = await import("../validate.mts");
+  const errors = validate(
+    [moduleModel({ id: "offer-pdf" })],
+    {
+      modules: ["offer-pdf"],
+      slots: { "offer.chanel": "offer-pdf/pdf" },
+    },
+    process.cwd(),
+  );
+  expect(errors).toEqual(
+    expect.arrayContaining([expect.stringContaining('unknown capability kind "chanel"')]),
   );
 });

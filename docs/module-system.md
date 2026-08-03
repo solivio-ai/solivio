@@ -83,6 +83,7 @@ Everything else is discovered from the conventional layout. All parts are option
 | `src/jobs/*.ts` | One `defineJob` default export per file |
 | `src/ai/tools.ts` | `export const tools: AgentTool[]` |
 | `src/ai/importers.ts` | `export const importers: AnyImporterDefinition[]` |
+| `src/channels.ts` | `export const channels: AnyChannelDefinition[]` — output capability (top-level, not under `ai/`) |
 | `src/contracts/routes.ts` | `export const routes: ApiContract[]` (OpenAPI) |
 | `src/i18n/<locale>.json` | Messages, merged under the `<moduleId>` namespace |
 | `src/nav.tsx` | `export const nav: NavEntry[]` (client-safe: icons + data only) |
@@ -188,7 +189,11 @@ Core or module surfaces render `<Slot id="..." />`; other modules fill the slot 
 in `next.config.mjs` (`turbopack.resolveAlias`) and `apps/solivio/tsconfig.json`
 (`paths`), and the only generated file modules may import. Slot ids and their props are
 declared in `sdk/src/ui/slots.ts` (`SlotPropsMap`); current ids: `dashboard.cards`,
-`offer-detail.panel`, `import.panel`. The offers dashboard hosts `dashboard.cards`.
+`offer-detail.document`, `offer-detail.primaryAction`, `import.panel`. The offers
+dashboard hosts `dashboard.cards`; the accepted-offer screen hosts the two
+`offer-detail.*` slots restricted to whichever module backs the bound `offer`
+channel (`Slot`'s `providerId`, resolved via `getChannelProvider`) — see
+`docs/adr/0005-channels-output-capability.md`.
 
 ## 5. Services — the cross-module call path
 
@@ -305,6 +310,7 @@ the accessors:
 | `getAi()` | Deployment model ids: `chatModelId()`, `embeddingModelId()`, `modelFor(role)` |
 | `getLogger(moduleId)` | Structured JSON logger tagged with the module id |
 | `getImporter(target)` | The importer bound to a target via slot binding (or sole provider) |
+| `getChannel(target)` | The channel bound to a target via slot binding (or sole provider) |
 | `getAgentTools()` | All agent tools contributed by enabled modules |
 | `getModuleOptions(moduleId)` | The module's validated options from `solivio.config.ts` |
 | `emitEvent(name, payload)` | Typed event emission (inline + queued subscribers) |

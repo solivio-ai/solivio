@@ -133,7 +133,7 @@ export function validate(
   // Cross-module service usage must be declared in dependsOn, and runtime
   // accessors must not run at module scope (the runtime boots after import).
   const RUNTIME_ACCESSORS =
-    /\b(getDb|getService|getAi|getAuth|getAgentTools|getImporter|getModuleOptions|getLogger)\(/;
+    /\b(getDb|getService|getAi|getAuth|getAgentTools|getImporter|getChannel|getModuleOptions|getLogger)\(/;
   for (const module of modules) {
     const ownServices = new Set<string>(["users"]);
     const servicesPath = path.join(module.dir, "src/services.ts");
@@ -232,11 +232,37 @@ export function validate(
     }
   }
 
-  // Slot bindings must reference enabled modules
+  // Slot bindings must reference an enabled module that actually provides the
+  // capability kind the slot names. The bound *name* is not checked here — that
+  // would mean regex-parsing the provider's source; the runtime resolver reports
+  // an unknown name with the module and name in the message.
+  const CAPABILITY_FILES: Record<string, { file: string; has: keyof ModuleModel["has"] }> = {
+    importer: { file: "ai/importers.ts", has: "aiImporters" },
+    channel: { file: "channels.ts", has: "channels" },
+  };
   for (const [slot, binding] of Object.entries(config.slots ?? {})) {
     const moduleId = binding.split("/")[0];
     if (!ids.has(moduleId)) {
       errors.push(`Slot "${slot}" is bound to unknown/disabled module "${moduleId}"`);
+      continue;
+    }
+    const kind = slot.split(".").pop() ?? "";
+    const capability = CAPABILITY_FILES[kind];
+    if (!capability) {
+      errors.push(
+        `Slot "${slot}" names unknown capability kind "${kind}" — expected one of ${Object.keys(
+          CAPABILITY_FILES,
+        )
+          .map((name) => `"${name}"`)
+          .join(", ")}`,
+      );
+      continue;
+    }
+    const provider = modules.find((module) => module.id === moduleId);
+    if (provider && !provider.has[capability.has]) {
+      errors.push(
+        `Slot "${slot}" is bound to module "${moduleId}", which has no ${capability.file}`,
+      );
     }
   }
 

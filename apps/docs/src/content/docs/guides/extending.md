@@ -73,6 +73,7 @@ export default defineConfig({
     ["acme-sync", { erpUrl: "https://erp.acme.example/api" }],
   ],
   slots: {
+    "offer.channel": "offer-pdf/pdf",
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
     "offer.importer": "csv-import/csv-orders",
@@ -87,7 +88,7 @@ options validated against the module's schema.
 
 A custom module has exactly the same shape as the built-in ones - pages, API
 routes, services, events, jobs, database tables with their own migrations,
-translations, nav entries, agent tools, and importers, all discovered by file
+translations, nav entries, agent tools, importers, and channels, all discovered by file
 convention. Use `modules/products-sync` in the Solivio repository as the
 reference (it exercises every surface) and see `docs/module-system.md` for the
 authoring guide.

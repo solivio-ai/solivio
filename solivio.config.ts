@@ -18,8 +18,10 @@ export default defineConfig({
     "order-history",
     "products-sync",
     "knowledge-base",
+    "offer-pdf",
   ],
   slots: {
+    "offer.channel": "offer-pdf/pdf",
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
     "offer.importer": "csv-import/csv-orders",

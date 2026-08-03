@@ -1,23 +1,22 @@
 "use client";
 
-import { ArrowLeft, Download, User } from "lucide-react";
-import dynamic from "next/dynamic";
+import { ArrowLeft, User } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import type { Offer } from "@solivio/domain";
+import { hasSlotContribution, Slot } from "@solivio/slots";
 import { Button } from "@solivio/ui/components/button.tsx";
+import { cn } from "@solivio/ui/lib/utils.ts";
 
 import { calculateNetTotal, calculateSubtotalNet } from "../../../lib/offerTotals.ts";
 import type { DraftLine } from "./offer-builder-types";
 
-const PdfViewer = dynamic(() => import("./PdfViewer").then((m) => ({ default: m.PdfViewer })), {
-  ssr: false,
-});
-
 type OfferAcceptedViewProps = {
   offer: Offer;
   onBackToDraft: () => void;
+  /** Which module backs the `offer` channel; `null` if none is bound unambiguously. */
+  channelModuleId: string | null;
 };
 
 function toDraftLines(offer: Offer): DraftLine[] {
@@ -35,10 +34,6 @@ function toDraftLines(offer: Offer): DraftLine[] {
   }));
 }
 
-function downloadPdf(offerId: string) {
-  window.open(`/api/offers/${offerId}/pdf?download=1`, "_blank", "noopener,noreferrer");
-}
-
 function formatMoney(value: number, currency: string) {
   return `${new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 2,
@@ -46,7 +41,20 @@ function formatMoney(value: number, currency: string) {
   }).format(value)} ${currency}`;
 }
 
-export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewProps) {
+/**
+ * The accepted-offer screen. Offers owns the chrome — totals, attribution,
+ * back/exit navigation — and stays ignorant of *what* the configured `offer`
+ * channel is: the document preview and the primary action are channel UI,
+ * contributed via `offer-detail.document` / `offer-detail.primaryAction` and
+ * restricted to `channelModuleId` so only the bound channel's own contribution
+ * renders, even with other channel modules also enabled (see
+ * `docs/adr/0005-channels-output-capability.md`).
+ */
+export function OfferAcceptedView({
+  offer,
+  onBackToDraft,
+  channelModuleId,
+}: OfferAcceptedViewProps) {
   const t = useTranslations("offers.newOffer.builder");
   const tAccepted = useTranslations("offers.newOffer.review.acceptedView");
   const tCommercial = useTranslations("offers.newOffer.review.commercial");
@@ -58,14 +66,25 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
   const discountPercent = offer.discountPercent;
   const discountAmount = subtotal * (discountPercent / 100);
   const total = calculateNetTotal(subtotal, discountPercent);
+  const hasDocument =
+    channelModuleId !== null && hasSlotContribution("offer-detail.document", channelModuleId);
 
   return (
-    <section className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-      <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
-        <PdfViewer url={`/api/offers/${offer.id}/pdf`} title={tAccepted("pdfPreviewAria")} />
-      </article>
+    <section
+      className={cn("grid min-h-0 gap-4", hasDocument && "xl:grid-cols-[minmax(0,1fr)_380px]")}
+    >
+      {hasDocument && (
+        <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
+          <Slot id="offer-detail.document" providerId={channelModuleId} offerId={offer.id} />
+        </article>
+      )}
 
-      <aside className="grid min-h-0 content-start gap-3">
+      <aside
+        className={cn(
+          "grid min-h-0 content-start gap-3",
+          !hasDocument && "mx-auto w-full max-w-md",
+        )}
+      >
         <section className="rounded-lg border bg-card p-4">
           <h2 className="text-sm font-semibold">{tCommercial("title")}</h2>
           <div className="mt-4 grid gap-3 text-sm">
@@ -105,10 +124,9 @@ export function OfferAcceptedView({ offer, onBackToDraft }: OfferAcceptedViewPro
         )}
 
         <div className="grid w-full max-w-sm content-start auto-rows-min gap-2 self-start rounded-lg border bg-card p-3">
-          <Button onClick={() => downloadPdf(offer.id)}>
-            <Download size={16} aria-hidden="true" />
-            {tAccepted("downloadPdf")}
-          </Button>
+          {channelModuleId && (
+            <Slot id="offer-detail.primaryAction" providerId={channelModuleId} offerId={offer.id} />
+          )}
           <Button variant="outline" onClick={onBackToDraft}>
             <ArrowLeft size={16} aria-hidden="true" />
             {t("backToDraft")}

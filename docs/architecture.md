@@ -67,7 +67,7 @@ offers ◄── order-history            csv-import (headless; no deps)
 
 - **catalog** — products + prices, semantic search, import target `product`.
 - **customers** — customers + intake requests, import target `customer`.
-- **offers** — offer lifecycle: drafts, line items, revisions, PDF, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`).
+- **offers** — offer lifecycle: drafts, line items, revisions, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`). PDF rendering is a separately-provided `offer` channel, not owned here — see §4.
 - **offer-chat** — the offer review chat *domain*: threads, messages, the copilot agent, streaming routes.
 - **order-history** — agent tools that recall a customer's accepted past offers/orders through the offers service.
 - **csv-import** — CSV importer capabilities for the product/customer/offer import targets (bound via config `slots`).
@@ -81,12 +81,13 @@ One deliberate seam: the chat **panel UI lives in offers** (it integrates impera
 The long-term surface taxonomy — inputs, enrichment, renderers, channels — still frames where capabilities belong. Implemented today:
 
 - **Importers** (input) — pure transforms (raw payload → normalized records) declared in `ai/importers.ts`; the owning module's import route persists the records. Exclusive per target, selected by a config slot.
+- **Channels** (output) — what a *finalized* entity is handed to, declared in `channels.ts`: render a document, send a message, create a record in another system. Exclusive per target, selected by a config slot (`"offer.channel"`), resolved with `getChannel(target)`. Unlike importers, a channel is **effectful** — it performs its own side effect, because only the provider knows the remote protocol — and its input is a domain entity rather than a raw payload. Which entity a target carries is declared by the package owning it (`ChannelInputMap`, merged from `@solivio/domain`) rather than hardcoded in the SDK, so a provider needs no dependency on the module that owns the entity and the SDK needs none on the entity packages. Its `ChannelResult` is a union (`document` | `reference` | `acknowledged`) because a rendered file, a remote record id, and a fire-and-forget send genuinely differ.
 - **Agent tools** (enrichment) — declared in `ai/tools.ts`, merged into one registry, consumed by agents via `getAgentTools()`.
 - **Slots** (UI) — typed injection points (`SlotPropsMap`) that modules fill via `slots.tsx`.
 - **Events + subscribers** (cross-cutting) — typed observer events; subscribers have no mutation rights over another module's state except through its services.
 - **Jobs** — cron-schedulable background work on the queue.
 
-Renderers and channels as formal capability kinds remain future surfaces; today PDF rendering lives inside the offers module.
+Channels subsume what the taxonomy used to call *renderers*: a PDF renderer and an ERP push are the same kind of capability, differing only in what they return. The offer PDF lives in its own provider module (`modules/offer-pdf/`) and reaches the app exclusively through the channel binding — the offers module owns `/api/offers/{offerId}/pdf` but no longer owns the rendering.
 
 For v0, **one provider per exclusive capability**. Cross-provider merging (dedup, conflict, priority) is deferred until a real need appears.
 

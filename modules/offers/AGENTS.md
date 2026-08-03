@@ -1,6 +1,6 @@
 # offers module
 
-Owns the offer lifecycle: drafts, line items, revisions, PDF rendering, the
+Owns the offer lifecycle: drafts, line items, revisions, the
 generation/name/validation agents, the copilot's offer-editing agent tools,
 and ALL offer-facing UI (dashboard "/", /offers, /offers/new, /offers/[offerId],
 /offers/demo — including the chat panel UI, which integrates imperatively with
@@ -17,6 +17,14 @@ reached over HTTP).
   removeLineItem, bulkAddProducts.
 - **Agent tools:** `src/ai/tools.ts` contributes the copilot tools to the
   generated registry (consumed by offer-chat's agent via getAgentTools()).
-- **Slots:** the dashboard page hosts `<Slot id="dashboard.cards" />`.
+- **Slots hosted:** the dashboard page hosts `<Slot id="dashboard.cards" />`.
+  `OfferAcceptedView` hosts two channel-scoped slots for modules that act on a
+  finalized offer — `offer-detail.document` (a preview, e.g. the PDF) and
+  `offer-detail.primaryAction` (what running the channel looks like, e.g.
+  "Download PDF"). Both pass `providerId` resolved
+  server-side (`getChannelProvider("offer")` in the `[offerId]/page.tsx`), so
+  only the module backing the bound `offer` channel renders, even with other
+  channel-providing modules also enabled. Offers hosts these slots but is
+  ignorant of what fills them.
 - Per-role agent model ids come from `getAi().modelFor(role)`.
 - After changes: `yarn generate && yarn check && yarn typecheck`.

@@ -1,6 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import type { AgentId, AgentTool } from "./agent-tool.ts";
+import type { ChannelDefinition, ChannelTarget } from "./channel.ts";
 import type { ImporterDefinition, ImportTarget } from "./importer.ts";
 import type { AnyJobDefinition } from "./job.ts";
 import type { AiClientFactory, Logger } from "./module-context.ts";
@@ -26,6 +27,12 @@ export interface AuthSession {
 export type GuardResult =
   | { session: AuthSession; response?: never }
   | { session?: never; response: Response };
+
+/** A resolved channel together with the id of the module that provides it. */
+export interface ChannelProvider<K extends ChannelTarget = ChannelTarget> {
+  moduleId: string;
+  channel: ChannelDefinition<K>;
+}
 
 export interface AuthGuards {
   /** Requires a signed-in session. */
@@ -54,6 +61,10 @@ export interface SolivioRuntime {
   auth: AuthGuards;
   /** Resolves the importer bound to a target (via slot binding or sole provider). */
   importer: (target: ImportTarget) => Promise<ImporterDefinition>;
+  /** Resolves the channel bound to a target (via slot binding or sole provider). */
+  channel: <K extends ChannelTarget>(target: K) => Promise<ChannelDefinition<K>>;
+  /** Same resolution as `channel`, but also reports which module provided it. */
+  channelProvider: <K extends ChannelTarget>(target: K) => Promise<ChannelProvider<K>>;
   /** All agent tools contributed by enabled modules (generated registry). */
   agentTools: ReadonlyArray<AgentTool>;
   moduleOptions: Record<string, unknown>;
@@ -145,6 +156,28 @@ export function getAgentTools(agentId?: AgentId): ReadonlyArray<AgentTool> {
 /** The importer capability bound to a target ("product", "customer", …). */
 export function getImporter(target: ImportTarget): Promise<ImporterDefinition> {
   return runtime().importer(target);
+}
+
+/**
+ * The channel capability bound to a target ("offer") — what a finalized entity
+ * is handed to. Callers must handle every `ChannelResult` kind: which one comes
+ * back is a deployment decision, not a compile-time one.
+ */
+export function getChannel<K extends ChannelTarget>(target: K): Promise<ChannelDefinition<K>> {
+  return runtime().channel(target);
+}
+
+/**
+ * Like {@link getChannel}, but also reports the id of the module providing it —
+ * for UI that needs to show only the bound module's own contribution (see
+ * `hasSlotContribution`/`Slot`'s `providerId` in `@/generated/slots`), since a
+ * deployment may enable several channel-providing modules at once and bind only
+ * one of them.
+ */
+export function getChannelProvider<K extends ChannelTarget>(
+  target: K,
+): Promise<ChannelProvider<K>> {
+  return runtime().channelProvider(target);
 }
 
 /** The module's validated options from `solivio.config.ts`. */

@@ -1,0 +1,14 @@
+{
+  "document": {
+    "previewAria": "Accepted offer PDF preview",
+    "loading": "Loading PDF…",
+    "error": "Failed to load PDF.",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  },
+  "action": {
+    "download": "Generate and download PDF"
+  }
+}

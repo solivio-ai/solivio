@@ -1,5 +1,10 @@
-// Canonical domain models. Pure TS types + small constants. No infra deps.
+// Canonical domain models. Pure TS types + small constants; no runtime deps.
+//
+// `channels.ts` additionally declares the `offer` channel input by merging into
+// the SDK's open `ChannelInputMap` — a type-only reference to @solivio/sdk, which
+// keeps that dependency pointing one way (the SDK never imports this package).
 
+export type { OfferChannelInput } from "./channels";
 export type { Customer, CustomerSource } from "./models/customer";
 export {
   CustomerSelectionError,

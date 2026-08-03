@@ -18,7 +18,7 @@ type PdfViewerProps = {
 };
 
 export function PdfViewer({ url, title }: PdfViewerProps) {
-  const t = useTranslations("offers.newOffer.review.acceptedView.pdfViewer");
+  const t = useTranslations("offer-pdf.document");
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);

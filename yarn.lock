@@ -5621,6 +5621,13 @@ __metadata:
 "@solivio/domain@workspace:*, @solivio/domain@workspace:packages/domain":
   version: 0.0.0-use.local
   resolution: "@solivio/domain@workspace:packages/domain"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+  peerDependencies:
+    "@solivio/sdk": "*"
+  peerDependenciesMeta:
+    "@solivio/sdk":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -5735,25 +5742,45 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-offer-pdf@workspace:modules/offer-pdf":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-offer-pdf@workspace:modules/offer-pdf"
+  dependencies:
+    "@react-pdf/renderer": "npm:^4.5.1"
+    "@solivio/domain": "workspace:*"
+    "@solivio/sdk": "workspace:*"
+    "@solivio/ui": "workspace:*"
+    "@types/react": "npm:^19.2.17"
+    decimal.js: "npm:^10.6.0"
+    lucide-react: "npm:^1.17.0"
+    next: "npm:^16.2.9"
+    next-intl: "npm:^4.13.0"
+    react-pdf: "npm:^10.4.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.4.3"
+  peerDependencies:
+    next: "*"
+    next-intl: "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/module-offers@workspace:modules/offers":
   version: 0.0.0-use.local
   resolution: "@solivio/module-offers@workspace:modules/offers"
   dependencies:
     "@ai-sdk/openai": "npm:^3.0.70"
     "@ai-sdk/react": "npm:^3.0.204"
-    "@react-pdf/renderer": "npm:^4.5.1"
     "@solivio/domain": "workspace:*"
     "@solivio/sdk": "workspace:*"
     "@solivio/ui": "workspace:*"
     "@types/react": "npm:^19.2.17"
     "@voltagent/core": "npm:^2.7.7"
     ai: "npm:^6.0.202"
-    decimal.js: "npm:^10.6.0"
     drizzle-orm: "npm:^0.45.2"
     lucide-react: "npm:^1.17.0"
     next: "npm:^16.2.9"
     next-intl: "npm:^4.13.0"
-    react-pdf: "npm:^10.4.1"
     react-resizable-panels: "npm:^4.11.2"
     server-only: "npm:^0.0.1"
     typescript: "npm:^6.0.3"

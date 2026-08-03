@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // tsconfig.base sets "preserve" because Next owns the transform in the app
+    // build. This module's document is also compiled by the test runner, which
+    // has no such pipeline, so JSX must be transformed here.
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

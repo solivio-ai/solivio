@@ -49,6 +49,13 @@ generator does with these files in `codegen.md`.
   (`"product" | "customer" | "offer"`), plus `ProductImporterDefinition`,
   `CustomerImporterDefinition`, `OfferImporterDefinition`, and the entity DTOs
   `ProductInput`, `CustomerInput`, `OfferImportInput`, `ProductMatch`.
+- Channel types — `ChannelDefinition` (`name`, `description`, `target`, `run`), `ChannelResult`
+  (`document` | `reference` | `acknowledged`), `ChannelInputMap`, `ChannelTarget`,
+  `AnyChannelDefinition`. Channels are the **output** counterpart to importers: effectful,
+  and taking a domain entity rather than a raw payload. `ChannelInputMap` is an **open
+  interface** like `Services`/`Events` — the package owning an entity declares that
+  target's input (`@solivio/domain` declares `offer`), and `ChannelTarget` is
+  `keyof ChannelInputMap`, so the SDK stays free of any dependency on entity packages.
 - Registry types — `Services`, `Events`, `ServiceName`, `EventName`,
   `CoreUsersService` (see merging contract below).
 - Infrastructure types — `Logger`, `AiClientFactory`.
@@ -64,7 +71,7 @@ of the SDK. Calling any accessor before boot throws.
 
 `getService(name)`, `getLogger(moduleId)`, `getDb()` and the lazy `db` proxy,
 `getAi()`, `getAuth()` (`requireAuth`/`requireAdmin` guards returning
-`{ session } | { response }`), `getAgentTools()`, `getImporter(target)`,
+`{ session } | { response }`), `getAgentTools()`, `getImporter(target)`, `getChannel(target)`,
 `getModuleOptions(moduleId)`, `emitEvent(name, payload)`, `enqueueJob(name, payload?)`.
 Types: `SolivioRuntime`, `SessionUser`, `AuthSession`, `GuardResult`, `AuthGuards`.
 `setRuntime` is host-only — modules never call it.

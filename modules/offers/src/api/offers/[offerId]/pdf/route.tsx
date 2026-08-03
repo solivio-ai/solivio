@@ -1,11 +1,7 @@
-import type { DocumentProps } from "@react-pdf/renderer";
-import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
-import type { ReactElement } from "react";
 
-import { getAuth } from "@solivio/sdk/runtime";
+import { getAuth, getChannel } from "@solivio/sdk/runtime";
 
-import { buildPdfOfferPayload, OfferDocument } from "../../../../components/offer-pdf/index.ts";
 import { getOffer } from "../../../../server/offerService.ts";
 
 export const runtime = "nodejs";
@@ -16,15 +12,28 @@ type RouteContext = {
   }>;
 };
 
-function toPdfResponse(buffer: Buffer, filename: string, asAttachment = false) {
-  return new Response(new Uint8Array(buffer), {
+function toDocumentResponse(
+  body: Uint8Array<ArrayBuffer>,
+  contentType: string,
+  filename: string,
+  asAttachment = false,
+) {
+  return new Response(body, {
     headers: {
-      "Content-Type": "application/pdf",
+      "Content-Type": contentType,
       "Content-Disposition": `${asAttachment ? "attachment" : "inline"}; filename="${filename}"`,
     },
   });
 }
 
+/**
+ * Serves the document produced by the configured `offer` channel.
+ *
+ * The offers module owns this URL but not the rendering: which channel runs is a
+ * deployment decision (`"offer.channel"` in solivio.config.ts). A channel whose
+ * result is not a document — an ERP push, an email send — has nothing to return
+ * here, which is a misconfiguration rather than a bad request.
+ */
 export async function GET(request: Request, context: RouteContext) {
   const auth = await getAuth().requireAuth();
   if (auth.response) return auth.response;
@@ -39,12 +48,21 @@ export async function GET(request: Request, context: RouteContext) {
     );
   }
 
-  const payload = buildPdfOfferPayload(offer);
-  const buffer = await renderToBuffer(
-    (<OfferDocument data={payload} />) as ReactElement<DocumentProps>,
-  );
+  const channel = await getChannel("offer");
+  const result = await channel.run({ offer });
+
+  if (result.kind !== "document") {
+    return NextResponse.json(
+      {
+        error: {
+          code: "CHANNEL_HAS_NO_DOCUMENT",
+          message: `The configured offer channel "${channel.name}" produces "${result.kind}", not a document.`,
+        },
+      },
+      { status: 500 },
+    );
+  }
 
   const asAttachment = new URL(request.url).searchParams.get("download") === "1";
-  const filename = `oferta-${payload.offer.number.replace(/\//g, "-")}.pdf`;
-  return toPdfResponse(buffer, filename, asAttachment);
+  return toDocumentResponse(result.body, result.contentType, result.filename, asAttachment);
 }
