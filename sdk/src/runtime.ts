@@ -29,9 +29,9 @@ export type GuardResult =
   | { session?: never; response: Response };
 
 /** A resolved channel together with the id of the module that provides it. */
-export interface ChannelProvider<K extends ChannelTarget = ChannelTarget> {
+export interface ChannelProvider {
   moduleId: string;
-  channel: ChannelDefinition<K>;
+  channel: ChannelDefinition;
 }
 
 export interface AuthGuards {
@@ -61,10 +61,11 @@ export interface SolivioRuntime {
   auth: AuthGuards;
   /** Resolves the importer bound to a target (via slot binding or sole provider). */
   importer: (target: ImportTarget) => Promise<ImporterDefinition>;
-  /** Resolves the channel bound to a target (via slot binding or sole provider). */
-  channel: <K extends ChannelTarget>(target: K) => Promise<ChannelDefinition<K>>;
-  /** Same resolution as `channel`, but also reports which module provided it. */
-  channelProvider: <K extends ChannelTarget>(target: K) => Promise<ChannelProvider<K>>;
+  /**
+   * Resolves the channel bound to a target (via slot binding or sole provider);
+   * `null` when the deployment bound none.
+   */
+  channelProvider: (target: ChannelTarget) => Promise<ChannelProvider | null>;
   /** All agent tools contributed by enabled modules (generated registry). */
   agentTools: ReadonlyArray<AgentTool>;
   moduleOptions: Record<string, unknown>;
@@ -159,24 +160,17 @@ export function getImporter(target: ImportTarget): Promise<ImporterDefinition> {
 }
 
 /**
- * The channel capability bound to a target ("offer") — what a finalized entity
- * is handed to. Callers must handle every `ChannelResult` kind: which one comes
- * back is a deployment decision, not a compile-time one.
- */
-export function getChannel<K extends ChannelTarget>(target: K): Promise<ChannelDefinition<K>> {
-  return runtime().channel(target);
-}
-
-/**
- * Like {@link getChannel}, but also reports the id of the module providing it —
- * for UI that needs to show only the bound module's own contribution (see
+ * Which module is the bound destination for a target ("offer") — what a finalized
+ * entity is handed to. `null` when the deployment bound none, which is a
+ * configuration state rather than a per-request error: the host simply renders no
+ * channel UI.
+ *
+ * The returned definition is metadata; a channel has nothing to invoke. Hosts use
+ * `moduleId` to show only the bound module's contribution (see
  * `hasSlotContribution`/`Slot`'s `providerId` in `@/generated/slots`), since a
- * deployment may enable several channel-providing modules at once and bind only
- * one of them.
+ * deployment may enable several channel-providing modules and bind only one.
  */
-export function getChannelProvider<K extends ChannelTarget>(
-  target: K,
-): Promise<ChannelProvider<K>> {
+export function getChannelProvider(target: ChannelTarget): Promise<ChannelProvider | null> {
   return runtime().channelProvider(target);
 }
 

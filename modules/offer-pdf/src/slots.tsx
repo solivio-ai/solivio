@@ -10,7 +10,7 @@ export const slots: SlotContributions = {
       component: OfferDocumentSlot,
     },
   ],
-  "offer-detail.primaryAction": [
+  "offer-detail.actions": [
     {
       id: "offer-pdf.download-button",
       component: DownloadPdfButton,

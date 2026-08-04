@@ -233,11 +233,11 @@ function emitChannels(writer: Writer, modules: ModuleModel[]): void {
 
   writer.write(
     `${GEN}/channels.ts`,
-    `import type { AnyChannelDefinition } from "@solivio/sdk";
+    `import type { ChannelDefinition } from "@solivio/sdk";
 ${imports.length > 0 ? `\n${imports}\n` : ""}
 export const channelProviders: ReadonlyArray<{
   moduleId: string;
-  channel: AnyChannelDefinition;
+  channel: ChannelDefinition;
 }> = [
 ${providers
   .map(

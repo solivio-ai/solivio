@@ -6,23 +6,13 @@ import type { ComponentType } from "react";
  *
  * Slot ids and their props are declared here (extensible by declaration
  * merging if a module needs to define its own slot surface).
+ *
+ * Slots whose props are typed by a domain entity are declared by the package
+ * owning that entity rather than here — `@solivio/domain` merges in the
+ * `offer-detail.*` surface — so this package stays free of entity dependencies.
  */
 export interface SlotPropsMap {
   "dashboard.cards": Record<never, never>;
-  /**
-   * The finalized-offer document area — content owned by whichever module
-   * provides the bound `offer` channel (the PDF preview, today). The host
-   * passes `providerId` from `getChannelProvider("offer")` so only that
-   * module's contribution renders, even if another channel module is also
-   * enabled.
-   */
-  "offer-detail.document": { offerId: string };
-  /**
-   * The finalized-offer primary action — what running the bound `offer`
-   * channel looks like to the user (e.g. "Download PDF"). Same
-   * `providerId` restriction as `offer-detail.document`.
-   */
-  "offer-detail.primaryAction": { offerId: string };
   "import.panel": { target: "products" | "customers" };
 }
 

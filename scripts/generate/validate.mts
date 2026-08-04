@@ -133,7 +133,7 @@ export function validate(
   // Cross-module service usage must be declared in dependsOn, and runtime
   // accessors must not run at module scope (the runtime boots after import).
   const RUNTIME_ACCESSORS =
-    /\b(getDb|getService|getAi|getAuth|getAgentTools|getImporter|getChannel|getModuleOptions|getLogger)\(/;
+    /\b(getDb|getService|getAi|getAuth|getAgentTools|getImporter|getChannelProvider|getModuleOptions|getLogger)\(/;
   for (const module of modules) {
     const ownServices = new Set<string>(["users"]);
     const servicesPath = path.join(module.dir, "src/services.ts");

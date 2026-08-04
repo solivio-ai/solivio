@@ -158,7 +158,7 @@ Module anatomy (all parts optional; discovery is by file path):
 | `src/subscribers/*.ts` | Event subscribers (`defineSubscriber`; `persistent: true` runs via the job queue) |
 | `src/jobs/*.ts` | Background jobs (`defineJob`; optional cron schedule resolved at boot) |
 | `src/ai/tools.ts`, `src/ai/importers.ts` | Agent tools and importer capabilities |
-| `src/channels.ts` | Channel capabilities — what a finalized entity is handed to (document / remote record / message) |
+| `src/channels.ts` | Channel declarations — marks the module as a destination for a finalized entity; it receives the entity through slots and acts through its own routes/subscribers |
 | `src/contracts/routes.ts` | OpenAPI route contracts merged into the API docs |
 | `src/i18n/<locale>.json` | Translations, namespaced under the module id |
 | `src/nav.tsx`, `src/slots.tsx` | Sidebar nav entries and slot contributions (client-safe) |

@@ -4,13 +4,7 @@
 export type { AgentId, AgentTool, AgentToolContext } from "./agent-tool.ts";
 export { AGENT_IDS, defineAgentTool } from "./agent-tool.ts";
 // ── Channels (output surface for finalized entities) ──────────────────────────
-export type {
-  AnyChannelDefinition,
-  ChannelDefinition,
-  ChannelInputMap,
-  ChannelResult,
-  ChannelTarget,
-} from "./channel.ts";
+export type { ChannelDefinition, ChannelTarget, ChannelTargets } from "./channel.ts";
 // ── Entity DTOs (import surface for importer capabilities) ────────────────────
 export type {
   CustomerInput,

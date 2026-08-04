@@ -3,5 +3,4 @@
 export * from "@solivio/sdk/contracts";
 
 export * from "./offer.ts";
-export * from "./offer-pdf.ts";
 export * from "./offer-revision.ts";

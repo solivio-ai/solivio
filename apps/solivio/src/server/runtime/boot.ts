@@ -20,12 +20,14 @@ import { createUsersService } from "@/server/runtime/usersService";
  * explicit slot binding ("<moduleId>/<channelName>") wins; otherwise a sole
  * provider for the target is used implicitly. Returns the module id alongside
  * the channel so UI can restrict itself to that module's contribution (see
- * `hasSlotContribution`/`Slot`'s `providerId` in `@/generated/slots`) — `channel`
- * below is this same resolution with the module id dropped.
+ * `hasSlotContribution`/`Slot`'s `providerId` in `@/generated/slots`).
+ *
+ * No provider is `null`, not an error: a deployment enabling no channel for a
+ * target is a legitimate configuration, and the host just renders no channel UI.
+ * Several providers with no binding *is* an error — the deployment has to say
+ * which one it means.
  */
-async function resolveChannelProvider<K extends ChannelTarget>(
-  target: K,
-): Promise<ChannelProvider<K>> {
+async function resolveChannelProvider(target: ChannelTarget): Promise<ChannelProvider | null> {
   const binding = slotBindings[`${target}.channel`];
   if (binding) {
     const [moduleId, channelName] = binding.split("/");
@@ -35,15 +37,15 @@ async function resolveChannelProvider<K extends ChannelTarget>(
     if (!bound) {
       throw new Error(`Slot "${target}.channel" is bound to unknown channel "${binding}"`);
     }
-    return bound as unknown as ChannelProvider<K>;
+    return bound;
   }
   const candidates = channelProviders.filter((provider) => provider.channel.target === target);
-  if (candidates.length === 1) return candidates[0] as unknown as ChannelProvider<K>;
-  throw new Error(
-    candidates.length === 0
-      ? `No channel provides target "${target}"`
-      : `Multiple channels provide target "${target}" — bind a slot in solivio.config.ts`,
-  );
+  if (candidates.length > 1) {
+    throw new Error(
+      `Multiple channels provide target "${target}" — bind a slot in solivio.config.ts`,
+    );
+  }
+  return candidates[0] ?? null;
 }
 
 /**
@@ -101,7 +103,6 @@ export function bootModuleRuntime(): SolivioRuntime {
           : `Multiple importers provide target "${target}" — bind a slot in solivio.config.ts`,
       );
     },
-    channel: async (target) => (await resolveChannelProvider(target)).channel,
     channelProvider: resolveChannelProvider,
     moduleOptions,
     agentTools,

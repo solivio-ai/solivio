@@ -1,10 +1,14 @@
 // Canonical domain models. Pure TS types + small constants; no runtime deps.
 //
-// `channels.ts` additionally declares the `offer` channel input by merging into
-// the SDK's open `ChannelInputMap` — a type-only reference to @solivio/sdk, which
-// keeps that dependency pointing one way (the SDK never imports this package).
+// `channels.ts` additionally declares the `offer` channel target and its slot
+// props by merging into the SDK's open registries — a type-only reference to
+// @solivio/sdk, which keeps that dependency pointing one way (the SDK never
+// imports this package).
 
-export type { OfferChannelInput } from "./channels";
+// Type-only: pulls the file into the program so its augmentations merge, without
+// emitting a runtime import into a package that has none.
+import type {} from "./channels";
+
 export type { Customer, CustomerSource } from "./models/customer";
 export {
   CustomerSelectionError,

@@ -43,12 +43,14 @@ function formatMoney(value: number, currency: string) {
 
 /**
  * The accepted-offer screen. Offers owns the chrome — totals, attribution,
- * back/exit navigation — and stays ignorant of *what* the configured `offer`
- * channel is: the document preview and the primary action are channel UI,
- * contributed via `offer-detail.document` / `offer-detail.primaryAction` and
- * restricted to `channelModuleId` so only the bound channel's own contribution
- * renders, even with other channel modules also enabled (see
- * `docs/adr/0005-channels-output-capability.md`).
+ * back/exit navigation — and stays ignorant of what any module does with a
+ * finalized offer. Two slots differ deliberately (see
+ * `docs/adr/0005-channels-output-capability.md`):
+ *
+ * - `offer-detail.document` is **exclusive**, restricted to `channelModuleId`,
+ *   because one preview owns that column.
+ * - `offer-detail.actions` is **additive**: every contributing module's button
+ *   renders, so a PDF download and a push to another system coexist.
  */
 export function OfferAcceptedView({
   offer,
@@ -75,7 +77,7 @@ export function OfferAcceptedView({
     >
       {hasDocument && (
         <article className="min-h-[60vh] overflow-hidden rounded-lg border bg-card">
-          <Slot id="offer-detail.document" providerId={channelModuleId} offerId={offer.id} />
+          <Slot id="offer-detail.document" providerId={channelModuleId} offer={offer} />
         </article>
       )}
 
@@ -124,9 +126,7 @@ export function OfferAcceptedView({
         )}
 
         <div className="grid w-full max-w-sm content-start auto-rows-min gap-2 self-start rounded-lg border bg-card p-3">
-          {channelModuleId && (
-            <Slot id="offer-detail.primaryAction" providerId={channelModuleId} offerId={offer.id} />
-          )}
+          <Slot id="offer-detail.actions" offer={offer} />
           <Button variant="outline" onClick={onBackToDraft}>
             <ArrowLeft size={16} aria-hidden="true" />
             {t("backToDraft")}

@@ -2,8 +2,9 @@ import { describe, expect, test, vi } from "vitest";
 
 import type { Offer } from "@solivio/domain";
 
-import { offerPdfChannel } from "./channels.ts";
-import { buildPdfOfferPayload } from "./lib/buildPdfOfferPayload.ts";
+import { channels } from "../channels.ts";
+import { buildPdfOfferPayload } from "./buildPdfOfferPayload.ts";
+import { renderOfferPdf } from "./renderOfferPdf.ts";
 
 /**
  * Only `renderToBuffer` is stubbed — the document component and its imports stay
@@ -11,9 +12,9 @@ import { buildPdfOfferPayload } from "./lib/buildPdfOfferPayload.ts";
  * absent under the `react-server` resolve condition the root vitest config sets
  * for server modules; it throws before producing anything.
  *
- * What is under test here is the channel's half of the contract: that a rendered
- * buffer is surfaced as a `document` result with a safe filename and the right
- * content type. Actual PDF output has no automated coverage — see AGENTS.md.
+ * What is under test is this module's half of the contract: that a rendered
+ * buffer is surfaced with a safe filename and the right content type. Actual PDF
+ * output has no automated coverage — see AGENTS.md.
  */
 vi.mock("@react-pdf/renderer", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@react-pdf/renderer")>()),
@@ -42,19 +43,26 @@ function offerFixture(overrides: Partial<Offer> = {}): Offer {
   } as Offer;
 }
 
-describe("offer pdf channel", () => {
-  test("is declared as the pdf channel for the offer target", () => {
-    expect(offerPdfChannel.name).toBe("pdf");
-    expect(offerPdfChannel.target).toBe("offer");
+describe("offer pdf channel declaration", () => {
+  test("declares the pdf channel for the offer target", () => {
+    expect(channels).toHaveLength(1);
+    expect(channels[0].name).toBe("pdf");
+    expect(channels[0].target).toBe("offer");
   });
 
-  test("surfaces the rendered bytes as a document result", async () => {
-    const result = await offerPdfChannel.run({ offer: offerFixture() });
+  test("declares no behaviour — the core never invokes a channel", () => {
+    // Guards the decision in ADR 0005: a channel is a declaration, and anything
+    // effectful belongs to this module's own route or subscribers.
+    expect(channels[0]).not.toHaveProperty("run");
+  });
+});
 
-    expect(result.kind).toBe("document");
-    if (result.kind !== "document") return;
+describe("renderOfferPdf", () => {
+  test("surfaces the rendered bytes with a pdf content type", async () => {
+    const result = await renderOfferPdf(offerFixture());
+
     expect(result.contentType).toBe("application/pdf");
-    // The contract promises bytes the caller can stream directly.
+    // The caller streams these bytes directly.
     expect(result.body).toBeInstanceOf(Uint8Array);
     expect(new TextDecoder().decode(result.body.subarray(0, 5))).toBe("%PDF-");
     expect(result.filename).toMatch(/^oferta-.*\.pdf$/);
@@ -63,12 +71,13 @@ describe("offer pdf channel", () => {
   test("strips slashes from the filename", async () => {
     // An offer number containing "/" would terminate the Content-Disposition
     // header value early; buildPdfOfferPayload derives numbers from the id, but
-    // the sanitisation is the channel's promise, not the payload builder's.
-    const result = await offerPdfChannel.run({ offer: offerFixture() });
-    if (result.kind !== "document") throw new Error("expected a document");
+    // the sanitisation is the renderer's promise, not the payload builder's.
+    const result = await renderOfferPdf(offerFixture());
     expect(result.filename).not.toContain("/");
   });
+});
 
+describe("buildPdfOfferPayload", () => {
   test("derives the payload from the domain offer", () => {
     const payload = buildPdfOfferPayload(offerFixture());
 
