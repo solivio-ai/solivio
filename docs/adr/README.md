@@ -15,6 +15,7 @@ Keep ADRs short. If you find yourself writing more than two pages, you are proba
 | # | Title | Status |
 |---|---|---|
 | [0001](0001-runtime-framework.md) | Backend and frontend runtime framework | proposed |
+| [0005](0005-channels-output-capability.md) | Channels as the output capability | accepted |
 
 ## Future ADRs (likely)
 

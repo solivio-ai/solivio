@@ -6,10 +6,13 @@ import type { ComponentType } from "react";
  *
  * Slot ids and their props are declared here (extensible by declaration
  * merging if a module needs to define its own slot surface).
+ *
+ * Slots whose props are typed by a domain entity are declared by the package
+ * owning that entity rather than here — `@solivio/domain` merges in the
+ * `offer-detail.*` surface — so this package stays free of entity dependencies.
  */
 export interface SlotPropsMap {
   "dashboard.cards": Record<never, never>;
-  "offer-detail.panel": { offerId: string };
   "import.panel": { target: "products" | "customers" };
 }
 

@@ -15,14 +15,16 @@ The published image ships with the first-party module set enabled:
 
 - `catalog` - products, prices, embeddings, and semantic search.
 - `customers` - customers and intake requests.
-- `offers` - offer drafts, line items, revisions, PDF rendering, and all
-  offer-facing UI including the dashboard.
+- `offers` - offer drafts, line items, revisions, and all offer-facing UI
+  including the dashboard.
 - `offer-chat` - the offer-review assistant (threads, messages, streaming).
 - `order-history` - tools that let agents recall a customer's past orders.
 - `knowledge-base` - internal knowledge base (spaces and articles) with
   semantic retrieval that grounds the agents, plus a JSON importer.
 - `csv-import` - CSV importer capabilities for products, customers, and
   historical orders.
+- `offer-pdf` - the PDF channel for offers: renders a finalized offer into a
+  document.
 - `products-sync` - scheduled sync of products from an external source.
 
 ## Enabling and configuring modules
@@ -44,6 +46,7 @@ export default defineConfig({
     ["products-sync", { sourceUrl: "https://example.com/products.json", cron: "0 3 * * *" }],
   ],
   slots: {
+    "offer.channel": "offer-pdf/pdf",
     "product.importer": "csv-import/csv-products",
     "customer.importer": "csv-import/csv-customers",
     "offer.importer": "csv-import/csv-orders",
@@ -55,8 +58,9 @@ export default defineConfig({
   for out-of-tree modules.
 - The `[name, { …options }]` form passes options, validated against the
   module's schema at generate time.
-- `slots` bind exclusive capabilities (e.g. which importer handles the
-  `product` target) when more than one module provides them.
+- `slots` bind exclusive capabilities - which importer handles the `product`
+  target, or which channel a finalized `offer` is handed to (a PDF today, an
+  ERP push or an email later) - when more than one module provides them.
 
 Changing the config requires regenerating and rebuilding the image - that is
 the deliberate trade of the build-time model: modules get the full surface

@@ -1,6 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import type { AgentId, AgentTool } from "./agent-tool.ts";
+import type { ChannelDefinition, ChannelTarget } from "./channel.ts";
 import type { ImporterDefinition, ImportTarget } from "./importer.ts";
 import type { AnyJobDefinition } from "./job.ts";
 import type { AiClientFactory, Logger } from "./module-context.ts";
@@ -26,6 +27,12 @@ export interface AuthSession {
 export type GuardResult =
   | { session: AuthSession; response?: never }
   | { session?: never; response: Response };
+
+/** A resolved channel together with the id of the module that provides it. */
+export interface ChannelProvider {
+  moduleId: string;
+  channel: ChannelDefinition;
+}
 
 export interface AuthGuards {
   /** Requires a signed-in session. */
@@ -54,6 +61,11 @@ export interface SolivioRuntime {
   auth: AuthGuards;
   /** Resolves the importer bound to a target (via slot binding or sole provider). */
   importer: (target: ImportTarget) => Promise<ImporterDefinition>;
+  /**
+   * Resolves the channel bound to a target (via slot binding or sole provider);
+   * `null` when the deployment bound none.
+   */
+  channelProvider: (target: ChannelTarget) => Promise<ChannelProvider | null>;
   /** All agent tools contributed by enabled modules (generated registry). */
   agentTools: ReadonlyArray<AgentTool>;
   moduleOptions: Record<string, unknown>;
@@ -145,6 +157,21 @@ export function getAgentTools(agentId?: AgentId): ReadonlyArray<AgentTool> {
 /** The importer capability bound to a target ("product", "customer", …). */
 export function getImporter(target: ImportTarget): Promise<ImporterDefinition> {
   return runtime().importer(target);
+}
+
+/**
+ * Which module is the bound destination for a target ("offer") — what a finalized
+ * entity is handed to. `null` when the deployment bound none, which is a
+ * configuration state rather than a per-request error: the host simply renders no
+ * channel UI.
+ *
+ * The returned definition is metadata; a channel has nothing to invoke. Hosts use
+ * `moduleId` to show only the bound module's contribution (see
+ * `hasSlotContribution`/`Slot`'s `providerId` in `@/generated/slots`), since a
+ * deployment may enable several channel-providing modules and bind only one.
+ */
+export function getChannelProvider(target: ChannelTarget): Promise<ChannelProvider | null> {
+  return runtime().channelProvider(target);
 }
 
 /** The module's validated options from `solivio.config.ts`. */

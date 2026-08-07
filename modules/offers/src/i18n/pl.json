@@ -245,18 +245,8 @@
         "removeAria": "Usuń {name}"
       },
       "acceptedView": {
-        "pdfPreviewAria": "Podgląd PDF zaakceptowanej oferty",
         "attribution": "Odpowiedzialna osoba",
-        "downloadPdf": "Wygeneruj i pobierz PDF",
-        "goToOffers": "Wróć do listy ofert",
-        "pdfViewer": {
-          "loading": "Ładowanie PDF…",
-          "error": "Nie udało się załadować PDF.",
-          "zoomOut": "Pomniejsz",
-          "zoomIn": "Powiększ",
-          "previousPage": "Poprzednia strona",
-          "nextPage": "Następna strona"
-        }
+        "goToOffers": "Wróć do listy ofert"
       }
     },
     "revision": {

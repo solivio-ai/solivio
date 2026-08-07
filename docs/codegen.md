@@ -89,6 +89,7 @@ are pruned on every run.
 | `jobs.ts` | The `jobs` array (one per `src/jobs/*` file) | runtime boot, jobs engine |
 | `ai.ts` | `agentTools` (merged `ai/tools.ts`) and `importerProviders` (merged `ai/importers.ts`, tagged with module id) | runtime boot (`getAgentTools`, `getImporter` resolution) |
 | `nav.ts` | `navRegistry` — all `nav.tsx` entries tagged with module id, sorted by `order` | `AppSidebar` / `AdminSidebarSection` |
+| `channels.ts` | `channelProviders` (merged `channels.ts`, tagged with module id) | runtime boot (`getChannelProvider` resolution) |
 | `slots.tsx` | `slotRegistry` (merged, ordered) + the `Slot` host component | core via `@/generated/slots`; module pages via the `@solivio/slots` alias (next.config + tsconfig paths) |
 | `acl.ts` | The `Permission` union type + `allPermissions` | permission-aware code |
 | `schema.ts` | `export *` of every module `data/schema.ts` | tooling/typing over the full schema |

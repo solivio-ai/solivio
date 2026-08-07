@@ -50,6 +50,9 @@ export function installTestRuntime(overrides: TestRuntimeOverrides = {}): Solivi
       (async (target) => {
         throw new Error(`No test importer registered for target "${target}"`);
       }),
+    // No channel bound is a legitimate state, so the default is `null` rather
+    // than a throw — a test that needs one overrides it.
+    channelProvider: overrides.channelProvider ?? (async () => null),
     agentTools: overrides.agentTools ?? [],
     moduleOptions: overrides.moduleOptions ?? {},
     subscribers: overrides.subscribers ?? [],

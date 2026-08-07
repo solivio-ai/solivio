@@ -83,6 +83,7 @@ Everything else is discovered from the conventional layout. All parts are option
 | `src/jobs/*.ts` | One `defineJob` default export per file |
 | `src/ai/tools.ts` | `export const tools: AgentTool[]` |
 | `src/ai/importers.ts` | `export const importers: AnyImporterDefinition[]` |
+| `src/channels.ts` | `export const channels: ChannelDefinition[]` — declares this module as a destination for a target (top-level, not under `ai/`) |
 | `src/contracts/routes.ts` | `export const routes: ApiContract[]` (OpenAPI) |
 | `src/i18n/<locale>.json` | Messages, merged under the `<moduleId>` namespace |
 | `src/nav.tsx` | `export const nav: NavEntry[]` (client-safe: icons + data only) |
@@ -187,8 +188,17 @@ Core or module surfaces render `<Slot id="..." />`; other modules fill the slot 
 `@/generated/slots`; **module pages import it as `@solivio/slots`** — an alias defined
 in `next.config.mjs` (`turbopack.resolveAlias`) and `apps/solivio/tsconfig.json`
 (`paths`), and the only generated file modules may import. Slot ids and their props are
-declared in `sdk/src/ui/slots.ts` (`SlotPropsMap`); current ids: `dashboard.cards`,
-`offer-detail.panel`, `import.panel`. The offers dashboard hosts `dashboard.cards`.
+declared in `sdk/src/ui/slots.ts` (`SlotPropsMap`) — or, when their props are typed by a
+domain entity, by the package owning it: `@solivio/domain` merges in the `offer-detail.*`
+surface so the SDK needs no entity dependency. Current ids: `dashboard.cards`,
+`offer-detail.document`, `offer-detail.actions`, `import.panel`. The offers
+dashboard hosts `dashboard.cards`; the accepted-offer screen hosts the two
+`offer-detail.*` slots, handing over the whole `Offer`. They differ deliberately:
+`offer-detail.document` is **exclusive**, restricted to whichever module backs the bound
+`offer` channel (`Slot`'s `providerId`, resolved via `getChannelProvider`), because one
+preview owns that column; `offer-detail.actions` is **additive**, so every module acting
+on accepted offers contributes a button and all of them render — see
+`docs/adr/0005-channels-output-capability.md`.
 
 ## 5. Services — the cross-module call path
 
@@ -305,6 +315,7 @@ the accessors:
 | `getAi()` | Deployment model ids: `chatModelId()`, `embeddingModelId()`, `modelFor(role)` |
 | `getLogger(moduleId)` | Structured JSON logger tagged with the module id |
 | `getImporter(target)` | The importer bound to a target via slot binding (or sole provider) |
+| `getChannelProvider(target)` | Which module is the bound destination for a target (or `null`); channels are declarations, so there is nothing to invoke |
 | `getAgentTools()` | All agent tools contributed by enabled modules |
 | `getModuleOptions(moduleId)` | The module's validated options from `solivio.config.ts` |
 | `emitEvent(name, payload)` | Typed event emission (inline + queued subscribers) |

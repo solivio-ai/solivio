@@ -62,6 +62,7 @@ export interface ModuleModel {
     aiTools: boolean;
     aiImporters: boolean;
     aiAgents: boolean;
+    channels: boolean;
   };
 }
 
@@ -230,6 +231,9 @@ export async function discoverModule(entry: ConfigEntry): Promise<ModuleModel> {
       contracts: exists("contracts/routes.ts"),
       aiTools: exists("ai/tools.ts"),
       aiImporters: exists("ai/importers.ts"),
+      // Top-level, not under ai/: a channel (a PDF renderer, an ERP push) has
+      // nothing to do with AI.
+      channels: exists("channels.ts"),
       aiAgents: exists("ai/agents.ts"),
     },
   };

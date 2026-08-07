@@ -67,7 +67,7 @@ offers ◄── order-history            csv-import (headless; no deps)
 
 - **catalog** — products + prices, semantic search, import target `product`.
 - **customers** — customers + intake requests, import target `customer`.
-- **offers** — offer lifecycle: drafts, line items, revisions, PDF, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`).
+- **offers** — offer lifecycle: drafts, line items, revisions, the generation/name/validation agents, the copilot's offer-editing tools, and all offer-facing UI including the dashboard (`/`). PDF rendering is a separately-provided `offer` channel, not owned here — see §4.
 - **offer-chat** — the offer review chat *domain*: threads, messages, the copilot agent, streaming routes.
 - **order-history** — agent tools that recall a customer's accepted past offers/orders through the offers service.
 - **csv-import** — CSV importer capabilities for the product/customer/offer import targets (bound via config `slots`).
@@ -81,14 +81,15 @@ One deliberate seam: the chat **panel UI lives in offers** (it integrates impera
 The long-term surface taxonomy — inputs, enrichment, renderers, channels — still frames where capabilities belong. Implemented today:
 
 - **Importers** (input) — pure transforms (raw payload → normalized records) declared in `ai/importers.ts`; the owning module's import route persists the records. Exclusive per target, selected by a config slot.
+- **Channels** (output) — which modules a *finalized* entity is handed to: render a document, send a message, create a record in another system. A channel is a **declaration** (`channels.ts`: name, description, target) that the core resolves (`getChannelProvider(target)`) and never invokes. The provider receives the entity through the target's slots and owns what happens next — its own API routes for anything needing the server, its own subscribers (on `offers.offer.accepted`, say) for anything that should happen unattended. Several modules may act on one target and their actions coexist; the config slot (`"offer.channel"`) is exclusive only over the document area, where one preview owns the column. Which targets exist, and the slot props carrying each entity, are declared by the package owning the entity (`ChannelTargets` and `SlotPropsMap`, merged from `@solivio/domain`) rather than hardcoded in the SDK, so the SDK needs no dependency on the entity packages. A provider route must take an id and re-fetch, never trust an entity posted from the browser.
 - **Agent tools** (enrichment) — declared in `ai/tools.ts`, merged into one registry, consumed by agents via `getAgentTools()`.
 - **Slots** (UI) — typed injection points (`SlotPropsMap`) that modules fill via `slots.tsx`.
 - **Events + subscribers** (cross-cutting) — typed observer events; subscribers have no mutation rights over another module's state except through its services.
 - **Jobs** — cron-schedulable background work on the queue.
 
-Renderers and channels as formal capability kinds remain future surfaces; today PDF rendering lives inside the offers module.
+Channels subsume what the taxonomy used to call *renderers*: a PDF renderer and an ERP push are the same kind of capability, differing only in what the provider does with the entity. The offer PDF lives in its own provider module (`modules/offer-pdf/`), which owns both the rendering and the route serving it (`/api/offer-pdf/{offerId}`), and reaches the accepted-offer screen through the channel binding and the slots it fills. The offers module hosts those slots and owns no PDF surface at all.
 
-For v0, **one provider per exclusive capability**. Cross-provider merging (dedup, conflict, priority) is deferred until a real need appears.
+For v0, **one provider per exclusive capability** — importers, and the channel document area. Cross-provider merging (dedup, conflict, priority) is deferred until a real need appears. Channel *actions* are the exception and are additive: several modules can act on the same finalized entity, each through its own trigger, so nothing has to be merged.
 
 ## 5. Shared infrastructure
 

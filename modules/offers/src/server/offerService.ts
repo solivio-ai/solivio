@@ -206,7 +206,7 @@ export async function updateOfferMeta(
     resolvedCustomerId = customer?.id ?? null;
   }
 
-  return db.transaction(
+  const result = await db.transaction(
     async (tx) => {
       const existing = await findOfferById(offerId, tx);
       if (!existing) return null;
@@ -248,6 +248,16 @@ export async function updateOfferMeta(
     },
     { isolationLevel: "repeatable read" },
   );
+
+  // After the commit, never inside it: a subscriber that reads the offer must not
+  // race a transaction that has not landed. A non-null result with an accepted
+  // status is always a real transition — the guard above rejects any change to an
+  // already-accepted offer except reopening it to draft.
+  if (result && data.status === OFFER_STATUS.ACCEPTED) {
+    await emitEvent("offers.offer.accepted", { offerId });
+  }
+
+  return result;
 }
 
 export async function deleteOffer(offerId: string): Promise<boolean> {
