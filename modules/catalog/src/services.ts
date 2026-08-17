@@ -8,7 +8,7 @@ import { importProductsWithEmbeddings } from "./server/productEmbeddingService.t
 import type { ProductPriceRow } from "./server/productPriceRepository.ts";
 import { findActivePricesForProducts } from "./server/productPriceRepository.ts";
 import type { ProductSummaryRow } from "./server/productRepository.ts";
-import { getProductsByIds } from "./server/productRepository.ts";
+import { deleteBySkus, getProductsByIds } from "./server/productRepository.ts";
 import type { ProductSearchMatch } from "./server/productSearchService.ts";
 import {
   lookupProductsBySkus,
@@ -33,7 +33,10 @@ export interface CatalogSearchOptions {
  */
 export interface CatalogService {
   /** Semantic (embedding) catalog search for a single prompt. */
-  searchByPrompt(query: string, opts?: CatalogSearchOptions): Promise<ProductSearchMatch[]>;
+  searchByPrompt(
+    query: string,
+    opts?: CatalogSearchOptions,
+  ): Promise<ProductSearchMatch[]>;
   /** Run several semantic queries at once; matches keyed by the original query. */
   searchBatch(
     queries: string[],
@@ -43,6 +46,13 @@ export interface CatalogService {
   lookupBySkus(skus: string[]): Promise<Map<string, ProductSearchMatch>>;
   /** Embed and upsert imported product records (products + prices). */
   importProducts(records: ProductInput[]): Promise<{ count: number }>;
+  /**
+   * Hard-delete products by SKU; resolves with the SKUs actually removed
+   * (unknown SKUs are ignored, not an error). Prices cascade. Rows in other
+   * modules that reference a deleted product by id keep their snapshotted data
+   * and are left with a dangling `product_id` — callers own that trade-off.
+   */
+  deleteBySkus(skus: string[]): Promise<{ count: number; skus: string[] }>;
   /** Existence/display lookup for id-only cross-module references. */
   getProductsByIds(ids: string[]): Promise<ProductSummaryRow[]>;
   /** Active prices for the given products in a currency, keyed by product id. */
@@ -68,8 +78,19 @@ function createCatalogService(): CatalogService {
       await emitEvent("catalog.products.imported", { count: result.count });
       return result;
     },
+    deleteBySkus: async (skus) => {
+      const deleted = await deleteBySkus(skus);
+      if (deleted.length > 0) {
+        await emitEvent("catalog.products.deleted", {
+          count: deleted.length,
+          skus: deleted,
+        });
+      }
+      return { count: deleted.length, skus: deleted };
+    },
     getProductsByIds: (ids) => getProductsByIds(ids),
-    getActivePricesForProducts: (ids, currency) => findActivePricesForProducts(ids, currency),
+    getActivePricesForProducts: (ids, currency) =>
+      findActivePricesForProducts(ids, currency),
   };
 }
 

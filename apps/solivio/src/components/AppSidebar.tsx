@@ -31,7 +31,11 @@ import { useSession } from "@/lib/auth-client";
 
 const moduleNavItems = navRegistry.filter((entry) => (entry.section ?? "main") === "main");
 
-export function AppSidebar() {
+type Props = {
+  ssoOnly: boolean;
+};
+
+export function AppSidebar({ ssoOnly }: Props) {
   const pathname = usePathname();
   const t = useTranslations("AppSidebar");
   const tModules = useTranslations();
@@ -111,7 +115,7 @@ export function AppSidebar() {
           </div>
           <ThemeToggle className="ml-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8" />
         </div>
-        <UserMenu />
+        <UserMenu ssoOnly={ssoOnly} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
