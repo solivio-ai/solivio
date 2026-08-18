@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: [
+      "apps/*/src/**/*.{test,spec}.{ts,tsx}",
       "modules/*/src/**/*.{test,spec}.{ts,tsx}",
       "packages/*/src/**/*.{test,spec}.{ts,tsx}",
       "sdk/src/**/*.{test,spec}.{ts,tsx}",

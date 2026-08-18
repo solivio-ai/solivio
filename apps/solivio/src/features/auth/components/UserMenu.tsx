@@ -17,7 +17,11 @@ import { authClient, useSession } from "@/lib/auth-client";
 
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 
-export function UserMenu() {
+type Props = {
+  ssoOnly: boolean;
+};
+
+export function UserMenu({ ssoOnly }: Props) {
   const t = useTranslations("UserMenu");
   const { data: session } = useSession();
   const { signOut } = authClient;
@@ -33,7 +37,7 @@ export function UserMenu() {
     });
 
   const displayName = session?.user.name || session?.user.email || "";
-  const hasCredentials = !!session?.user;
+  const hasCredentials = !ssoOnly && !!session?.user;
 
   return (
     <div className="flex items-center gap-1">
@@ -59,13 +63,15 @@ export function UserMenu() {
               {t("changePassword")}
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem
-            onClick={handleSignOut}
-            className="text-destructive focus:text-destructive"
-          >
-            <LogOut size={14} aria-hidden="true" />
-            {t("logOut")}
-          </DropdownMenuItem>
+          {!ssoOnly && (
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive focus:text-destructive"
+            >
+              <LogOut size={14} aria-hidden="true" />
+              {t("logOut")}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

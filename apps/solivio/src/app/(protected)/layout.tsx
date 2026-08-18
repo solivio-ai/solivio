@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@solivio/ui/components/sidebar.tsx";
 import { AppSidebar } from "@/components/AppSidebar";
+import { authFlags } from "@/server/auth/auth";
 import { getCurrentSession } from "@/server/auth/session";
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
@@ -12,7 +13,7 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar ssoOnly={authFlags.ssoOnly} />
       <SidebarInset>
         <SidebarTrigger className="fixed left-3 top-3 z-40 border border-border bg-background shadow-sm md:hidden" />
         {children}

@@ -51,6 +51,22 @@ export async function upsertMany(rows: UpsertProductRow[], tx?: Tx): Promise<voi
     });
 }
 
+/**
+ * Hard-deletes products by SKU and returns the SKUs actually removed.
+ *
+ */
+export async function deleteBySkus(skus: string[], tx?: Tx): Promise<string[]> {
+  if (skus.length === 0) return [];
+  const conn = tx ?? getDb();
+
+  const rows = await conn
+    .delete(products)
+    .where(inArray(products.sku, skus))
+    .returning({ sku: products.sku });
+
+  return rows.map((row) => row.sku);
+}
+
 export async function findIdsBySku(skus: string[], tx?: Tx): Promise<Map<string, string>> {
   if (skus.length === 0) return new Map();
   const conn = tx ?? getDb();

@@ -57,3 +57,4 @@ apps/solivio/src/app/api/(gen)/
 
 # Operator overlay manifest (linked by scripts/overlay.mjs) — never commit
 solivio.config.local.ts
+.solivio-overlay.json

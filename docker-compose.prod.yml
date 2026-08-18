@@ -54,10 +54,23 @@ services:
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      AUTH_ENABLED: ${AUTH_ENABLED:-true}
       AUTH_SIGNUP_ENABLED: ${AUTH_SIGNUP_ENABLED:-true}
       AUTH_CREDENTIALS_ENABLED: ${AUTH_CREDENTIALS_ENABLED:-true}
       AUTH_SSO_ENABLED: ${AUTH_SSO_ENABLED:-false}
+      AUTH_SIGNUP_DEFAULT_ROLE: ${AUTH_SIGNUP_DEFAULT_ROLE:-user}
+      AUTH_SSO_ONLY: ${AUTH_SSO_ONLY:-false}
+      # Odoo SSO. Without these the endpoints redirect to /login rather than
+      # starting a flow, which reads as "SSO is broken" from the embed.
+      SSO_JWT_SECRET: ${SSO_JWT_SECRET:-}
+      SSO_JWT_ISSUER: ${SSO_JWT_ISSUER:-}
+      SSO_JWT_AUDIENCE: ${SSO_JWT_AUDIENCE:-solivio-app}
+      SSO_START_URL: ${SSO_START_URL:-}
+      SSO_EXCHANGE_URL: ${SSO_EXCHANGE_URL:-}
+      SSO_EXCHANGE_API_KEY: ${SSO_EXCHANGE_API_KEY:-}
+      # Odoo module.
+      ODOO_URL: ${ODOO_URL:-}
+      ODOO_API_KEY: ${ODOO_API_KEY:-}
+      DEFAULT_CURRENCY: ${DEFAULT_CURRENCY:-PLN}
     labels:
       - traefik.enable=true
       - traefik.http.routers.app.rule=Host(`${APP_HOST:-demo.solivio.ai}`)

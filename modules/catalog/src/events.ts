@@ -5,5 +5,6 @@ import type {} from "@solivio/sdk";
 declare module "@solivio/sdk" {
   interface Events {
     "catalog.products.imported": { count: number };
+    "catalog.products.deleted": { count: number; skus: string[] };
   }
 }
