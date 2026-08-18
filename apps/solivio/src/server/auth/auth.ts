@@ -65,6 +65,7 @@ export const auth = betterAuth({
   },
   socialProviders,
   plugins: [
+    nextCookies(),
     username(),
     admin({
       defaultRole: authFlags.signUpDefaultRole,
@@ -82,10 +83,6 @@ export const auth = betterAuth({
       exchangeKey: process.env.SSO_EXCHANGE_API_KEY,
       defaultRole: authFlags.signUpDefaultRole,
     }),
-    // Cookie-integration plugins must be last: better-auth attaches
-    // Set-Cookie via each plugin's `after` hook in registration order, and
-    // nextCookies() is what forwards those to Next's cookies() store.
-    nextCookies(),
   ],
 });
 
