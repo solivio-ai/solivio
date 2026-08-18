@@ -33,10 +33,7 @@ export interface CatalogSearchOptions {
  */
 export interface CatalogService {
   /** Semantic (embedding) catalog search for a single prompt. */
-  searchByPrompt(
-    query: string,
-    opts?: CatalogSearchOptions,
-  ): Promise<ProductSearchMatch[]>;
+  searchByPrompt(query: string, opts?: CatalogSearchOptions): Promise<ProductSearchMatch[]>;
   /** Run several semantic queries at once; matches keyed by the original query. */
   searchBatch(
     queries: string[],
@@ -89,8 +86,7 @@ function createCatalogService(): CatalogService {
       return { count: deleted.length, skus: deleted };
     },
     getProductsByIds: (ids) => getProductsByIds(ids),
-    getActivePricesForProducts: (ids, currency) =>
-      findActivePricesForProducts(ids, currency),
+    getActivePricesForProducts: (ids, currency) => findActivePricesForProducts(ids, currency),
   };
 }
 

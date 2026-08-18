@@ -236,25 +236,33 @@ export const externalSso = (options: ExternalSsoOptions) => ({
         let user = existing?.user;
 
         if (!user) {
-          let username = usernameFromEmail(email);
-          // Collision check, not a hard guarantee: good enough for the rare
-          // case of two different email local-parts slugifying the same way.
-          for (let attempt = 0; attempt < 5; attempt++) {
+          const base = usernameFromEmail(email);
+
+          for (let attempt = 0; attempt < 5 && !user; attempt++) {
+            // The pre-check keeps the ordinary case to a single insert; the
+            // catch is what makes it correct when it loses.
+            const candidate = attempt === 0 ? base : `${base}-${randomBytes(3).toString("hex")}`;
             const taken = await ctx.context.adapter.findOne({
               model: "user",
-              where: [{ field: "username", value: username }],
+              where: [{ field: "username", value: candidate }],
             });
-            if (!taken) break;
-            username = `${usernameFromEmail(email)}-${Math.random().toString(36).slice(2, 6)}`;
+            if (taken) continue;
+
+            try {
+              user = await ctx.context.internalAdapter.createUser({
+                name,
+                email,
+                emailVerified: true, // asserted by the issuing system, not self-reported
+                username: candidate,
+                displayUsername: candidate,
+                role: options.defaultRole,
+              });
+            } catch {
+              user = (await ctx.context.internalAdapter.findUserByEmail(email))?.user;
+            }
           }
-          user = await ctx.context.internalAdapter.createUser({
-            name,
-            email,
-            emailVerified: true, // asserted by the issuing system, not self-reported
-            username,
-            displayUsername: username,
-            role: options.defaultRole,
-          });
+
+          if (!user) throw failureRedirect();
         }
 
         // No context argument: in better-auth 1.6 `createSession` takes
