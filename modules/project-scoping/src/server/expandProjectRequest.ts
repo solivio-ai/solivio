@@ -53,14 +53,15 @@ Rules:
   Never invent or alter SKUs; otherwise null.
 - query: product-search query — product type plus identifying specs, base (dictionary)
   form, in the request language followed by an English translation ("X / Y"), no quantities.
-- phrase: short line in the request language describing the item for the salesperson.
+- phrase: short line (max ~8 words) in the request language describing the item.
 - quantity: positive integer estimate in the product's sales unit, derived from the
   knowledge base's quantity norms and the project size, rounded up to whole sales units.
-  basis: one sentence showing the calculation. If nothing supports an estimate, use 1 and
-  say in basis that the quantity must be confirmed.
+  basis: the calculation only, e.g. "120 m² × 15 pcs/m² = 1800 pcs", no prose. If nothing
+  supports an estimate, use 1 and write "to be confirmed" in the request language.
 - One entry per distinct product — sum quantities instead of repeating a product.
 - missingInfo: up to 6 questions the salesperson should ask to make the estimate precise.
-- Write phrase, basis, assumptions and missingInfo in the request's language.
+- Write phrase, basis, assumptions and missingInfo in the request's language. Keep every text
+  field terse: the list is long and output length drives latency.
 - Prefer completeness: a typical project needs 20-60 items.
 `.trim();
 
@@ -105,6 +106,10 @@ const MATCHES_FOR_REQUEST = 5;
 const MAX_ARTICLES = 14;
 const MAX_CONTEXT_CHARS = 40_000;
 
+// The knowledge base carries the domain reasoning, so both calls run with low
+// reasoning effort; latency is dominated by output length, not by thinking.
+const FAST_REASONING = { openai: { reasoningEffort: "low" } } as const;
+
 let planAgentInstance: Agent | undefined;
 let composeAgentInstance: Agent | undefined;
 
@@ -112,7 +117,9 @@ function planAgent(): Agent {
   planAgentInstance ??= new Agent({
     name: "project-scoping-plan",
     instructions: PLAN_INSTRUCTIONS,
-    model: getAi().modelFor("offerGeneration"),
+    // Listing a dozen components is a short, low-stakes output: the cheaper
+    // chat-tier model is enough and noticeably faster than offerGeneration.
+    model: getAi().modelFor("chat"),
   });
   return planAgentInstance;
 }
@@ -144,19 +151,29 @@ async function retrieveKnowledge(request: string, queries: string[]): Promise<Kn
 
 export async function expandProjectRequest(request: string): Promise<ProjectExpansion> {
   const log = getLogger("project-scoping");
+  const startedAt = Date.now();
+  const elapsed = () => Date.now() - startedAt;
 
   const planResult = await planAgent().generateText(request, {
     output: Output.object({ schema: planSchema }),
+    providerOptions: FAST_REASONING,
   });
   const plan = planSchema.parse(planResult.output);
+  const planMs = elapsed();
+  log.info("project-scoping planned components", {
+    components: plan.components.length,
+    durationMs: planMs,
+  });
 
   const articles = await retrieveKnowledge(
     request,
     plan.components.map((c) => c.kbQuery),
   );
+  const retrieveMs = elapsed() - planMs;
   log.info("project-scoping retrieved knowledge", {
     components: plan.components.length,
     articles: articles.length,
+    durationMs: retrieveMs,
   });
 
   const context = formatKnowledgeContext(articles, MAX_CONTEXT_CHARS);
@@ -168,6 +185,7 @@ export async function expandProjectRequest(request: string): Promise<ProjectExpa
 
   const composeResult = await composeAgent().generateText(prompt, {
     output: Output.object({ schema: composeSchema }),
+    providerOptions: FAST_REASONING,
   });
   const composed = composeSchema.parse(composeResult.output);
 
@@ -178,6 +196,8 @@ export async function expandProjectRequest(request: string): Promise<ProjectExpa
   log.info("project-scoping composed items", {
     items: composed.items.length,
     kbArticles: kbArticles.length,
+    durationMs: elapsed() - planMs - retrieveMs,
+    totalMs: elapsed(),
   });
 
   return {
