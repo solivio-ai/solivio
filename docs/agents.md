@@ -57,7 +57,13 @@ they call the `catalog` and `offers` services lazily via `getService()` — and 
 offer-generation agents. The **knowledge-base** module likewise contributes its RAG
 retrieval tools (`browse_knowledge_base`, `search_knowledge_base`, `list_articles`,
 `get_article`) to the same two agents, so the offer generator can ground decisions in
-internal articles. The consuming agents request their scoped tool registry through
+internal articles. The **project-scoping** module contributes `expand_project_request`
+to the same two agents: for project-style requests (a house, a room, an installation —
+no product list) it plans the scope, retrieves knowledge-base guidance through the
+`knowledge-base` service and composes an approximate item list (query, optional SKU,
+estimated quantity + basis), which the offer generator then feeds to `search_products`.
+It runs two internal LLM calls on the `offerGeneration` role; the domain knowledge stays
+in the knowledge base. The consuming agents request their scoped tool registry through
 `getAgentTools()`; neither module imports another module's implementation.
 
 ## Rules for agent code in modules

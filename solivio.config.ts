@@ -18,6 +18,7 @@ export default defineConfig({
     "order-history",
     "products-sync",
     "knowledge-base",
+    "project-scoping",
     "offer-pdf",
   ],
   slots: {

@@ -1,8 +1,9 @@
 # knowledge-base module
 
 Internal knowledge base with RAG retrieval for the agents. Standalone — no
-`dependsOn`; other modules consume it only through the agent-tool registry,
-never via `getService`.
+`dependsOn`. Agents consume it through the agent-tool registry; modules that
+need retrieval inside their own pipeline call the public service
+(`getService("knowledge-base").searchArticles`, e.g. `project-scoping`).
 
 Owns its full surface:
 
