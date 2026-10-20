@@ -1,0 +1,28 @@
+{
+  "name": "@solivio/module-project-scoping",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent tool expanding project-style requests into an approximate, knowledge-base-grounded item list.",
+  "type": "module",
+  "solivio": {
+    "module": true
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@solivio/sdk": "workspace:*",
+    "@voltagent/core": "^2.7.7",
+    "ai": "^6.0.202",
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

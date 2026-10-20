@@ -1,5 +1,7 @@
 import type { Services } from "@solivio/sdk";
 
+// Pulls the Events augmentation into dependents' standalone typecheck (erased at runtime).
+import type {} from "./events.ts";
 import type { ImportPayload } from "./lib/importSchema.ts";
 import type { ArticleSearchMatch } from "./server/knowledgeBaseSearchService.ts";
 import { searchArticles } from "./server/knowledgeBaseSearchService.ts";

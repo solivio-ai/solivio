@@ -5823,6 +5823,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@solivio/module-project-scoping@workspace:modules/project-scoping":
+  version: 0.0.0-use.local
+  resolution: "@solivio/module-project-scoping@workspace:modules/project-scoping"
+  dependencies:
+    "@solivio/sdk": "workspace:*"
+    "@voltagent/core": "npm:^2.7.7"
+    ai: "npm:^6.0.202"
+    server-only: "npm:^0.0.1"
+    typescript: "npm:^6.0.3"
+    zod: "npm:^4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@solivio/sdk@workspace:*, @solivio/sdk@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@solivio/sdk@workspace:sdk"
